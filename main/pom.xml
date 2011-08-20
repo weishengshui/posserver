@@ -12,12 +12,6 @@
 	<name>Main Server for QQ Group Buy Validation POS Network Server</name>
 	<description>Main Server for QQ Group Buy Validation POS Network Server</description>
 	<dependencies>
-		<!-- Apache Mina - Socket -->
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-		</dependency>
-
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -41,6 +35,24 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>ejb3-persistence</artifactId>
 			<version>1.0.2.GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
+
+		<!-- Apache Mina - Socket -->
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
 		</dependency>
 
 		<!-- Test Scope STARTS -->

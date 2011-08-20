@@ -21,10 +21,11 @@
 	<inceptionYear>2011</inceptionYear>
 	<properties>
 		<guice.version>3.0</guice.version>
-		<testng.version>5.14.10</testng.version>
+		<hibernate.version>3.4.0</hibernate.version>
 		<junit.version>4.8.2</junit.version>
 		<slf4j.version>1.5.11</slf4j.version>
 		<logback.version>0.9.29</logback.version>
+		<apache.commonconfig.version>1.6</apache.commonconfig.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
@@ -86,6 +87,13 @@
 				<version>1.0.2.GA</version>
 			</dependency>
 
+			<!-- Configuration -->
+			<dependency>
+				<groupId>commons-configuration</groupId>
+				<artifactId>commons-configuration</artifactId>
+				<version>${apache.commonconfig.version}</version>
+			</dependency>
+			
 			<!-- Logging -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
