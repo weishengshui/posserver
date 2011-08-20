@@ -21,7 +21,7 @@
 	</properties>
 	<dependencies>
 
-		<!-- Apache Httpcomponent STARTS -->
+		<!-- Apache HttpComponent STARTS -->
 		<dependency>
 			<groupId>commons-discovery</groupId>
 			<artifactId>commons-discovery</artifactId>

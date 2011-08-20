@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+
+	<!--
+		Constant section BEGINS 
+	 -->
+	<constant name="struts.objectFactory" value="com.google.inject.struts2.GuiceObjectFactory" />
+	<!-- 
+	<constant name="guice.module" value="com.chinarewards.tiger2.b2c.guice.B2CWebModule"/>
+	 -->
+	
+	<!-- Enable Struts debugging. -->
+	<!-- FIXME disable this for production -->
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.custom.i18n.resources" value="Application" />
+	<!-- <constant name="struts.convention.result.path" value="/" > -->
+	
+	<!--
+		Constant section ENDS 
+	 -->
+	
+	
+	
+	<!-- 
+		Package definition section STARTS
+	-->
+	
+	<!--
+		Our default package. All packages should extends this instead of
+		struts-defaults.
+	 -->
+	<package name="default" extends="struts-default" abstract="true">
+	
+		<!-- Our own secure stack -->
+		<interceptors>
+			
+			<!-- 
+			<interceptor name="exception2" class="com.chinarewards.tiger2.b2c.struts.interceptor.EJBExceptionMappingInterceptor">
+				<param name="logEnabled">true</param>
+			</interceptor>
+			<interceptor name="login" class="com.chinarewards.tiger2.b2c.struts.LoginCheckInterceptor" />
+			<interceptor name="adminLoginCheckInterceptor" class="com.chinarewards.tiger2.b2c.struts.AdminLoginCheckInterceptor"/>
+			 --> 
+			
+			<!-- The China Rewards default stack -->
+			<interceptor-stack name="crStack">
+				<!-- 
+				<interceptor-ref name="exception2">
+					<param name="logEnabled">true</param>
+					<param name="logLevel">error</param>
+				</interceptor-ref>
+				 -->
+                <interceptor-ref name="alias"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="i18n"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="debugging"/>
+                <interceptor-ref name="profiling" /> 
+                <interceptor-ref name="scopedModelDriven"/>
+                <interceptor-ref name="modelDriven"/>
+                <interceptor-ref name="fileUpload"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="multiselect"/>
+                <interceptor-ref name="staticParams"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="params">
+                  <param name="excludeParams">dojo\..*,^struts\..*</param>
+                </interceptor-ref>
+                <interceptor-ref name="conversionError"/>
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <!-- admin后台模块的 -->
+                <!-- 
+                <interceptor-ref name="adminLoginCheckInterceptor"/>
+                 -->
+		        <interceptor-ref name="defaultStack"/>     <!--必需引用这个，否则点下一个子ACTION会报错-->
+			
+			</interceptor-stack>
+			
+			<!-- This stack checks if the user has logged in. -->
+			<interceptor-stack name="secureStack">
+				<!-- <interceptor-ref name="login" /> -->
+				<interceptor-ref name="crStack" />
+			</interceptor-stack>
+		</interceptors>
+		
+		<default-interceptor-ref name="crStack"/>
+		
+		<global-results>
+		
+			<result name="error">/error.jsp</result>
+			<result name="login" type="redirectAction">
+				<param name="namespace">/</param>
+				<param name="actionName">login</param>
+				<param name="login.backUrl">${backUrl}</param>
+			</result>
+			<result name="admin" type="redirectAction">
+				<param name="namespace">/admin</param>
+				<param name="actionName">index</param>
+			</result>
+			
+			<!-- For use by global-exception-mappings -->
+			<result name="runtimeException">/WEB-INF/jsp/error/system_error.jsp</result>			
+		</global-results>
+
+		<global-exception-mappings>		
+			<!-- General error -->
+			<exception-mapping result="runtimeException" exception="java.lang.RuntimeException" />		
+		</global-exception-mappings>	
+		
+	</package>
+	
+	<!-- Nested include -->
+	<include file="struts2/common.xml" ></include>
+	
+</struts>

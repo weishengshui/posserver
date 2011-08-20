@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>root</artifactId>
@@ -26,6 +27,8 @@
 		<logback.version>0.9.16</logback.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<apache.commonconfig.version>1.6</apache.commonconfig.version>
+		<!-- project.version: this project's version -->
+		<project.version>0.1.0-SNAPSHOT</project.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
@@ -72,6 +75,11 @@
 			<dependency>
 				<groupId>com.google.inject.extensions</groupId>
 				<artifactId>guice-persist</artifactId>
+				<version>${guice.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-struts2-plugin</artifactId>
 				<version>${guice.version}</version>
 			</dependency>
 
@@ -130,6 +138,13 @@
 				<version>${logback.version}</version>
 				<scope>runtime</scope>
 			</dependency>
+			<!-- If it is not included, JUnit test has no output. -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-access</artifactId>
+				<version>${logback.version}</version>
+				<scope>runtime</scope>
+			</dependency>
 
 			<!-- Test Scope STARTS -->
 			<dependency>
@@ -152,6 +167,6 @@
 		<module>domain</module>
 		<module>qqapi</module>
 		<!-- <module>packaging</module> -->
-    <module>qqapi</module>
-  </modules>
+		<module>config</module>
+	</modules>
 </project>
