@@ -92,7 +92,7 @@ public abstract class LoadProperties {
 			}
 		}
 		return Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream("/" + getPropertyFileName());
+				.getResourceAsStream(getPropertyFileName());
 	}
 
 	protected String getOsSpecificConfigPath() {

@@ -17,6 +17,7 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.utils.appinfo.AppInfo;
 import com.google.inject.Guice;
@@ -38,7 +39,7 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 public class BootStrap {
 
 	Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	private static final String APP_NAME = "POSv2 Server";
 
 	/**
@@ -161,12 +162,10 @@ public class BootStrap {
 		// print version and quit.
 		if (cl.hasOption("version")) {
 			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println("POS version "
-					+ appInfo.getVersionString());
+			System.out.println("POS version " + appInfo.getVersionString());
 			System.exit(0);
 		}
 
-		
 		if (cl.getOptionValue("reply-per-loop") != null) {
 			Pattern pattern = Pattern.compile("^[-+]?[0-9]*");
 			Matcher isNum = pattern
@@ -223,51 +222,51 @@ public class BootStrap {
 
 		// create Options object
 		{
-//			// Options options = new Options();
-//			Options options = main;
-//
-//			options.addOption(OptionBuilder.withLongOpt("db").isRequired()
-//					.withArgName("database").hasArg().withDescription("数据库名称")
-//					.create());
-//			options.addOption(OptionBuilder.withLongOpt("dbtype").isRequired()
-//					.withArgName("database_type").hasArg()
-//					.withDescription("数据库类型。目前支持：mysql").create());
-//			options.addOption(OptionBuilder.withLongOpt("dbhost").isRequired()
-//					.withArgName("host").hasArg().withDescription("数据库主机/IP地址")
-//					.create());
-//			options.addOption(OptionBuilder.withLongOpt("dbuser").isRequired()
-//					.withArgName("username").hasArg().withDescription("数据库用户名")
-//					.create());
-//			options.addOption(OptionBuilder.withLongOpt("dbpass").isRequired()
-//					.withArgName("password").hasArg().withDescription("数据库密码")
-//					.create());
-//			// Sina microblog related
-//			options.addOption(OptionBuilder.withLongOpt("sinauser")
-//					.withArgName("username").isRequired().hasArg()
-//					.withDescription("新浪微博用户名").create());
-//			options.addOption(OptionBuilder.withLongOpt("sinapass")
-//					.withArgName("password").isRequired().hasArg()
-//					.withDescription("新浪微博密码").create());
-//			//
-//			options.addOption(OptionBuilder.withLongOpt("reply-per-loop")
-//					.hasArg().withDescription("每个循环的最大数量的回复")
-//					.withType(new Integer(1)).create());
-//
-//			//
-//			options.addOption(OptionBuilder.withLongOpt("pause-per-reply")
-//					.hasArg().withDescription("回复间隔时间")
-//					.withType(new Integer(1)).create());
-//
-//			OptionGroup group = new OptionGroup();
-//			// --comment
-//			group.addOption(OptionBuilder.withLongOpt("comment")
-//					.withArgName("text").isRequired().hasArg()
-//					.withDescription("该评论内容将回复所有微博").create("c"));
-//
-//			group.addOption(OptionBuilder.withLongOpt("commentfile")
-//					.withArgName("path").isRequired().hasArg()
-//					.withDescription("评论文件路径").create("cf"));
-//			options.addOptionGroup(group);
+			// // Options options = new Options();
+			// Options options = main;
+			//
+			// options.addOption(OptionBuilder.withLongOpt("db").isRequired()
+			// .withArgName("database").hasArg().withDescription("数据库名称")
+			// .create());
+			// options.addOption(OptionBuilder.withLongOpt("dbtype").isRequired()
+			// .withArgName("database_type").hasArg()
+			// .withDescription("数据库类型。目前支持：mysql").create());
+			// options.addOption(OptionBuilder.withLongOpt("dbhost").isRequired()
+			// .withArgName("host").hasArg().withDescription("数据库主机/IP地址")
+			// .create());
+			// options.addOption(OptionBuilder.withLongOpt("dbuser").isRequired()
+			// .withArgName("username").hasArg().withDescription("数据库用户名")
+			// .create());
+			// options.addOption(OptionBuilder.withLongOpt("dbpass").isRequired()
+			// .withArgName("password").hasArg().withDescription("数据库密码")
+			// .create());
+			// // Sina microblog related
+			// options.addOption(OptionBuilder.withLongOpt("sinauser")
+			// .withArgName("username").isRequired().hasArg()
+			// .withDescription("新浪微博用户名").create());
+			// options.addOption(OptionBuilder.withLongOpt("sinapass")
+			// .withArgName("password").isRequired().hasArg()
+			// .withDescription("新浪微博密码").create());
+			// //
+			// options.addOption(OptionBuilder.withLongOpt("reply-per-loop")
+			// .hasArg().withDescription("每个循环的最大数量的回复")
+			// .withType(new Integer(1)).create());
+			//
+			// //
+			// options.addOption(OptionBuilder.withLongOpt("pause-per-reply")
+			// .hasArg().withDescription("回复间隔时间")
+			// .withType(new Integer(1)).create());
+			//
+			// OptionGroup group = new OptionGroup();
+			// // --comment
+			// group.addOption(OptionBuilder.withLongOpt("comment")
+			// .withArgName("text").isRequired().hasArg()
+			// .withDescription("该评论内容将回复所有微博").create("c"));
+			//
+			// group.addOption(OptionBuilder.withLongOpt("commentfile")
+			// .withArgName("path").isRequired().hasArg()
+			// .withDescription("评论文件路径").create("cf"));
+			// options.addOptionGroup(group);
 
 		}
 
@@ -361,20 +360,9 @@ public class BootStrap {
 
 		log.info("Initializing dependency injection environment...");
 
-		//
-		// JPA
-		//
-		String db = cl.getOptionValue("db");
-		String dbType = cl.getOptionValue("dbtype");
-		String dbUsername = cl.getOptionValue("dbuser");
-		String dbPassword = cl.getOptionValue("dbpass");
-		@SuppressWarnings("unused")
-		String dbHost = cl.getOptionValue("dbhost");
-
 		// prepare the persistence module
 		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
-		Properties props = buildJpaProperties(dbType, dbUsername, dbPassword,
-				db);
+		Properties props = buildJpaProperties();
 		jpaModule.properties(props);
 
 		// prepare Guice injector
@@ -383,40 +371,10 @@ public class BootStrap {
 
 	}
 
-	protected Properties buildJpaProperties(String dbType, String dbUsername,
-			String dbPassword, String db) {
+	protected Properties buildJpaProperties() {
 
-		Properties props = new Properties();
-		props.setProperty("hibernate.hbm2ddl.auto", "update");
-		props.setProperty("hibernate.connection.username", dbUsername);
-		props.setProperty("hibernate.connection.password", dbPassword);
-		// props.setProperty("hibernate.show_sql", "true");
-
-		// determine the db type
-		if ("mysql".equals(dbType)) {
-			props.setProperty("hibernate.dialect",
-					"org.hibernate.dialect.MySQL5Dialect");
-			props.setProperty("hibernate.connection.driver_class",
-					"com.mysql.jdbc.Driver");
-			// necessary to add the parameters in the end of
-			// URL related to encoding
-			// TODO verify if it is correct.
-			props.setProperty(
-					"hibernate.connection.url",
-					"jdbc:mysql://"
-							+ cl.getOptionValue("dbhost")
-							+ ":3306/"
-							+ db
-							+ "?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
-		} else if ("hsql".equals(dbType)) {
-			props.setProperty("hibernate.dialect",
-					"org.hibernate.dialect.HSQLDialect");
-			props.setProperty("hibernate.connection.driver_class",
-					"org.hsqldb.jdbcDriver");
-			props.setProperty("hibernate.connection.url", "jdbc:hsqldb:.");
-		}
-
-		return props;
+		DatabaseProperties p = new DatabaseProperties();
+		return p.getProperties();
 
 	}
 

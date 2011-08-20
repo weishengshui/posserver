@@ -11,6 +11,16 @@
 	<name>Main Server for QQ Group Buy Validation POS Network Server</name>
 	<description>Main Server for QQ Group Buy Validation POS Network Server</description>
 	<dependencies>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>config</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>domain</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
@@ -96,7 +106,8 @@
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<scope>test</scope>
+			<!-- simple main, connect to hsqldb -->
+			<!-- <scope>test</scope> -->
 		</dependency>
 
 		<!-- Logging -->

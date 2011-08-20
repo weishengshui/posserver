@@ -16,6 +16,8 @@ import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
  * Represents a Validation transaction, should be created by POS server. This
  * record should not be modified by any program once written.
  * 
+ * Billing should use this record as the basis.
+ * 
  * @author kmtong
  * 
  */
