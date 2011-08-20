@@ -24,7 +24,7 @@
 		<hibernate.version>3.4.0</hibernate.version>
 		<junit.version>4.8.2</junit.version>
 		<slf4j.version>1.5.11</slf4j.version>
-		<logback.version>0.9.20</logback.version>
+		<logback.version>0.9.16</logback.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<apache.commonconfig.version>1.6</apache.commonconfig.version>
 	</properties>

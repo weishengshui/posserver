@@ -7,6 +7,7 @@
 	<listener>
 		<listener-class>com.chinarewards.qqgbvpn.guice.GuiceBootstrap</listener-class>
 	</listener>
+	
 	<filter>
 		<filter-name>guiceFilter</filter-name>
 		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>

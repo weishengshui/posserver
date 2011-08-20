@@ -15,7 +15,6 @@ import com.google.inject.servlet.ServletModule;
  */
 public class QqgbvpnServletModule extends ServletModule {
 
-	@Override
 	protected void configureServlets() {
 
 		// appinfo servlet
