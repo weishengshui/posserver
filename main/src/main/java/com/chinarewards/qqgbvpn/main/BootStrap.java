@@ -77,7 +77,7 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out
-				.println("Microblogger version " + appInfo.getVersionString());
+				.println("POSv2 Server: version " + appInfo.getVersionString());
 
 	}
 
