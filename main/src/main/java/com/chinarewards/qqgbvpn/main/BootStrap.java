@@ -77,7 +77,7 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out
-				.println("Microblogger version " + appInfo.getVersionString());
+				.println("QQ Group Buying Validation POS Network Server version " + appInfo.getVersionString());
 
 	}
 
@@ -165,7 +165,7 @@ public class BootStrap {
 		// version
 		if (cl.hasOption("version")) {
 			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println("Microblogger version "
+			System.out.println("QQ Group Buying Validation POS Network Server version "
 					+ appInfo.getVersionString());
 			System.exit(0);
 		}
