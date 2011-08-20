@@ -16,11 +16,6 @@ import java.util.Properties;
  */
 public class LogConfigImpl implements LogConfig {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.chinarewards.microblogger.Log#setVerboseLevel(int)
-	 */
 	public void setVerboseLevel(int level) {
 		
 		if (true) return;
@@ -44,7 +39,7 @@ public class LogConfigImpl implements LogConfig {
 		
 		if (level == 1) {
 			props.setProperty("log4j.logger.org.apache", "DEBUG");
-			props.setProperty("log4j.logger.com.chinarewards.microblogger", "DEBUG");
+			props.setProperty("log4j.logger.com.chinarewards.qqgbvpn", "DEBUG");
 		}
 		
 //		LogManager.resetConfiguration();

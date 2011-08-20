@@ -381,7 +381,7 @@ public class BootStrap {
 		String dbHost = cl.getOptionValue("dbhost");
 
 		// prepare the persistence module
-		JpaPersistModule jpaModule = new JpaPersistModule("microblogger");
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
 		Properties props = buildJpaProperties(dbType, dbUsername, dbPassword,
 				db);
 		jpaModule.properties(props);

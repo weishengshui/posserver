@@ -15,11 +15,6 @@ import java.util.Date;
  */
 public class SimpleDateTimeProvider implements DateTimeProvider {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.chinarewards.microblogger.DateTimeProvider#getTime()
-	 */
 	public Date getTime() {
 		return new Date();
 	}
