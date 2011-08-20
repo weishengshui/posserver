@@ -39,6 +39,8 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 public class BootStrap {
 
 	Logger log = LoggerFactory.getLogger(getClass());
+	
+	private static final String APP_NAME = "POSv2 Server";
 
 	/**
 	 * Container for all dependency injection required objects.
@@ -77,7 +79,7 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out
-				.println("POSv2 Server: version " + appInfo.getVersionString());
+				.println(APP_NAME + ": version " + appInfo.getVersionString());
 
 	}
 
@@ -86,10 +88,11 @@ public class BootStrap {
 	 */
 	public void run() throws Exception {
 
+		// print application version.
+		printAppVersion();
+
 		// parse command line arguments.
 		parseCmdArgs();
-
-		printAppVersion();
 
 		log.info("Bootstrapping...");
 
@@ -150,26 +153,21 @@ public class BootStrap {
 			System.exit(1);
 		}
 
-		// help message
+		// print help message and quit.
 		if (cl.hasOption("help")) {
 			printHelp(opts);
 			System.exit(0);
 		}
 
-		// no argument is given.
-		if (cl.getOptions().length == 0) {
-			printHelp(opts);
-			System.exit(1);
-		}
-
-		// version
+		// print version and quit.
 		if (cl.hasOption("version")) {
 			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println("QQ Group Buying Validation POS Network Server version "
+			System.out.println("POS version "
 					+ appInfo.getVersionString());
 			System.exit(0);
 		}
 
+		
 		if (cl.getOptionValue("reply-per-loop") != null) {
 			Pattern pattern = Pattern.compile("^[-+]?[0-9]*");
 			Matcher isNum = pattern
@@ -214,7 +212,7 @@ public class BootStrap {
 	 */
 	protected void printHelp(Options options) {
 		HelpFormatter f = new HelpFormatter();
-		f.printHelp("java -jar microblogger.jar", options, true);
+		f.printHelp("java -jar posnet.jar", options, true);
 	}
 
 	@SuppressWarnings("static-access")
@@ -226,59 +224,51 @@ public class BootStrap {
 
 		// create Options object
 		{
-			// Options options = new Options();
-			Options options = main;
-
-			options.addOption(OptionBuilder.withLongOpt("db").isRequired()
-					.withArgName("database").hasArg().withDescription("数据库名称")
-					.create());
-			options.addOption(OptionBuilder.withLongOpt("dbtype").isRequired()
-					.withArgName("database_type").hasArg()
-					.withDescription("数据库类型。目前支持：mysql").create());
-			options.addOption(OptionBuilder.withLongOpt("dbhost").isRequired()
-					.withArgName("host").hasArg().withDescription("数据库主机/IP地址")
-					.create());
-			options.addOption(OptionBuilder.withLongOpt("dbuser").isRequired()
-					.withArgName("username").hasArg().withDescription("数据库用户名")
-					.create());
-			options.addOption(OptionBuilder.withLongOpt("dbpass").isRequired()
-					.withArgName("password").hasArg().withDescription("数据库密码")
-					.create());
-			// Sina microblog related
-			options.addOption(OptionBuilder.withLongOpt("sinauser")
-					.withArgName("username").isRequired().hasArg()
-					.withDescription("新浪微博用户名").create());
-			options.addOption(OptionBuilder.withLongOpt("sinapass")
-					.withArgName("password").isRequired().hasArg()
-					.withDescription("新浪微博密码").create());
-			//
-			options.addOption(OptionBuilder.withLongOpt("reply-per-loop")
-					.hasArg().withDescription("每个循环的最大数量的回复")
-					.withType(new Integer(1)).create());
-
-			//
-			options.addOption(OptionBuilder.withLongOpt("pause-per-reply")
-					.hasArg().withDescription("回复间隔时间")
-					.withType(new Integer(1)).create());
-
-			OptionGroup group = new OptionGroup();
-			// --comment
-			group.addOption(OptionBuilder.withLongOpt("comment")
-					.withArgName("text").isRequired().hasArg()
-					.withDescription("该评论内容将回复所有微博").create("c"));
-
-			// FIXME add a parameter --commentfile <path>, which accepts a text
-			// file,
-			// each line contains one reply.
-			// this argument should be mutually exclusive to the '--comment'
-			// argument,
-			// only one of them should be present.
-			// apache Commons CLI - OptionGroup
-
-			group.addOption(OptionBuilder.withLongOpt("commentfile")
-					.withArgName("path").isRequired().hasArg()
-					.withDescription("评论文件路径").create("cf"));
-			options.addOptionGroup(group);
+//			// Options options = new Options();
+//			Options options = main;
+//
+//			options.addOption(OptionBuilder.withLongOpt("db").isRequired()
+//					.withArgName("database").hasArg().withDescription("数据库名称")
+//					.create());
+//			options.addOption(OptionBuilder.withLongOpt("dbtype").isRequired()
+//					.withArgName("database_type").hasArg()
+//					.withDescription("数据库类型。目前支持：mysql").create());
+//			options.addOption(OptionBuilder.withLongOpt("dbhost").isRequired()
+//					.withArgName("host").hasArg().withDescription("数据库主机/IP地址")
+//					.create());
+//			options.addOption(OptionBuilder.withLongOpt("dbuser").isRequired()
+//					.withArgName("username").hasArg().withDescription("数据库用户名")
+//					.create());
+//			options.addOption(OptionBuilder.withLongOpt("dbpass").isRequired()
+//					.withArgName("password").hasArg().withDescription("数据库密码")
+//					.create());
+//			// Sina microblog related
+//			options.addOption(OptionBuilder.withLongOpt("sinauser")
+//					.withArgName("username").isRequired().hasArg()
+//					.withDescription("新浪微博用户名").create());
+//			options.addOption(OptionBuilder.withLongOpt("sinapass")
+//					.withArgName("password").isRequired().hasArg()
+//					.withDescription("新浪微博密码").create());
+//			//
+//			options.addOption(OptionBuilder.withLongOpt("reply-per-loop")
+//					.hasArg().withDescription("每个循环的最大数量的回复")
+//					.withType(new Integer(1)).create());
+//
+//			//
+//			options.addOption(OptionBuilder.withLongOpt("pause-per-reply")
+//					.hasArg().withDescription("回复间隔时间")
+//					.withType(new Integer(1)).create());
+//
+//			OptionGroup group = new OptionGroup();
+//			// --comment
+//			group.addOption(OptionBuilder.withLongOpt("comment")
+//					.withArgName("text").isRequired().hasArg()
+//					.withDescription("该评论内容将回复所有微博").create("c"));
+//
+//			group.addOption(OptionBuilder.withLongOpt("commentfile")
+//					.withArgName("path").isRequired().hasArg()
+//					.withDescription("评论文件路径").create("cf"));
+//			options.addOptionGroup(group);
 
 		}
 
@@ -290,6 +280,7 @@ public class BootStrap {
 
 		}
 
+		// help mesasge
 		{
 			Option help = OptionBuilder.withArgName("help").withLongOpt("help")
 					.withDescription("打印消息").create('h');
@@ -297,9 +288,11 @@ public class BootStrap {
 			options.addOption(help);
 		}
 
-		// version
-		main.addOption(OptionBuilder.withLongOpt("version")
-				.withDescription("显示版本").create());
+		// print version
+		{
+			main.addOption(OptionBuilder.withLongOpt("version")
+					.withDescription("显示版本").create());
+		}
 
 		return main;
 	}
