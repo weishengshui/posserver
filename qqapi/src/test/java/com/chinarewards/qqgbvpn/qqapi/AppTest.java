@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn;
+package com.chinarewards.qqgbvpn.qqapi;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

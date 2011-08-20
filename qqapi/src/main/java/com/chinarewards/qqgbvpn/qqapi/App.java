@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn;
+package com.chinarewards.qqgbvpn.qqapi;
 
 /**
  * Hello world!
