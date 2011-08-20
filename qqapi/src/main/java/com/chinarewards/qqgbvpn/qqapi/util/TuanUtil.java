@@ -86,10 +86,11 @@ public class TuanUtil {
 	 * 解析QQ返回的XML流，返回解析结果
 	 * @author iori
 	 * @param in
+	 * @param nodeDir 子元素的目录
 	 * @return
 	 * @throws DocumentException
 	 */
-	public static HashMap<String,Object> parseXML(InputStream in) throws Exception {
+	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir) throws Exception {
 		HashMap<String,Object> parseResult = new HashMap<String,Object>();
 		SAXReader reader = new SAXReader(); 
 		Document xmlDoc = reader.read(in);
@@ -98,7 +99,7 @@ public class TuanUtil {
 		parseResult.put("resultCode", resultCode);
 		//0才有item
 		if ("0".equals(resultCode)) {
-			List<Element> listRowSet = xmlDoc.selectNodes("//groupon/item");
+			List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
 			List<TuanSearchListVO> itemList = new ArrayList<TuanSearchListVO>();
 			for (Element ele : listRowSet) {
 				TuanSearchListVO item = (TuanSearchListVO) copyProperties(TuanSearchListVO.class,ele);
