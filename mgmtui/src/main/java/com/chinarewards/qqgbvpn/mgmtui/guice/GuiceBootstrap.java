@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.guice;
+package com.chinarewards.qqgbvpn.mgmtui.guice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

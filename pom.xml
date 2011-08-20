@@ -27,6 +27,8 @@
 		<logback.version>0.9.16</logback.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<apache.commonconfig.version>1.6</apache.commonconfig.version>
+		<!-- project.version: this project's version -->
+		<project.version>0.1.0-SNAPSHOT</project.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
@@ -73,6 +75,11 @@
 			<dependency>
 				<groupId>com.google.inject.extensions</groupId>
 				<artifactId>guice-persist</artifactId>
+				<version>${guice.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.inject.extensions</groupId>
+				<artifactId>guice-struts2-plugin</artifactId>
 				<version>${guice.version}</version>
 			</dependency>
 

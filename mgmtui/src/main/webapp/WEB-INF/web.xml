@@ -4,17 +4,121 @@
 
 	<display-name>QQ Group Buying Validation POS Network Server</display-name>
 
+<!-- 
 	<listener>
 		<listener-class>com.chinarewards.qqgbvpn.guice.GuiceBootstrap</listener-class>
 	</listener>
-	
+-->
+
+	<!-- Must be the first filter -->
 	<filter>
 		<filter-name>guiceFilter</filter-name>
 		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
 	</filter>
+	<filter>
+		<filter-name>action2-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<filter>
+		<filter-name>sitemesh</filter-name>
+		<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>action2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>disableUrlSessionFilter</filter-name>
+		<filter-class>com.chinarewards.qqgbvpn.mgmtui.filter.DisableUrlSessionFilter</filter-class>
+	</filter>
+	
+	
+	<filter-mapping>
+		<filter-name>disableUrlSessionFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>guiceFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>action2-cleanup</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>action2</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
 
+	<!-- 	
+	<servlet>
+		<servlet-name>init</servlet-name>
+		<servlet-class>com.chinarewards.tiger2.b2c.servlet.InitServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	 -->
+	<servlet>
+		<servlet-name>appinfo</servlet-name>
+		<servlet-class>com.chinarewards.common.web.appinfo.AppInfoServlet</servlet-class>
+		<load-on-startup>99</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>appinfo</servlet-name>
+		<url-pattern>/appinfo.html</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>Kaptcha</servlet-name>
+		<servlet-class>com.google.code.kaptcha.servlet.KaptchaServlet</servlet-class>
+		<init-param>
+			<param-name>kaptcha.border</param-name>
+			<param-value>yes</param-value>
+		</init-param>
+		<init-param>
+			<param-name>kaptcha.textproducer.char.length</param-name>
+			<param-value>4</param-value>
+		</init-param>
+		<init-param>
+			<param-name>kaptcha.image.width</param-name>
+			<param-value>130</param-value>
+		</init-param>
+		<init-param>
+			<param-name>kaptcha.image.height</param-name>
+			<param-value>50</param-value>
+		</init-param>
+		<init-param>
+			<param-name>kaptcha.textproducer.char.string</param-name>
+			<param-value>1234567890</param-value>
+		</init-param>
+		<init-param>
+			<param-name>kaptcha.noise.impl</param-name>
+			<param-value>com.google.code.kaptcha.impl.NoNoise</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Kaptcha</servlet-name>
+		<url-pattern>/kaptcha.jpg</url-pattern>
+	</servlet-mapping>
+	
+	<jsp-config>
+		<taglib>
+			<taglib-uri>/struts-tags</taglib-uri>
+			<taglib-location>/WEB-INF/tld/struts-tags.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://www.opensymphony.com/sitemesh/decorator</taglib-uri>
+			<taglib-location>/WEB-INF/tld/sitemesh-decorator.tld</taglib-location>
+		</taglib>
+		<taglib>
+			<taglib-uri>http://www.opensymphony.com/sitemesh/page</taglib-uri>
+			<taglib-location>/WEB-INF/tld/sitemesh-page.tld</taglib-location>
+		</taglib>
+	</jsp-config>
 </web-app>

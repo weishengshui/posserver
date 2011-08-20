@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.util;
+package com.chinarewards.qqgbvpn.main.util;
 
 /**
  * 
