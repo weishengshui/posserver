@@ -106,5 +106,6 @@
   	<module>main</module>
 <!--     <module>packaging</module>
  -->
+  	<module>domain</module>
   </modules>
 </project>
