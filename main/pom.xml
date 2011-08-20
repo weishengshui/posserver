@@ -249,4 +249,5 @@
 		<system>Jenkins</system>
 		<url>http://build.dev.china-rewards.com:8080/</url>
 	</ciManagement>
+	<version>0.1.0-SNAPSHOT</version>
 </project>
