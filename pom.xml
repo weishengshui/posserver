@@ -138,6 +138,13 @@
 				<version>${logback.version}</version>
 				<scope>runtime</scope>
 			</dependency>
+			<!-- If it is not included, JUnit test has no output. -->
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-access</artifactId>
+				<version>${logback.version}</version>
+				<scope>runtime</scope>
+			</dependency>
 
 			<!-- Test Scope STARTS -->
 			<dependency>

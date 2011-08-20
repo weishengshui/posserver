@@ -12,7 +12,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
@@ -365,7 +364,6 @@ public class BootStrap {
 		//
 		// JPA
 		//
-
 		String db = cl.getOptionValue("db");
 		String dbType = cl.getOptionValue("dbtype");
 		String dbUsername = cl.getOptionValue("dbuser");
@@ -402,6 +400,7 @@ public class BootStrap {
 					"com.mysql.jdbc.Driver");
 			// necessary to add the parameters in the end of
 			// URL related to encoding
+			// TODO verify if it is correct.
 			props.setProperty(
 					"hibernate.connection.url",
 					"jdbc:mysql://"
