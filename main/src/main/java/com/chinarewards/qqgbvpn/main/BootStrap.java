@@ -77,7 +77,7 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out
-				.println("QQ Group Buying Validation POS Network Server version " + appInfo.getVersionString());
+				.println("POSv2 Server: version " + appInfo.getVersionString());
 
 	}
 
