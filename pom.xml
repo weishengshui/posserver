@@ -5,13 +5,14 @@
 	<parent>
 		<artifactId>root</artifactId>
 		<groupId>com.chinarewards</groupId>
-		<version>2.1.0-SNAPSHOT</version>
+		<version>2.1.0</version>
 	</parent>
-	<artifactId>qqgbvpn</artifactId>
+	<groupId>com.chinarewards.qqgbvpn</groupId>
+	<artifactId>parent</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>QQ Group Buy Validation POS Network</name>
-	<description>QQ Group Buy Validation POS Network</description>
+	<name>QQ Group Buy Validation POS Network Parent POM</name>
+	<description>QQ Group Buy Validation POS Network parent Maven project.</description>
 	<scm>
 		<url>http://git.dev.china-rewards.com/repo</url>
 		<connection>scm:git:git://git.dev.china-rewards.com/qqgbvpn/qqgbvpn-server.git</connection>
@@ -21,6 +22,9 @@
 	<properties>
 		<guice.version>3.0</guice.version>
 		<testng.version>5.14.10</testng.version>
+		<junit.version>4.8.2</junit.version>
+		<slf4j.version>1.5.11</slf4j.version>
+		<logback.version>0.9.29</logback.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
@@ -36,12 +40,14 @@
 	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
+			<!-- Apache Mina - Socket programming -->
 			<dependency>
-			    <groupId>org.apache.mina</groupId>
-			    <artifactId>mina-core</artifactId>
-			    <version>2.0.4</version>
+				<groupId>org.apache.mina</groupId>
+				<artifactId>mina-core</artifactId>
+				<version>2.0.4</version>
 			</dependency>
-			<!-- Guice START -->
+
+			<!-- Google Guice - dependenct injection -->
 			<dependency>
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
@@ -67,8 +73,8 @@
 				<artifactId>guice-persist</artifactId>
 				<version>${guice.version}</version>
 			</dependency>
-			<!-- Guice END -->
-			<!-- JPA supported START -->
+
+			<!-- JPA and related -->
 			<dependency>
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc14</artifactId>
@@ -79,18 +85,25 @@
 				<artifactId>ejb3-persistence</artifactId>
 				<version>1.0.2.GA</version>
 			</dependency>
-			<!-- JPA supported END -->
+
+			<!-- Logging -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+
 			<!-- Test Scope STARTS -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.8.2</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.testng</groupId>
-				<artifactId>testng</artifactId>
-				<version>${testng.version}</version>
+				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -102,9 +115,8 @@
 			<!-- Test Scope ENDS -->
 		</dependencies>
 	</dependencyManagement>
-  <modules>
-  	<module>main</module>
-<!--     <module>packaging</module>
- -->
-  </modules>
+	<modules>
+		<module>main</module>
+		<!-- <module>packaging</module> -->
+	</modules>
 </project>
