@@ -2,14 +2,29 @@ package com.chinarewards.qqgbvpn.qqapi.vo;
 
 public class TuanSearchListVO {
 
+	/**
+	 * 团购ID
+	 */
 	private String grouponId;
 	
+	/**
+	 * 团购名称-小票上显示
+	 */
 	private String grouponName;
 	
+	/**
+	 * 商家名称-小票上显示
+	 */
 	private String mercName;
 	
+	/**
+	 * 列表上的名称，包含换行符号
+	 */
 	private String listName;
 	
+	/**
+	 * 验证界面上的名称
+	 */
 	private String detailName;
 
 	public String getGrouponId() {
