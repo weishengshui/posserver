@@ -1,0 +1,5 @@
+/target
+# JRebel stuff
+/misc/conf/jrebel.properties
+/misc/javarebel.stats
+/misc/jrebel.info
