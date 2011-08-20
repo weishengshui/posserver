@@ -11,7 +11,7 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>QQ Group Buy Validation POS Network</name>
-	<description>QQ Group Buy Validation POS Network</description>
+	<description>QQ Group Buy Validation POS Network.</description>
 	<scm>
 		<url>http://git.dev.china-rewards.com/repo</url>
 		<connection>scm:git:git://git.dev.china-rewards.com/qqgbvpn/qqgbvpn-server.git</connection>
