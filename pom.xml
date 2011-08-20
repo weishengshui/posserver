@@ -150,6 +150,7 @@
 	</dependencyManagement>
 	<modules>
 		<module>main</module>
+		<module>domain</module>
 		<!-- <module>packaging</module> -->
 	</modules>
 </project>
