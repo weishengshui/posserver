@@ -13,6 +13,10 @@ import org.junit.Test;
  */
 public class JavaLoggingTest extends BaseTest {
 
+	/**
+	 * After running this, see your Eclipse console and make sure the
+	 * corresponding output does appear.
+	 */
 	@Test
 	public void testAllLogLevels() {
 

@@ -21,6 +21,9 @@ public class EmptyGuiceTest extends GuiceTest {
 		return null;
 	}
 
+	/**
+	 * Make sure this does not throw exception.
+	 */
 	@Test
 	public void testNullModules() {
 	}
