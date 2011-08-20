@@ -17,7 +17,7 @@
 	<url>http://www.china-rewards.com</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<apache.hc.version>4.1.1</apache.hc.version>
+		<apache.hc.version>4.1.2</apache.hc.version>
 	</properties>
 	<dependencies>
 
@@ -31,6 +31,16 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>${apache.hc.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>dom4j</groupId>
+		    <artifactId>dom4j</artifactId>
+		    <version>1.6.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>jaxen</groupId>
+		    <artifactId>jaxen</artifactId>
+		    <version>1.1.1</version>
 		</dependency>
 
 		<!-- Logging -->
