@@ -2,10 +2,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-	<display-name>zooticket-war</display-name>
+	<display-name>QQ Group Buying Validation POS Network Server</display-name>
 
 	<listener>
-		<listener-class>com.chinarewards.zooticket.web.servlet.GuiceServletConfig</listener-class>
+		<listener-class>com.chinarewards.qqgbvpn.guice.GuiceBootstrap</listener-class>
 	</listener>
 	<filter>
 		<filter-name>guiceFilter</filter-name>
@@ -15,38 +15,5 @@
 		<filter-name>guiceFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
-	<servlet>
-    <servlet-name>Kaptcha</servlet-name>
-    <servlet-class>com.google.code.kaptcha.servlet.KaptchaServlet</servlet-class>
-    <init-param>
-      <param-name>kaptcha.border</param-name>
-      <param-value>yes</param-value>
-    </init-param>
-    <init-param>
-      <param-name>kaptcha.textproducer.char.length</param-name>
-      <param-value>4</param-value>
-    </init-param>
-    <init-param>
-      <param-name>kaptcha.image.width</param-name>
-      <param-value>130</param-value>
-    </init-param>
-    <init-param>
-      <param-name>kaptcha.image.height</param-name>
-      <param-value>50</param-value>
-    </init-param>
-    <init-param>
-      <param-name>kaptcha.textproducer.char.string</param-name>
-      <param-value>1234567890</param-value>
-    </init-param>
-    <init-param>
-      <param-name>kaptcha.noise.impl</param-name>
-      <param-value>com.google.code.kaptcha.impl.NoNoise</param-value>
-    </init-param>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>Kaptcha</servlet-name>
-    <url-pattern>/kaptcha.jpg</url-pattern>
-  </servlet-mapping>
-	
+
 </web-app>

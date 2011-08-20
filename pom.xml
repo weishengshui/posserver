@@ -24,7 +24,8 @@
 		<hibernate.version>3.4.0</hibernate.version>
 		<junit.version>4.8.2</junit.version>
 		<slf4j.version>1.5.11</slf4j.version>
-		<logback.version>0.9.29</logback.version>
+		<logback.version>0.9.20</logback.version>
+		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<apache.commonconfig.version>1.6</apache.commonconfig.version>
 	</properties>
 	<organization>
@@ -75,6 +76,16 @@
 				<version>${guice.version}</version>
 			</dependency>
 
+
+			<!-- Servlet related -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>2.5</version>
+				<scope>provided</scope>
+			</dependency>
+
+
 			<!-- JPA and related -->
 			<dependency>
 				<groupId>com.oracle</groupId>
@@ -92,6 +103,13 @@
 				<groupId>commons-configuration</groupId>
 				<artifactId>commons-configuration</artifactId>
 				<version>${apache.commonconfig.version}</version>
+			</dependency>
+
+			<!-- China Rewards -->
+			<dependency>
+				<groupId>com.chinarewards</groupId>
+				<artifactId>common-web</artifactId>
+				<version>2.2.0</version>
 			</dependency>
 
 			<!-- Logging -->
@@ -124,7 +142,7 @@
 			<dependency>
 				<groupId>hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>1.8.0.10</version>
+				<version>${hsqldb.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- Test Scope ENDS -->
