@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Maven">
+	<bannerLeft>
+		<name>China Rewards Project Site</name>
+		<src>http://project.dev.china-rewards.com/images/china-rewards.gif
+		</src>
+		<href>http://project.dev.china-rewards.com/</href>
+	</bannerLeft>
+	<bannerRight>
+		<name>China Rewards</name>
+		<src>http://project.dev.china-rewards.com/images/china-rewards.gif
+		</src>
+		<href>http://www.china-rewards.com/</href>
+	</bannerRight>
+	<body>
+		<menu name="Overview">
+			<item name="About" href="/index.html" />
+		</menu>
+		<menu name="Modules">
+			<item name="Main" href="main" />
+		</menu>
+		<menu ref="reports" />
+	</body>
+</project>
