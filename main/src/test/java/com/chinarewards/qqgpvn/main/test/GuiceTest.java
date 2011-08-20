@@ -15,7 +15,7 @@ import com.google.inject.Module;
  * @author Cyril
  * @since 0.1.0
  */
-public class GuiceTest extends BaseTest {
+public abstract class GuiceTest extends BaseTest {
 
 	/**
 	 * Creates an instance of Guice injector with prepared modules returned by

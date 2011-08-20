@@ -33,7 +33,7 @@ public class HelloLogicImplTest {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		// FIXME implements me
 	}
 
 }
