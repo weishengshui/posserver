@@ -64,4 +64,20 @@
 		</dependency>
 		<!-- Test Scope ENDS -->
 	</dependencies>
+	<inceptionYear>2011</inceptionYear>
+	<organization>
+		<name>China Rewards</name>
+		<url>http://www.china-rewards.com</url>
+	</organization>
+	<scm>
+		<connection>git@git.dev.china-rewards.com:qqgbvpn/qqgbvpn-server.git</connection>
+	</scm>
+	<issueManagement>
+		<system>Bugzilla</system>
+		<url>http://bugs.dev.china-rewards.com</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://build.dev.china-rewards.com:8080/</url>
+	</ciManagement>
 </project>
