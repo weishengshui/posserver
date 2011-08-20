@@ -8,18 +8,19 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
-	<artifactId>main</artifactId>
-	<name>Main Server for QQ Group Buy Validation POS Network Server</name>
-	<description>Main Server for QQ Group Buy Validation POS Network Server</description>
+	<artifactId>mgmtui</artifactId>
+	<name>Main Server for QQ Group Buy Validation POS Network Management UI</name>
+	<description>Main Server for QQ Group Buy Validation POS Network Management UI</description>
+
+	<properties>
+		<struts.version>2.2.3</struts.version>
+	</properties>
+
 	<dependencies>
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-jndi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
@@ -45,7 +46,6 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>ejb3-persistence</artifactId>
-			<version>1.0.2.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -60,10 +60,41 @@
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 
-		<!-- Apache Mina - Socket -->
+		<!-- Struts 2 -->
 		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+			<version>${struts.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-sitemesh-plugin</artifactId>
+			<version>${struts.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-spring-plugin</artifactId>
+			<version>${struts.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-config-browser-plugin</artifactId>
+			<version>${struts.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-struts2-plugin</artifactId>
+		</dependency>
+
+		<!-- Web UI related -->
+		<dependency>
+			<groupId>com.google.code</groupId>
+			<artifactId>kaptcha</artifactId>
+			<version>2.3</version>
 		</dependency>
 
 		<!-- Configuration -->
@@ -84,6 +115,17 @@
 		<dependency>
 			<groupId>com.chinarewards</groupId>
 			<artifactId>common-web</artifactId>
+		</dependency>
+		<!-- Self dependencies -->
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>qqapi</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Test Scope STARTS -->

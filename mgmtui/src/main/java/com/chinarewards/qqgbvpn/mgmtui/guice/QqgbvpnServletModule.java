@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.guice;
+package com.chinarewards.qqgbvpn.mgmtui.guice;
 
 import com.chinarewards.common.web.appinfo.AppInfoServlet;
 import com.google.inject.Singleton;
