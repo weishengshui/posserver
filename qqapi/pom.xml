@@ -32,6 +32,8 @@
 			<artifactId>httpclient</artifactId>
 			<version>${apache.hc.version}</version>
 		</dependency>
+		
+		<!-- XML -->
 		<dependency>
 		    <groupId>dom4j</groupId>
 		    <artifactId>dom4j</artifactId>
@@ -41,6 +43,11 @@
 		    <groupId>jaxen</groupId>
 		    <artifactId>jaxen</artifactId>
 		    <version>1.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
 		</dependency>
 
 		<!-- Logging -->
