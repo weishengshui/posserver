@@ -89,9 +89,10 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
+		String url = config.getString("qq.groupbuy.url.groupBuyingValidationUrl");
+		
 		HashMap<String, Object> validateResult = GroupBuyingUtil.parseXML(
-				GroupBuyingUtil.sendPost("http://tuan.qq.com/api/pos/verify",
-						postParams), "//groupon",
+				GroupBuyingUtil.sendPost(url, postParams), "//groupon",
 				GroupBuyingValidateResultVO.class);
 		return validateResult;
 	}
