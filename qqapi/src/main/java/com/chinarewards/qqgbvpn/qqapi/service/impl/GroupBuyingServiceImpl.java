@@ -102,7 +102,8 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	 * 
 	 * @author iori
 	 * @param params
-	 *            map中key必须包括:posId[],key posId是字符串数组类型
+	 *            map中key必须包括:posId[],key.
+	 *            posId是字符串数组类型
 	 * @return
 	 */
 	public HashMap<String, Object> groupBuyingUnbind(
