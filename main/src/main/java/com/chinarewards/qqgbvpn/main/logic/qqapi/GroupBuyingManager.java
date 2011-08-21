@@ -1,9 +1,9 @@
-package com.chinarewards.qqgbvpn.qqapi.service;
+package com.chinarewards.qqgbvpn.main.logic.qqapi;
 
 import java.util.HashMap;
 
-public interface GroupBuyingService {
-	
+public interface GroupBuyingManager {
+
 	/**
 	 * 团购查询
 	 * 

@@ -17,6 +17,8 @@ import com.google.inject.Module;
  */
 public abstract class GuiceTest extends BaseTest {
 
+	private Injector injector;
+
 	/**
 	 * Creates an instance of Guice injector with prepared modules returned by
 	 * {@link #getModules()}.
@@ -29,8 +31,16 @@ public abstract class GuiceTest extends BaseTest {
 			// prevent NullPointerException
 			modules = new Module[0];
 		}
-		Injector i = Guice.createInjector(modules);
-		return i;
+		injector = Guice.createInjector(modules);
+		return injector;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Injector getInjector() {
+		return injector;
 	}
 
 	/**
