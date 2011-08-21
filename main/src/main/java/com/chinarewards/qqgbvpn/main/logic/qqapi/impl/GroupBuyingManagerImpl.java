@@ -2,17 +2,20 @@ package com.chinarewards.qqgbvpn.main.logic.qqapi.impl;
 
 import java.util.HashMap;
 
+import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.google.inject.Inject;
 
 public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	
-	private GroupBuyingService service;  
+	private GroupBuyingService service;
+	private GroupBuyingDao dao;
 	  
     @Inject   
-    public GroupBuyingManagerImpl(GroupBuyingService service) {   
+    public GroupBuyingManagerImpl(GroupBuyingService service, GroupBuyingDao dao) {   
         this.service = service;   
+        this.dao = dao;
     }
     
     /**
@@ -25,7 +28,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.groupBuyingSearch(params);
-		return null;
+		return map;
 	}
 
 	/**
@@ -38,7 +41,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingValidate(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.groupBuyingValidate(params);
-		return null;
+		return map;
 	}
 
 	/**
@@ -51,7 +54,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingUnbind(
 			HashMap<String, Object> params) throws Exception {
 		HashMap<String, Object> map = service.groupBuyingUnbind(params);
-		return null;
+		return map;
 	}
     
 }

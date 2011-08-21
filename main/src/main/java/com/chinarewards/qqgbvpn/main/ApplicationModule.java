@@ -5,6 +5,8 @@ package com.chinarewards.qqgbvpn.main;
 
 import javax.inject.Singleton;
 
+import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
+import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.GroupBuyingDaoImpl;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.GroupBuyingManagerImpl;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
@@ -36,6 +38,8 @@ public class ApplicationModule extends AbstractModule {
 		bind(GroupBuyingService.class).to(GroupBuyingServiceImpl.class);
 		
 		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class);
+		
+		bind(GroupBuyingDao.class).to(GroupBuyingDaoImpl.class);
 		
 	}
 
