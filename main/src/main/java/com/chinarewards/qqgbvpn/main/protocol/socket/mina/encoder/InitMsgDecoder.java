@@ -35,23 +35,35 @@ public class InitMsgDecoder extends CumulativeProtocolDecoder {
 
 		if (in.remaining() >= 24) {
 
+			System.out.println("Do processing");
+			
 			// read header
+			System.out.println("Read head");
 			in.get(head);	// 2 byte
+			System.out.println("in.remaining() = " + in.remaining());
 
 			// packet length
-			long length = in.getLong(); // XXX	// 4 byte
+			System.out.println("Read length");
+			long length = in.getUnsignedInt(); // XXX	// 4 byte
+			System.out.println("in.remaining() = " + in.remaining());
 
 			// serial number
-			long serial = in.getLong();	// 4 byte
+			System.out.println("Read serial");
+			long serial = in.getUnsignedInt();	// 4 byte
+			System.out.println("in.remaining() = " + in.remaining());
 
 			// command ID
-			long cmdId = in.getUnsignedInt();	// 2 byte
+			System.out.println("Read command ID");
+			long cmdId = in.getUnsignedShort();	// 2 byte
+			System.out.println("in.remaining() = " + in.remaining());
 
 			// pos ID
 			byte[] posIdRaw = new byte[ProtocolLengths.POS_ID];
 			in.get(posIdRaw);
 			String posId = new String(posIdRaw);
+			System.out.println("in.remaining() = " + in.remaining());
 
+			
 			log.debug("length={}, serial={}, cmdId={}, posIdRaw={}, posId={}", new Object[] {
 					length, serial, cmdId, posIdRaw, posId });
 			
