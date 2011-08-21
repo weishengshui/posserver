@@ -5,8 +5,6 @@ package com.chinarewards.qqgpvn.main.test;
 
 import org.junit.Test;
 
-import com.chinarewards.qqgpvn.qqapi.test.BaseTest;
-
 /**
  * Simple test to make sure the Java logging does work.
  * 
