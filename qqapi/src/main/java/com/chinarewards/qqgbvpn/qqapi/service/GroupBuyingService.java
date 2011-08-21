@@ -3,7 +3,7 @@ package com.chinarewards.qqgbvpn.qqapi.service;
 import java.util.HashMap;
 
 public interface GroupBuyingService {
-
+	
 	/**
 	 * 团购查询
 	 * 

@@ -31,7 +31,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 			throw new NullPointerException();
 		this.config = config;
 	}
-
+	
 	/**
 	 * 团购查询
 	 * 
