@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
 /**
