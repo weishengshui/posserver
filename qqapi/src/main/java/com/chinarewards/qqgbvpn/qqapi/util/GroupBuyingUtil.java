@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.qqapi.util;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +20,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.HTTP;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.chinarewards.qqgbvpn.qqapi.vo.TuanSearchListVO;
-
-public class TuanUtil {
+public class GroupBuyingUtil {
 	
 	
 	/**
@@ -66,10 +66,10 @@ public class TuanUtil {
 		//设置post参数
 		if (postParams != null) {
 			for (String key : postParams.keySet()) {
-				params.add(new BasicNameValuePair(key, postParams.get(key)));
+				params.add(new BasicNameValuePair(key, URLEncoder.encode(postParams.get(key),"UTF-8")));
 			}
 		}
-		HttpEntity httpentity = new UrlEncodedFormEntity(params, "gb2312");
+		HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 		post.setEntity(httpentity);
 		HttpResponse httpResponse = client.execute(post);
 		//请求成功
@@ -85,12 +85,13 @@ public class TuanUtil {
 	/**
 	 * 解析QQ返回的XML流，返回解析结果
 	 * @author iori
-	 * @param in
+	 * @param in      XML输入流
 	 * @param nodeDir 子元素的目录
+	 * @param bean 	     返回对象Class   
 	 * @return
 	 * @throws DocumentException
 	 */
-	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir) throws Exception {
+	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir, Class bean) throws Exception {
 		HashMap<String,Object> parseResult = new HashMap<String,Object>();
 		SAXReader reader = new SAXReader(); 
 		Document xmlDoc = reader.read(in);
@@ -100,9 +101,9 @@ public class TuanUtil {
 		//0才有item
 		if ("0".equals(resultCode)) {
 			List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
-			List<TuanSearchListVO> itemList = new ArrayList<TuanSearchListVO>();
+			List itemList = new ArrayList();
 			for (Element ele : listRowSet) {
-				TuanSearchListVO item = (TuanSearchListVO) copyProperties(TuanSearchListVO.class,ele);
+				Object item = copyProperties(bean,ele);
 				itemList.add(item);
 			}
 			parseResult.put("items", itemList);

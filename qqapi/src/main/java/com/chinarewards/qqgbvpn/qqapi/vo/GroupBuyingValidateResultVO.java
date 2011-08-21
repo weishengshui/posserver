@@ -1,6 +1,6 @@
 package com.chinarewards.qqgbvpn.qqapi.vo;
 
-public class TuanValidateResultVO {
+public class GroupBuyingValidateResultVO {
 
 	/**
 	 * 验证结果名称-小票上显示

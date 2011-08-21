@@ -1,6 +1,6 @@
 package com.chinarewards.qqgbvpn.qqapi.vo;
 
-public class TuanSearchListVO {
+public class GroupBuyingSearchListVO {
 
 	/**
 	 * 团购ID

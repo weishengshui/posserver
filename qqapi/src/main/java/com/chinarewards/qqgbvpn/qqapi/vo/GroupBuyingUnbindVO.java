@@ -1,6 +1,6 @@
 package com.chinarewards.qqgbvpn.qqapi.vo;
 
-public class TuanUnbindVO {
+public class GroupBuyingUnbindVO {
 
 	/**
 	 * POS机编号
