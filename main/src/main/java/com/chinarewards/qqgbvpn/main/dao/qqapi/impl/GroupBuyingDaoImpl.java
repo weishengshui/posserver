@@ -15,13 +15,9 @@ import com.google.inject.Provider;
 
 public class GroupBuyingDaoImpl implements GroupBuyingDao {
 
-	private final Provider<EntityManager> em;
-
 	@Inject
-	public GroupBuyingDaoImpl(Provider<EntityManager> em) {
-		this.em = em;
-	}
-	
+	private Provider<EntityManager> em;
+
 	public void handleGroupBuyingSearch(Journal journal) throws Exception {
 		em.get().getTransaction().begin();
 		saveJournal(journal);

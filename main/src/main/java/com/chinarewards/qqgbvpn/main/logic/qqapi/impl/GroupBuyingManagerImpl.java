@@ -16,20 +16,18 @@ import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	
 	Logger log = LoggerFactory.getLogger(getClass());
 	
-	private GroupBuyingService service;
-	private GroupBuyingDao dao;
+	@Inject   
+	private Provider<GroupBuyingService> service;
+	
+	@Inject
+	private Provider<GroupBuyingDao> dao;
 	  
-    @Inject   
-    public GroupBuyingManagerImpl(GroupBuyingService service, GroupBuyingDao dao) {   
-        this.service = service;   
-        this.dao = dao;
-    }
-    
     /**
 	 * 团购查询
 	 * 
@@ -39,7 +37,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	 */
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
-		HashMap<String, Object> map = service.groupBuyingSearch(params);
+		HashMap<String, Object> map = service.get().groupBuyingSearch(params);
 		Journal journal = new Journal();
 		journal.setTs(new Date());
 		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
@@ -51,7 +49,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 			journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
 		}
 		try {
-			dao.handleGroupBuyingSearch(journal);
+			dao.get().handleGroupBuyingSearch(journal);
 		} catch (Exception e) {
 			log.error("group buying search save journal error");
 			log.error("ts: " + journal.getTs());
@@ -72,7 +70,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	 */
 	public HashMap<String, Object> groupBuyingValidate(
 			HashMap<String, String> params) throws Exception {
-		HashMap<String, Object> map = service.groupBuyingValidate(params);
+		HashMap<String, Object> map = service.get().groupBuyingValidate(params);
 		return map;
 	}
 
@@ -85,7 +83,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	 */
 	public HashMap<String, Object> groupBuyingUnbind(
 			HashMap<String, Object> params) throws Exception {
-		HashMap<String, Object> map = service.groupBuyingUnbind(params);
+		HashMap<String, Object> map = service.get().groupBuyingUnbind(params);
 		return map;
 	}
     
