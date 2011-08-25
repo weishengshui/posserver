@@ -15,7 +15,7 @@ public interface ICommandId {
 	/**
 	 * Returns the command ID.
 	 * 
-	 * @return
+	 * @return the command ID.
 	 */
 	public long getCmdId();
 
