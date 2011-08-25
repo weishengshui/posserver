@@ -8,6 +8,7 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import com.chinarewards.qqgbvpn.common.DateTimeProvider;
+import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.main.logic.AbstractJpaLogic;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -38,14 +39,19 @@ public class DbJournalLogic extends AbstractJpaLogic implements JournalLogic {
 	 * .lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Transactional
-	public void logEvent(String event, String domain, String entityId,
-			String detail) {
+	public void logEvent(String event, String entity, String entityId,
+			String eventDetail) {
 
 		Date now = dtProvider.getTime();
 
 		// FIXME implements me
 
 		// start new transaction on top of this transaction.
+		Journal j = new Journal();
+		j.setEntity(entity);
+		j.setEntityId(entityId);
+		j.setEventDetail(eventDetail);
+		j.setTs(now);
 
 		// save the entity
 

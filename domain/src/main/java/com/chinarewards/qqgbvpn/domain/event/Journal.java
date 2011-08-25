@@ -3,8 +3,6 @@ package com.chinarewards.qqgbvpn.domain.event;
 import java.util.Date;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -29,17 +27,23 @@ public class Journal {
 	Date ts;
 
 	/**
-	 * The type of event. Should not be <code>null</code>.
+	 * The type of event. Should not be <code>null</code>. Refer to the value of
+	 * DomainEvent
+	 * 
+	 * @see DomainEvent
 	 */
-	@Enumerated(EnumType.STRING)
-	DomainEvent event;
+	// @Enumerated(EnumType.STRING)
+	String event;
 
 	/**
 	 * The type of entity which is related to this event. Should not be
 	 * <code>null</code>.
+	 * <p>
+	 * 
+	 * @see DomainEntity
 	 */
-	@Enumerated(EnumType.STRING)
-	DomainEntity entity;
+	// @Enumerated(EnumType.STRING)
+	String entity;
 
 	/**
 	 * The identity of the entity. This value, together with <code>entity</code>
@@ -52,4 +56,95 @@ public class Journal {
 	 * no detail is available.
 	 */
 	String eventDetail;
+
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
+	 * @return the ts
+	 */
+	public Date getTs() {
+		return ts;
+	}
+
+	/**
+	 * @param ts
+	 *            the ts to set
+	 */
+	public void setTs(Date ts) {
+		this.ts = ts;
+	}
+
+	/**
+	 * @return the event
+	 */
+	public String getEvent() {
+		return event;
+	}
+
+	/**
+	 * @param event
+	 *            the event to set
+	 */
+	public void setEvent(String event) {
+		this.event = event;
+	}
+
+	/**
+	 * @return the entity
+	 */
+	public String getEntity() {
+		return entity;
+	}
+
+	/**
+	 * @param entity
+	 *            the entity to set
+	 */
+	public void setEntity(String entity) {
+		this.entity = entity;
+	}
+
+	/**
+	 * @return the entityId
+	 */
+	public String getEntityId() {
+		return entityId;
+	}
+
+	/**
+	 * @param entityId
+	 *            the entityId to set
+	 */
+	public void setEntityId(String entityId) {
+		this.entityId = entityId;
+	}
+
+	/**
+	 * @return the eventDetail
+	 */
+	public String getEventDetail() {
+		return eventDetail;
+	}
+
+	/**
+	 * @param eventDetail
+	 *            the eventDetail to set
+	 */
+	public void setEventDetail(String eventDetail) {
+		this.eventDetail = eventDetail;
+	}
+
 }

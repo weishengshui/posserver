@@ -16,11 +16,11 @@ public interface JournalLogic {
 	 * 
 	 * @param event
 	 *            name of the event
-	 * @param domain
+	 * @param entity
 	 * @param entityId
-	 * @param detail
+	 * @param eventDetail
 	 */
-	public void logEvent(String event, String domain, String entityId,
-			String detail);
+	public void logEvent(String event, String entity, String entityId,
+			String eventDetail);
 
 }
