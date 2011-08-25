@@ -15,7 +15,11 @@ import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 
 /**
+ * Concrete implementation of <code>JournalLogic</code>. Database is used as the
+ * data store for the log.
+ * <p>
  * 
+ * For the event detail, JSON is expected to be the storage format.
  * 
  * @author Cyril
  * @since 0.1.0

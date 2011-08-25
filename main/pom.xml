@@ -59,6 +59,12 @@
 			<artifactId>mina-core</artifactId>
 		</dependency>
 
+		<!-- JSON -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+
 		<!-- Configuration -->
 		<dependency>
 			<groupId>commons-configuration</groupId>
