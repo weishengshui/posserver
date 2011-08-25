@@ -7,6 +7,12 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * 
+ * 
+ * @author kmtong
+ * @since 0.1.0
+ */
 @Entity
 public class ReturnNoteDetail {
 

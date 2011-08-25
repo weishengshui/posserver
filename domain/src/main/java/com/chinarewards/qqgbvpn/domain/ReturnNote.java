@@ -13,6 +13,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 
+/**
+ * 
+ * 
+ * @author kmtong
+ * @since 0.1.0
+ */
 @Entity
 public class ReturnNote {
 

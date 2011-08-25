@@ -9,11 +9,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 /**
  * Represents the current assignment of POS to whatever Agent.
+ * <p>
  * 
  * This entity should be created by management UI, and used by POS server.
  * 
  * @author kmtong
- * 
+ * @since 0.1.0
  */
 @Entity
 public class PosAssignment {
