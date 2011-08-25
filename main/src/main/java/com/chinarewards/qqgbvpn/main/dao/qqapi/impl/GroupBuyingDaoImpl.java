@@ -24,24 +24,9 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 		this.em = em;
 	}
 	
-	public void handleGroupBuyingSearch() throws Exception {
-		Journal j = new Journal();
-		j.setTs(new Date());
-		j.setEntity(DomainEntity.VALIDATION.toString());
-		j.setEntityId("Validation_Id");
-		j.setEvent(DomainEvent.POS_ORDER_VALIDATED_OK.toString());
-		Journal j2 = new Journal();
-		j2.setTs(new Date());
-		j2.setEntity(DomainEntity.VALIDATION.toString());
-		j2.setEntityId("Validation_Id");
-		j2.setEvent(DomainEvent.POS_ORDER_VALIDATED_OK.toString());
-		List<Journal> l = new ArrayList<Journal>();
-		l.add(j2);
-		l.add(j);
-		ObjectMapper mapper = new ObjectMapper();
-		j.setEventDetail(mapper.writeValueAsString(l));
+	public void handleGroupBuyingSearch(Journal journal) throws Exception {
 		em.get().getTransaction().begin();
-		em.get().persist(j);
+		em.get().persist(journal);
 		em.get().getTransaction().commit();
 	}
 	

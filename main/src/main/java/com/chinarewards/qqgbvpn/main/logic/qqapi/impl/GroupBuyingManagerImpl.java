@@ -1,10 +1,18 @@
 package com.chinarewards.qqgbvpn.main.logic.qqapi.impl;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
+import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
 
 public class GroupBuyingManagerImpl implements GroupBuyingManager {
@@ -28,7 +36,16 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.groupBuyingSearch(params);
-		dao.handleGroupBuyingSearch();
+		Journal journal = new Journal();
+		journal.setTs(new Date());
+		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
+		journal.setEntityId(params.get("posId"));
+		journal.setEvent(DomainEvent.POS_PRODUCT_SEARCH.toString());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
+		
+		dao.handleGroupBuyingSearch(journal);
 		return map;
 	}
 

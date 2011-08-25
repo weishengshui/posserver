@@ -37,6 +37,12 @@ public enum DomainEntity {
 	/**
 	 * FIXME Javadoc??
 	 */
-	VALIDATION
+	VALIDATION,
+	
+	/**
+	 * Related to group buying search product information. (this just is value object,not entity)The entity ID should be the POS machine's ID
+	 * <code>Pos.getPosId()</code>, <b>not</b> the UUID.
+	 */
+	GROUPON_INFORMATION
 
 }
