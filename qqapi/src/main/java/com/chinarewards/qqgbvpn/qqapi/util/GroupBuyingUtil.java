@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.qqapi.util;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -94,7 +95,7 @@ public class GroupBuyingUtil {
 	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir, Class bean) throws Exception {
 		HashMap<String,Object> parseResult = new HashMap<String,Object>();
 		SAXReader reader = new SAXReader(); 
-		Document xmlDoc = reader.read(in);
+		Document xmlDoc = reader.read(new InputStreamReader(in, "UTF-8"));
 		Element root = xmlDoc.getRootElement();
 		String resultCode = root.elementText("resultCode");
 		parseResult.put("resultCode", resultCode);
