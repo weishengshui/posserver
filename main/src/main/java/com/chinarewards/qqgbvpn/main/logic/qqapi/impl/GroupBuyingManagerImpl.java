@@ -43,10 +43,25 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
 		journal.setEntityId(params.get("posId"));
 		journal.setEvent(DomainEvent.POS_PRODUCT_SEARCH.toString());
-		
+		String resultCode = (String) map.get("resultCode");
 		ObjectMapper mapper = new ObjectMapper();
-		if (map.get("items") != null) {
+		if ("0".equals(resultCode) && map.get("items") != null) {
 			journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
+		} else {
+			switch (Integer.valueOf(resultCode)) {
+	    		case -1 :
+	    			journal.setEventDetail("服务器繁忙");
+	    			break;
+	    		case -2 :
+	    			journal.setEventDetail("md5校验失败");
+	    			break;
+	    		case -3 :
+	    			journal.setEventDetail("没有权限");
+	    			break;
+	    		default :
+	    			journal.setEventDetail("未知错误");
+	    			break;
+			}
 		}
 		try {
 			dao.get().handleGroupBuyingSearch(journal);
