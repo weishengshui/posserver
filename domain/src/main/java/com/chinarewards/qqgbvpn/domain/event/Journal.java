@@ -21,14 +21,14 @@ public class Journal {
 	Long id;
 
 	/**
-	 * Timestamp. Accuracy down to milliseconds. Should not be
-	 * <code>null</code>>
+	 * Timestamp. Accuracy down to milliseconds. Should not be <code>null</code>
+	 * .
 	 */
 	Date ts;
 
 	/**
 	 * The type of event. Should not be <code>null</code>. Refer to the value of
-	 * DomainEvent
+	 * DomainEvent.
 	 * 
 	 * @see DomainEvent
 	 */

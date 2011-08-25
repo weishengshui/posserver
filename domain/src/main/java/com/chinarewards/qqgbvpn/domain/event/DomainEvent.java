@@ -17,15 +17,94 @@ public enum DomainEvent {
 
 	/**
 	 * User has added a POS machine.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete POS information (entity POS)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
 	 */
 	USER_ADDED_POS,
 
 	/**
 	 * User has added a POS machine.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete POS information (entity POS)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
 	 */
 	USER_REMOVED_POS, //
-	USER_ADDED_AGENT, USER_REMOVED_AGENT, //
-	USER_ADDED_DNOTE, USER_ADDED_DNOTE_DTL, USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
+
+	/**
+	 * User has added a Agent.
+	 * <p>
+	 * 
+	 * Expected domain: Agent.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete Agent information (entity Agent)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_ADDED_AGENT,
+
+	/**
+	 * User has removed an Agent.
+	 * <p>
+	 * 
+	 * Expected domain: Agent.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete Agent information (entity Agent)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_REMOVED_AGENT, //
+	
+	/**
+	 * User has added a delivery note.
+	 * <p>
+	 * 
+	 * Expected domain: Delivery Note.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete delivery note.</li>
+	 * <li>Child delivery details (if any).</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_ADDED_DNOTE, 
+	
+	/**
+	 * User has added a delivery note.
+	 * <p>
+	 * 
+	 * Expected domain: Delivery Note.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Delivery note ID (UUID).</li>
+	 * <li>Complete delivery note detail.</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_ADDED_DNOTE_DTL, 
+	
+	USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
 	USER_CONFIRMED_DNOTE, USER_PRINTED_DNOTE, //
 	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL,
 
