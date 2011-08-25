@@ -29,6 +29,8 @@ import org.dom4j.io.SAXReader;
 
 public class GroupBuyingUtil {
 	
+	private final static HttpClient client = new DefaultHttpClient();
+	
 	
 	/**
 	 * MD5加密字符串
@@ -59,15 +61,22 @@ public class GroupBuyingUtil {
 	 * @param params POST参数
 	 * @return
 	 */
-	public static InputStream sendPost(String url, HashMap<String,String> postParams) throws Exception {
-		HttpClient client = new DefaultHttpClient();
+	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws Exception {
 		client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		HttpPost post = new HttpPost(url);
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		//设置post参数
 		if (postParams != null) {
 			for (String key : postParams.keySet()) {
-				params.add(new BasicNameValuePair(key, URLEncoder.encode(postParams.get(key),"UTF-8")));
+				Object v = postParams.get(key);
+				if (v instanceof java.util.Collection) {
+					ArrayList<String> list = (ArrayList<String>) v;
+					for (String s : list) {
+						params.add(new BasicNameValuePair(key, URLEncoder.encode((String) s,"UTF-8")));
+					}
+				} else {
+					params.add(new BasicNameValuePair(key, URLEncoder.encode((String) v,"UTF-8")));
+				}
 			}
 		}
 		HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
