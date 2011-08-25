@@ -1,5 +1,11 @@
 package com.chinarewards.qqgbvpn.domain.event;
 
+/**
+ * Defines a list of well-known domain events.
+ * 
+ * @author kmtong
+ * @since 0.1.0
+ */
 public enum DomainEvent {
 
 	// -------- UI Related -------------

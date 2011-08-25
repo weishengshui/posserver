@@ -8,6 +8,12 @@ package com.chinarewards.qqgbvpn.domain.event;
 public enum DomainEntity {
 
 	/**
+	 * Related to system user (SysUser). The entity ID should be user's
+	 * <code>Pos.getUsername()</code>, <b>not</b> the UUID.
+	 */
+	USER,
+
+	/**
 	 * Related to POS machine. The entity ID should be the POS machine's ID
 	 * <code>Pos.getPosId()</code>, <b>not</b> the UUID.
 	 */
@@ -26,8 +32,8 @@ public enum DomainEntity {
 	/**
 	 * Return note. The entity ID should be <code>ReturnNote.getId()</code>.
 	 */
-	RETURN_NOTE, 
-	
+	RETURN_NOTE,
+
 	/**
 	 * FIXME Javadoc??
 	 */
