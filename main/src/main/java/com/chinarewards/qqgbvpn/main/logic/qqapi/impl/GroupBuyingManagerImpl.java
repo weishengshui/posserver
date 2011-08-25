@@ -28,6 +28,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.groupBuyingSearch(params);
+		dao.handleGroupBuyingSearch();
 		return map;
 	}
 

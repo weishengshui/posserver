@@ -14,5 +14,21 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 	public GroupBuyingDaoImpl(Provider<EntityManager> em) {
 		this.em = em;
 	}
+	
+	public void handleGroupBuyingSearch() throws Exception {
+		if (em.get() != null) {
+			System.out.println("注入成功");
+		} else {
+			System.out.println("注入不成功");
+		}
+	}
+	
+	public void handleGroupBuyingValidate() throws Exception {
+		
+	}
+	
+	public void handleGroupBuyingUnbind() throws Exception {
+		
+	}
 
 }
