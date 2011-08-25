@@ -30,6 +30,7 @@ import com.chinarewards.qqgpvn.main.test.BaseTest;
  */
 public class ProtcolOnMinaTest extends BaseTest {
 
+	@Test
 	public void testClientServer() throws Exception {
 
 		// the TCP port to listen
@@ -87,7 +88,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 
 		}
 
-		long runForSeconds = 120;
+		long runForSeconds = 3600;
 		log.info(
 				"Server running, waiting incoming connection, will run for {} seconds",
 				runForSeconds);
@@ -133,6 +134,9 @@ public class ProtcolOnMinaTest extends BaseTest {
 		@Override
 		public void sessionOpened(IoSession session) throws Exception {
 			super.sessionOpened(session);
+			
+			System.out.println("session.getRemoteAddress():" + session.getRemoteAddress());
+			
 			// session.write("Thanks for connecting to me");
 		}
 
@@ -179,13 +183,14 @@ public class ProtcolOnMinaTest extends BaseTest {
 		}
 	}
 
+	@Test
 	public void testSendViaJavaSocket() throws Exception {
 
 		Socket socket = new Socket("localhost", 1234);
 
 		OutputStream os = socket.getOutputStream();
 
-		byte[] msg = new byte[] { 0x0a, 0x0f, 0, 0, 0, 24, 0, 0, 0, 2, 0, 7,
+		byte[] msg = new byte[] { 0x0a, 0x0d, 0, 0, 0, 24, 0, 0, 0, 2, 0, 7,
 				'P', 'O', 'S', '-', '5', '6', '7', '8', '9', '0', '1', '2' };
 		System.out.println("Packet size: " + msg.length);
 		os.write(msg);
