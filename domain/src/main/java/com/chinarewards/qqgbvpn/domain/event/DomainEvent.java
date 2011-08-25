@@ -71,7 +71,7 @@ public enum DomainEvent {
 	 * </ol>
 	 */
 	USER_REMOVED_AGENT, //
-	
+
 	/**
 	 * User has added a delivery note.
 	 * <p>
@@ -86,8 +86,8 @@ public enum DomainEvent {
 	 * <li>Username of the SysUser who performed this action.</li>
 	 * </ol>
 	 */
-	USER_ADDED_DNOTE, 
-	
+	USER_ADDED_DNOTE,
+
 	/**
 	 * User has added a delivery note.
 	 * <p>
@@ -102,13 +102,55 @@ public enum DomainEvent {
 	 * <li>Username of the SysUser who performed this action.</li>
 	 * </ol>
 	 */
-	USER_ADDED_DNOTE_DTL, 
-	
+	USER_ADDED_DNOTE_DTL,
+
 	USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
 	USER_CONFIRMED_DNOTE, USER_PRINTED_DNOTE, //
 	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL,
 
 	// ---------- POS Server Related -------------
 	POS_INIT_REQ, POS_INIT_OK, POS_INIT_FAILED, POS_LOGGED_IN, //
-	POS_PRODUCT_SEARCH, POS_ORDER_VALIDATED_OK, POS_ORDER_VALIDATED_FAILED
+
+	/**
+	 * Event: A product search action has been performed.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Search criteria</li>
+	 * <li>Search result</li>
+	 * </ol>
+	 */
+	POS_PRODUCT_SEARCH,
+
+	/**
+	 * A 'groupon' has been validated and is successful (business-wise).
+	 * <p>
+	 * 
+	 * Expected domain: Validation
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete validation information (see entity bean Validation)</li>
+	 * </ol>
+	 */
+	POS_ORDER_VALIDATED_OK,
+
+	/**
+	 * A 'groupon' has been validated and failed.
+	 * <p>
+	 * 
+	 * Expected domain: Validation
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete validation information (see entity bean Validation)</li>
+	 * </ol>
+	 */
+	POS_ORDER_VALIDATED_FAILED
 }
