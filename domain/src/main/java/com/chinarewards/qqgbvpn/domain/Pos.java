@@ -32,6 +32,9 @@ public class Pos {
 
 	String model;
 
+	/**
+	 * Serial number.
+	 */
 	String sn;
 
 	String simPhoneNo;

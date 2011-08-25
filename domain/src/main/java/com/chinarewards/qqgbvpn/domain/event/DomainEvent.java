@@ -3,8 +3,21 @@ package com.chinarewards.qqgbvpn.domain.event;
 public enum DomainEvent {
 
 	// -------- UI Related -------------
-	USER_LOGGED_IN, //
-	USER_ADDED_POS, USER_REMOVED_POS, //
+
+	/**
+	 * User has logged in to the management UI.
+	 */
+	USER_LOGGED_IN,
+
+	/**
+	 * User has added a POS machine.
+	 */
+	USER_ADDED_POS,
+
+	/**
+	 * User has added a POS machine.
+	 */
+	USER_REMOVED_POS, //
 	USER_ADDED_AGENT, USER_REMOVED_AGENT, //
 	USER_ADDED_DNOTE, USER_ADDED_DNOTE_DTL, USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
 	USER_CONFIRMED_DNOTE, USER_PRINTED_DNOTE, //

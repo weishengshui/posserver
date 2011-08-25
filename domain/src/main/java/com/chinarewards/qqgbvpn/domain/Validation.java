@@ -15,7 +15,7 @@ import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 /**
  * Represents a Validation transaction, should be created by POS server. This
  * record should not be modified by any program once written.
- * 
+ * <p>
  * Billing should use this record as the basis.
  * 
  * @author kmtong
@@ -45,17 +45,20 @@ public class Validation {
 	String pcode;
 
 	/**
-	 * POS ID, Should be copied from <code>PosAssignment</code>
+	 * POS ID, Should be copied from <code>PosAssignment</code>. The value
+	 * should be <code>Pos.getPosId()</code>.
 	 */
 	String posId;
 
 	/**
-	 * POS Model, Should be copied from <code>PosAssignment</code>
+	 * POS Model, Should be copied from <code>PosAssignment</code>. The value
+	 * should be <code>Pos.getModel()</code>.
 	 */
 	String posModel;
 
 	/**
-	 * POS SIM Phone Number, Should be copied from <code>PosAssignment</code>
+	 * POS SIM Phone Number, Should be copied from <code>PosAssignment</code>.
+	 * The value should be <code>Pos.getSimPhoneNo()</code>.
 	 */
 	String posSimPhoneNo;
 
@@ -66,12 +69,14 @@ public class Validation {
 	ValidationStatus status;
 
 	/**
-	 * Should be copied from <code>PosAssignment</code>
+	 * Should be copied from <code>PosAssignment</code>. The value should be
+	 * <code>Agent.getId()</code>.
 	 */
 	String agentId;
 
 	/**
-	 * Should be copied from <code>PosAssignment</code>
+	 * Should be copied from <code>PosAssignment</code>. The value should be
+	 * <code>Agent.getName()</code>.
 	 */
 	String agentName;
 }
