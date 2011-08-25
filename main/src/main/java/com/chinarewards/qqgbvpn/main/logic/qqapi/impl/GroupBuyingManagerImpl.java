@@ -20,8 +20,6 @@ import com.google.inject.Provider;
 
 public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	
-	Logger log = LoggerFactory.getLogger(getClass());
-	
 	@Inject   
 	private Provider<GroupBuyingService> service;
 	
@@ -63,16 +61,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	    			break;
 			}
 		}
-		try {
-			dao.get().handleGroupBuyingSearch(journal);
-		} catch (Exception e) {
-			log.error("group buying search save journal error");
-			log.error("ts: " + journal.getTs());
-			log.error("entity: " + journal.getEntity());
-			log.error("entityId: " + journal.getEntityId());
-			log.error("event: " + journal.getEvent());
-			log.error("eventDetail: " + journal.getEventDetail());
-		}
+		dao.get().handleGroupBuyingSearch(journal);
 		return map;
 	}
 

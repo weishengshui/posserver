@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
@@ -15,13 +17,24 @@ import com.google.inject.Provider;
 
 public class GroupBuyingDaoImpl implements GroupBuyingDao {
 
+	Logger log = LoggerFactory.getLogger(getClass());
+	
 	@Inject
 	private Provider<EntityManager> em;
 
 	public void handleGroupBuyingSearch(Journal journal) throws Exception {
-		em.get().getTransaction().begin();
-		saveJournal(journal);
-		em.get().getTransaction().commit();
+		try {
+			em.get().getTransaction().begin();
+			saveJournal(journal);
+			em.get().getTransaction().commit();
+		} catch (Exception e) {
+			log.error("group buying search save journal error");
+			log.error("ts: " + journal.getTs());
+			log.error("entity: " + journal.getEntity());
+			log.error("entityId: " + journal.getEntityId());
+			log.error("event: " + journal.getEvent());
+			log.error("eventDetail: " + journal.getEventDetail());
+		}
 	}
 	
 	public void handleGroupBuyingValidate() throws Exception {
