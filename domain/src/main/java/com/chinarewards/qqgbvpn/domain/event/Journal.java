@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 /**
  * Business Event Journal for replay and audit purpose. This record should not
@@ -55,6 +56,7 @@ public class Journal {
 	 * Details related to this event. Optional. Should be <code>null</code> if
 	 * no detail is available.
 	 */
+	@Lob
 	String eventDetail;
 
 	/**
