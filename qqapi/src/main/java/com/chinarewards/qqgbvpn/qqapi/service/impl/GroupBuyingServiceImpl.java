@@ -1,6 +1,8 @@
 package com.chinarewards.qqgbvpn.qqapi.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
@@ -42,7 +44,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
 		// 根据QQ接口需要 ,封装POST参数
-		HashMap<String, String> postParams = new HashMap<String, String>();
+		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
 		postParams.put("posId", params.get("posId"));
 		StringBuffer sb = new StringBuffer("posId=");
@@ -71,7 +73,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	public HashMap<String, Object> groupBuyingValidate(
 			HashMap<String, String> params) throws Exception {
 		// 根据QQ接口需要 ,封装POST参数
-		HashMap<String, String> postParams = new HashMap<String, String>();
+		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
 		postParams.put("posId", params.get("posId"));
 		// post参数:grouponId
@@ -108,18 +110,20 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	public HashMap<String, Object> groupBuyingUnbind(
 			HashMap<String, Object> params) throws Exception {
 		// 根据QQ接口需要 ,封装POST参数
-		HashMap<String, String> postParams = new HashMap<String, String>();
+		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		String[] posIds = (String[]) params.get("posId");
 		StringBuffer posId = new StringBuffer();
+		List<String> posIdList = new ArrayList<String>();
 		if (posIds != null && posIds.length > 0) {
 			for (String s : posIds) {
 				posId.append("&posId[]=");
 				posId.append(s);
+				posIdList.add(s);
 			}
 		}
 		String posIdStr = posId.length() > 1 ? posId.toString().substring(1) : "";
 		// post参数:posId
-		postParams.put("posId", posIdStr);
+		postParams.put("posId[]", posIdList);
 		StringBuffer sb = new StringBuffer(posIdStr);
 		sb.append("&key=");
 		sb.append(params.get("key"));
