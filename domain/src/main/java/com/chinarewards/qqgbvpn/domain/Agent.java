@@ -6,6 +6,13 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
+/**
+ * Aka "第三方". Conceptually, an agent is responsible for providing groupon
+ * service, and posses POS machines.
+ * 
+ * @author kmtong
+ * @since 0.1.0
+ */
 @Entity
 public class Agent {
 
