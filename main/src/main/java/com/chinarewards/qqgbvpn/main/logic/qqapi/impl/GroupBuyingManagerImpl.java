@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
@@ -16,6 +18,8 @@ import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
 
 public class GroupBuyingManagerImpl implements GroupBuyingManager {
+	
+	Logger log = LoggerFactory.getLogger(getClass());
 	
 	private GroupBuyingService service;
 	private GroupBuyingDao dao;
@@ -43,9 +47,19 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		journal.setEvent(DomainEvent.POS_PRODUCT_SEARCH.toString());
 		
 		ObjectMapper mapper = new ObjectMapper();
-		journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
-		
-		dao.handleGroupBuyingSearch(journal);
+		if (map.get("items") != null) {
+			journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
+		}
+		try {
+			dao.handleGroupBuyingSearch(journal);
+		} catch (Exception e) {
+			log.error("group buying search save journal error");
+			log.error("ts: " + journal.getTs());
+			log.error("entity: " + journal.getEntity());
+			log.error("entityId: " + journal.getEntityId());
+			log.error("event: " + journal.getEvent());
+			log.error("eventDetail: " + journal.getEventDetail());
+		}
 		return map;
 	}
 

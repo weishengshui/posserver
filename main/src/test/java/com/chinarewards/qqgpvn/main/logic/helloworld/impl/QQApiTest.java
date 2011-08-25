@@ -130,4 +130,5 @@ public class QQApiTest extends GuiceTest {
     		}
     	}
 	}
+	
 }

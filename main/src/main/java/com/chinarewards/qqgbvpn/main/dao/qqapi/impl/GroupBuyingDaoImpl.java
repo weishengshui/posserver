@@ -1,8 +1,6 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -26,7 +24,7 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 	
 	public void handleGroupBuyingSearch(Journal journal) throws Exception {
 		em.get().getTransaction().begin();
-		em.get().persist(journal);
+		saveJournal(journal);
 		em.get().getTransaction().commit();
 	}
 	
@@ -50,6 +48,10 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 	
 	public void handleGroupBuyingUnbind() throws Exception {
 		
+	}
+	
+	private void saveJournal(Journal journal) {
+		em.get().persist(journal);
 	}
 
 }
