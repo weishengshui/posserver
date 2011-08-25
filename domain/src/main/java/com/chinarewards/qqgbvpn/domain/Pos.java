@@ -18,7 +18,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
  * This entity should be created by management UI, used by POS server.
  * 
  * @author kmtong
- * 
+ * @since 0.1.0
  */
 @Entity
 public class Pos {
