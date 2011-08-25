@@ -2,5 +2,18 @@ package com.chinarewards.qqgbvpn.domain.status;
 
 public enum DeliveryNoteStatus {
 
-	DRAFT, CONFIRMED, PRINTED
+	/**
+	 * First state.
+	 */
+	DRAFT,
+
+	/**
+	 * Second state.
+	 */
+	CONFIRMED,
+
+	/**
+	 * Final state.
+	 */
+	PRINTED
 }
