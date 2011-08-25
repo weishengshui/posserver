@@ -4,7 +4,7 @@
 package com.chinarewards.qqgbvpn.main.logic.journal;
 
 /**
- * 
+ * Defines the interface of journalling service.
  * 
  * @author Cyril
  * @since 0.1.0
