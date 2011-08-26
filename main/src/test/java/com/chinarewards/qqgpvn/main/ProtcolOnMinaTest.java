@@ -17,9 +17,9 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
-import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
+import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
 import com.chinarewards.qqgpvn.main.test.BaseTest;
 
@@ -186,6 +186,26 @@ public class ProtcolOnMinaTest extends BaseTest {
 				session.write("quit");
 				session.close(false);
 			}
+			
+			
+			// construct random response
+
+			// known challenge
+			byte[] challenge = new byte[8];
+			int i = 0;
+			challenge[i++] = (byte)0x01;
+			challenge[i++] = (byte)0x0a;
+			challenge[i++] = (byte)0xfe;
+			challenge[i++] = (byte)0xef;
+			//
+			challenge[i++] = (byte)0xab;
+			challenge[i++] = (byte)0xcd;
+			challenge[i++] = (byte)0xef;
+			challenge[i++] = (byte)0x43;
+			
+			InitMsgResult ret = new InitMsgResult(challenge);
+			session.write(ret);
+			
 		}
 
 		@Override
