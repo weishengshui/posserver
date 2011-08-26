@@ -30,17 +30,21 @@ public class QQApiTest extends GuiceTest {
 		return new Module[] { new QQApiModule() };
 	}
 
-	@Test
 	public void testGroupBuyingSearch() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		params.put("key", "456789000");
+		params.put("curpage", "2");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingSearch(params);
 			String resultCode = (String) result.get("resultCode");
+			String curpage = (String) result.get("curpage");
+			String totalpage = String.valueOf(result.get("totalpage"));
 			System.out.println("resultCode->" + resultCode);
+			System.out.println("curpage->" + curpage);
+			System.out.println("totalpage->" + totalpage);
 			if ("0".equals(resultCode)) {
 				List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) result
 						.get("items");
@@ -86,7 +90,6 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 
-	@Test
 	public void testGroupBuyingValidate() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
@@ -145,13 +148,11 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 
-	@Test
 	public void testGroupBuyingUnbind() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("posId", new String[] { "rewards-0001", "rewards-0002",
-				"rewards-0002" });
+		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
 		params.put("key", "456789000");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);

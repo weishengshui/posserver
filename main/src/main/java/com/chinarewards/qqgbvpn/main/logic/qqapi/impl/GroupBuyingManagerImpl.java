@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.logic.qqapi.impl;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 
@@ -11,6 +12,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
+import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -37,6 +39,33 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException {
 		HashMap<String, Object> map = service.get().groupBuyingSearch(params);
+		List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) map.get("items");
+		Integer pageCount = 0;
+		//这个目前定死
+		int pageSize = 3;
+		if (params.get("curpage") != null && !"".equals(params.get("curpage").trim())) {
+			String s = params.get("curpage");
+			int pageId = Integer.valueOf(s).intValue();
+			if (items != null && items.size() > pageSize) {
+				if (items.size() % pageSize == 0) {
+					pageCount = items.size() / pageSize;
+				} else {
+					pageCount = items.size() / pageSize + 1;
+				}
+				//当前页数不能大于总页数并且不能小于1
+				if (!(pageId > pageCount || pageId < 1)) {
+					int startIndex = (pageId - 1) * pageSize;
+					int endIndex;
+					if (pageId == pageCount) {
+						endIndex = items.size();
+					} else {
+						endIndex = pageId * pageSize;
+					}
+					map.put("items", items.subList(startIndex, endIndex));
+				}
+			}
+		}
+		map.put("totalpage", pageCount);
 		map.putAll(params);
 		dao.get().handleGroupBuyingSearch(map);
 		return map;
