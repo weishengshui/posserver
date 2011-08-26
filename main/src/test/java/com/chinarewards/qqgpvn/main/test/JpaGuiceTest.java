@@ -6,11 +6,7 @@ package com.chinarewards.qqgpvn.main.test;
 import javax.persistence.EntityManager;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-
-import com.google.inject.persist.PersistService;
 
 /**
  * 
@@ -20,6 +16,8 @@ import com.google.inject.persist.PersistService;
  */
 public abstract class JpaGuiceTest extends GuiceTest {
 
+	protected EntityManager em;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -27,29 +25,14 @@ public abstract class JpaGuiceTest extends GuiceTest {
 	public void setUp() throws Exception {
 		super.setUp();
 
-		EntityManager em = getInjector().getInstance(EntityManager.class);
+		em = getInjector().getInstance(EntityManager.class);
 		em.getTransaction().begin();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 
-		EntityManager em = getInjector().getInstance(EntityManager.class);
 		em.getTransaction().rollback();
-	}
-
-	@BeforeClass
-	public void setUpBeforeClass() throws Exception {
-		// get the persistence service
-		PersistService ps = getInjector().getInstance(PersistService.class);
-		ps.start();
-	}
-
-	@AfterClass
-	public void tearDownAfterClass() throws Exception {
-		// get the persistence service
-		PersistService ps = getInjector().getInstance(PersistService.class);
-		ps.stop();
 	}
 
 }

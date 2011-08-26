@@ -7,7 +7,11 @@ import javax.persistence.Persistence;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.URLProperties;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
+import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.GroupBuyingDaoImpl;
+import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.PosDaoImpl;
+import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
+import com.chinarewards.qqgbvpn.main.logic.login.impl.LoginManagerImpl;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.GroupBuyingManagerImpl;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
@@ -39,11 +43,13 @@ public class QQApiModule extends AbstractModule {
 				}
 			}
 		}).in(Singleton.class);
-		
+
 		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class).in(Singleton.class);
-		
+		bind(LoginManager.class).to(LoginManagerImpl.class);
+
 		bind(GroupBuyingDao.class).to(GroupBuyingDaoImpl.class);
-		
+
+		bind(PosDao.class).to(PosDaoImpl.class);
 	}
 
 }

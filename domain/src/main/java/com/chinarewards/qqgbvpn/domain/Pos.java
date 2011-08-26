@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.domain;
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -48,8 +50,12 @@ public class Pos {
 	@Enumerated(EnumType.STRING)
 	PosOperationStatus ostatus;
 
+	// POS 内置唯一标识。6位字符
 	String secret;
 
+	// save the challenge code.
+	byte[] challenge;
+	
 	public String getId() {
 		return id;
 	}
@@ -120,5 +126,22 @@ public class Pos {
 
 	public void setSecret(String secret) {
 		this.secret = secret;
+	}
+
+	public byte[] getChallenge() {
+		return challenge;
+	}
+
+	public void setChallenge(byte[] challenge) {
+		this.challenge = challenge;
+	}
+
+	@Override
+	public String toString() {
+		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
+				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
+				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
+				+ ", secret=" + secret + ", challenge="
+				+ Arrays.toString(challenge) + "]";
 	}
 }

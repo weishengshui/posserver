@@ -30,7 +30,6 @@ import com.chinarewards.qqgpvn.main.test.BaseTest;
  */
 public class ProtcolOnMinaTest extends BaseTest {
 
-	@Test
 	public void testClientServer() throws Exception {
 
 		// the TCP port to listen
@@ -183,7 +182,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testSendViaJavaSocket() throws Exception {
 
 		Socket socket = new Socket("localhost", 1234);
