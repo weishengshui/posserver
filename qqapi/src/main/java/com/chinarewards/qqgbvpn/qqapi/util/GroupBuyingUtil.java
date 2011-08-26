@@ -23,9 +23,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
+import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
+import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
+import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 
 public class GroupBuyingUtil {
 	
@@ -39,19 +42,23 @@ public class GroupBuyingUtil {
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String MD5(String s) throws Exception {
-		MessageDigest mdInst = MessageDigest.getInstance("MD5");
-		mdInst.update(s.getBytes());
-		byte[] md = mdInst.digest();
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < md.length; i++) {
-			int val = ((int) md[i]) & 0xff;
-			if (val < 16) {
-				sb.append("0");
+	public static String MD5(String s) throws MD5Exception {
+		try {
+			MessageDigest mdInst = MessageDigest.getInstance("MD5");
+			mdInst.update(s.getBytes());
+			byte[] md = mdInst.digest();
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < md.length; i++) {
+				int val = ((int) md[i]) & 0xff;
+				if (val < 16) {
+					sb.append("0");
+				}
+				sb.append(Integer.toHexString(val));
 			}
-			sb.append(Integer.toHexString(val));
+			return sb.toString();
+		} catch (Exception e) {
+			throw new MD5Exception(e);
 		}
-		return sb.toString();
 	}
 	
 	/**
@@ -61,35 +68,39 @@ public class GroupBuyingUtil {
 	 * @param params POST参数
 	 * @return
 	 */
-	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws Exception {
-		client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		HttpPost post = new HttpPost(url);
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		//设置post参数
-		if (postParams != null) {
-			for (String key : postParams.keySet()) {
-				Object v = postParams.get(key);
-				if (v instanceof java.util.Collection) {
-					ArrayList<String> list = (ArrayList<String>) v;
-					for (String s : list) {
-						params.add(new BasicNameValuePair(key, URLEncoder.encode((String) s,"UTF-8")));
+	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws SendPostTimeOutException {
+		try {
+			client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+			HttpPost post = new HttpPost(url);
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			//设置post参数
+			if (postParams != null) {
+				for (String key : postParams.keySet()) {
+					Object v = postParams.get(key);
+					if (v instanceof java.util.Collection) {
+						ArrayList<String> list = (ArrayList<String>) v;
+						for (String s : list) {
+							params.add(new BasicNameValuePair(key, URLEncoder.encode((String) s,"UTF-8")));
+						}
+					} else {
+						params.add(new BasicNameValuePair(key, URLEncoder.encode((String) v,"UTF-8")));
 					}
-				} else {
-					params.add(new BasicNameValuePair(key, URLEncoder.encode((String) v,"UTF-8")));
 				}
 			}
-		}
-		HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
-		post.setEntity(httpentity);
-		HttpResponse httpResponse = client.execute(post);
-		//请求成功
-		if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-			HttpEntity entity = httpResponse.getEntity();
-			if (entity != null) {
-				return entity.getContent();
+			HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+			post.setEntity(httpentity);
+			HttpResponse httpResponse = client.execute(post);
+			//请求成功
+			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				HttpEntity entity = httpResponse.getEntity();
+				if (entity != null) {
+					return entity.getContent();
+				}
 			}
+			throw new Exception("send post error, status code: " + httpResponse.getStatusLine().getStatusCode());
+		} catch (Exception e) {
+			throw new SendPostTimeOutException(e);
 		}
-		return null;
 	}
 
 	/**
@@ -99,26 +110,30 @@ public class GroupBuyingUtil {
 	 * @param nodeDir 子元素的目录
 	 * @param bean 	     返回对象Class   
 	 * @return
-	 * @throws DocumentException
+	 * @throws ParseXMLException
 	 */
-	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir, Class bean) throws Exception {
-		HashMap<String,Object> parseResult = new HashMap<String,Object>();
-		SAXReader reader = new SAXReader(); 
-		Document xmlDoc = reader.read(new InputStreamReader(in, "UTF-8"));
-		Element root = xmlDoc.getRootElement();
-		String resultCode = root.elementText("resultCode");
-		parseResult.put("resultCode", resultCode);
-		//0才有item
-		if ("0".equals(resultCode)) {
-			List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
-			List itemList = new ArrayList();
-			for (Element ele : listRowSet) {
-				Object item = copyProperties(bean,ele);
-				itemList.add(item);
+	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir, Class bean) throws ParseXMLException {
+		try {
+			HashMap<String,Object> parseResult = new HashMap<String,Object>();
+			SAXReader reader = new SAXReader(); 
+			Document xmlDoc = reader.read(new InputStreamReader(in, "UTF-8"));
+			Element root = xmlDoc.getRootElement();
+			String resultCode = root.elementText("resultCode");
+			parseResult.put("resultCode", resultCode);
+			//0才有item
+			if ("0".equals(resultCode)) {
+				List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
+				List itemList = new ArrayList();
+				for (Element ele : listRowSet) {
+					Object item = copyProperties(bean,ele);
+					itemList.add(item);
+				}
+				parseResult.put("items", itemList);
 			}
-			parseResult.put("items", itemList);
+			return parseResult;
+		} catch (Exception e) {
+			throw new ParseXMLException(e);
 		}
-		return parseResult;
 	}
 	
 	/**

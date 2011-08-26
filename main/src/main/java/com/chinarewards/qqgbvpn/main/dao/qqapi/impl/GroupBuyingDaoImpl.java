@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
+import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -31,7 +33,7 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 	@Inject
 	private Provider<EntityManager> em;
 
-	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws Exception {
+	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
 		Journal journal = new Journal();
 		journal.setTs(new Date());
 		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
@@ -40,7 +42,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 		String resultCode = (String) params.get("resultCode");
 		ObjectMapper mapper = new ObjectMapper();
 		if ("0".equals(resultCode) && params.get("items") != null) {
-			journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) params.get("items")));
+			try {
+				journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) params.get("items")));
+			} catch (Exception e) {
+				throw new JsonGenerationException(e);
+			}
 		} else {
 			switch (Integer.valueOf(resultCode)) {
 			case -1 :
@@ -68,10 +74,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 			log.error("entityId: " + journal.getEntityId());
 			log.error("event: " + journal.getEvent());
 			log.error("eventDetail: " + journal.getEventDetail());
+			throw new SaveDBException(e);
 		}
 	}
 	
-	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws Exception {
+	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException {
 		String posId = (String) params.get("posId");
 		String resultCode = (String) params.get("resultCode");
 		String token = (String) params.get("token");
@@ -130,14 +137,16 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 				log.error("entityId: " + journal.getEntityId());
 				log.error("event: " + journal.getEvent());
 				log.error("eventDetail: " + journal.getEventDetail());
+				throw new SaveDBException(e);
 			}
 		} else {
 			log.error("group buying validate get pos or agent error");
 			log.error("pos or agent not found by posId : " + posId);
+			throw new SaveDBException("group buying validate error,pos or agent not found by posId : " + posId);
 		}
 	}
 	
-	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws Exception {
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
 		String[] posIds = (String[]) params.get("posId");
 		String resultCode = (String) params.get("resultCode");
 		for (String posId : posIds) {
@@ -150,7 +159,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 				journal.setEvent("0".equals(resultCode) ? DomainEvent.POS_UNBIND_SUCCESS.toString() : DomainEvent.POS_UNBIND_FAILED.toString());
 				ObjectMapper mapper = new ObjectMapper();
 				if ("0".equals(resultCode) && params.get("items") != null) {
-					journal.setEventDetail(mapper.writeValueAsString(pa));
+					try {
+						journal.setEventDetail(mapper.writeValueAsString(pa));
+					} catch (Exception e) {
+						throw new JsonGenerationException(e);
+					}
 				} else {
 					switch (Integer.valueOf(resultCode)) {
 					case -1 :
@@ -167,15 +180,27 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 						break;
 					}
 				}
-				em.get().getTransaction().begin();
-				if ("0".equals(resultCode)) {
-					em.get().remove(pa);
+				try {
+					em.get().getTransaction().begin();
+					if ("0".equals(resultCode)) {
+						em.get().remove(pa);
+					}
+					saveJournal(journal);
+					em.get().getTransaction().commit();
+				} catch (Exception e) {
+					log.error("group buying unbind save error");
+					log.error("posId: " + posId);
+					log.error("ts: " + journal.getTs());
+					log.error("entity: " + journal.getEntity());
+					log.error("entityId: " + journal.getEntityId());
+					log.error("event: " + journal.getEvent());
+					log.error("eventDetail: " + journal.getEventDetail());
+					throw new SaveDBException(e);
 				}
-				saveJournal(journal);
-				em.get().getTransaction().commit();
 			} else {
 				log.error("group buying unbind get pos assignment error");
 				log.error("pos assignment not found by posId : " + posId);
+				throw new SaveDBException("group buying unbind error,pos assignment not found by posId : " + posId);
 			}
 		}
 	}

@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
+import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
+import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
@@ -39,10 +42,13 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	 * @param params
 	 *            map中key必须包括:posId,key
 	 * @return
+	 * @throws MD5Exception 
+	 * @throws SendPostTimeOutException 
+	 * @throws ParseXMLException 
 	 * @throws Exception
 	 */
 	public HashMap<String, Object> groupBuyingSearch(
-			HashMap<String, String> params) throws Exception {
+			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException {
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -69,9 +75,12 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	 * @param params
 	 *            map中key必须包括:posId,grouponId,token,key
 	 * @return
+	 * @throws MD5Exception 
+	 * @throws SendPostTimeOutException 
+	 * @throws ParseXMLException 
 	 */
 	public HashMap<String, Object> groupBuyingValidate(
-			HashMap<String, String> params) throws Exception {
+			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException {
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -106,9 +115,12 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 	 *            map中key必须包括:posId[],key.
 	 *            posId是字符串数组类型
 	 * @return
+	 * @throws MD5Exception 
+	 * @throws SendPostTimeOutException 
+	 * @throws ParseXMLException 
 	 */
 	public HashMap<String, Object> groupBuyingUnbind(
-			HashMap<String, Object> params) throws Exception {
+			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException {
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		String[] posIds = (String[]) params.get("posId");
