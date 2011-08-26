@@ -9,6 +9,7 @@ import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.service.IoServiceStatistics;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -18,7 +19,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.junit.Test;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg;
+import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
 import com.chinarewards.qqgpvn.main.test.BaseTest;
 
@@ -43,11 +44,14 @@ public class ProtcolOnMinaTest extends BaseTest {
 		InetSocketAddress serverAddr = new InetSocketAddress(PORT);
 
 		IoAcceptor acceptor = new NioSocketAcceptor();
+
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
 		// FIXME not this
 		acceptor.getFilterChain().addLast("codec",
 				new ProtocolCodecFilter(new InitMsgSocketFactory(false)));
+
+		acceptor.getFilterChain().addLast("logger2", new LoggingFilter());
 
 		acceptor.setHandler(new ServerSessionHandler());
 		acceptor.setCloseOnDeactivation(true);
@@ -115,28 +119,37 @@ public class ProtcolOnMinaTest extends BaseTest {
 		public void messageReceived(IoSession session, Object message)
 				throws Exception {
 
-			InitMsg msg = (InitMsg) message;
+			InitMsg2 msg = (InitMsg2) message;
 
+			System.out.println("Sequence =" + msg.getSeq());
+			System.out.println("ACK      =" + msg.getAck());
+			System.out.println("FLAGS    =" + msg.getFlags());
+			System.out.println("Checksum =" + msg.getChecksum());
 			System.out.println("length=" + msg.getLength());
-			System.out.println("Sequence=" + msg.getSequence());
 			System.out.println("POS ID=[" + msg.getPosId() + "]");
-			System.out.println("Command ID=" + msg.getCommandId());
-			System.out.println("Header=[" + msg.getHeader() + "]");
 
 		}
 
 		@Override
 		public void sessionIdle(IoSession session, IdleStatus status)
 				throws Exception {
-			System.out.println("IDLE " + session.getIdleCount(status));
+			System.out.println("IDLE " + session.getIdleCount(status)
+					+ ", Remote IP/Port:" + session.getRemoteAddress()
+					+ ", Accum: " + session.getBothIdleCount());
+
+			IoServiceStatistics stat = session.getService().getStatistics();
+
+			System.out.println("getManagedSessionCount="
+					+ session.getService().getManagedSessionCount());
 		}
 
 		@Override
 		public void sessionOpened(IoSession session) throws Exception {
 			super.sessionOpened(session);
-			
-			System.out.println("session.getRemoteAddress():" + session.getRemoteAddress());
-			
+
+			System.out.println("session.getRemoteAddress():"
+					+ session.getRemoteAddress());
+
 			// session.write("Thanks for connecting to me");
 		}
 
@@ -190,8 +203,22 @@ public class ProtcolOnMinaTest extends BaseTest {
 
 		OutputStream os = socket.getOutputStream();
 
-		byte[] msg = new byte[] { 0x0a, 0x0d, 0, 0, 0, 24, 0, 0, 0, 2, 0, 7,
-				'P', 'O', 'S', '-', '5', '6', '7', '8', '9', '0', '1', '2' };
+		byte[] msg = new byte[] {
+				// SEQ
+				0, 0, 0, 24,
+				// ACK
+				0, 0, 0, 0,
+				// flags
+				0, 0, 
+				// checksum
+				0, 2,
+				// message length
+				0, 0, 0, 32,
+				// command ID
+				0, 0, 0, 5,
+				// POS ID
+				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
+				'0', '1', '2' };
 		System.out.println("Packet size: " + msg.length);
 		os.write(msg);
 		os.close();
