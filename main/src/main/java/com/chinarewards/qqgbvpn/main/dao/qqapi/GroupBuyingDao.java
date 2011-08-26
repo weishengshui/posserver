@@ -1,13 +1,13 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi;
 
-import com.chinarewards.qqgbvpn.domain.event.Journal;
+import java.util.HashMap;
 
 
 public interface GroupBuyingDao {
 
-	public void handleGroupBuyingSearch(Journal journal) throws Exception;
+	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws Exception;
 	
-	public void handleGroupBuyingValidate() throws Exception;
+	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws Exception;
 	
 	public void handleGroupBuyingUnbind() throws Exception;
 }

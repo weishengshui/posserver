@@ -79,4 +79,86 @@ public class Validation {
 	 * <code>Agent.getName()</code>.
 	 */
 	String agentName;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Date getTs() {
+		return ts;
+	}
+
+	public void setTs(Date ts) {
+		this.ts = ts;
+	}
+
+	public String getVcode() {
+		return vcode;
+	}
+
+	public void setVcode(String vcode) {
+		this.vcode = vcode;
+	}
+
+	public String getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(String pcode) {
+		this.pcode = pcode;
+	}
+
+	public String getPosId() {
+		return posId;
+	}
+
+	public void setPosId(String posId) {
+		this.posId = posId;
+	}
+
+	public String getPosModel() {
+		return posModel;
+	}
+
+	public void setPosModel(String posModel) {
+		this.posModel = posModel;
+	}
+
+	public String getPosSimPhoneNo() {
+		return posSimPhoneNo;
+	}
+
+	public void setPosSimPhoneNo(String posSimPhoneNo) {
+		this.posSimPhoneNo = posSimPhoneNo;
+	}
+
+	public ValidationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ValidationStatus status) {
+		this.status = status;
+	}
+
+	public String getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(String agentId) {
+		this.agentId = agentId;
+	}
+
+	public String getAgentName() {
+		return agentName;
+	}
+
+	public void setAgentName(String agentName) {
+		this.agentName = agentName;
+	}
+	
+	
 }

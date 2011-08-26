@@ -36,32 +36,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.get().groupBuyingSearch(params);
-		Journal journal = new Journal();
-		journal.setTs(new Date());
-		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
-		journal.setEntityId(params.get("posId"));
-		journal.setEvent(DomainEvent.POS_PRODUCT_SEARCH.toString());
-		String resultCode = (String) map.get("resultCode");
-		ObjectMapper mapper = new ObjectMapper();
-		if ("0".equals(resultCode) && map.get("items") != null) {
-			journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) map.get("items")));
-		} else {
-			switch (Integer.valueOf(resultCode)) {
-	    		case -1 :
-	    			journal.setEventDetail("服务器繁忙");
-	    			break;
-	    		case -2 :
-	    			journal.setEventDetail("md5校验失败");
-	    			break;
-	    		case -3 :
-	    			journal.setEventDetail("没有权限");
-	    			break;
-	    		default :
-	    			journal.setEventDetail("未知错误");
-	    			break;
-			}
-		}
-		dao.get().handleGroupBuyingSearch(journal);
+		map.putAll(params);
+		dao.get().handleGroupBuyingSearch(map);
 		return map;
 	}
 
@@ -75,6 +51,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingValidate(
 			HashMap<String, String> params) throws Exception {
 		HashMap<String, Object> map = service.get().groupBuyingValidate(params);
+		map.putAll(params);
+		dao.get().handleGroupBuyingValidate(map);
 		return map;
 	}
 
