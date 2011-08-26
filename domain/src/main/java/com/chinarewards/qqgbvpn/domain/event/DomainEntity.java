@@ -35,7 +35,7 @@ public enum DomainEntity {
 	RETURN_NOTE,
 
 	/**
-	 * FIXME Javadoc??
+	 * Validation. The entity ID should be <code>Validation.getId</code>
 	 */
 	VALIDATION,
 	
