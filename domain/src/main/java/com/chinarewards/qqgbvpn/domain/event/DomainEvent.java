@@ -152,5 +152,15 @@ public enum DomainEvent {
 	 * <li>Complete validation information (see entity bean Validation)</li>
 	 * </ol>
 	 */
-	POS_ORDER_VALIDATED_FAILED
+	POS_ORDER_VALIDATED_FAILED,
+	
+	/**
+	 * Unbind pos assignment success
+	 */
+	POS_UNBIND_SUCCESS,
+	
+	/**
+	 * Unbind pos asssignment failed
+	 */
+	POS_UNBIND_FAILED
 }

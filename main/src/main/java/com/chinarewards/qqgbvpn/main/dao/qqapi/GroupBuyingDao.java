@@ -9,5 +9,5 @@ public interface GroupBuyingDao {
 	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws Exception;
 	
-	public void handleGroupBuyingUnbind() throws Exception;
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws Exception;
 }

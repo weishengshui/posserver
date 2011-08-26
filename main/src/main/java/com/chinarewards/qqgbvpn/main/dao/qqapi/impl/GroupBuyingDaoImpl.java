@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.PosAssignment;
 import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
@@ -136,22 +137,47 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 		}
 	}
 	
-	public void handleGroupBuyingUnbind() throws Exception {
-		if (em.get() != null) {
-			System.out.println("注入成功");
-		} else {
-			System.out.println("注入不成功");
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws Exception {
+		String[] posIds = (String[]) params.get("posId");
+		String resultCode = (String) params.get("resultCode");
+		for (String posId : posIds) {
+			PosAssignment pa = getPosAssignmentByIdPosId(posId);
+			if (pa != null) {
+				Journal journal = new Journal();
+				journal.setTs(new Date());
+				journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+				journal.setEntityId(pa.getId());
+				journal.setEvent("0".equals(resultCode) ? DomainEvent.POS_UNBIND_SUCCESS.toString() : DomainEvent.POS_UNBIND_FAILED.toString());
+				ObjectMapper mapper = new ObjectMapper();
+				if ("0".equals(resultCode) && params.get("items") != null) {
+					journal.setEventDetail(mapper.writeValueAsString(pa));
+				} else {
+					switch (Integer.valueOf(resultCode)) {
+					case -1 :
+						journal.setEventDetail("服务器繁忙");
+						break;
+					case -2 :
+						journal.setEventDetail("md5校验失败");
+						break;
+					case -3 :
+						journal.setEventDetail("没有权限");
+						break;
+					default :
+						journal.setEventDetail("未知错误");
+						break;
+					}
+				}
+				em.get().getTransaction().begin();
+				if ("0".equals(resultCode)) {
+					deletePosAssignmentByIdUUID(pa.getId());
+				}
+				saveJournal(journal);
+				em.get().getTransaction().commit();
+			} else {
+				log.error("group buying unbind get pos assignment error");
+				log.error("pos assignment not found by posId : " + posId);
+			}
 		}
-		Journal j = new Journal();
-		j.setTs(new Date());
-		j.setEntity(DomainEntity.VALIDATION.toString());
-		j.setEntityId("Validation_Id");
-		j.setEvent(DomainEvent.POS_ORDER_VALIDATED_OK.toString());
-		ObjectMapper mapper = new ObjectMapper();
-		j.setEventDetail(mapper.writeValueAsString(j));
-		em.get().getTransaction().begin();
-		em.get().persist(j);
-		em.get().getTransaction().commit();
 	}
 	
 	private void saveJournal(Journal journal) {
@@ -183,6 +209,23 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	private PosAssignment getPosAssignmentByIdPosId(String posId) {
+		try {
+			Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
+			jql.setParameter(1, posId);
+			PosAssignment pa = (PosAssignment) jql.getSingleResult();
+			return pa;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private void deletePosAssignmentByIdUUID(String uuid) {
+		Query jql = em.get().createQuery("delete from PosAssignment pa where pa.id = ?1");
+		jql.setParameter(1, uuid);
+		jql.executeUpdate();
 	}
 
 }

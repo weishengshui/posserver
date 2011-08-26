@@ -1,20 +1,10 @@
 package com.chinarewards.qqgbvpn.main.logic.qqapi.impl;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
-import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
-import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -66,6 +56,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public HashMap<String, Object> groupBuyingUnbind(
 			HashMap<String, Object> params) throws Exception {
 		HashMap<String, Object> map = service.get().groupBuyingUnbind(params);
+		map.putAll(params);
+		dao.get().handleGroupBuyingUnbind(map);
 		return map;
 	}
     

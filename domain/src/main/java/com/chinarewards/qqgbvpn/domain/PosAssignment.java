@@ -30,4 +30,28 @@ public class PosAssignment {
 	@ManyToOne
 	Agent agent;
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Pos getPos() {
+		return pos;
+	}
+
+	public void setPos(Pos pos) {
+		this.pos = pos;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
 }

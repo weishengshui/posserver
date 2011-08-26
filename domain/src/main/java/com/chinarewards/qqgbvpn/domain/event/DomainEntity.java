@@ -40,6 +40,11 @@ public enum DomainEntity {
 	VALIDATION,
 	
 	/**
+	 * Unbind pos assignment. The entity ID should be <code>PosAssignment.getId</code>
+	 */
+	UNBIND_POS_ASSIGNMENT,
+	
+	/**
 	 * Related to group buying search product information. (this just is value object,not entity)The entity ID should be the POS machine's ID
 	 * <code>Pos.getPosId()</code>, <b>not</b> the UUID.
 	 */
