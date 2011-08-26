@@ -3,9 +3,9 @@
  */
 package com.chinarewards.qqgbvpn.main;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -14,11 +14,19 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.mina.core.service.IoAcceptor;
+import org.apache.mina.core.session.IdleStatus;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.MessageCoderFactory;
+import com.chinarewards.qqgpvn.main.MinaTest.ServerSessionHandler;
 import com.chinarewards.utils.appinfo.AppInfo;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -56,6 +64,16 @@ public class BootStrap {
 	 * Contains parsed command line arguments, from <code>args</code>.
 	 */
 	CommandLine cl;
+	
+	/**
+	 * socket server address
+	 */
+	InetSocketAddress serverAddr;
+
+	/**
+	 * acceptor
+	 */
+	IoAcceptor acceptor;
 
 	/**
 	 * Creates an instance of BootStrap.
@@ -107,6 +125,8 @@ public class BootStrap {
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
 
+		//start mina server
+		startMinaServer();
 		log.info("Bootstrapping completed");
 
 	}
@@ -124,6 +144,8 @@ public class BootStrap {
 
 		shutdownJpa();
 
+		stopMinaServer();
+		
 		log.info("Shutdown sequence done");
 	}
 
@@ -137,6 +159,14 @@ public class BootStrap {
 			log.warn("Error occurred when shutting down persistence service", t);
 		}
 
+	}
+	
+	/**
+	 * stop MinaServer
+	 */
+	protected void stopMinaServer() {
+		acceptor.unbind(serverAddr);
+		acceptor.dispose();
 	}
 
 	/**
@@ -337,6 +367,38 @@ public class BootStrap {
 		log.debug("Bootstraping Guice injector...");
 		injector = Guice.createInjector(new AppModule(), jpaModule);
 
+	}
+	
+	/**
+	 * start MinaServer
+	 * 
+	 * @throws IOException
+	 */
+	protected void startMinaServer() throws IOException {
+
+		// the TCP port to listen
+		int port = new PosNetworkProperties().getSearverPort();
+
+		// =============== server side ===================
+		serverAddr = new InetSocketAddress(port);
+
+		acceptor = new NioSocketAcceptor();
+		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
+
+		// not this
+		acceptor.getFilterChain().addLast("codec",
+				new ProtocolCodecFilter(new MessageCoderFactory()));
+
+		acceptor.setHandler(new ServerSessionHandler());
+		acceptor.setCloseOnDeactivation(true);
+
+		// acceptor.getSessionConfig().setReadBufferSize(2048);
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		acceptor.bind(serverAddr);
+
+		log.info(
+				"Server running, port is {}",
+				port);
 	}
 
 	protected Properties buildJpaProperties() {
