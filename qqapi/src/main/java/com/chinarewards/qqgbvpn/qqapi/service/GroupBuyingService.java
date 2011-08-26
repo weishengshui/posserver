@@ -2,6 +2,10 @@ package com.chinarewards.qqgbvpn.qqapi.service;
 
 import java.util.HashMap;
 
+import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
+import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
+import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
+
 public interface GroupBuyingService {
 	
 	/**
@@ -12,7 +16,7 @@ public interface GroupBuyingService {
 	 * @return
 	 */
 	public HashMap<String, Object> groupBuyingSearch(
-			HashMap<String, String> params) throws Exception;
+			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException;
 
 	/**
 	 * 团购验证
@@ -22,7 +26,7 @@ public interface GroupBuyingService {
 	 * @return
 	 */
 	public HashMap<String, Object> groupBuyingValidate(
-			HashMap<String, String> params) throws Exception;
+			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException;
 
 	/**
 	 * 团购取消绑定
@@ -32,5 +36,5 @@ public interface GroupBuyingService {
 	 * @return
 	 */
 	public HashMap<String, Object> groupBuyingUnbind(
-			HashMap<String, Object> params) throws Exception;
+			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException;
 }

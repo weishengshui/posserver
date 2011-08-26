@@ -1,13 +1,17 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi;
 
-import com.chinarewards.qqgbvpn.domain.event.Journal;
+import java.util.HashMap;
+
+import org.codehaus.jackson.JsonGenerationException;
+
+import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 
 
 public interface GroupBuyingDao {
 
-	public void handleGroupBuyingSearch(Journal journal) throws Exception;
+	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
 	
-	public void handleGroupBuyingValidate() throws Exception;
+	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException;
 	
-	public void handleGroupBuyingUnbind() throws Exception;
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
 }
