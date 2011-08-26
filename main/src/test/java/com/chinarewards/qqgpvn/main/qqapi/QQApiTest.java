@@ -205,7 +205,7 @@ public class QQApiTest extends GuiceTest {
 
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
-		s.setResponse("error url");
+		s.setResponse("correct url");
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -247,6 +247,7 @@ public class QQApiTest extends GuiceTest {
 		try {
 			GroupBuyingUtil.sendPost(url, null);
 		} catch (SendPostTimeOutException e) {
+			System.out.println("connection time out");
 			return;
 		}
 		throw new Exception();
@@ -325,6 +326,7 @@ public class QQApiTest extends GuiceTest {
 				}
 			}
 		} catch (ParseXMLException e) {
+			System.out.println("xml contents format error");
 			return;
 		}
 		throw new Exception();
@@ -332,7 +334,7 @@ public class QQApiTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testParseXML() throws Exception {
+	public void testGroupBuyingSearchParseXML() throws Exception {
 		Server server = new Server(0);
 
 		HardCodedServlet s = new HardCodedServlet();
@@ -387,6 +389,146 @@ public class QQApiTest extends GuiceTest {
 				System.out.println(item.getMercName());
 				System.out.println(item.getListName());
 				System.out.println(item.getDetailName());
+			}
+		} else {
+			switch (Integer.valueOf(resultCode)) {
+			case -1:
+				System.out.println("服务器繁忙");
+				break;
+			case -2:
+				System.out.println("md5校验失败");
+				break;
+			case -3:
+				System.out.println("没有权限");
+				break;
+			default:
+				System.out.println("未知错误");
+				break;
+			}
+		}
+	}
+	
+	@Test
+	public void testGroupBuyingValidateParseXML() throws Exception {
+		Server server = new Server(0);
+
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+		sb.append("<tuan>");
+		sb.append("<resultCode>0</resultCode>");
+		sb.append("<groupon>");
+		sb.append("<resultName>验证已成功</resultName>");
+		sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
+		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+		sb.append("<useTime>2011-08-03 11:10:23</useTime>");
+		sb.append("<validTime>2011-08-10</validTime>");
+		sb.append("</groupon>");
+		sb.append("<groupon>");
+		sb.append("<resultName>已退款</resultName>");
+		sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
+		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+		sb.append("<validTime>2011-08-10</validTime>");
+		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
+		sb.append("</groupon>");
+		sb.append("</tuan>");
+		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		String servletPath = "/qqapi";
+		ServletHandler scHandler = new ServletHandler();
+		scHandler.addServletWithMapping(h, servletPath);
+		
+		// add handler to server
+		server.addHandler(scHandler);
+		server.start();
+		
+		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
+		
+		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
+				GroupBuyingUtil.sendPost(url, null), "//groupon",
+				GroupBuyingValidateResultVO.class);
+		String resultCode = (String) result.get("resultCode");
+		System.out.println("resultCode->" + resultCode);
+		if ("0".equals(resultCode)) {
+			List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
+					.get("items");
+			for (GroupBuyingValidateResultVO item : items) {
+				System.out.println(item.getResultName());
+				System.out.println(item.getResultExplain());
+				System.out.println(item.getCurrentTime());
+				System.out.println(item.getUseTime());
+				System.out.println(item.getValidTime());
+				System.out.println(item.getRefundTime());
+			}
+		} else {
+			switch (Integer.valueOf(resultCode)) {
+			case -1:
+				System.out.println("服务器繁忙");
+				break;
+			case -2:
+				System.out.println("md5校验失败");
+				break;
+			case -3:
+				System.out.println("没有权限");
+				break;
+			default:
+				System.out.println("未知错误");
+				break;
+			}
+		}
+	}
+	
+	@Test
+	public void testGroupBuyingUnbindParseXML() throws Exception {
+		Server server = new Server(0);
+
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+		sb.append("<tuan>");
+		sb.append("<resultCode>0</resultCode>");
+		sb.append("<groupon>");
+		sb.append("<item>");
+		sb.append("<posId>1</posId>");
+		sb.append("<resultStatus>0</resultStatus>");
+		sb.append("</item>");
+		sb.append("<item>");
+		sb.append("<posId>2</posId>");
+		sb.append("<resultStatus>1</resultStatus>");
+		sb.append("</item>");
+		sb.append("</groupon>");
+		sb.append("</tuan>");
+		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		String servletPath = "/qqapi";
+		ServletHandler scHandler = new ServletHandler();
+		scHandler.addServletWithMapping(h, servletPath);
+		
+		// add handler to server
+		server.addHandler(scHandler);
+		server.start();
+		
+		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
+		
+		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
+				GroupBuyingUtil.sendPost(url, null), "//groupon/item",
+				GroupBuyingUnbindVO.class);
+		String resultCode = (String) result.get("resultCode");
+		System.out.println("resultCode->" + resultCode);
+		if ("0".equals(resultCode)) {
+			List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) result
+					.get("items");
+			for (GroupBuyingUnbindVO item : items) {
+				System.out.println(item.getPosId());
+				System.out.println(item.getResultStatus());
 			}
 		} else {
 			switch (Integer.valueOf(resultCode)) {
