@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HardCodedServlet extends HttpServlet {
 
-	private String response;
+	private String response = "hello";
 
 	/*
 	 * (non-Javadoc)
