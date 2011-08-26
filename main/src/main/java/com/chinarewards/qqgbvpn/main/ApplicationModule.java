@@ -35,12 +35,6 @@ public class ApplicationModule extends AbstractModule {
 		// log
 		bind(LogConfig.class).to(LogConfigImpl.class).in(Singleton.class);
 		
-		bind(GroupBuyingService.class).to(GroupBuyingServiceImpl.class);
-		
-		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class);
-		
-		bind(GroupBuyingDao.class).to(GroupBuyingDaoImpl.class);
-		
 	}
 
 }
