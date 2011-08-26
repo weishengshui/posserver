@@ -169,7 +169,7 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 				}
 				em.get().getTransaction().begin();
 				if ("0".equals(resultCode)) {
-					deletePosAssignmentByIdUUID(pa.getId());
+					em.get().remove(pa);
 				}
 				saveJournal(journal);
 				em.get().getTransaction().commit();
@@ -222,10 +222,4 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 		}
 	}
 	
-	private void deletePosAssignmentByIdUUID(String uuid) {
-		Query jql = em.get().createQuery("delete from PosAssignment pa where pa.id = ?1");
-		jql.setParameter(1, uuid);
-		jql.executeUpdate();
-	}
-
 }
