@@ -32,5 +32,8 @@ public abstract class ProtocolLengths {
 	public static final int COMMAND = 2;
 	
 	public static final int POS_ID = 12;
+	
+	public static final int HEAD = 16;//add by tommy 
+	
 
 }
