@@ -10,7 +10,7 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg;
+import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.TransportMessage;
 
@@ -33,41 +33,51 @@ public class InitMsgDecoder extends CumulativeProtocolDecoder {
 		System.out.println("InitMsgDecoder.doDecode invoked");
 		System.out.println("in.remaining() = " + in.remaining());
 
-		if (in.remaining() >= 24) {
+		if (in.remaining() >= 32) {
 
 			System.out.println("Do processing");
 			
-			// read header
-			System.out.println("Read head");
-			in.get(head);	// 2 byte
+			// SEQ: Sequence number
+			System.out.println("Read sequence");
+			long seq = in.getUnsignedInt();	// 4 byte
 			System.out.println("in.remaining() = " + in.remaining());
 
-			// packet length
-			System.out.println("Read length");
+			// ACK: Sequence number
+			System.out.println("Read ACK");
+			long ack = in.getUnsignedInt();	// 4 byte
+			System.out.println("in.remaining() = " + in.remaining());
+
+			// Flags
+			System.out.println("Read Flags");
+			int flags = in.getUnsignedShort();	// 2 byte
+			System.out.println("in.remaining() = " + in.remaining());
+
+			// Checksum
+			System.out.println("Read Checksum");
+			int checksum = in.getUnsignedShort();	// 2 byte
+			System.out.println("in.remaining() = " + in.remaining());
+
+			// message size
+			System.out.println("Read message size");
 			long length = in.getUnsignedInt(); // XXX	// 4 byte
-			System.out.println("in.remaining() = " + in.remaining());
-
-			// serial number
-			System.out.println("Read serial");
-			long serial = in.getUnsignedInt();	// 4 byte
 			System.out.println("in.remaining() = " + in.remaining());
 
 			// command ID
 			System.out.println("Read command ID");
-			long cmdId = in.getUnsignedShort();	// 2 byte
+			long cmdId = in.getUnsignedInt();	// 4 byte
 			System.out.println("in.remaining() = " + in.remaining());
 
-			// pos ID
+			// POS ID
 			byte[] posIdRaw = new byte[ProtocolLengths.POS_ID];
 			in.get(posIdRaw);
 			String posId = new String(posIdRaw);
 			System.out.println("in.remaining() = " + in.remaining());
 
 			
-			log.debug("length={}, serial={}, cmdId={}, posIdRaw={}, posId={}", new Object[] {
-					length, serial, cmdId, posIdRaw, posId });
+			log.info("SEQ={}, ACK={}, Flags={}, Checksum={}, MsgLength={}, CmdId={}, PosID={}",
+					new Object[] { seq, ack, flags, checksum, length, cmdId, posId } );
 			
-			InitMsg m = new InitMsg(24, serial, posId);
+			InitMsg2 m = new InitMsg2(seq, ack, flags, checksum, length, posId);
 			out.write(m);
 
 			return true;
