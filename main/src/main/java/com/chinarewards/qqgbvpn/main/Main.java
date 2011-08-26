@@ -79,7 +79,7 @@ public class Main {
 	public static void main(String[] args) {
 
 		//
-		// Developers: Please keep this code as short as possible!
+		// Developers: Please keep this code as short and clean as possible!
 		//
 
 		//
@@ -87,7 +87,9 @@ public class Main {
 		//
 		BootStrap boot = new BootStrap(args);
 		try {
+			
 			boot.run();
+			
 		} catch (Throwable e) {
 			System.err
 					.println("An unexpected error occurred when bootstrapping. See ");
@@ -107,9 +109,13 @@ public class Main {
 		AppShutdownThread t = new AppShutdownThread(app, Thread.currentThread());
 		Runtime.getRuntime().addShutdownHook(t);
 
+		//
 		// run the "main" application!
+		//
 		try {
+			
 			app.run();
+			
 		} catch (Throwable e) {
 			// don't let it die without gracefully closing the application.
 			System.err.println("Unexpected application termination detected.");

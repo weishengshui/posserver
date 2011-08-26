@@ -94,6 +94,7 @@ public class BootStrap {
 		// parse command line arguments.
 		parseCmdArgs();
 
+		// print some text.
 		log.info("Bootstrapping...");
 
 		// create the dependency injection environment.
@@ -162,45 +163,12 @@ public class BootStrap {
 		// print version and quit.
 		if (cl.hasOption("version")) {
 			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println("POS version " + appInfo.getVersionString());
+			System.out.println(BootStrap.APP_NAME + " version " + appInfo.getVersionString());
 			System.exit(0);
 		}
+		
+		// create the configuration object.
 
-		if (cl.getOptionValue("reply-per-loop") != null) {
-			Pattern pattern = Pattern.compile("^[-+]?[0-9]*");
-			Matcher isNum = pattern
-					.matcher(cl.getOptionValue("reply-per-loop"));
-			if (!isNum.matches()) {
-				System.err
-						.println("appPreference replyPerLoop is not numeric!");
-				printHelp(opts);
-				System.exit(1);
-			} else {
-				if (Integer.parseInt(cl.getOptionValue("reply-per-loop")) < 0) {
-					System.err
-							.println("appPreference replyPerLoop is less then or equal zero");
-					System.exit(1);
-				}
-			}
-		}
-
-		if (cl.getOptionValue("pause-per-reply") != null) {
-			Pattern pattern = Pattern.compile("^[-+]?[0-9]*");
-			Matcher isNum = pattern.matcher(cl
-					.getOptionValue("pause-per-reply"));
-			if (!isNum.matches()) {
-				System.err
-						.println("appPreference pausePerReply is not numeric!");
-				printHelp(opts);
-				System.exit(1);
-			} else {
-				if (Integer.parseInt(cl.getOptionValue("pause-per-reply")) < 0) {
-					System.err
-							.println("appPreference pausePerReply is less then or equal zero");
-					System.exit(1);
-				}
-			}
-		}
 	}
 
 	/**
