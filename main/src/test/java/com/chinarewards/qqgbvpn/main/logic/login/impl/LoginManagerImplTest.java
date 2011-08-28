@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
+import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
@@ -23,6 +24,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
+import com.google.inject.persist.jpa.JpaPersistModule;
 
 /**
  * @author cream
@@ -34,7 +36,10 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 
 	@Override
 	protected Module[] getModules() {
-		return new Module[] { new QQApiModule() };
+		return new Module[] {
+				new QQApiModule(),
+				new JpaPersistModule("posnet")
+						.properties(new DatabaseProperties().getProperties()) };
 	}
 
 	@Test
@@ -48,8 +53,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setDstatus(PosDeliveryStatus.DELIVERED);
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
-		em.persist(pos);
-		em.flush();
+		getEm().persist(pos);
+		getEm().flush();
 
 		InitRequest request = new InitRequest();
 		request.setSerial(1l);
@@ -71,8 +76,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setDstatus(PosDeliveryStatus.DELIVERED);
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
-		em.persist(pos);
-		em.flush();
+		getEm().persist(pos);
+		getEm().flush();
 
 		LoginRequest req = new LoginRequest();
 		req.setSerial(2l);
@@ -86,7 +91,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.SUCCESS, resp.getResult());
 
-		Pos record = em.find(Pos.class, "pos-0002");
+		Pos record = getEm().find(Pos.class, "pos-0002");
 		assertNotNull(record.getChallenge());
 		assertNotNull(record.getSecret());
 	}

@@ -1,10 +1,7 @@
 package com.chinarewards.qqgbvpn.main;
 
 import javax.inject.Singleton;
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
-import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.URLProperties;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
@@ -23,16 +20,7 @@ public class QQApiModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		
-		//注入JPA
-		//install(new JpaPersistModule("posnet").properties(new DatabaseProperties().getProperties())); 
-		bind(EntityManager.class).toProvider(new Provider<EntityManager>() {
-			@Override
-			public EntityManager get() {
-				return Persistence.createEntityManagerFactory("posnet",new DatabaseProperties().getProperties()).createEntityManager();
-			}
-		}).in(Singleton.class);
-		
+
 		bind(GroupBuyingService.class).toProvider(new Provider<GroupBuyingService>() {
 			@Override
 			public GroupBuyingService get() {
