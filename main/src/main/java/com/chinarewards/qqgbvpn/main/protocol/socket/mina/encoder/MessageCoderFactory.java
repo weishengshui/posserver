@@ -34,8 +34,9 @@ public class MessageCoderFactory implements ProtocolCodecFactory {
 	
 	public MessageCoderFactory(Charset charset,Injector injector){
 		this.charset = charset;
-		encoder = new MessageEncoder(charset,injector);
-		decoder = new MessageDecoder(charset,injector);
+		this.injector = injector;
+		encoder = new MessageEncoder(charset,this.injector);
+		decoder = new MessageDecoder(charset,this.injector);
 	}
 	
 	

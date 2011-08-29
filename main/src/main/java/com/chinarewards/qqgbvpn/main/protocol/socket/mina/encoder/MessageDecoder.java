@@ -14,7 +14,6 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessageCoder;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -76,9 +75,13 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			log.debug("in.remaining() = " + in.remaining());
 			log.debug("headMessage : {}",
 					headMessage.toString());
-			//TODO check message by head
 			
-			//TODO read body and decode to MessageObject
+			//check length
+			if(messageSize != ProtocolLengths.HEAD + in.remaining()){
+				throw new PackgeException("packge message error");
+			}
+			//TODO check message by checksum
+			
 			IBodyMessage bodyMessage = this.decodeMessageBody(in, charset);
 			
 			Message message = new Message(headMessage,bodyMessage);
@@ -93,7 +96,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	}
 	
 	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
-		//TODO get cmdId and process it
+		//get cmdId and process it
 		int position = in.position();
 		int cmdId = in.getUnsignedShort();
 		in.position(position);
@@ -102,7 +105,19 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 		switch(cmdId){
 			case CmdConstant.INIT_CMD_ID :
 				bodyMessageCoder  = injector.getInstance(Key.get(IBodyMessageCoder.class,
+						Names.named(CmdConstant.INIT_CMD_NAME)));
+				break;
+			case CmdConstant.LOGIN_CMD_ID :
+				bodyMessageCoder  = injector.getInstance(Key.get(IBodyMessageCoder.class,
 						Names.named(CmdConstant.LOGIN_CMD_NAME)));
+				break;
+			case CmdConstant.SEARCH_CMD_ID :
+				bodyMessageCoder  = injector.getInstance(Key.get(IBodyMessageCoder.class,
+						Names.named(CmdConstant.SEARCH_CMD_NAME)));
+				break;
+			case CmdConstant.VERIFICATION_CMD_ID :
+				bodyMessageCoder  = injector.getInstance(Key.get(IBodyMessageCoder.class,
+						Names.named(CmdConstant.VERIFICATION_CMD_NAME)));
 				break;
 			default : throw new PackgeException("cmd is not exits,cmd id is:"+cmdId);	
 		}

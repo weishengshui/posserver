@@ -3,6 +3,8 @@ package com.chinarewards.qqgbvpn.main.protocol.hander;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
@@ -21,6 +23,8 @@ import com.google.inject.name.Names;
  *
  */
 public class ServerSessionHandler extends IoHandlerAdapter {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	private Injector injector;
 	
@@ -37,6 +41,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
+		log.debug("messageReceived start");
 		Message msg = (Message) message;
 		
 		int cmdId = msg.getBodyMessage().getCmdId();
@@ -64,6 +69,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 //		Date date = new Date();
 		msg.setBodyMessage(responseMsgBody);
 		session.write(msg);
+		log.debug("messageReceived end");
 		System.out.println("Server written to client...");
 	}
 
