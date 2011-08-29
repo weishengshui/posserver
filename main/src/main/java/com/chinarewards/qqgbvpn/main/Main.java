@@ -96,6 +96,8 @@ public class Main {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		
+		
 		// get the injector (dependency injection readied).
 		Injector injector = boot.getInjector();
 

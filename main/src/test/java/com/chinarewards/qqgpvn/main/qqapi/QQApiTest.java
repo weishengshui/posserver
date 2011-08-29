@@ -1,7 +1,10 @@
 package com.chinarewards.qqgpvn.main.qqapi;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.persistence.Query;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
@@ -10,7 +13,10 @@ import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.domain.GrouponCache;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
+import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.HardCodedServlet;
@@ -35,10 +41,9 @@ public class QQApiTest extends JpaGuiceTest {
 						.properties(new DatabaseProperties().getProperties()) };
 	}
 	
-	
-
 	@Test
-	public void testGroupBuyingSearch() {
+	public void testInitGrouponCache() {
+		
 		//build test server start
 		try {
 			Server server = new Server(0);
@@ -63,6 +68,13 @@ public class QQApiTest extends JpaGuiceTest {
 			sb.append("<mercName>三人行骨头王</mercName>");
 			sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
 			sb.append("<detailName>400.01元套餐</detailName>");
+			sb.append("</item>");
+			sb.append("<item>");
+			sb.append("<grouponId>132154</grouponId>");
+			sb.append("<grouponName>测试商品</grouponName>");
+			sb.append("<mercName>测试商品王</mercName>");
+			sb.append("<listName>测试商品套餐\r\n        (132154)</listName>");
+			sb.append("<detailName>测试商品套餐</detailName>");
 			sb.append("</item>");
 			sb.append("</groupon>");
 			sb.append("</tuan>");
@@ -89,47 +101,103 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		params.put("key", "456789000");
-		params.put("curpage", "1");
 		try {
-			HashMap<String, Object> result = gbm.groupBuyingSearch(params);
-			String resultCode = (String) result.get("resultCode");
-			String curpage = (String) result.get("curpage");
-			String totalpage = String.valueOf(result.get("totalpage"));
-			String totalnum = String.valueOf(result.get("totalnum"));
-			String curnum = String.valueOf(result.get("curnum"));
-			System.out.println("resultCode->" + resultCode);
-			System.out.println("totalnum->" + totalnum);
-			System.out.println("curnum->" + curnum);
-			System.out.println("curpage->" + curpage);
-			System.out.println("totalpage->" + totalpage);
-			if ("0".equals(resultCode)) {
-				List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) result
-						.get("items");
-				for (GroupBuyingSearchListVO item : items) {
-					System.out.println(item.getGrouponId());
-					System.out.println(item.getGrouponName());
-					System.out.println(item.getMercName());
-					System.out.println(item.getListName());
-					System.out.println(item.getDetailName());
-				}
+			String resultCode = gbm.initGrouponCache(params);
+			System.out.println("resultCode--> " + resultCode);
+			//search groupon cache
+			Query query = emp.get().createQuery("select gc from GrouponCache gc where gc.posId = 'rewards-0001'");
+			List<GrouponCache> list = query.getResultList();
+			for (GrouponCache item : list) {
+				System.out.println("GrouponId-->" + item.getGrouponId());
+				System.out.println("GrouponName-->" + item.getGrouponName());
+				System.out.println("MercName-->" + item.getMercName());
+				System.out.println("ListName-->" + item.getListName());
+				System.out.println("DetailName-->" + item.getDetailName());
+			}
+		} catch (JsonGenerationException e) {
+			System.err.println("生成JSON对象出错");
+			e.printStackTrace();
+		} catch (MD5Exception e) {
+			System.err.println("生成MD5校验位出错");
+			e.printStackTrace();
+		} catch (ParseXMLException e) {
+			System.err.println("解析XML出错");
+			e.printStackTrace();
+		} catch (SendPostTimeOutException e) {
+			System.err.println("POST连接出错");
+			e.printStackTrace();
+		} catch (SaveDBException e) {
+			System.err.println("后台保存数据库出错");
+			System.out.println("具体异常信息：" + e.getMessage());
+			e.printStackTrace();
+		} catch (CopyPropertiesException e) {
+			System.err.println("复制属性值出错");
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	public void testGroupBuyingSearch() {
+		//init test data start
+		if (!this.emp.get().getTransaction().isActive()) {
+			this.emp.get().getTransaction().begin();
+		}
+		GrouponCache gc1 = new GrouponCache();
+		gc1.setCreateDate(new Date());
+		gc1.setPosId("rewards-0001");
+		gc1.setGrouponId("grouponId1");
+		gc1.setGrouponName("grouponName1");
+		gc1.setListName("listName1");
+		gc1.setMercName("mercName1");
+		gc1.setDetailName("detailName1");
+		this.emp.get().persist(gc1);
+		GrouponCache gc2 = new GrouponCache();
+		gc2.setCreateDate(new Date());
+		gc2.setPosId("rewards-0001");
+		gc2.setGrouponId("grouponId2");
+		gc2.setGrouponName("grouponName2");
+		gc2.setListName("listName2");
+		gc2.setMercName("mercName2");
+		gc2.setDetailName("detailName2");
+		this.emp.get().persist(gc2);
+		GrouponCache gc3 = new GrouponCache();
+		gc3.setCreateDate(new Date());
+		gc3.setPosId("rewards-0001");
+		gc3.setGrouponId("grouponId3");
+		gc3.setGrouponName("grouponName3");
+		gc3.setListName("listName3");
+		gc3.setMercName("mercName3");
+		gc3.setDetailName("detailName3");
+		this.emp.get().persist(gc3);
+		//init test data end
+		
+		GroupBuyingManager gbm = getInjector().getInstance(
+				GroupBuyingManager.class);
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("posId", "rewards-0001");
+		//params.put("key", "456789000");
+		params.put("curpage", "3");
+		params.put("pageSize", "1");
+		try {
+			PageInfo pageInfo = gbm.groupBuyingSearch(params);
+			System.out.println("totalnum->" + pageInfo.getRecordCount());
+			if (pageInfo.getItems() != null) {
+				System.out.println("curnum->" + pageInfo.getItems().size());
 			} else {
-				switch (Integer.valueOf(resultCode)) {
-				case -1:
-					System.out.println("服务器繁忙");
-					break;
-				case -2:
-					System.out.println("md5校验失败");
-					break;
-				case -3:
-					System.out.println("没有权限");
-					break;
-				default:
-					System.out.println("未知错误");
-					break;
+				System.out.println("curnum->" + 0);
+			}
+			System.out.println("curpage->" + pageInfo.getPageId());
+			System.out.println("totalpage->" + pageInfo.getPageCount());
+			if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
+				List<GrouponCache> items = (List<GrouponCache>) pageInfo.getItems();
+				for (GrouponCache item : items) {
+					System.out.println("GrouponId-->" + item.getGrouponId());
+					System.out.println("GrouponName-->" + item.getGrouponName());
+					System.out.println("MercName-->" + item.getMercName());
+					System.out.println("ListName-->" + item.getListName());
+					System.out.println("DetailName-->" + item.getDetailName());
 				}
 			}
-			
-			
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");
 			e.printStackTrace();

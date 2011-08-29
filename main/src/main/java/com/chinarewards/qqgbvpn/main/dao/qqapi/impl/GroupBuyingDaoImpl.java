@@ -1,18 +1,19 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.GrouponCache;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
 import com.chinarewards.qqgbvpn.domain.Validation;
@@ -21,46 +22,141 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
+import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 
-public class GroupBuyingDaoImpl implements GroupBuyingDao {
+public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 
-	Logger log = LoggerFactory.getLogger(getClass());
-	
-	@Inject
-	private Provider<EntityManager> em;
+	public void initGrouponCache(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException, CopyPropertiesException {
+		String posId = (String)params.get("posId");
+		Date date = new Date();
+		ObjectMapper mapper = new ObjectMapper();
+		String resultCode = (String) params.get("resultCode");
+		//商品缓存列表
+		List<GrouponCache> oldCache = new ArrayList<GrouponCache>();
+		List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) params.get("items");
+		//新商品列表
+		List<GrouponCache> grouponCacheList = new ArrayList<GrouponCache>();
+		if (items != null && items.size() > 0) {
+			for (GroupBuyingSearchListVO vo : items) {
+				GrouponCache grouponCache = new GrouponCache();
+				grouponCache.setPosId(posId);
+				grouponCache.setCreateDate(date);
+				try {
+					BeanUtils.copyProperties(grouponCache, vo);
+				} catch (Exception e) {
+					throw new CopyPropertiesException(e);
+				}
+				grouponCacheList.add(grouponCache);
+			}
+		}
+		
+		//商品日志对象
+		Journal journal = new Journal();
+		journal.setTs(date);
+		journal.setEntity(DomainEntity.GROUPON_CACHE.toString());
+		journal.setEntityId(posId);
+		journal.setEvent(DomainEvent.GROUPON_CACHE_INIT.toString());
+		try {
+			if (grouponCacheList != null && grouponCacheList.size() > 0) {
+				journal.setEventDetail(mapper.writeValueAsString(grouponCacheList));
+			}
+		} catch (Exception e) {
+			throw new JsonGenerationException(e);
+		}
+		
+		//删除缓存日志对象
+		Journal oldCacheJournal = new Journal();
+		oldCacheJournal.setTs(date);
+		oldCacheJournal.setEntity(DomainEntity.GROUPON_CACHE.toString());
+		oldCacheJournal.setEntityId(posId);
+		oldCacheJournal.setEvent(DomainEvent.GROUPON_CACHE_DELETE.toString());
+		
+		if (!em.get().getTransaction().isActive()) {
+			em.get().getTransaction().begin();
+		}
+		try {
+			if ("0".equals(resultCode)) {
+				//删除缓存
+				oldCache = deleteGrouponCache(posId);
+				try {
+					if (oldCache != null && oldCache.size() > 0) {
+						oldCacheJournal.setEventDetail(mapper.writeValueAsString(oldCache));
+					}
+				} catch (Exception e) {
+					throw new JsonGenerationException(e);
+				}
+				//保存删除缓存日志
+				saveJournal(oldCacheJournal);
+				//保存商品
+				if (grouponCacheList != null && grouponCacheList.size() > 0) {
+					for (GrouponCache vo : grouponCacheList) {
+						saveGrouponCache(vo);
+					}
+				}
+			} else {
+				switch (Integer.valueOf(resultCode)) {
+				case -1 :
+					journal.setEventDetail("服务器繁忙");
+					break;
+				case -2 :
+					journal.setEventDetail("md5校验失败");
+					break;
+				case -3 :
+					journal.setEventDetail("没有权限");
+					break;
+				default :
+					journal.setEventDetail("未知错误");
+					break;
+				}
+			}
+			//保存商品日志
+			saveJournal(journal);
+			if (em.get().getTransaction().isActive()) {
+				em.get().getTransaction().commit();
+			}
+		} catch (Exception e) {
+			if (em.get().getTransaction().isActive()) {
+				em.get().getTransaction().rollback();
+			}
+			//记日志
+			log.error("groupon cache init error");
+			log.error("ts: " + date);
+			log.error("old groupon cache information:");
+			log.error("entity: " + oldCacheJournal.getEntity());
+			log.error("entityId: " + oldCacheJournal.getEntityId());
+			log.error("event: " + oldCacheJournal.getEvent());
+			log.error("eventDetail: " + oldCacheJournal.getEventDetail());
+			log.error("new groupon information:");
+			log.error("entity: " + journal.getEntity());
+			log.error("entityId: " + journal.getEntityId());
+			log.error("event: " + journal.getEvent());
+			log.error("eventDetail: " + journal.getEventDetail());
+			throw new SaveDBException(e);
+		}
+	}
 
-	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
+	public PageInfo handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException {
+		String posId = params.get("posId");
+		
+		PageInfo pageInfo = new PageInfo();
+		pageInfo.setPageId(Integer.valueOf(params.get("curpage")));
+		pageInfo.setPageSize(Integer.valueOf(params.get("pageSize")));
+		//分页查询商品
+		pageInfo = getGrouponCachePagination(pageInfo,posId);
+		
 		Journal journal = new Journal();
 		journal.setTs(new Date());
-		journal.setEntity(DomainEntity.GROUPON_INFORMATION.toString());
-		journal.setEntityId((String)params.get("posId"));
+		journal.setEntity(DomainEntity.GROUPON_CACHE.toString());
+		journal.setEntityId(posId);
 		journal.setEvent(DomainEvent.POS_PRODUCT_SEARCH.toString());
-		String resultCode = (String) params.get("resultCode");
 		ObjectMapper mapper = new ObjectMapper();
-		if ("0".equals(resultCode) && params.get("items") != null) {
+		if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
 			try {
-				journal.setEventDetail(mapper.writeValueAsString((List<GroupBuyingSearchListVO>) params.get("items")));
+				journal.setEventDetail(mapper.writeValueAsString((List<GrouponCache>) pageInfo.getItems()));
 			} catch (Exception e) {
 				throw new JsonGenerationException(e);
-			}
-		} else {
-			switch (Integer.valueOf(resultCode)) {
-			case -1 :
-				journal.setEventDetail("服务器繁忙");
-				break;
-			case -2 :
-				journal.setEventDetail("md5校验失败");
-				break;
-			case -3 :
-				journal.setEventDetail("没有权限");
-				break;
-			default :
-				journal.setEventDetail("未知错误");
-				break;
 			}
 		}
 		try {
@@ -83,6 +179,8 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 			log.error("eventDetail: " + journal.getEventDetail());
 			throw new SaveDBException(e);
 		}
+		
+		return pageInfo;
 	}
 	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException {
@@ -228,6 +326,33 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 	
 	private void saveJournal(Journal journal) {
 		em.get().persist(journal);
+	}
+	
+	private void saveGrouponCache(GrouponCache grouponCache) {
+		em.get().persist(grouponCache);
+	}
+	
+	private List<GrouponCache> deleteGrouponCache(String posId) {
+		List<GrouponCache> list = getGrouponCacheByPosId(posId);
+		if (list != null && list.size() > 0) {
+			Query query = em.get().createQuery("delete from GrouponCache gc where gc.posId = ?1");
+			query.setParameter(1, posId);
+			query.executeUpdate();
+		}
+		return list;
+	}
+	
+	private PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId) {
+		String sql = "select gc from GrouponCache gc where gc.posId = ?1 order by gc.id asc";
+		List<Object> params = new ArrayList<Object>();
+		params.add(posId);
+		return this.findPageInfo(sql, params, pageInfo);
+	}
+	
+	private List<GrouponCache> getGrouponCacheByPosId(String posId) {
+		Query query = em.get().createQuery("select gc from GrouponCache gc where gc.posId = ?1");
+		query.setParameter(1, posId);
+		return query.getResultList() != null ? (List<GrouponCache>) query.getResultList() : null;
 	}
 	
 	private void saveValidation(Validation validation) {

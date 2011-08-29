@@ -65,7 +65,7 @@ public class BootStrap {
 	 * Contains parsed command line arguments, from <code>args</code>.
 	 */
 	CommandLine cl;
-	
+
 	/**
 	 * socket server address
 	 */
@@ -79,7 +79,7 @@ public class BootStrap {
 	/**
 	 * Creates an instance of BootStrap.
 	 * 
-	 * @param args
+	 * @param args command line arguments
 	 */
 	public BootStrap(String... args) {
 		this.args = args;
@@ -104,6 +104,11 @@ public class BootStrap {
 
 	/**
 	 * Starts the bootstrap sequence.
+	 * <p>
+	 * 
+	 * After the bootstrapping, all Guice modules should be properly configured,
+	 * and the Guice injector can be retrieved via {@link #getInjector()}
+	 * method.
 	 */
 	public void run() throws Exception {
 
@@ -126,7 +131,7 @@ public class BootStrap {
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
 
-		//start mina server
+		// start mina server
 		startMinaServer();
 		log.info("Bootstrapping completed");
 
@@ -146,7 +151,7 @@ public class BootStrap {
 		shutdownJpa();
 
 		stopMinaServer();
-		
+
 		log.info("Shutdown sequence done");
 	}
 
@@ -161,7 +166,7 @@ public class BootStrap {
 		}
 
 	}
-	
+
 	/**
 	 * stop MinaServer
 	 */
@@ -194,11 +199,15 @@ public class BootStrap {
 		// print version and quit.
 		if (cl.hasOption("version")) {
 			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println(BootStrap.APP_NAME + " version " + appInfo.getVersionString());
+			System.out.println(BootStrap.APP_NAME + " version "
+					+ appInfo.getVersionString());
 			System.exit(0);
 		}
-		
+
 		// create the configuration object.
+		// make sure we know where to read configuration file
+		
+		
 
 	}
 
@@ -304,31 +313,10 @@ public class BootStrap {
 
 		// initialize the Application Preference object using command line
 		// arguments.
-		pref.setWeiboUsername(cl.getOptionValue("sinauser"));
-		pref.setWeiboPassword(cl.getOptionValue("sinapass"));
 		pref.setDb(cl.getOptionValue("db"));
 		pref.setDbType(cl.getOptionValue("dbtype"));
 		pref.setDbUsername(cl.getOptionValue("dbuser"));
 		pref.setDbPassword(cl.getOptionValue("dbpass"));
-		// TODO allow command line arguments for specifying province and city
-		pref.setSinaProvinceId("44");
-		pref.setSinaCityId("3");
-		if (cl.getOptionValue("reply-per-loop") != null) {
-			pref.setReplyPerLoop(new Integer(cl
-					.getOptionValue("reply-per-loop")));
-		}
-		if (cl.getOptionValue("pause-per-reply") != null) {
-			pref.setPausePerReply(new Integer(cl
-					.getOptionValue("pause-per-reply")));
-		}
-
-		// set comment and commentfile
-		if (cl.getOptionValue("comment") != null) {
-			pref.setMicroblogComments(cl.getOptionValues("comment"));
-		}
-		if (cl.getOptionValue("commentfile") != null) {
-			pref.setCommentFile(cl.getOptionValue("commentfile"));
-		}
 
 		// verbose level
 		{
@@ -369,7 +357,7 @@ public class BootStrap {
 		injector = Guice.createInjector(new AppModule(), jpaModule);
 
 	}
-	
+
 	/**
 	 * start MinaServer
 	 * 
@@ -400,9 +388,7 @@ public class BootStrap {
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		acceptor.bind(serverAddr);
 
-		log.info(
-				"Server running, port is {}",
-				port);
+		log.info("Server running, port is {}", port);
 	}
 
 	protected Properties buildJpaProperties() {
