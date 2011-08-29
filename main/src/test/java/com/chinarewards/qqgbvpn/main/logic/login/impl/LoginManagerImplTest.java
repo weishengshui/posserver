@@ -6,6 +6,9 @@ package com.chinarewards.qqgbvpn.main.logic.login.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
@@ -16,11 +19,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
@@ -47,7 +46,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 	}
 
 	@Test
-	public void testInit() {
+	public void testInit() throws IOException {
 
 		posDao = getInjector().getInstance(PosDao.class);
 
@@ -63,7 +62,9 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		InitRequestMessage request = new InitRequestMessage();
 		request.setPosid("pos-0001");
 
-		InitResponseMessage response = getManager().init(request);
+		File secretFile = File.createTempFile("secret", "txt");
+
+		InitResponseMessage response = getManager().init(request, secretFile);
 		assertNotNull(response.getChallenge());
 		assertEquals(InitResult.INIT.getPosCode(), response.getResult());
 
@@ -79,16 +80,21 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		// prepared data
 		Pos pos = new Pos();
 		pos.setPosId("pos-0002");
+		pos.setSecret("000001");
 		pos.setDstatus(PosDeliveryStatus.DELIVERED);
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
+
+		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
 		req.setPosid("pos-0002");
-		byte[] b = new byte[] {};
-		req.setChallengeResponse(b);
+		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
+				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
+		req.setChallengeResponse(challengeResponse);
 
 		LoginResponseMessage resp = getManager().login(req);
 

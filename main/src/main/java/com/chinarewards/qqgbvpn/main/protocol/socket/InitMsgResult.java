@@ -15,9 +15,12 @@ public class InitMsgResult implements ICommandId {
 
 	public static final int COMMAND_ID = 6;
 
+	private int result;
+
 	private byte[] challenge = new byte[8];
 
-	public InitMsgResult(byte[] challenge) {
+	public InitMsgResult(int result, byte[] challenge) {
+		this.result = result;
 		this.challenge = challenge;
 	}
 
@@ -29,6 +32,13 @@ public class InitMsgResult implements ICommandId {
 	@Override
 	public long getCmdId() {
 		return COMMAND_ID;
+	}
+
+	/**
+	 * @return the result
+	 */
+	public int getResult() {
+		return result;
 	}
 
 	/**

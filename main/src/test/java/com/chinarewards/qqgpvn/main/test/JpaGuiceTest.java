@@ -43,7 +43,9 @@ public abstract class JpaGuiceTest extends GuiceTest {
 	@After
 	public void tearDown() throws Exception {
 
-		getEm().getTransaction().rollback();
+		if (getEm().getTransaction().isActive()) {
+			getEm().getTransaction().rollback();
+		}
 	}
 
 }

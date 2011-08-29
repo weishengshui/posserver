@@ -46,11 +46,11 @@ public class InitMsgEncoder implements ProtocolEncoder {
 
 		InitMsgResult msg = (InitMsgResult) message;
 
-		int msgLength = (int) MsgV2.LENGTH + 2 + 8;
+		int msgLength = (int) MsgV2.LENGTH + 4 + 2 + 8;
 
 		IoBuffer buf = IoBuffer.allocate(msgLength);
 		// SEQ
-		buf.putUnsignedInt(2);
+		buf.putUnsignedInt(12);
 		// ACK
 		buf.putUnsignedInt(0);
 		// FLAGS - not used now
@@ -59,8 +59,10 @@ public class InitMsgEncoder implements ProtocolEncoder {
 		buf.putUnsignedShort(0x1234);
 		// message length
 		buf.putUnsignedInt(msgLength);
+		// command ID
+		buf.putUnsignedInt(msg.getCmdId());
 		// the result
-		buf.putUnsignedInt(msgLength);
+		buf.putUnsignedShort(msg.getResult());
 		// the challenge
 		buf.put(msg.getChallenge());
 

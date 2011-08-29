@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login.impl;
 
+import java.io.File;
+
 import javax.persistence.NoResultException;
 
 import org.slf4j.Logger;
@@ -14,11 +16,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
@@ -39,15 +37,8 @@ public class LoginManagerImpl implements LoginManager {
 	@Inject
 	Provider<PosDao> posDao;
 
-	/**
-	 * <ul>
-	 * <li>Check POS ID first</li>
-	 * <li>Check POS status.</li>
-	 * <li>Check POS secret code. If not existed, create it.</li>
-	 * </ul>
-	 */
 	@Override
-	public InitResponseMessage init(InitRequestMessage req) {
+	public InitResponseMessage init(InitRequestMessage req, File secretFile) {
 		logger.debug("InitResponse() invoke");
 
 		InitResponseMessage resp = new InitResponseMessage();
@@ -68,7 +59,11 @@ public class LoginManagerImpl implements LoginManager {
 
 			// check pos.secret. When not existed, generate one.
 			if (StringUtil.isEmptyString(pos.getSecret())) {
-				pos.setSecret(ChallengeUtil.generatePosSecret());
+				if (secretFile != null) {
+					pos.setSecret(ChallengeUtil.generatePosSecret(secretFile));
+				} else {
+					pos.setSecret(ChallengeUtil.generatePosSecret());
+				}
 			}
 
 			pos.setChallenge(challenge);
@@ -95,6 +90,11 @@ public class LoginManagerImpl implements LoginManager {
 	}
 
 	@Override
+	public InitResponseMessage init(InitRequestMessage req) {
+		return init(req, null);
+	}
+
+	@Override
 	public LoginResponseMessage login(LoginRequestMessage req) {
 		LoginResponseMessage resp = new LoginResponseMessage();
 
@@ -102,13 +102,16 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
-
-			logger.debug("challenge:{}", challenge);
-			pos.setChallenge(challenge);
-
+			logger.trace(
+					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
+					new Object[] { pos.getPosId(), pos.getSecret(),
+							pos.getChallenge() });
 			boolean check = ChallengeUtil.checkChallenge(
 					req.getChallengeResponse(), pos.getSecret(),
 					pos.getChallenge());
+
+			logger.debug("new challenge:{}", challenge);
+			pos.setChallenge(challenge);
 
 			if (check) {
 				result = LoginResult.SUCCESS;

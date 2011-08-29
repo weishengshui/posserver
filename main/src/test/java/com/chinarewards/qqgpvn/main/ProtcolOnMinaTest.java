@@ -1,9 +1,11 @@
 package com.chinarewards.qqgpvn.main;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.Random;
 
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
@@ -17,10 +19,12 @@ import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
+import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 import com.chinarewards.qqgpvn.main.test.BaseTest;
 
 /**
@@ -31,6 +35,11 @@ import com.chinarewards.qqgpvn.main.test.BaseTest;
  */
 public class ProtcolOnMinaTest extends BaseTest {
 
+	@Test
+	public void testDummy() {
+		
+	}
+	
 	public void testClientServer() throws Exception {
 
 		// the TCP port to listen
@@ -127,6 +136,44 @@ public class ProtcolOnMinaTest extends BaseTest {
 			System.out.println("length=" + msg.getLength());
 			System.out.println("POS ID=[" + msg.getPosId() + "]");
 
+			// construct random response
+			System.out.println("Building response to client");
+
+			// known challenge
+			byte[] challenge = new byte[8];
+			int i = 0;
+			challenge[i++] = (byte) 0x01;
+			challenge[i++] = (byte) 0x0a;
+			challenge[i++] = (byte) 0xfe;
+			challenge[i++] = (byte) 0xef;
+			//
+			challenge[i++] = (byte) 0xab;
+			challenge[i++] = (byte) 0xcd;
+			challenge[i++] = (byte) 0xef;
+			challenge[i++] = (byte) 0x43;
+
+			// debug: print the expected challenge response using the above
+			// challenge.
+			String key = "123456";
+
+			byte[] challengeResponse = HMAC_MD5
+					.getSecretContent(challenge, key);
+			for (int j = 0; j < challengeResponse.length; j++) {
+				System.out.print(Integer.toHexString(challengeResponse[j] & 0XFF));
+				System.out.print(" ");
+			}
+			System.out.print("\n");
+
+			// result
+			Random randomGenerator = new Random();
+			int result = randomGenerator.nextInt(2); // 0 to 1
+
+			InitMsgResult ret = new InitMsgResult(result, challenge);
+			session.write(ret);
+
+			System.out.println("Wrote response to client.");
+			System.out.println("Result is " + result);
+
 		}
 
 		@Override
@@ -135,6 +182,16 @@ public class ProtcolOnMinaTest extends BaseTest {
 			System.out.println("IDLE " + session.getIdleCount(status)
 					+ ", Remote IP/Port:" + session.getRemoteAddress()
 					+ ", Accum: " + session.getBothIdleCount());
+
+			System.out.println("getBothIdleTimeInMillis="
+					+ session.getConfig().getBothIdleTimeInMillis());
+			System.out
+					.println("getBothIdleCount=" + session.getBothIdleCount());
+
+			if (session.getBothIdleCount()
+					* session.getConfig().getBothIdleTimeInMillis() >= 1000 * 60) {
+				session.close(true);
+			}
 
 			IoServiceStatistics stat = session.getService().getStatistics();
 
@@ -186,26 +243,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 				session.write("quit");
 				session.close(false);
 			}
-			
-			
-			// construct random response
 
-			// known challenge
-			byte[] challenge = new byte[8];
-			int i = 0;
-			challenge[i++] = (byte)0x01;
-			challenge[i++] = (byte)0x0a;
-			challenge[i++] = (byte)0xfe;
-			challenge[i++] = (byte)0xef;
-			//
-			challenge[i++] = (byte)0xab;
-			challenge[i++] = (byte)0xcd;
-			challenge[i++] = (byte)0xef;
-			challenge[i++] = (byte)0x43;
-			
-			InitMsgResult ret = new InitMsgResult(challenge);
-			session.write(ret);
-			
 		}
 
 		@Override
@@ -215,12 +253,12 @@ public class ProtcolOnMinaTest extends BaseTest {
 		}
 	}
 
-//	@Test
 	public void testSendViaJavaSocket() throws Exception {
 
 		Socket socket = new Socket("localhost", 1234);
 
 		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
 
 		byte[] msg = new byte[] {
 				// SEQ
@@ -228,7 +266,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 				// ACK
 				0, 0, 0, 0,
 				// flags
-				0, 0, 
+				0, 0,
 				// checksum
 				0, 2,
 				// message length
@@ -236,10 +274,31 @@ public class ProtcolOnMinaTest extends BaseTest {
 				// command ID
 				0, 0, 0, 5,
 				// POS ID
-				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
-				'0', '1', '2' };
+				'P', 'O', 'S', '-', '5', '6', '7', '8', '9', '0', '1', '2' };
 		System.out.println("Packet size: " + msg.length);
+
+		long runForSeconds = 1;
+		// write response
+		log.info("Send request to server");
 		os.write(msg);
+		// session.write("Client First Message");
+		Thread.sleep(runForSeconds * 1000);
+		// read
+		log.info("Read response");
+		byte[] response = new byte[30];
+		int n = is.read(response);
+		System.out.println("Number of bytes read: " + n);
+		for (int i = 0; i < n; i++) {
+			String s = Integer.toHexString((byte) response[i]);
+			if (s.length() < 2)
+				s = "0" + s;
+			if (s.length() > 2)
+				s = s.substring(s.length() - 2);
+			System.out.print(s + " ");
+			if ((i + 1) % 8 == 0)
+				System.out.println("");
+		}
+
 		os.close();
 		socket.close();
 
