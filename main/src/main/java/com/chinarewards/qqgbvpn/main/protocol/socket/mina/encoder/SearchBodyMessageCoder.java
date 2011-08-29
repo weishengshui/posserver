@@ -43,7 +43,7 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 		message.setCmdId(cmdId);
 		message.setPage(page);
 		message.setSize(size);
-		log.debug("search message request:cmdId is() , page is(), size is()",new Object[]{cmdId,page,size});
+		log.debug("search message request:cmdId is ({}) , page is ({}), size is ({})",new Object[]{cmdId,page,size});
 		return message;
 	}
 
