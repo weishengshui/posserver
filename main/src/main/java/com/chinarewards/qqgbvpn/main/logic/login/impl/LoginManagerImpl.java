@@ -113,11 +113,11 @@ public class LoginManagerImpl implements LoginManager {
 			if (check) {
 				result = LoginResult.SUCCESS;
 			} else {
-				result = LoginResult.FAILED;
+				result = LoginResult.VALIDATE_FAILED;
 			}
 		} catch (NoResultException e) {
-			logger.warn("NO result fetch.");
-			result = LoginResult.FAILED;
+			logger.warn("Pos ID not found in DB. PosId={}", req.getPosId());
+			result = LoginResult.POSID_NOT_EXIST;
 		}
 		resp.setChallenge(challenge);
 		resp.setResult(result);

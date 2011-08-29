@@ -65,9 +65,13 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		assertNotNull(response.getChallenge());
 		assertEquals(InitResult.INIT, response.getResult());
 
+		Pos record = getEm().find(Pos.class, pos.getId());
+		assertNotNull(record);
+		assertNotNull(record.getChallenge());
+		assertNotNull(record.getSecret());
 	}
 
-	// @Test Not finished yet!
+	@Test
 	public void testLogin() {
 
 		// prepared data
@@ -91,9 +95,9 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.SUCCESS, resp.getResult());
 
-		Pos record = getEm().find(Pos.class, "pos-0002");
+		Pos record = getEm().find(Pos.class, pos.getId());
+		assertNotNull(record);
 		assertNotNull(record.getChallenge());
-		assertNotNull(record.getSecret());
 	}
 
 	private LoginManager getManager() {
