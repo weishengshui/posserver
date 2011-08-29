@@ -8,7 +8,7 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd.login;
  * 
  */
 public enum LoginResult {
-	SUCCESS(0), FAILED(1), OTHERS(2);
+	SUCCESS(0), VALIDATE_FAILED(1), POSID_NOT_EXIST(2), OTHERS(3);
 
 	private int posCode;
 
