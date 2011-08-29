@@ -48,15 +48,16 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 		int result = responseMessage.getResult();
 		byte[] challeuge = responseMessage.getChalleuge();
 
-		// TODO Auto-generated method stub
-		System.out.println("cmdId========:"
-				+ String.valueOf(cmdId).getBytes().length);
-		System.out.println("result========:"
-				+ String.valueOf(result).getBytes().length);
-		System.out.println("challeuge========:" + challeuge.length);
-		System.out.println("serial========:"
-				+ String.valueOf(serial).getBytes().length);
-		return null;
+		byte[] resultByte = new byte[ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
+		
+		Tools.putUnsignedInt(resultByte, serial, 0);
+		Tools.putUnsignedShort(resultByte, cmdId, ProtocolLengths.POS_SERIAL);
+		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND);
+		Tools.putBytes(resultByte, challeuge, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
+		
+		return resultByte;
 	}
+
+
 
 }

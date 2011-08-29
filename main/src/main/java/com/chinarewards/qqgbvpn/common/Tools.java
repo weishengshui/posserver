@@ -50,6 +50,12 @@ public class Tools {
 		bb[index + 2] = (byte) (x >> 8);
 		bb[index + 3] = (byte) (x >> 0);
 	}
+	
+	public static void putBytes(byte[] bb, byte[] x, int index) {
+		for(int i=0;i<x.length;i++){
+			bb[index + i] = x[i];
+		}
+	}
 
 	public static long getUnsignedInt(byte[] bb, int index) {
 		return ((((long) bb[index + 0] & 0xff) << 24)
