@@ -29,7 +29,7 @@ public abstract class ProtocolLengths {
 	/**
 	 * 
 	 */
-	public static final int COMMAND = 2;
+	public static final int COMMAND = 4;
 	
 	public static final int POS_ID = 12;
 	

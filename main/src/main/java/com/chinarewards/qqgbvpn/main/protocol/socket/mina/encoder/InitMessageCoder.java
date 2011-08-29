@@ -32,7 +32,7 @@ public class InitMessageCoder implements IBodyMessageCoder {
 			throw new PackgeException(
 					"login packge message body error, body message is :" + in);
 		}
-		int cmdId = in.getUnsignedShort();
+		long cmdId = in.getUnsignedInt();
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		in.get(posid);
 		message.setCmdId(cmdId);
@@ -44,13 +44,13 @@ public class InitMessageCoder implements IBodyMessageCoder {
 	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
 		log.debug("init message encode");
 		InitResponseMessage responseMessage = (InitResponseMessage) bodyMessage;
-		int cmdId = responseMessage.getCmdId();
+		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
 		byte[] challeuge = responseMessage.getChalleuge();
 
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
 		
-		Tools.putUnsignedShort(resultByte, cmdId, 0);
+		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
 		

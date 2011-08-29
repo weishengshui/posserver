@@ -34,7 +34,7 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 			throw new PackgeException(
 					"login packge message body error, body message is :" + in);
 		}
-		int cmdId = in.getUnsignedShort();
+		long cmdId = in.getUnsignedInt();
 		long serial = in.getUnsignedInt();
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		byte[] challeugeresponse = new byte[ProtocolLengths.CHALLEUGERESPONSE];
@@ -52,14 +52,14 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 		log.debug("login message encode");
 
 		LoginResponseMessage responseMessage = (LoginResponseMessage) bodyMessage;
-		int cmdId = responseMessage.getCmdId();
+		long cmdId = responseMessage.getCmdId();
 		long serial = responseMessage.getSerial();
 		int result = responseMessage.getResult();
 		byte[] challeuge = responseMessage.getChalleuge();
 
 		byte[] resultByte = new byte[ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
 		
-		Tools.putUnsignedShort(resultByte, cmdId, 0);
+		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedInt(resultByte, serial, ProtocolLengths.COMMAND);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT);

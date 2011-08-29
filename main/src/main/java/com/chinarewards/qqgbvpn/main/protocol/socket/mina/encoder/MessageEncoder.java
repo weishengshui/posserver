@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
+import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
@@ -64,34 +64,17 @@ public class MessageEncoder implements ProtocolEncoder {
 		HeadMessage headMessage = msg.getHeadMessage();
 		IBodyMessage bodyMessage = msg.getBodyMessage();
 
-		int cmdId = bodyMessage.getCmdId();
+		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;
-		IBodyMessageCoder bodyMessageCoder = null;
 		log.debug("cmdId is ()", cmdId);
-		switch (cmdId) {
-		case CmdConstant.INIT_CMD_ID:
-			bodyMessageCoder = injector.getInstance(Key.get(
-					IBodyMessageCoder.class, Names
-							.named(CmdConstant.INIT_CMD_NAME)));
-			break;
-		case CmdConstant.LOGIN_CMD_ID:
-			bodyMessageCoder = injector.getInstance(Key.get(
-					IBodyMessageCoder.class, Names
-							.named(CmdConstant.LOGIN_CMD_NAME)));
-			break;
-		case CmdConstant.SEARCH_CMD_ID:
-			bodyMessageCoder = injector.getInstance(Key.get(
-					IBodyMessageCoder.class, Names
-							.named(CmdConstant.SEARCH_CMD_NAME)));
-			break;
-		case CmdConstant.VERIFICATION_CMD_ID:
-			bodyMessageCoder = injector.getInstance(Key.get(
-					IBodyMessageCoder.class, Names
-							.named(CmdConstant.VERIFICATION_CMD_NAME)));
-			break;
-		default:
-			throw new PackgeException("cmd is not exits,cmd id is:" + cmdId);
+		
+		String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
+		if(cmdName == null || cmdName.length() == 0){
+			throw new PackgeException("cmd id is not exits,cmdId is :"+cmdId);
 		}
+		//Dispatcher
+		IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+		
 		bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 
 		byte[] headByte = new byte[ProtocolLengths.HEAD];

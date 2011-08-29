@@ -8,11 +8,11 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.message;
  */
 public class InitRequestMessage implements IBodyMessage {
 
-	private int cmdId;
+	private long cmdId;
 	
 	private String posid;
 	
-	public int getCmdId() {
+	public long getCmdId() {
 		return cmdId;
 	}
 
@@ -24,7 +24,7 @@ public class InitRequestMessage implements IBodyMessage {
 		this.posid = posid;
 	}
 
-	public void setCmdId(int cmdId) {
+	public void setCmdId(long cmdId) {
 		this.cmdId = cmdId;
 	}
 

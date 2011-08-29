@@ -6,7 +6,8 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.config.CmdProperties;
+import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
@@ -44,29 +45,17 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		log.debug("messageReceived start");
 		Message msg = (Message) message;
 		
-		int cmdId = msg.getBodyMessage().getCmdId();
-		CommandHandler commandHandler = null;
+		long cmdId = msg.getBodyMessage().getCmdId();
+		String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
+		if(cmdName == null || cmdName.length() == 0){
+			throw new PackgeException("cmd id is not exits,cmdId is :"+cmdId);
+		}
+
 		//Dispatcher
-		switch(cmdId){
-		case CmdConstant.LOGIN_CMD_ID:
-			commandHandler = injector.getInstance(Key.get(CommandHandler.class,
-					Names.named(CmdConstant.LOGIN_CMD_NAME)));
-			break;
-			
-		}
-		if(commandHandler == null){
-			//TODO no exits cmd
-		}
+		CommandHandler commandHandler = injector.getInstance(Key.get(CommandHandler.class, Names.named(cmdName)));
+
 		IBodyMessage responseMsgBody = commandHandler.execute(session, msg.getBodyMessage());
 		
-//		String str = message.toString();
-//		if (str.trim().equalsIgnoreCase("quit")) {
-//			session.close(false);
-//			return;
-//		}
-//		System.out.println("Server received: session=" + session.getId()
-//				+ " message=" + message);
-//		Date date = new Date();
 		msg.setBodyMessage(responseMsgBody);
 		session.write(msg);
 		log.debug("messageReceived end");
