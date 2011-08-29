@@ -45,7 +45,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		//团购总数量
 		Integer totalnum = items != null ? items.size() : 0;
 		//当前页的团购数量
-		int pageSize = 3;
+		int pageSize = 4;
 		if (params.get("curpage") != null && !"".equals(params.get("curpage").trim())) {
 			String s = params.get("curpage");
 			int pageId = Integer.valueOf(s).intValue();
