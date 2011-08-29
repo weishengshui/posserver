@@ -46,41 +46,11 @@ public class MinaProtcolTest extends JpaGuiceTest {
 		getEm().flush();
 		
 
-//		Socket socket = new Socket("localhost", 1234);
-//
-//		OutputStream os = socket.getOutputStream();
-//
-//		byte[] initMsg = new byte[] {
-//				// SEQ
-//				0, 0, 0, 24,
-//				// ACK
-//				0, 0, 0, 0,
-//				// flags
-//				0, 0, 
-//				// checksum
-//				0, 2,
-//				// message length
-//				0, 0, 0, 32,
-//				// command ID
-//				0, 0, 0, 5,
-//				// POS ID
-//				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
-//				'0', '1', '2' };
-//		System.out.println("Packet size: " + initMsg.length);
-//		os.write(initMsg);
-//		os.flush();
-//		InputStream in = socket.getInputStream();
-//		os.close();
-		
-		byte[] result = new byte[]{1,2,3,4,5,6,7,8};
-//		in.read(result, 22, 8);
-		
-		
-		byte[] challengeResponse  = HMAC_MD5.getSecretContent(result, "012345");
-		
-		
-		byte[] loginMsg = new byte[] {
-				//head start
+		Socket socket = new Socket("localhost", 1234);
+
+		OutputStream os = socket.getOutputStream();
+
+		byte[] initMsg = new byte[] {
 				// SEQ
 				0, 0, 0, 24,
 				// ACK
@@ -90,27 +60,56 @@ public class MinaProtcolTest extends JpaGuiceTest {
 				// checksum
 				0, 2,
 				// message length
-				0, 0, 0, 48,
-				//head end
+				0, 0, 0, 32,
 				// command ID
-				0, 0, 0, 7,
+				0, 0, 0, 5,
 				// POS ID
 				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
-				'0', '1', '2' 
-				//challengeResponse
-				,0,0,0,0,0,0,0,0
-				,0,0,0,0,0,0,0,0
-		};
-		Tools.putBytes(loginMsg, challengeResponse, 32);
-		System.out.println("Packet size: " + loginMsg.length);
-		Socket socket = new Socket("localhost", 1234);
-		OutputStream os = socket.getOutputStream();
-
-		os = socket.getOutputStream();
-		os.write(loginMsg);
+				'0', '1', '2' };
+		System.out.println("Packet size: " + initMsg.length);
+		os.write(initMsg);
 		os.flush();
-		socket.close();
+		os.close();
+		
+//		byte[] result = new byte[]{1,2,3,4,5,6,7,8};
+//		
+//		
+//		byte[] challengeResponse  = HMAC_MD5.getSecretContent(result, "012345");
+//		
+//		
+//		byte[] loginMsg = new byte[] {
+//				//head start
+//				// SEQ
+//				0, 0, 0, 24,
+//				// ACK
+//				0, 0, 0, 0,
+//				// flags
+//				0, 0, 
+//				// checksum
+//				0, 2,
+//				// message length
+//				0, 0, 0, 48,
+//				//head end
+//				// command ID
+//				0, 0, 0, 7,
+//				// POS ID
+//				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
+//				'0', '1', '2' 
+//				//challengeResponse
+//				,0,0,0,0,0,0,0,0
+//				,0,0,0,0,0,0,0,0
+//		};
+//		Tools.putBytes(loginMsg, challengeResponse, 32);
+//		System.out.println("Packet size: " + loginMsg.length);
+//		Socket socket = new Socket("localhost", 1234);
+//		OutputStream os = socket.getOutputStream();
+//
+//		os = socket.getOutputStream();
+//		os.write(loginMsg);
+//		os.flush();
+//		socket.close();
 
+		
 	}
 
 }

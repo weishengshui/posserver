@@ -1,5 +1,9 @@
 package com.chinarewards.qqgbvpn.common;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 /**
@@ -10,7 +14,6 @@ import org.apache.mina.core.buffer.IoBuffer;
  */
 public class Tools {
 	
-
 	
 	public static byte[] unsignedShortToByte(int src){
 		byte[] des = new byte[2];
@@ -67,6 +70,13 @@ public class Tools {
 		return ((((long) bb[index + 0] & 0xff) << 24)
 				| (((long) bb[index + 1] & 0xff) << 16)
 				| (((long) bb[index + 2] & 0xff) << 8) | (((long) bb[index + 3] & 0xff) << 0));
+	}
+	
+	
+	
+	public static String dateToString(String format, Date date){
+		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+		return dateFormat.format(date);
 	}
 	
 	public static void main(String[] args) {

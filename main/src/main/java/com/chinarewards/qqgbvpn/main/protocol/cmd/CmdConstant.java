@@ -32,10 +32,14 @@ public class CmdConstant {
 	/**
 	 * 验证
 	 */
-	public static final long VERIFICATION_CMD_ID = 3;
+	public static final long VALIDATE_CMD_ID = 3;
 	/**
 	 * 验证
 	 */
-	public static final long VERIFICATION_CMD_ID_RESPONSE = 4;
+	public static final long VALIDATE_CMD_ID_RESPONSE = 4;
 	
+	/**
+	 *分隔符 
+	 */
+	public static final String END_PRIEX = "\\0";
 }
