@@ -14,11 +14,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
@@ -102,13 +98,16 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
-
-			logger.debug("challenge:{}", challenge);
-			pos.setChallenge(challenge);
-
+			logger.trace(
+					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
+					new Object[] { pos.getPosId(), pos.getSecret(),
+							pos.getChallenge() });
 			boolean check = ChallengeUtil.checkChallenge(
 					req.getChallengeResponse(), pos.getSecret(),
 					pos.getChallenge());
+
+			logger.debug("new challenge:{}", challenge);
+			pos.setChallenge(challenge);
 
 			if (check) {
 				result = LoginResult.SUCCESS;

@@ -43,6 +43,9 @@ public class PosDaoImpl implements PosDao {
 	@Override
 	public Pos fetchPos(String posId, PosDeliveryStatus dstatus,
 			PosInitializationStatus istatus, PosOperationStatus ostatus) {
+		logger.trace("posId:{}, dstatus:{}, istatus:{}, ostatus:{}",
+				new Object[] { posId, dstatus, istatus, ostatus });
+
 		StringBuffer hql = new StringBuffer("FROM Pos p ");
 		hql.append(" WHERE p.posId = :posId");
 		if (dstatus != null) {
