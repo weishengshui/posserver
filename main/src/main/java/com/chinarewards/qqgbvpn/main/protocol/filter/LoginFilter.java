@@ -22,8 +22,8 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
  */
 public class LoginFilter extends IoFilterAdapter {
 
-	private final static String IS_LOGIN = "is_login";
-	private final static String POS_ID = "pos_id";
+	public final static String IS_LOGIN = "is_login";
+	public final static String POS_ID = "pos_id";
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
@@ -61,7 +61,7 @@ public class LoginFilter extends IoFilterAdapter {
 			WriteRequest writeRequest) throws Exception {
 		IBodyMessage msg = ((Message) writeRequest.getMessage()).getBodyMessage();
 		long cmdId = msg.getCmdId();
-		if (cmdId == CmdConstant.LOGIN_CMD_ID) {
+		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE) {
 			session.setAttribute(IS_LOGIN, false);
 
 			LoginResponseMessage lm = (LoginResponseMessage) msg;
