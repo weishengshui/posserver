@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
+import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.hander.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.MessageCoderFactory;
 import com.chinarewards.utils.appinfo.AppInfo;
@@ -388,6 +389,9 @@ public class BootStrap {
 		// not this
 		acceptor.getFilterChain().addLast("codec",
 				new ProtocolCodecFilter(new MessageCoderFactory()));
+
+		// Login filter.
+		acceptor.getFilterChain().addLast("login", new LoginFilter());
 
 		acceptor.setHandler(new ServerSessionHandler(injector));
 		acceptor.setCloseOnDeactivation(true);
