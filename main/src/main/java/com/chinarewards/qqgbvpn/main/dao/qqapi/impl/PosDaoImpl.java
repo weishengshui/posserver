@@ -78,4 +78,9 @@ public class PosDaoImpl implements PosDao {
 		return pos;
 	}
 
+	@Override
+	public void merge(Pos pos) {
+		getEm().merge(pos);
+	}
+
 }

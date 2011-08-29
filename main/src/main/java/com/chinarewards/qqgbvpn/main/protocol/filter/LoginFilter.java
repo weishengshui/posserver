@@ -43,7 +43,7 @@ public class LoginFilter extends IoFilterAdapter {
 			// session.setAttribute(POS_ID, lm.getPosid());
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			// get POS ID
-			LoginRequestMessage lm = (LoginRequestMessage) message;
+			LoginRequestMessage lm = (LoginRequestMessage) msg;
 			session.setAttribute(POS_ID, lm.getPosid());
 
 		} else if (isLogin == null || !isLogin) {

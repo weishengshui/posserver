@@ -12,7 +12,7 @@ public class InitResponseMessage implements IBodyMessage {
 	
 	private int result;
 	
-	private byte[] challeuge;
+	private byte[] challenge;
 
 	
 	//-------------------------------------------------//
@@ -32,12 +32,12 @@ public class InitResponseMessage implements IBodyMessage {
 		this.result = result;
 	}
 
-	public byte[] getChalleuge() {
-		return challeuge;
+	public byte[] getChallenge() {
+		return challenge;
 	}
 
-	public void setChalleuge(byte[] challeuge) {
-		this.challeuge = challeuge;
+	public void setChallenge(byte[] challeuge) {
+		this.challenge = challeuge;
 	} 
 	
 

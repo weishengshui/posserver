@@ -10,30 +10,17 @@ public class LoginRequestMessage implements IBodyMessage {
 
 	private long cmdId;
 
-	private long serial;
-	
 	private String posid;
 	
-	private byte[] challeugeresponse; 
+	private byte[] challengeResponse; 
 
 	
 	public long getCmdId() {
 		return cmdId;
 	}
 
-	
-	public long getSerial() {
-		return serial;
-	}
-
 	public void setCmdId(long cmdId) {
 		this.cmdId = cmdId;
-
-	}
-
-	
-	public void setSerial(long serial) {
-		this.serial = serial;
 
 	}
 
@@ -45,11 +32,11 @@ public class LoginRequestMessage implements IBodyMessage {
 		this.posid = posid;
 	}
 
-	public byte[] getChalleugeresponse() {
-		return challeugeresponse;
+	public byte[] getChallengeResponse() {
+		return challengeResponse;
 	}
 
-	public void setChalleugeresponse(byte[] challeugeresponse) {
-		this.challeugeresponse = challeugeresponse;
+	public void setChallengeResponse(byte[] challeugeresponse) {
+		this.challengeResponse = challeugeresponse;
 	}
 }

@@ -20,6 +20,10 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -43,16 +47,14 @@ public class LoginManagerImpl implements LoginManager {
 	 * </ul>
 	 */
 	@Override
-	public InitResponse init(InitRequest req) {
+	public InitResponseMessage init(InitRequestMessage req) {
 		logger.debug("InitResponse() invoke");
 
-		InitResponse resp = new InitResponse();
+		InitResponseMessage resp = new InitResponseMessage();
 
-		if (StringUtil.isEmptyString(req.getPosId())) {
+		if (StringUtil.isEmptyString(req.getPosid())) {
 			throw new IllegalArgumentException("POS ID is missing!");
 		}
-
-		resp.setSerial(req.getSerial());
 
 		Pos pos = null;
 		InitResult result = null;
@@ -60,7 +62,7 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
 		try {
-			pos = posDao.get().fetchPos(req.getPosId(),
+			pos = posDao.get().fetchPos(req.getPosid(),
 					PosDeliveryStatus.DELIVERED, null,
 					PosOperationStatus.ALLOWED);
 
@@ -87,21 +89,19 @@ public class LoginManagerImpl implements LoginManager {
 			result = InitResult.OTHERS;
 		}
 		resp.setChallenge(challenge);
-		resp.setResult(result);
+		resp.setResult(result.getPosCode());
 
 		return resp;
 	}
 
 	@Override
-	public LoginResponse login(LoginRequest req) {
-		LoginResponse resp = new LoginResponse();
-
-		resp.setSerial(req.getSerial());
+	public LoginResponseMessage login(LoginRequestMessage req) {
+		LoginResponseMessage resp = new LoginResponseMessage();
 
 		LoginResult result = null;
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		try {
-			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
+			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
 
 			logger.debug("challenge:{}", challenge);
 			pos.setChallenge(challenge);
@@ -116,11 +116,11 @@ public class LoginManagerImpl implements LoginManager {
 				result = LoginResult.VALIDATE_FAILED;
 			}
 		} catch (NoResultException e) {
-			logger.warn("Pos ID not found in DB. PosId={}", req.getPosId());
+			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
 			result = LoginResult.POSID_NOT_EXIST;
 		}
 		resp.setChallenge(challenge);
-		resp.setResult(result);
+		resp.setResult(result.getPosCode());
 
 		return resp;
 	}

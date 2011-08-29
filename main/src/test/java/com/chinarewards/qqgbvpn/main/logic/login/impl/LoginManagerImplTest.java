@@ -22,6 +22,10 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
@@ -56,14 +60,12 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().persist(pos);
 		getEm().flush();
 
-		InitRequest request = new InitRequest();
-		request.setSerial(1l);
-		request.setPosId("pos-0001");
+		InitRequestMessage request = new InitRequestMessage();
+		request.setPosid("pos-0001");
 
-		InitResponse response = getManager().init(request);
-		assertEquals(1l, response.getSerial());
+		InitResponseMessage response = getManager().init(request);
 		assertNotNull(response.getChallenge());
-		assertEquals(InitResult.INIT, response.getResult());
+		assertEquals(InitResult.INIT.getPosCode(), response.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
@@ -83,17 +85,15 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().persist(pos);
 		getEm().flush();
 
-		LoginRequest req = new LoginRequest();
-		req.setSerial(2l);
-		req.setPosId("pos-0002");
+		LoginRequestMessage req = new LoginRequestMessage();
+		req.setPosid("pos-0002");
 		byte[] b = new byte[] {};
 		req.setChallengeResponse(b);
 
-		LoginResponse resp = getManager().login(req);
+		LoginResponseMessage resp = getManager().login(req);
 
-		assertEquals(2l, resp.getSerial());
 		assertNotNull(resp.getChallenge());
-		assertEquals(LoginResult.SUCCESS, resp.getResult());
+		assertEquals(LoginResult.SUCCESS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
