@@ -48,7 +48,7 @@ public class MessageCoderFactory implements ProtocolCodecFactory {
 
 	@Override
 	public ProtocolEncoder getEncoder(IoSession session) throws Exception {
-		log.debug("getDecoder invoked");
+		log.debug("getEncoder invoked");
 		return encoder;
 	}
 

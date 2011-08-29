@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
 import java.nio.charset.Charset;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
@@ -29,6 +30,7 @@ public class MessageEncoder implements ProtocolEncoder {
 
 	public MessageEncoder(Charset charset, Injector injector) {
 		this.charset = charset;
+		this.injector = injector;
 	}
 
 	/*
@@ -91,7 +93,11 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		Tools.putBytes(result, headByte, 0);
 		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
-		out.write(result);
+		IoBuffer buf = IoBuffer.allocate(result.length);
+		
+		buf.put(result);
+		buf.flip();
+		out.write(buf);
 		log.debug("encode message end");
 	}
 

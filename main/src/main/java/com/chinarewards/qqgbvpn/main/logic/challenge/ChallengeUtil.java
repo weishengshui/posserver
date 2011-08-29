@@ -3,7 +3,20 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.challenge;
 
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
+import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
+import com.chinarewards.utils.StringUtil;
 
 /**
  * This class will handler the challenge logic.
@@ -13,31 +26,86 @@ import java.util.Date;
  */
 public class ChallengeUtil {
 
+	static Logger logger = LoggerFactory.getLogger(ChallengeUtil.class);
+
 	/**
 	 * This method will generate 8 byte of challenge code.
 	 * 
 	 * @return
 	 */
 	public static byte[] generateChallenge() {
-		long time = new Date().getTime();
+		return HMAC_MD5.getSecretKey(8);
+	}
 
-		byte[] result = new byte[8];
-		for (int i = 0; i < 8; i++) {
-			result[i] = (byte) (time >>> (56 - i * 8));
+	public static String generatePosSecret(File secretFile) {
+		String result = null;
+		synchronized (secretFile) {
+
+			FileReader rf = null;
+			BufferedReader br = null;
+			FileWriter fw = null;
+			String str = null;
+			int serial = 0;
+			try {
+				rf = new FileReader(secretFile);
+				br = new BufferedReader(rf);
+
+				if (br.ready()) {
+					str = br.readLine();
+				}
+
+				fw = new FileWriter(secretFile);
+
+				if (StringUtil.isEmptyString(str)) {
+					serial = 1;
+				} else {
+					serial = Integer.valueOf(str);
+				}
+
+				result = String.format("%06d", serial);
+
+				serial++;
+				fw.write(serial + "");
+			} catch (FileNotFoundException e) {
+				logger.error("File (file=" + secretFile + ") not found yet!", e);
+			} catch (IOException e) {
+				logger.error("Reading file error.", e);
+			} finally {
+				try {
+					if (br != null) {
+						br.close();
+					}
+					if (rf != null) {
+						rf.close();
+					}
+					if (fw != null) {
+						fw.close();
+					}
+				} catch (IOException e) {
+					logger.error("unknow exception!", e);
+				}
+			}
+			return result;
 		}
-		return result;
 	}
 
+	/**
+	 * Get serial number from special file. The increment it and restore serial
+	 * number.
+	 * 
+	 * @return
+	 */
 	public static String generatePosSecret() {
-		// FIXME Implement me.
-		return "00001"; // FOR test.
-		// throw new UnsupportedOperationException("Unsupported yet!");
+
+		String filePath = new PosNetworkProperties().getSecretFilePaht();
+		File secretFile = new File(filePath);
+
+		return generatePosSecret(secretFile);
 	}
 
-	public static boolean checkChallenge(byte[] chanllengeResponse,
+	public static boolean checkChallenge(byte[] challengeResponse,
 			String posSecret, byte[] random) {
-		// FIXME Implement me.
-		return true; // For test.
-		// throw new UnsupportedOperationException("Unsupported yet!");
+		byte[] content = HMAC_MD5.getSecretContent(random, posSecret);
+		return Arrays.equals(challengeResponse, content);
 	}
 }

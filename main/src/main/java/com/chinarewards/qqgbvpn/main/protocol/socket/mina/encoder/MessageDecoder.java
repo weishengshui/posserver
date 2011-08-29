@@ -29,6 +29,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	
 	public MessageDecoder(Charset charset,Injector injector){
 		this.charset = charset;
+		this.injector = injector;
 	}
 	
 	@Override
@@ -73,7 +74,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			long messageSize = in.getUnsignedInt(); 
 			headMessage.setMessageSize(messageSize);
 			log.debug("in.remaining() = " + in.remaining());
-			log.debug("headMessage : {}",
+			log.debug("headMessage ====: {}",
 					headMessage.toString());
 			
 			//check length
@@ -98,10 +99,14 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
 		//get cmdId and process it
 		int position = in.position();
-		int cmdId = in.getUnsignedShort();
+		long cmdId = in.getUnsignedInt();
+		log.debug("position========:"+position);
 		in.position(position);
-		
+		log.debug("cmdId========:"+cmdId);
+		log.debug("injector========:"+(injector==null));
+		injector.getInstance(CmdProperties.class);
 		String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
+		log.debug("cmdName========:"+cmdName);
 		if(cmdName == null || cmdName.length() == 0){
 			throw new PackgeException("cmd id is not exits,cmdId is :"+cmdId);
 		}
