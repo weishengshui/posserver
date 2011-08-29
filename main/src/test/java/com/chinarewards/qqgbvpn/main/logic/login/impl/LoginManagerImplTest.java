@@ -16,12 +16,12 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
@@ -56,14 +56,12 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().persist(pos);
 		getEm().flush();
 
-		InitRequest request = new InitRequest();
-		request.setSerial(1l);
-		request.setPosId("pos-0001");
+		InitRequestMessage request = new InitRequestMessage();
+		request.setPosid("pos-0001");
 
-		InitResponse response = getManager().init(request);
-		assertEquals(1l, response.getSerial());
+		InitResponseMessage response = getManager().init(request);
 		assertNotNull(response.getChallenge());
-		assertEquals(InitResult.INIT, response.getResult());
+		assertEquals(InitResult.INIT.getPosCode(), response.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
@@ -77,23 +75,26 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		// prepared data
 		Pos pos = new Pos();
 		pos.setPosId("pos-0002");
+		pos.setSecret("000001");
 		pos.setDstatus(PosDeliveryStatus.DELIVERED);
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
+
+		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
-		LoginRequest req = new LoginRequest();
-		req.setSerial(2l);
-		req.setPosId("pos-0002");
-		byte[] b = new byte[] {};
-		req.setChallengeResponse(b);
+		LoginRequestMessage req = new LoginRequestMessage();
+		req.setPosid("pos-0002");
+		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
+				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
+		req.setChallengeResponse(challengeResponse);
 
-		LoginResponse resp = getManager().login(req);
+		LoginResponseMessage resp = getManager().login(req);
 
-		assertEquals(2l, resp.getSerial());
 		assertNotNull(resp.getChallenge());
-		assertEquals(LoginResult.SUCCESS, resp.getResult());
+		assertEquals(LoginResult.SUCCESS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);

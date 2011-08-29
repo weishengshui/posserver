@@ -105,6 +105,8 @@ public class ChallengeUtil {
 
 	public static boolean checkChallenge(byte[] challengeResponse,
 			String posSecret, byte[] random) {
+		logger.trace("checking challenge:response:{}, posKey:{}, random:{}",
+				new Object[] { challengeResponse, posSecret, random });
 		byte[] content = HMAC_MD5.getSecretContent(random, posSecret);
 		return Arrays.equals(challengeResponse, content);
 	}

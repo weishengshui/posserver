@@ -3,10 +3,10 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login;
 
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 
 /**
  * Defined Login logic.
@@ -22,13 +22,13 @@ public interface LoginManager {
 	 * @param req
 	 * @return
 	 */
-	public InitResponse init(InitRequest req);
+	public InitResponseMessage init(InitRequestMessage req);
 
 	/**
 	 * 
 	 * @param req
 	 * @return
 	 */
-	public LoginResponse login(LoginRequest req);
+	public LoginResponseMessage login(LoginRequestMessage req);
 
 }

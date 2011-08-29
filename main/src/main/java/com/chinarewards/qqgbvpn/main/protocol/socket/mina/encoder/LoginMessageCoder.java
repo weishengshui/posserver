@@ -22,27 +22,24 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessag
 public class LoginMessageCoder implements IBodyMessageCoder {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	@Override
 	public IBodyMessage decode(IoBuffer in, Charset charset)
 			throws PackgeException {
 		log.debug("login message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
-		if (in.remaining() != ProtocolLengths.POS_SERIAL
-				+ ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
+		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
 				+ ProtocolLengths.CHALLEUGERESPONSE) {
 			throw new PackgeException(
 					"login packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();
-		long serial = in.getUnsignedInt();
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		byte[] challeugeresponse = new byte[ProtocolLengths.CHALLEUGERESPONSE];
 		in.get(posid);
 		in.get(challeugeresponse);
 		message.setCmdId(cmdId);
-		message.setSerial(serial);
-		message.setChalleugeresponse(challeugeresponse);
+		message.setChallengeResponse(challeugeresponse);
 		message.setPosid(new String(posid, charset));
 		return message;
 	}
@@ -53,20 +50,17 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 
 		LoginResponseMessage responseMessage = (LoginResponseMessage) bodyMessage;
 		long cmdId = responseMessage.getCmdId();
-		long serial = responseMessage.getSerial();
 		int result = responseMessage.getResult();
-		byte[] challeuge = responseMessage.getChalleuge();
+		byte[] challeuge = responseMessage.getChallenge();
 
-		byte[] resultByte = new byte[ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
-		
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT
+				+ ProtocolLengths.CHALLEUGE];
+
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedInt(resultByte, serial, ProtocolLengths.COMMAND);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, challeuge, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
-		
+		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
+		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
+
 		return resultByte;
 	}
-
-
 
 }

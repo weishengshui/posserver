@@ -24,5 +24,8 @@ public interface PosDao {
 			PosInitializationStatus istatus, PosOperationStatus ostatus);
 
 	public Pos createPos(Pos pos);
+	
+	public void merge(Pos pos);
+	
 
 }
