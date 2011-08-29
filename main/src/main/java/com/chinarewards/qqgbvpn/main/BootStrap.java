@@ -388,7 +388,7 @@ public class BootStrap {
 
 		// not this
 		acceptor.getFilterChain().addLast("codec",
-				new ProtocolCodecFilter(new MessageCoderFactory()));
+				new ProtocolCodecFilter(new MessageCoderFactory(injector)));
 
 		// Login filter.
 		acceptor.getFilterChain().addLast("login", new LoginFilter());

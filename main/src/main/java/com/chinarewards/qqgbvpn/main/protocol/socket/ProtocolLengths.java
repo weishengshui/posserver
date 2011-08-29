@@ -38,5 +38,7 @@ public abstract class ProtocolLengths {
 	public static final int CHALLEUGERESPONSE = 16;
 	
 	public static final int RESULT = 2;
+	
+	public static final int CHALLEUGE = 8;
 
 }

@@ -2,6 +2,12 @@ package com.chinarewards.qqgbvpn.common;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
+/**
+ * byte tools
+ * 
+ * @author huangwei
+ *
+ */
 public class Tools {
 	
 
@@ -49,6 +55,12 @@ public class Tools {
 		bb[index + 1] = (byte) (x >> 16);
 		bb[index + 2] = (byte) (x >> 8);
 		bb[index + 3] = (byte) (x >> 0);
+	}
+	
+	public static void putBytes(byte[] bb, byte[] x, int index) {
+		for(int i=0;i<x.length;i++){
+			bb[index + i] = x[i];
+		}
 	}
 
 	public static long getUnsignedInt(byte[] bb, int index) {

@@ -1,10 +1,11 @@
-package com.chinarewards.qqgbvpn.main.protocol.socket.message;
+package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 
 /**
  * body message coder

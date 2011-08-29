@@ -9,6 +9,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Injector;
+
 public class MessageCoderFactory implements ProtocolCodecFactory {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -24,14 +26,17 @@ public class MessageCoderFactory implements ProtocolCodecFactory {
 
 	private ProtocolDecoder decoder;
 	
-	public MessageCoderFactory(){
-		this(charsetDefault);
+	private Injector injector;
+	
+	public MessageCoderFactory(Injector injector){
+		this(charsetDefault,injector);
 	}
 	
-	public MessageCoderFactory(Charset charset){
+	public MessageCoderFactory(Charset charset,Injector injector){
 		this.charset = charset;
-		encoder = new MessageEncoder(charset);
-		decoder = new MessageDecoder(charset);
+		this.injector = injector;
+		encoder = new MessageEncoder(charset,this.injector);
+		decoder = new MessageDecoder(charset,this.injector);
 	}
 	
 	
