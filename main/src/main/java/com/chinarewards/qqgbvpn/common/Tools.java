@@ -2,6 +2,12 @@ package com.chinarewards.qqgbvpn.common;
 
 import org.apache.mina.core.buffer.IoBuffer;
 
+/**
+ * byte tools
+ * 
+ * @author huangwei
+ *
+ */
 public class Tools {
 	
 

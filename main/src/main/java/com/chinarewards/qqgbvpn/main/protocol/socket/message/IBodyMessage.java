@@ -10,5 +10,4 @@ public interface IBodyMessage {
 	
 	public int getCmdId();
 
-	public long getSerial();
 }

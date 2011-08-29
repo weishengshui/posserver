@@ -387,7 +387,7 @@ public class BootStrap {
 
 		// not this
 		acceptor.getFilterChain().addLast("codec",
-				new ProtocolCodecFilter(new MessageCoderFactory()));
+				new ProtocolCodecFilter(new MessageCoderFactory(injector)));
 
 		acceptor.setHandler(new ServerSessionHandler(injector));
 		acceptor.setCloseOnDeactivation(true);
