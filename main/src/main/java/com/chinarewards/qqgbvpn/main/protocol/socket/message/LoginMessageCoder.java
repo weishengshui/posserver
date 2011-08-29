@@ -26,8 +26,8 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 			throw new PackgeException(
 					"login packge message body error, body message is :" + in);
 		}
-		long serial = in.getUnsignedInt();
 		int cmdId = in.getUnsignedShort();
+		long serial = in.getUnsignedInt();
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		byte[] challeugeresponse = new byte[ProtocolLengths.CHALLEUGERESPONSE];
 		in.get(posid);
@@ -50,8 +50,8 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 
 		byte[] resultByte = new byte[ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
 		
-		Tools.putUnsignedInt(resultByte, serial, 0);
-		Tools.putUnsignedShort(resultByte, cmdId, ProtocolLengths.POS_SERIAL);
+		Tools.putUnsignedShort(resultByte, cmdId, 0);
+		Tools.putUnsignedInt(resultByte, serial, ProtocolLengths.COMMAND);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.POS_SERIAL+ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
 		

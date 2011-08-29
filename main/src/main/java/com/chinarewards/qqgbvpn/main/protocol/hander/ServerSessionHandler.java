@@ -1,17 +1,16 @@
 package com.chinarewards.qqgbvpn.main.protocol.hander;
 
-import java.util.Date;
-
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 
 /**
  * server handler
@@ -45,7 +44,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		//Dispatcher
 		switch(cmdId){
 		case CmdConstant.LOGIN_CMD_ID:
-//			commandHandler = injector.getInstance(type)
+			commandHandler = injector.getInstance(Key.get(CommandHandler.class,
+					Names.named(CmdConstant.LOGIN_CMD_NAME)));
 			break;
 			
 		}

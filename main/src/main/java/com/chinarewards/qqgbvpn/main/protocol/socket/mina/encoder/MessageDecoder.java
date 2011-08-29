@@ -10,11 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessageCoder;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 
 public class MessageDecoder extends CumulativeProtocolDecoder {
 
@@ -22,7 +26,9 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	private Charset charset;
 	
-	public MessageDecoder(Charset charset){
+	private Injector injector;
+	
+	public MessageDecoder(Charset charset,Injector injector){
 		this.charset = charset;
 	}
 	
@@ -88,7 +94,19 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	
 	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
 		//TODO get cmdId and process it
-		return new LoginMessageCoder().decode(in, charset);
+		int position = in.position();
+		int cmdId = in.getUnsignedShort();
+		in.position(position);
+		
+		IBodyMessageCoder bodyMessageCoder = null;
+		switch(cmdId){
+			case CmdConstant.INIT_CMD_ID :
+				bodyMessageCoder  = injector.getInstance(Key.get(IBodyMessageCoder.class,
+						Names.named(CmdConstant.LOGIN_CMD_NAME)));
+				break;
+			default : throw new PackgeException("cmd is not exits,cmd id is:"+cmdId);	
+		}
+		return bodyMessageCoder.decode(in, charset);
 	}
 
 }

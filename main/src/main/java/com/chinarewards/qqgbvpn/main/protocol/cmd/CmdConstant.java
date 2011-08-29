@@ -21,4 +21,15 @@ public class CmdConstant {
 	 */
 	public static final int VERIFICATION_CMD_ID = 4;
 	
+	
+	
+	public static final String INIT_CMD_NAME = "init";
+	
+	public static final String LOGIN_CMD_NAME = "login";
+	
+	public static final String SEARCH_CMD_NAME = "search";
+	
+	public static final String VERIFICATION_CMD_NAME = "verification";
+	
+	
 }
