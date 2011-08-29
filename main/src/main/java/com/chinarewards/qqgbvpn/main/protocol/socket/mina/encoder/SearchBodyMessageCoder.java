@@ -43,7 +43,7 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 		message.setCmdId(cmdId);
 		message.setPage(page);
 		message.setSize(size);
-		log.debug("search message request:cmdId is() , page is(), size is()",new Object[]{cmdId,page,size});
+		log.debug("search message request:cmdId is ({}) , page is ({}), size is ({})",new Object[]{cmdId,page,size});
 		return message;
 	}
 
@@ -62,11 +62,11 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 		
 		StringBuffer buffer = new StringBuffer();
 		for(SearchResponseDetail searchResponseDetail:detail){
-			buffer.append(searchResponseDetail.getGrouponId()).append(CmdConstant.END_PRIEX);
-			buffer.append(searchResponseDetail.getGrouponName()).append(CmdConstant.END_PRIEX);
-			buffer.append(searchResponseDetail.getMercName()).append(CmdConstant.END_PRIEX);
-			buffer.append(searchResponseDetail.getListName()).append(CmdConstant.END_PRIEX);
-			buffer.append(searchResponseDetail.getDetailName()).append(CmdConstant.END_PRIEX);
+			buffer.append(searchResponseDetail.getGrouponId()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getGrouponName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getMercName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getListName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getDetailName()).append(CmdConstant.SEPARATOR);
 		}
 		byte[] detailByte = buffer.toString().getBytes(charset);
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND + 10 + detailByte.length];

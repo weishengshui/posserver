@@ -41,5 +41,5 @@ public class CmdConstant {
 	/**
 	 *分隔符 
 	 */
-	public static final String END_PRIEX = "\\0";
+	public static final char SEPARATOR = '\0';
 }

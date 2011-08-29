@@ -1,5 +1,9 @@
 package com.chinarewards.qqgpvn.main.qqapi;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +17,7 @@ import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
+import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
@@ -93,14 +98,35 @@ public class QQApiTest extends JpaGuiceTest {
 		}
 		//build test server end
 		
+		List<String> grouponIdList = new ArrayList<String>();
+		grouponIdList.add("132127");
+		grouponIdList.add("132123");
+		grouponIdList.add("132154");
+		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
+		GroupBuyingDao dao = getInjector().getInstance(
+				GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		params.put("key", "456789000");
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
+			//search groupon cache
+			PageInfo<GrouponCache> pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(50);
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, "rewards-0001").getItems();
+			for (int i = 0; i < cacheList.size(); i++) {
+				System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
+				System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
+				System.out.println("MercName-->" + cacheList.get(i).getMercName());
+				System.out.println("ListName-->" + cacheList.get(i).getListName());
+				System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
+				//验证排序是否正确
+				assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+			}
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");
 			e.printStackTrace();
@@ -125,6 +151,38 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingSearch() {
+		//init test data start
+		if (!this.emp.get().getTransaction().isActive()) {
+			this.emp.get().getTransaction().begin();
+		}
+		GrouponCache gc1 = new GrouponCache();
+		gc1.setCreateDate(new Date());
+		gc1.setPosId("rewards-0001");
+		gc1.setGrouponId("grouponId1");
+		gc1.setGrouponName("grouponName1");
+		gc1.setListName("listName1");
+		gc1.setMercName("mercName1");
+		gc1.setDetailName("detailName1");
+		this.emp.get().persist(gc1);
+		GrouponCache gc2 = new GrouponCache();
+		gc2.setCreateDate(new Date());
+		gc2.setPosId("rewards-0001");
+		gc2.setGrouponId("grouponId2");
+		gc2.setGrouponName("grouponName2");
+		gc2.setListName("listName2");
+		gc2.setMercName("mercName2");
+		gc2.setDetailName("detailName2");
+		this.emp.get().persist(gc2);
+		GrouponCache gc3 = new GrouponCache();
+		gc3.setCreateDate(new Date());
+		gc3.setPosId("rewards-0001");
+		gc3.setGrouponId("grouponId3");
+		gc3.setGrouponName("grouponName3");
+		gc3.setListName("listName3");
+		gc3.setMercName("mercName3");
+		gc3.setDetailName("detailName3");
+		this.emp.get().persist(gc3);
+		//init test data end
 		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
@@ -134,7 +192,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("curpage", "1");
 		params.put("pageSize", "1");
 		try {
-			PageInfo pageInfo = gbm.groupBuyingSearch(params);
+			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());
@@ -144,8 +202,7 @@ public class QQApiTest extends JpaGuiceTest {
 			System.out.println("curpage->" + pageInfo.getPageId());
 			System.out.println("totalpage->" + pageInfo.getPageCount());
 			if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
-				List<GrouponCache> items = (List<GrouponCache>) pageInfo.getItems();
-				for (GrouponCache item : items) {
+				for (GrouponCache item : pageInfo.getItems()) {
 					System.out.println("GrouponId-->" + item.getGrouponId());
 					System.out.println("GrouponName-->" + item.getGrouponName());
 					System.out.println("MercName-->" + item.getMercName());

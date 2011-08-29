@@ -37,6 +37,7 @@ public class InitMessageCoder implements IBodyMessageCoder {
 		in.get(posid);
 		message.setCmdId(cmdId);
 		message.setPosid(new String(posid, charset));
+		log.debug("init message request:cmdId is ({}) , posid is ({})",new Object[]{cmdId,posid});
 		return message;
 	}
 
