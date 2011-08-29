@@ -36,7 +36,7 @@ public class LoginFilter extends IoFilterAdapter {
 		}
 		// Check whether the command ID is LOGIN
 		IBodyMessage msg = (IBodyMessage) message;
-		int cmdId = msg.getCmdId();
+		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// TODO get POS ID
 			// LoginRequestMessage lm = (LoginRequestMessage) message;
@@ -60,7 +60,7 @@ public class LoginFilter extends IoFilterAdapter {
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 		IBodyMessage msg = (IBodyMessage) writeRequest.getMessage();
-		int cmdId = msg.getCmdId();
+		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			session.setAttribute(IS_LOGIN, false);
 

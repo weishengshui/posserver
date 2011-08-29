@@ -8,6 +8,6 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.message;
  */
 public interface IBodyMessage {
 	
-	public int getCmdId();
+	public long getCmdId();
 
 }
