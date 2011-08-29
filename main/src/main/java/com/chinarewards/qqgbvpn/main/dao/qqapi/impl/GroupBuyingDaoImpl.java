@@ -68,11 +68,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 				em.get().getTransaction().begin();
 			}
 			saveJournal(journal);
-			if (!em.get().getTransaction().isActive()) {
+			if (em.get().getTransaction().isActive()) {
 				em.get().getTransaction().commit();
 			}
 		} catch (Exception e) {
-			if (!em.get().getTransaction().isActive()) {
+			if (em.get().getTransaction().isActive()) {
 				em.get().getTransaction().rollback();
 			}
 			log.error("group buying search save journal error");
@@ -135,11 +135,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 					}
 				}
 				saveJournal(journal);
-				if (!em.get().getTransaction().isActive()) {
+				if (em.get().getTransaction().isActive()) {
 					em.get().getTransaction().commit();
 				}
 			} catch (Exception e) {
-				if (!em.get().getTransaction().isActive()) {
+				if (em.get().getTransaction().isActive()) {
 					em.get().getTransaction().rollback();
 				}
 				log.error("group buying validate save error");
@@ -202,11 +202,11 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 						em.get().remove(pa);
 					}
 					saveJournal(journal);
-					if (!em.get().getTransaction().isActive()) {
+					if (em.get().getTransaction().isActive()) {
 						em.get().getTransaction().commit();
 					}
 				} catch (Exception e) {
-					if (!em.get().getTransaction().isActive()) {
+					if (em.get().getTransaction().isActive()) {
 						em.get().getTransaction().rollback();
 					}
 					log.error("group buying unbind save error");
