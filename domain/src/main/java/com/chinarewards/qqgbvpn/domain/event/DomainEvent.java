@@ -162,5 +162,11 @@ public enum DomainEvent {
 	/**
 	 * Unbind pos asssignment failed
 	 */
-	POS_UNBIND_FAILED
+	POS_UNBIND_FAILED,
+	
+	GROUPON_CACHE_INIT,
+	
+	GROUPON_CACHE_SEARCH,
+	
+	GROUPON_CACHE_DELETE
 }

@@ -4,12 +4,16 @@ import java.util.HashMap;
 
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 
 
 public interface GroupBuyingDao {
+	
+	public void initGrouponCache(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException, CopyPropertiesException;
 
-	public void handleGroupBuyingSearch(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
+	public PageInfo handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException;
 	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException;
 	
