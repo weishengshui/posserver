@@ -47,7 +47,11 @@ public class QQApiTest extends GuiceTest {
 			String resultCode = (String) result.get("resultCode");
 			String curpage = (String) result.get("curpage");
 			String totalpage = String.valueOf(result.get("totalpage"));
+			String totalnum = String.valueOf(result.get("totalnum"));
+			String curnum = String.valueOf(result.get("curnum"));
 			System.out.println("resultCode->" + resultCode);
+			System.out.println("totalnum->" + totalnum);
+			System.out.println("curnum->" + curnum);
 			System.out.println("curpage->" + curpage);
 			System.out.println("totalpage->" + totalpage);
 			if ("0".equals(resultCode)) {

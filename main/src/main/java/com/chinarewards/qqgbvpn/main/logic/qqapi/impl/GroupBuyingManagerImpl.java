@@ -40,8 +40,11 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException {
 		HashMap<String, Object> map = service.get().groupBuyingSearch(params);
 		List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) map.get("items");
+		//总页数
 		Integer pageCount = 0;
-		//这个目前定死
+		//团购总数量
+		Integer totalnum = items != null ? items.size() : 0;
+		//当前页的团购数量
 		int pageSize = 3;
 		if (params.get("curpage") != null && !"".equals(params.get("curpage").trim())) {
 			String s = params.get("curpage");
@@ -66,6 +69,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 			}
 		}
 		map.put("totalpage", pageCount);
+		map.put("totalnum", totalnum);
+		map.put("curnum", pageSize);
 		map.putAll(params);
 		dao.get().handleGroupBuyingSearch(map);
 		return map;
