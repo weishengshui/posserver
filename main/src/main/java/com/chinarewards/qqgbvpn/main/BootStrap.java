@@ -389,7 +389,7 @@ public class BootStrap {
 		acceptor.getFilterChain().addLast("codec",
 				new ProtocolCodecFilter(new MessageCoderFactory()));
 
-		acceptor.setHandler(new ServerSessionHandler());
+		acceptor.setHandler(new ServerSessionHandler(injector));
 		acceptor.setCloseOnDeactivation(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);

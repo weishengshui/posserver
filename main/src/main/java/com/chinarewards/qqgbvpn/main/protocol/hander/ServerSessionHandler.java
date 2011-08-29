@@ -6,6 +6,13 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
+import com.google.inject.Injector;
+
 /**
  * server handler
  * 
@@ -15,6 +22,13 @@ import org.apache.mina.core.session.IoSession;
  *
  */
 public class ServerSessionHandler extends IoHandlerAdapter {
+	
+	private Injector injector;
+	
+	public ServerSessionHandler(Injector injector){
+		this.injector = injector;
+	}
+	
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
@@ -24,15 +38,32 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
-		String str = message.toString();
-		if (str.trim().equalsIgnoreCase("quit")) {
-			session.close(false);
-			return;
+		Message msg = (Message) message;
+		
+		int cmdId = msg.getBodyMessage().getCmdId();
+		CommandHandler commandHandler = null;
+		//Dispatcher
+		switch(cmdId){
+		case CmdConstant.LOGIN_CMD_ID:
+//			commandHandler = injector.getInstance(type)
+			break;
+			
 		}
-		System.out.println("Server received: session=" + session.getId()
-				+ " message=" + message);
-		Date date = new Date();
-		session.write("Server Date is: " + date.toString());
+		if(commandHandler == null){
+			//TODO no exits cmd
+		}
+		IBodyMessage responseMsgBody = commandHandler.execute(session, msg.getBodyMessage());
+		
+//		String str = message.toString();
+//		if (str.trim().equalsIgnoreCase("quit")) {
+//			session.close(false);
+//			return;
+//		}
+//		System.out.println("Server received: session=" + session.getId()
+//				+ " message=" + message);
+//		Date date = new Date();
+		msg.setBodyMessage(responseMsgBody);
+		session.write(msg);
 		System.out.println("Server written to client...");
 	}
 
