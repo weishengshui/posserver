@@ -48,6 +48,11 @@ public enum DomainEntity {
 	 * Related to group buying search product information. (this just is value object,not entity)The entity ID should be the POS machine's ID
 	 * <code>Pos.getPosId()</code>, <b>not</b> the UUID.
 	 */
-	GROUPON_INFORMATION
+	GROUPON_INFORMATION,
+	
+	/**
+	 * GrouponCache. The entity ID should be <code>Pos.getPosId()</code>
+	 */
+	GROUPON_CACHE
 
 }
