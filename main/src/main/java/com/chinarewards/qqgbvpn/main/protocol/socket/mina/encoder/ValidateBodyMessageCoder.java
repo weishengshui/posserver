@@ -89,19 +89,19 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(responseMessage.getResultName()).append(
-				CmdConstant.END_PRIEX);
+				CmdConstant.SEPARATOR);
 		buffer.append(responseMessage.getResultExplain()).append(
-				CmdConstant.END_PRIEX);
+				CmdConstant.SEPARATOR);
 		buffer.append(
 				Tools.dateToString(DATE_FORMAT, responseMessage
-						.getCurrentTime())).append(CmdConstant.END_PRIEX);
+						.getCurrentTime())).append(CmdConstant.SEPARATOR);
 		buffer.append(
 				Tools.dateToString(DATE_FORMAT, responseMessage.getUseTime()))
-				.append(CmdConstant.END_PRIEX);
+				.append(CmdConstant.SEPARATOR);
 		buffer
 				.append(
 						Tools.dateToString(DATE_FORMAT, responseMessage
-								.getValidTime())).append(CmdConstant.END_PRIEX);
+								.getValidTime())).append(CmdConstant.SEPARATOR);
 
 		byte[] tmp = buffer.toString().getBytes(charset);
 
