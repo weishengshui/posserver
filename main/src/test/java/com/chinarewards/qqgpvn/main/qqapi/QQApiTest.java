@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
-import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;

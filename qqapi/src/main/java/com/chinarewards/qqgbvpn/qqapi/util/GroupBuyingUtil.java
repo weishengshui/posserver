@@ -74,8 +74,7 @@ public class GroupBuyingUtil {
 		ClientConnectionManager mgr = httpClient.getConnectionManager();
 		HttpParams params = httpClient.getParams();
 
-		httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(
-				params, mgr.getSchemeRegistry()), params);
+		httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
 
 		return httpClient;
 	}
