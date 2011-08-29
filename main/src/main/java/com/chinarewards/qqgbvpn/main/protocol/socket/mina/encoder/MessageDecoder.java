@@ -9,6 +9,7 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
@@ -85,7 +86,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	}
 	
-	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset){
+	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
 		//TODO get cmdId and process it
 		return new LoginMessageCoder().decode(in, charset);
 	}
