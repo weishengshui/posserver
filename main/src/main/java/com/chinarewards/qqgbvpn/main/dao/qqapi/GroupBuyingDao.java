@@ -15,6 +15,8 @@ public interface GroupBuyingDao {
 
 	public PageInfo handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException;
 	
+	public PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId);
+	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException;
 	
 	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
