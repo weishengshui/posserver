@@ -1,10 +1,11 @@
 package com.chinarewards.qqgpvn.main.qqapi;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.persistence.Query;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
+import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
@@ -96,8 +98,15 @@ public class QQApiTest extends JpaGuiceTest {
 		}
 		//build test server end
 		
+		List<String> grouponIdList = new ArrayList<String>();
+		grouponIdList.add("132127");
+		grouponIdList.add("132123");
+		grouponIdList.add("132154");
+		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
+		GroupBuyingDao dao = getInjector().getInstance(
+				GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		params.put("key", "456789000");
@@ -105,14 +114,18 @@ public class QQApiTest extends JpaGuiceTest {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
 			//search groupon cache
-			Query query = emp.get().createQuery("select gc from GrouponCache gc where gc.posId = 'rewards-0001'");
-			List<GrouponCache> list = query.getResultList();
-			for (GrouponCache item : list) {
-				System.out.println("GrouponId-->" + item.getGrouponId());
-				System.out.println("GrouponName-->" + item.getGrouponName());
-				System.out.println("MercName-->" + item.getMercName());
-				System.out.println("ListName-->" + item.getListName());
-				System.out.println("DetailName-->" + item.getDetailName());
+			PageInfo<GrouponCache> pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(50);
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, "rewards-0001").getItems();
+			for (int i = 0; i < cacheList.size(); i++) {
+				System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
+				System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
+				System.out.println("MercName-->" + cacheList.get(i).getMercName());
+				System.out.println("ListName-->" + cacheList.get(i).getListName());
+				System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
+				//验证排序是否正确
+				assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
 			}
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");

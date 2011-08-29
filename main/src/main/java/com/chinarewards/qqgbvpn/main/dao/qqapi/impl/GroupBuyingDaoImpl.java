@@ -342,7 +342,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		return list;
 	}
 	
-	private PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId) {
+	public PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId) {
 		String sql = "select gc from GrouponCache gc where gc.posId = ?1 order by gc.id asc";
 		List<Object> params = new ArrayList<Object>();
 		params.add(posId);
