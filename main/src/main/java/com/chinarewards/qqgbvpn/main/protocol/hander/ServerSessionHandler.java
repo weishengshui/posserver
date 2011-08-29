@@ -71,7 +71,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		super.sessionOpened(session);
-		session.write("Thanks for connecting to me");
 	}
 
 }

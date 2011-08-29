@@ -1,5 +1,8 @@
 package com.chinarewards.qqgbvpn.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * cmd properties
  * 
@@ -7,6 +10,8 @@ package com.chinarewards.qqgbvpn.config;
  *
  */
 public class CmdProperties extends LoadProperties {
+	
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * get server port
@@ -14,6 +19,7 @@ public class CmdProperties extends LoadProperties {
 	 * @return
 	 */
 	public String getCmdNameById(long cmdId) {
+		log.debug("Properties========:"+getProperties());
 		return getProperties().getProperty(String.valueOf(cmdId));
 	}
 	
