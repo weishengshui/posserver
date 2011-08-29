@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
+import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
@@ -39,6 +40,51 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingSearch() {
+		//build test server start
+		try {
+			Server server = new Server(0);
+
+			HardCodedServlet s = new HardCodedServlet();
+			s.init();
+			StringBuffer sb = new StringBuffer();
+			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+			sb.append("<tuan>");
+			sb.append("<resultCode>0</resultCode>");
+			sb.append("<groupon>");
+			sb.append("<item>");
+			sb.append("<grouponId>132127</grouponId>");
+			sb.append("<grouponName>400.01元套餐POST</grouponName>");
+			sb.append("<mercName>三人行骨头王ggggg</mercName>");
+			sb.append("<listName>40元套餐\r\n        (132127)</listName>");
+			sb.append("<detailName>1111111111111140元套餐(132127)</detailName>");
+			sb.append("</item>");
+			sb.append("<item>");
+			sb.append("<grouponId>132123</grouponId>");
+			sb.append("<grouponName>400.01元套餐</grouponName>");
+			sb.append("<mercName>三人行骨头王</mercName>");
+			sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
+			sb.append("<detailName>400.01元套餐</detailName>");
+			sb.append("</item>");
+			sb.append("</groupon>");
+			sb.append("</tuan>");
+			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+			
+			ServletHolder h = new ServletHolder();
+			h.setServlet(s);
+
+			String servletPath = "/qqapi";
+			ServletHandler scHandler = new ServletHandler();
+			scHandler.addServletWithMapping(h, servletPath);
+			
+			// add handler to server
+			server.addHandler(scHandler);
+			server.getConnectors()[0].setPort(8086);
+			server.start();
+		} catch (Exception e) {
+			System.err.println("build test server failed");
+		}
+		//build test server end
+		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -106,6 +152,50 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingValidate() {
+		
+		//build test server start
+		try {
+			Server server = new Server(0);
+
+			HardCodedServlet s = new HardCodedServlet();
+			s.init();
+			StringBuffer sb = new StringBuffer();
+			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+			sb.append("<tuan>");
+			sb.append("<resultCode>0</resultCode>");
+			sb.append("<groupon>");
+			sb.append("<resultName>验证已成功</resultName>");
+			sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
+			sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+			sb.append("<useTime>2011-08-03 11:10:23</useTime>");
+			sb.append("<validTime>2011-08-10</validTime>");
+			sb.append("</groupon>");
+			sb.append("<groupon>");
+			sb.append("<resultName>已退款</resultName>");
+			sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
+			sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+			sb.append("<validTime>2011-08-10</validTime>");
+			sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
+			sb.append("</groupon>");
+			sb.append("</tuan>");
+			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+			
+			ServletHolder h = new ServletHolder();
+			h.setServlet(s);
+
+			String servletPath = "/qqapi";
+			ServletHandler scHandler = new ServletHandler();
+			scHandler.addServletWithMapping(h, servletPath);
+			
+			// add handler to server
+			server.addHandler(scHandler);
+			server.getConnectors()[0].setPort(8087);
+			server.start();
+		} catch (Exception e) {
+			System.err.println("build test server failed");
+		}
+		//build test server end
+		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -165,6 +255,46 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingUnbind() {
+		
+		//build test server start
+		try {
+			Server server = new Server(0);
+
+			HardCodedServlet s = new HardCodedServlet();
+			s.init();
+			StringBuffer sb = new StringBuffer();
+			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+			sb.append("<tuan>");
+			sb.append("<resultCode>0</resultCode>");
+			sb.append("<groupon>");
+			sb.append("<item>");
+			sb.append("<posId>1</posId>");
+			sb.append("<resultStatus>0</resultStatus>");
+			sb.append("</item>");
+			sb.append("<item>");
+			sb.append("<posId>2</posId>");
+			sb.append("<resultStatus>1</resultStatus>");
+			sb.append("</item>");
+			sb.append("</groupon>");
+			sb.append("</tuan>");
+			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+			
+			ServletHolder h = new ServletHolder();
+			h.setServlet(s);
+
+			String servletPath = "/qqapi";
+			ServletHandler scHandler = new ServletHandler();
+			scHandler.addServletWithMapping(h, servletPath);
+			
+			// add handler to server
+			server.addHandler(scHandler);
+			server.getConnectors()[0].setPort(8088);
+			server.start();
+		} catch (Exception e) {
+			System.err.println("build test server failed");
+		}
+		//build test server end
+		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
@@ -461,7 +591,10 @@ public class QQApiTest extends JpaGuiceTest {
 		
 		// add handler to server
 		server.addHandler(scHandler);
+		//server.getConnectors()[0].setPort(8087);
 		server.start();
+		
+		System.out.println("LocalPort: " + server.getConnectors()[0].getLocalPort());
 		
 		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
 		
