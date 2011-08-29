@@ -41,6 +41,7 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 		message.setCmdId(cmdId);
 		message.setChallengeResponse(challeugeresponse);
 		message.setPosid(new String(posid, charset));
+		log.debug("login message request:cmdId is ({}) , posid is ({}) ,challengeResponse is ({})",new Object[]{cmdId,posid,challeugeresponse});
 		return message;
 	}
 

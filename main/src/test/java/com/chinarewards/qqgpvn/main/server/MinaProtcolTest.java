@@ -14,6 +14,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
@@ -109,7 +110,61 @@ public class MinaProtcolTest extends JpaGuiceTest {
 //		os.flush();
 //		socket.close();
 
+//		OutputStream os = socket.getOutputStream();
 		
+//		CMD ID  团购验证请求  見上  見上  Yes  必需 = 3  3  
+//		grouponId  团购编号  \0作結尾的字符串  Yes   456789  
+//		grouponVCode  团购验证码  \0作結尾的字符串  Yes  一般為16字, 但不要限制  4567890  
+ 
+//				byte[] validateMsg = new byte[] {
+//						// SEQ
+//						0, 0, 0, 24,
+//						// ACK
+//						0, 0, 0, 0,
+//						// flags
+//						0, 0, 
+//						// checksum
+//						0, 2,
+//						// message length
+//						0, 0, 0, 36,
+//						// command ID
+//						0, 0, 0, 3,
+//						// grouponId 
+//						'g', 'r', 'o', 'u', 'p', '-', '1', '\0', 
+//						//grouponVCode 
+//						'v','c', '0', 'd','e','-','1','\0' };
+//				System.out.println("Packet size: " + validateMsg.length);
+//				os.write(validateMsg);
+//				os.flush();
+//				os.close();
+		
+//		OutputStream os = socket.getOutputStream();
+		
+//		CMD ID  团购验证请求  見上  見上  Yes  必需 = 3  3  
+//		grouponId  团购编号  \0作結尾的字符串  Yes   456789  
+//		grouponVCode  团购验证码  \0作結尾的字符串  Yes  一般為16字, 但不要限制  4567890  
+ 
+//				byte[] searchMsg = new byte[] {
+//						// SEQ
+//						0, 0, 0, 24,
+//						// ACK
+//						0, 0, 0, 0,
+//						// flags
+//						0, 0, 
+//						// checksum
+//						0, 2,
+//						// message length
+//						0, 0, 0, 24,
+//						// command ID
+//						0, 0, 0, 1,
+//						// grouponId 
+//						0, 10, 
+//						//grouponVCode 
+//						0,15 };
+//				System.out.println("Packet size: " + searchMsg.length);
+//				os.write(searchMsg);
+//				os.flush();
+//				os.close();
 	}
 
 }
