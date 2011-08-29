@@ -88,10 +88,11 @@ public class GroupBuyingUtil {
 	 * @return
 	 */
 	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws SendPostTimeOutException {
+		HttpPost post = null;
 		try {
 			HttpClient client = getThreadSafeClient();
 			client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			HttpPost post = new HttpPost(url);
+			post = new HttpPost(url);
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			//设置post参数
 			if (postParams != null) {
@@ -119,6 +120,9 @@ public class GroupBuyingUtil {
 			}
 			throw new Exception("send post error, status code: " + httpResponse.getStatusLine().getStatusCode());
 		} catch (Exception e) {
+			if (post != null && !post.isAborted()) {
+				post.abort();
+			}
 			throw new SendPostTimeOutException(e);
 		}
 	}
