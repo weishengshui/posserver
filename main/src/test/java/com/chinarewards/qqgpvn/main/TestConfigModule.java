@@ -31,4 +31,11 @@ public class TestConfigModule extends AbstractModule {
 		bind(Configuration.class).toInstance(configuration);
 	}
 
+	/**
+	 * @return the configuration
+	 */
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+
 }
