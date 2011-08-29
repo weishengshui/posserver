@@ -64,10 +64,17 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 			}
 		}
 		try {
-			em.get().getTransaction().begin();
+			if (!em.get().getTransaction().isActive()) {
+				em.get().getTransaction().begin();
+			}
 			saveJournal(journal);
-			em.get().getTransaction().commit();
+			if (!em.get().getTransaction().isActive()) {
+				em.get().getTransaction().commit();
+			}
 		} catch (Exception e) {
+			if (!em.get().getTransaction().isActive()) {
+				em.get().getTransaction().rollback();
+			}
 			log.error("group buying search save journal error");
 			log.error("ts: " + journal.getTs());
 			log.error("entity: " + journal.getEntity());
@@ -90,7 +97,9 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 			Journal journal = new Journal();
 			Date date = new Date();
 			try {
-				em.get().getTransaction().begin();
+				if (!em.get().getTransaction().isActive()) {
+					em.get().getTransaction().begin();
+				}
 				validation.setTs(date);
 				validation.setVcode(token);
 				validation.setPcode(grouponId);
@@ -126,8 +135,13 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 					}
 				}
 				saveJournal(journal);
-				em.get().getTransaction().commit();
+				if (!em.get().getTransaction().isActive()) {
+					em.get().getTransaction().commit();
+				}
 			} catch (Exception e) {
+				if (!em.get().getTransaction().isActive()) {
+					em.get().getTransaction().rollback();
+				}
 				log.error("group buying validate save error");
 				log.error("posId: " + posId);
 				log.error("ts: " + date);
@@ -181,13 +195,20 @@ public class GroupBuyingDaoImpl implements GroupBuyingDao {
 					}
 				}
 				try {
-					em.get().getTransaction().begin();
+					if (!em.get().getTransaction().isActive()) {
+						em.get().getTransaction().begin();
+					}
 					if ("0".equals(resultCode)) {
 						em.get().remove(pa);
 					}
 					saveJournal(journal);
-					em.get().getTransaction().commit();
+					if (!em.get().getTransaction().isActive()) {
+						em.get().getTransaction().commit();
+					}
 				} catch (Exception e) {
+					if (!em.get().getTransaction().isActive()) {
+						em.get().getTransaction().rollback();
+					}
 					log.error("group buying unbind save error");
 					log.error("posId: " + posId);
 					log.error("ts: " + journal.getTs());

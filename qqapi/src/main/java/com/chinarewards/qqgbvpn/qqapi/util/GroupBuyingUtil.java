@@ -18,9 +18,12 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -32,7 +35,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 
 public class GroupBuyingUtil {
 	
-	private final static HttpClient client = new DefaultHttpClient();
+	//private final static HttpClient client = new DefaultHttpClient();
 	
 	
 	/**
@@ -62,6 +65,22 @@ public class GroupBuyingUtil {
 	}
 	
 	/**
+	 * 创建线程安全的HtttpClient
+	 * @return
+	 */
+	public static DefaultHttpClient getThreadSafeClient() {
+
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+		ClientConnectionManager mgr = httpClient.getConnectionManager();
+		HttpParams params = httpClient.getParams();
+
+		httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(
+				params, mgr.getSchemeRegistry()), params);
+
+		return httpClient;
+	}
+	
+	/**
 	 * 发送POST请求到相应URL
 	 * @author iori
 	 * @param url
@@ -70,6 +89,7 @@ public class GroupBuyingUtil {
 	 */
 	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws SendPostTimeOutException {
 		try {
+			HttpClient client = getThreadSafeClient();
 			client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 			HttpPost post = new HttpPost(url);
 			List<NameValuePair> params = new ArrayList<NameValuePair>();

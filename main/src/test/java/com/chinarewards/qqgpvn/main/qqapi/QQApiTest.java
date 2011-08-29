@@ -21,11 +21,11 @@ import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
-import com.chinarewards.qqgpvn.main.test.GuiceTest;
+import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
-public class QQApiTest extends GuiceTest {
+public class QQApiTest extends JpaGuiceTest {
 
 	@Override
 	protected Module[] getModules() {
@@ -34,14 +34,17 @@ public class QQApiTest extends GuiceTest {
 				new JpaPersistModule("posnet")
 						.properties(new DatabaseProperties().getProperties()) };
 	}
+	
+	
 
+	@Test
 	public void testGroupBuyingSearch() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		params.put("key", "456789000");
-		params.put("curpage", "2");
+		params.put("curpage", "1");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingSearch(params);
 			String resultCode = (String) result.get("resultCode");
@@ -80,6 +83,8 @@ public class QQApiTest extends GuiceTest {
 					break;
 				}
 			}
+			
+			
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");
 			e.printStackTrace();
@@ -99,6 +104,7 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 
+	@Test
 	public void testGroupBuyingValidate() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
@@ -157,6 +163,7 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 
+	@Test
 	public void testGroupBuyingUnbind() {
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
@@ -263,7 +270,7 @@ public class QQApiTest extends GuiceTest {
 		throw new Exception();
 	}
 	
-//	@Test
+	@Test
 	public void testErrorXML() throws Exception {
 		Server server = new Server(0);
 
@@ -343,7 +350,7 @@ public class QQApiTest extends GuiceTest {
 		
 	}
 	
-//	@Test
+	@Test
 	public void testGroupBuyingSearchParseXML() throws Exception {
 		Server server = new Server(0);
 
@@ -418,7 +425,7 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void testGroupBuyingValidateParseXML() throws Exception {
 		Server server = new Server(0);
 
@@ -492,7 +499,7 @@ public class QQApiTest extends GuiceTest {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void testGroupBuyingUnbindParseXML() throws Exception {
 		Server server = new Server(0);
 
