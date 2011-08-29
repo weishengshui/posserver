@@ -3,7 +3,7 @@ package com.chinarewards.qqgbvpn.domain;
 import java.io.Serializable;
 import java.util.List;
 
-public class PageInfo implements Serializable {
+public class PageInfo<T> implements Serializable {
 
 	private static final long serialVersionUID = 4959472402595748283L;
 
@@ -19,7 +19,7 @@ public class PageInfo implements Serializable {
 
 	private int endIndex; // 当前页的结束行数
 	
-	private List items;
+	private List<T> items;
 
 	public PageInfo() {
 
@@ -73,11 +73,11 @@ public class PageInfo implements Serializable {
         this.endIndex = endIndex;
     }
 
-    public List getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(List items) {
+    public void setItems(List<T> items) {
         this.items = items;
     }
 }

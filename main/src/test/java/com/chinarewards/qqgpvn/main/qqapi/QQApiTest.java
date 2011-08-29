@@ -176,10 +176,10 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		//params.put("key", "456789000");
-		params.put("curpage", "3");
+		params.put("curpage", "1");
 		params.put("pageSize", "1");
 		try {
-			PageInfo pageInfo = gbm.groupBuyingSearch(params);
+			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());
@@ -189,8 +189,7 @@ public class QQApiTest extends JpaGuiceTest {
 			System.out.println("curpage->" + pageInfo.getPageId());
 			System.out.println("totalpage->" + pageInfo.getPageCount());
 			if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
-				List<GrouponCache> items = (List<GrouponCache>) pageInfo.getItems();
-				for (GrouponCache item : items) {
+				for (GrouponCache item : pageInfo.getItems()) {
 					System.out.println("GrouponId-->" + item.getGrouponId());
 					System.out.println("GrouponName-->" + item.getGrouponName());
 					System.out.println("MercName-->" + item.getMercName());
