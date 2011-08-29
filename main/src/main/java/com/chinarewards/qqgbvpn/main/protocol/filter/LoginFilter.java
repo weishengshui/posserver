@@ -12,7 +12,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
-import com.chinarewards.utils.StringUtil;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 
 /**
  * Login filter.
@@ -29,13 +29,13 @@ public class LoginFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		Boolean isLogin = (Boolean) session.getAttribute(IS_LOGIN);
-		String posId = (String) session.getAttribute(POS_ID);
+//		String posId = (String) session.getAttribute(POS_ID);
 
-		if (StringUtil.isEmptyString(posId)) {
-			throw new IllegalArgumentException("Pos Id not existed!");
-		}
+//		if (StringUtil.isEmptyString(posId)) {
+//			throw new IllegalArgumentException("Pos Id not existed!");
+//		}
 		// Check whether the command ID is LOGIN
-		IBodyMessage msg = (IBodyMessage) message;
+		IBodyMessage msg = ((Message) message).getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// TODO get POS ID
@@ -43,7 +43,7 @@ public class LoginFilter extends IoFilterAdapter {
 			// session.setAttribute(POS_ID, lm.getPosid());
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			// get POS ID
-			LoginRequestMessage lm = (LoginRequestMessage) message;
+			LoginRequestMessage lm = (LoginRequestMessage) msg;
 			session.setAttribute(POS_ID, lm.getPosid());
 
 		} else if (isLogin == null || !isLogin) {
@@ -59,7 +59,7 @@ public class LoginFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		IBodyMessage msg = (IBodyMessage) writeRequest.getMessage();
+		IBodyMessage msg = ((Message) writeRequest.getMessage()).getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			session.setAttribute(IS_LOGIN, false);

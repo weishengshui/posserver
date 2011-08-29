@@ -46,7 +46,7 @@ public class InitMessageCoder implements IBodyMessageCoder {
 		InitResponseMessage responseMessage = (InitResponseMessage) bodyMessage;
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
-		byte[] challeuge = responseMessage.getChalleuge();
+		byte[] challeuge = responseMessage.getChallenge();
 
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
 		

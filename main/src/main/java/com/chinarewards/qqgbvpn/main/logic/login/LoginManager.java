@@ -3,10 +3,12 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login;
 
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginRequest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
+import java.io.File;
+
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 
 /**
  * Defined Login logic.
@@ -17,18 +19,31 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResponse;
 public interface LoginManager {
 
 	/**
-	 * Returns a random number.
+	 * <ul>
+	 * <li>Check POS ID first</li>
+	 * <li>Check POS status.</li>
+	 * <li>Check POS secret code. If not existed, create it.</li>
+	 * </ul>
 	 * 
-	 * @param req
-	 * @return
+	 * @param secretFile
+	 *            file to create serial number.(Not required).
 	 */
-	public InitResponse init(InitRequest req);
+	public InitResponseMessage init(InitRequestMessage req, File secretFile);
+
+	/**
+	 * <ul>
+	 * <li>Check POS ID first</li>
+	 * <li>Check POS status.</li>
+	 * <li>Check POS secret code. If not existed, create it.</li>
+	 * </ul>
+	 */
+	public InitResponseMessage init(InitRequestMessage req);
 
 	/**
 	 * 
 	 * @param req
 	 * @return
 	 */
-	public LoginResponse login(LoginRequest req);
+	public LoginResponseMessage login(LoginRequestMessage req);
 
 }

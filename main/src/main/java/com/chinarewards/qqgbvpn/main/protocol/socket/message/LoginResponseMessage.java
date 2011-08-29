@@ -9,33 +9,22 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 public class LoginResponseMessage implements IBodyMessage {
 
 	private long cmdId;
-
-	private long serial;
 	
 	private int result;
 	
-	private byte[] challeuge; 
+	private byte[] challenge; 
 
 	
 	public long getCmdId() {
 		return cmdId;
 	}
 
-	
-	public long getSerial() {
-		return serial;
-	}
 
 	public void setCmdId(long cmdId) {
 		this.cmdId = cmdId;
 
 	}
 
-	
-	public void setSerial(long serial) {
-		this.serial = serial;
-
-	}
 
 
 	public int getResult() {
@@ -48,12 +37,12 @@ public class LoginResponseMessage implements IBodyMessage {
 	}
 
 
-	public byte[] getChalleuge() {
-		return challeuge;
+	public byte[] getChallenge() {
+		return challenge;
 	}
 
-	public void setChalleuge(byte[] challeuge) {
-		this.challeuge = challeuge;
+	public void setChallenge(byte[] challeuge) {
+		this.challenge = challeuge;
 	}
 
 }

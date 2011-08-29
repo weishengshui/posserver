@@ -8,12 +8,12 @@ import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
 import com.google.inject.Inject;
 
-public class LoginCommandHandler implements CommandHandler {
-
+public class InitCommandHandler implements CommandHandler {
+	
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Inject
@@ -21,10 +21,10 @@ public class LoginCommandHandler implements CommandHandler {
 	
 	@Override
 	public IBodyMessage execute(IoSession session, IBodyMessage bodyMessage) {
-		log.debug("LoginCommandHandler======execute==bodyMessage=:"+bodyMessage);
-		LoginResponseMessage loginResponseMessage  = loginManager.login((LoginRequestMessage) bodyMessage);
-		loginResponseMessage.setCmdId(CmdConstant.LOGIN_CMD_ID_RESPONSE);
-		return loginResponseMessage;
+		log.debug("InitCommandHandler======execute==bodyMessage=:"+bodyMessage);
+		InitResponseMessage  initResponseMessage  = loginManager.init((InitRequestMessage) bodyMessage);
+		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
+		return initResponseMessage;
 	}
 
 }
