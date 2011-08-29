@@ -124,7 +124,7 @@ public class Main {
 		}
 
 		// gracefully release any resources.
-		boot.shutdown();
+//		boot.shutdown();
 
 		// done
 		System.out.println("Main completed");
