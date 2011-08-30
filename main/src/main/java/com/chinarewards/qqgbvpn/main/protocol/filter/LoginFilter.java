@@ -9,10 +9,13 @@ import org.apache.mina.core.write.WriteRequest;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.protocol.exception.PermissionDeniedException;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
+import com.chinarewards.utils.StringUtil;
 
 /**
  * Login filter.
@@ -29,27 +32,30 @@ public class LoginFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		Boolean isLogin = (Boolean) session.getAttribute(IS_LOGIN);
-//		String posId = (String) session.getAttribute(POS_ID);
 
-//		if (StringUtil.isEmptyString(posId)) {
-//			throw new IllegalArgumentException("Pos Id not existed!");
-//		}
 		// Check whether the command ID is LOGIN
 		IBodyMessage msg = ((Message) message).getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
-			// TODO get POS ID
-			// LoginRequestMessage lm = (LoginRequestMessage) message;
-			// session.setAttribute(POS_ID, lm.getPosid());
+			// get POS ID
+			InitRequestMessage im = (InitRequestMessage) msg;
+			session.setAttribute(POS_ID, im.getPosid());
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			// get POS ID
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
 			session.setAttribute(POS_ID, lm.getPosid());
 
 		} else if (isLogin == null || !isLogin) {
-			// TODO use another Exception.
-			throw new IllegalArgumentException("Not login yet!");
+			throw new PermissionDeniedException("Not login yet!");
 		}
+
+		// Check POS ID for other connection(NOT init or login).
+		String posId = (String) session.getAttribute(POS_ID);
+
+		if (StringUtil.isEmptyString(posId)) {
+			throw new IllegalArgumentException("Pos Id not existed!");
+		}
+
 		// pass the chain when
 		// case 1: cmdId is INIT or LOGIN.
 		// case 2: had login
@@ -59,7 +65,8 @@ public class LoginFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		IBodyMessage msg = ((Message) writeRequest.getMessage()).getBodyMessage();
+		IBodyMessage msg = ((Message) writeRequest.getMessage())
+				.getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE) {
 			session.setAttribute(IS_LOGIN, false);

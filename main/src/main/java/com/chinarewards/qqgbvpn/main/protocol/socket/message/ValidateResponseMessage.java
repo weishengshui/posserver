@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
-import java.util.Date;
 
 public class ValidateResponseMessage implements IBodyMessage {
 
@@ -12,11 +11,11 @@ public class ValidateResponseMessage implements IBodyMessage {
 
 	private String resultExplain;
 	
-	private Date currentTime;
+	private String currentTime;
 	
-	private Date useTime;
+	private String useTime;
 	
-	private Date validTime;
+	private String validTime;
 
 	
 	
@@ -53,27 +52,27 @@ public class ValidateResponseMessage implements IBodyMessage {
 		this.resultExplain = resultExplain;
 	}
 
-	public Date getCurrentTime() {
+	public String getCurrentTime() {
 		return currentTime;
 	}
 
-	public void setCurrentTime(Date currentTime) {
+	public void setCurrentTime(String currentTime) {
 		this.currentTime = currentTime;
 	}
 
-	public Date getUseTime() {
+	public String getUseTime() {
 		return useTime;
 	}
 
-	public void setUseTime(Date useTime) {
+	public void setUseTime(String useTime) {
 		this.useTime = useTime;
 	}
 
-	public Date getValidTime() {
+	public String getValidTime() {
 		return validTime;
 	}
 
-	public void setValidTime(Date validTime) {
+	public void setValidTime(String validTime) {
 		this.validTime = validTime;
 	}
 	

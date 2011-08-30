@@ -37,45 +37,48 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 		int grouponIdEnd = -1;
 		int grouponVCodeEnd = -1;
 		boolean errorFlag = false;
-		for(int i=0;i<requestByte.length;i++){
-			if(requestByte[i] == 0){
-				if(grouponIdEnd == -1){
+		for (int i = 0; i < requestByte.length; i++) {
+			if (requestByte[i] == 0) {
+				if (grouponIdEnd == -1) {
 					grouponIdEnd = i;
-				}else if(grouponVCodeEnd == -1){
+				} else if (grouponVCodeEnd == -1) {
 					grouponVCodeEnd = i;
-				}else{
+				} else {
 					errorFlag = true;
 				}
 			}
 		}
-		if(requestByte[requestByte.length -1] != 0){
+		if (requestByte[requestByte.length - 1] != 0) {
 			errorFlag = true;
 		}
-		if(errorFlag){
+		if (errorFlag) {
 			throw new PackgeException(
-			"validate packge message body error, body message");
+					"validate packge message body error, body message");
 		}
 		String grouponId = null;
 		String grouponVCode = null;
-		if(grouponIdEnd != 0){
+		if (grouponIdEnd != 0) {
 			byte[] tmp = new byte[grouponIdEnd];
-			for(int i=0;i<grouponIdEnd;i++){
+			for (int i = 0; i < grouponIdEnd; i++) {
 				tmp[i] = requestByte[i];
 			}
 			grouponId = new String(tmp, charset);
 		}
-		if(grouponVCodeEnd - grouponIdEnd != 1){
-			byte[] tmp = new byte[requestByte.length - grouponIdEnd -2];
-			for(int i=0;i<requestByte.length - grouponIdEnd -2;i++){
-				tmp[i] = requestByte[i+grouponIdEnd+1];
+		if (grouponVCodeEnd - grouponIdEnd != 1) {
+			byte[] tmp = new byte[requestByte.length - grouponIdEnd - 2];
+			for (int i = 0; i < requestByte.length - grouponIdEnd - 2; i++) {
+				tmp[i] = requestByte[i + grouponIdEnd + 1];
 			}
 			grouponVCode = new String(tmp, charset);
 		}
-		
+
 		message.setCmdId(cmdId);
 		message.setGrouponId(grouponId);
 		message.setGrouponVCode(grouponVCode);
-		log.debug("validate message request:cmdId is ({}) , grouponId is ({}), grouponVCode is ({})",new Object[]{cmdId,grouponId,grouponVCode});
+		log
+				.debug(
+						"validate message request:cmdId is ({}) , grouponId is ({}), grouponVCode is ({})",
+						new Object[] { cmdId, grouponId, grouponVCode });
 		return message;
 	}
 
@@ -92,16 +95,12 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 				CmdConstant.SEPARATOR);
 		buffer.append(responseMessage.getResultExplain()).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(
-				Tools.dateToString(DATE_FORMAT, responseMessage
-						.getCurrentTime())).append(CmdConstant.SEPARATOR);
-		buffer.append(
-				Tools.dateToString(DATE_FORMAT, responseMessage.getUseTime()))
-				.append(CmdConstant.SEPARATOR);
-		buffer
-				.append(
-						Tools.dateToString(DATE_FORMAT, responseMessage
-								.getValidTime())).append(CmdConstant.SEPARATOR);
+		buffer.append(responseMessage.getCurrentTime()).append(
+				CmdConstant.SEPARATOR);
+		buffer.append(responseMessage.getUseTime()).append(
+				CmdConstant.SEPARATOR);
+		buffer.append(responseMessage.getValidTime()).append(
+				CmdConstant.SEPARATOR);
 
 		byte[] tmp = buffer.toString().getBytes(charset);
 
