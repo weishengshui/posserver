@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
+import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.google.inject.AbstractModule;
 
 /**
@@ -32,6 +33,7 @@ public class ApplicationModule extends AbstractModule {
 		
 		bind(CmdProperties.class).in(Singleton.class);
 
+		bind(TransactionFilter.class);
 	}
 
 }
