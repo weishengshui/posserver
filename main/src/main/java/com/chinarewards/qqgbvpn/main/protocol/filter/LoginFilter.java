@@ -6,11 +6,11 @@ package com.chinarewards.qqgbvpn.main.protocol.filter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
-import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
-import com.chinarewards.qqgbvpn.main.protocol.exception.PermissionDeniedException;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
@@ -30,6 +30,8 @@ public class LoginFilter extends IoFilterAdapter {
 	public final static String IS_LOGIN = "is_login";
 	public final static String POS_ID = "pos_id";
 
+	Logger log = LoggerFactory.getLogger(getClass());
+	
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
@@ -53,7 +55,7 @@ public class LoginFilter extends IoFilterAdapter {
 			bodyMessage.setErrorCode(CmdConstant.ERROR_NO_LOGIN_CODE);
 			messageTmp.setBodyMessage(bodyMessage);
 			session.write(messageTmp);
-			Log.debug("not login....");
+			log.debug("not login....");
 			return;
 		}
 
