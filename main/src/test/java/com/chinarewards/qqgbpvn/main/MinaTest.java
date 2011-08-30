@@ -1,4 +1,4 @@
-package com.chinarewards.qqgpvn.main;
+package com.chinarewards.qqgbpvn.main;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;

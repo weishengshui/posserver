@@ -35,7 +35,7 @@ import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
-import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
+import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
@@ -278,7 +278,10 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("curpage", "2");
 		params.put("pageSize", "1");
 		try {
-			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
+			HashMap<String,Object> resultMap = gbm.groupBuyingSearch(params);
+			String resultCode = (String) resultMap.get("resultCode");
+			System.out.println("resultCode->" + resultCode);
+			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap.get("pageInfo");
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());

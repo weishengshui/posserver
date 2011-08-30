@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mortbay.jetty.LocalConnector;
 import org.mortbay.jetty.testing.ServletTester;
 
-import com.chinarewards.qqgpvn.main.test.GuiceTest;
+import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 
 /**
  * @author Cyril

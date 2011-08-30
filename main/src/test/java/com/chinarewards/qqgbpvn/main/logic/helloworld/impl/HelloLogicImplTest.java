@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgpvn.main.logic.helloworld.impl;
+package com.chinarewards.qqgbpvn.main.logic.helloworld.impl;
 
 import static org.junit.Assert.*;
 

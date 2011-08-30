@@ -3,8 +3,6 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login.impl;
 
-import java.io.File;
-
 import javax.persistence.NoResultException;
 
 import org.slf4j.Logger;
@@ -38,7 +36,7 @@ public class LoginManagerImpl implements LoginManager {
 	Provider<PosDao> posDao;
 
 	@Override
-	public InitResponseMessage init(InitRequestMessage req, File secretFile) {
+	public InitResponseMessage init(InitRequestMessage req) {
 		logger.debug("InitResponse() invoke");
 
 		InitResponseMessage resp = new InitResponseMessage();
@@ -59,11 +57,7 @@ public class LoginManagerImpl implements LoginManager {
 
 			// check pos.secret. When not existed, generate one.
 			if (StringUtil.isEmptyString(pos.getSecret())) {
-				if (secretFile != null) {
-					pos.setSecret(ChallengeUtil.generatePosSecret(secretFile));
-				} else {
-					pos.setSecret(ChallengeUtil.generatePosSecret());
-				}
+				pos.setSecret(ChallengeUtil.generatePosSecret());
 			}
 
 			pos.setChallenge(challenge);
@@ -87,11 +81,6 @@ public class LoginManagerImpl implements LoginManager {
 		resp.setResult(result.getPosCode());
 
 		return resp;
-	}
-
-	@Override
-	public InitResponseMessage init(InitRequestMessage req) {
-		return init(req, null);
 	}
 
 	@Override

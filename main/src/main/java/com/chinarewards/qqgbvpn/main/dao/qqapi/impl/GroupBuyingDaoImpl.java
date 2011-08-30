@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -77,18 +78,18 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			em.get().getTransaction().begin();
 		}
 		try {
-			if ("0".equals(resultCode)) {
-				//删除缓存
-				oldCache = deleteGrouponCache(posId);
-				try {
-					if (oldCache != null && oldCache.size() > 0) {
-						oldCacheJournal.setEventDetail(mapper.writeValueAsString(oldCache));
-					}
-				} catch (Exception e) {
-					throw new JsonGenerationException(e);
+			//删除缓存
+			oldCache = deleteGrouponCache(posId);
+			try {
+				if (oldCache != null && oldCache.size() > 0) {
+					oldCacheJournal.setEventDetail(mapper.writeValueAsString(oldCache));
 				}
-				//保存删除缓存日志
-				saveJournal(oldCacheJournal);
+			} catch (Exception e) {
+				throw new JsonGenerationException(e);
+			}
+			//保存删除缓存日志
+			saveJournal(oldCacheJournal);
+			if ("0".equals(resultCode)) {
 				//保存商品
 				if (grouponCacheList != null && grouponCacheList.size() > 0) {
 					for (GrouponCache vo : grouponCacheList) {
@@ -96,20 +97,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 					}
 				}
 			} else {
-				switch (Integer.valueOf(resultCode)) {
-				case -1 :
-					journal.setEventDetail("服务器繁忙");
-					break;
-				case -2 :
-					journal.setEventDetail("md5校验失败");
-					break;
-				case -3 :
-					journal.setEventDetail("没有权限");
-					break;
-				default :
-					journal.setEventDetail("未知错误");
-					break;
-				}
+				journal.setEventDetail(resultCode);
 			}
 			//保存商品日志
 			saveJournal(journal);
@@ -137,14 +125,19 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		}
 	}
 
-	public PageInfo handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException {
+	public HashMap<String, Object> handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException {
+		HashMap<String, Object> relustMap = new HashMap<String, Object>();
 		String posId = params.get("posId");
 		
 		PageInfo pageInfo = new PageInfo();
 		pageInfo.setPageId(Integer.valueOf(params.get("curpage")));
 		pageInfo.setPageSize(Integer.valueOf(params.get("pageSize")));
+		
+		String resultCode = getResultCode(posId);
 		//分页查询商品
-		pageInfo = getGrouponCachePagination(pageInfo,posId);
+		if ("0".equals(resultCode)) {
+			pageInfo = getGrouponCachePagination(pageInfo,posId);
+		}
 		
 		Journal journal = new Journal();
 		journal.setTs(new Date());
@@ -179,8 +172,9 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			log.error("eventDetail: " + journal.getEventDetail());
 			throw new SaveDBException(e);
 		}
-		
-		return pageInfo;
+		relustMap.put("resultCode", resultCode);
+		relustMap.put("pageInfo", pageInfo);
+		return relustMap;
 	}
 	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException {
@@ -217,20 +211,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 				if ("0".equals(resultCode) && params.get("items") != null) {
 					journal.setEventDetail(mapper.writeValueAsString(validation));
 				} else {
-					switch (Integer.valueOf(resultCode)) {
-					case -1 :
-						journal.setEventDetail("服务器繁忙");
-						break;
-					case -2 :
-						journal.setEventDetail("md5校验失败");
-						break;
-					case -3 :
-						journal.setEventDetail("没有权限");
-						break;
-					default :
-						journal.setEventDetail("未知错误");
-						break;
-					}
+					journal.setEventDetail(resultCode);
 				}
 				saveJournal(journal);
 				if (em.get().getTransaction().isActive()) {
@@ -277,20 +258,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 						throw new JsonGenerationException(e);
 					}
 				} else {
-					switch (Integer.valueOf(resultCode)) {
-					case -1 :
-						journal.setEventDetail("服务器繁忙");
-						break;
-					case -2 :
-						journal.setEventDetail("md5校验失败");
-						break;
-					case -3 :
-						journal.setEventDetail("没有权限");
-						break;
-					default :
-						journal.setEventDetail("未知错误");
-						break;
-					}
+					journal.setEventDetail(resultCode);
 				}
 				try {
 					if (!em.get().getTransaction().isActive()) {
@@ -391,6 +359,23 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	private String getResultCode(String posId) {
+		String resultCode = "0";
+		Query jql = em.get().createQuery(
+				"select j.eventDetail from Journal j where j.event = '"
+						+ DomainEvent.GROUPON_CACHE_INIT.toString()
+						+ "' and j.entityId = ?1 order by j.ts desc");
+		jql.setParameter(1, posId);
+		List<String> resultList = jql.getResultList();
+		if (resultList !=  null && resultList.size() > 0) {
+			String result = resultList.get(0);
+			if (!"".equals(result.trim()) && !result.startsWith("[")) {
+				resultCode = result;
+			}
+		}
+		return resultCode;
 	}
 	
 }

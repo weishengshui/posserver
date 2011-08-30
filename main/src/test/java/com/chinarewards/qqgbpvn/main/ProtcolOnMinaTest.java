@@ -1,4 +1,4 @@
-package com.chinarewards.qqgpvn.main;
+package com.chinarewards.qqgbpvn.main;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,11 +21,11 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.test.BaseTest;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
-import com.chinarewards.qqgpvn.main.test.BaseTest;
 
 /**
  * 

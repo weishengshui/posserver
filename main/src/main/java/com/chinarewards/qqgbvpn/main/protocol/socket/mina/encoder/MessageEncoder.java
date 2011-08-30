@@ -111,6 +111,10 @@ public class MessageEncoder implements ProtocolEncoder {
 		
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
+		// debug print
+		log.debug("Outgoing byte content");
+		CodecUtil.debugRaw(log, result);
+
 		log.debug("result========length:"+result.length);
 		buf.put(result);
 		buf.flip();

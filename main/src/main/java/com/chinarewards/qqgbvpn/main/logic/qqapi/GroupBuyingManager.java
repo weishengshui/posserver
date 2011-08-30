@@ -30,7 +30,7 @@ public interface GroupBuyingManager {
 	 * @param params
 	 * @return
 	 */
-	public PageInfo groupBuyingSearch(
+	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException;
 
 	/**

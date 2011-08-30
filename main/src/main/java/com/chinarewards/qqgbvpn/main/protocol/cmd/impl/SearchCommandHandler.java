@@ -30,7 +30,7 @@ public class SearchCommandHandler implements CommandHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
-	private final int ERROR_CODE = 1; 
+	private final int ERROR_CODE_OTHER = 1; 
 	
 	private final int SUCCESS_CODE = 0; 
 	
@@ -52,42 +52,49 @@ public class SearchCommandHandler implements CommandHandler {
 		params.put("curpage", String.valueOf(searchRequestMessage.getPage()));
 		params.put("pageSize", String.valueOf(searchRequestMessage.getSize()));
 		try {
-			PageInfo pageInfo = gbm.get().groupBuyingSearch(params);
+			HashMap<String,Object> resultMap = gbm.get().groupBuyingSearch(params);
+			String resultCode = (String) resultMap.get("resultCode");
+			
+			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap.get("pageInfo");
 			List<GrouponCache> grouponCacheList = pageInfo.getItems();
-			
-			searchResponseMessage.setCurpage(pageInfo.getPageId());
-			searchResponseMessage.setTotalnum(pageInfo.getRecordCount());
-			searchResponseMessage.setTotalpage(pageInfo.getPageCount());
-			
 			List<SearchResponseDetail> detailList = new ArrayList<SearchResponseDetail>();
-			if(grouponCacheList!= null){
-				searchResponseMessage.setCurnum(grouponCacheList.size());
-				for(GrouponCache grouponCache :grouponCacheList){
-					SearchResponseDetail detail = new SearchResponseDetail();
-					detail.setDetailName(grouponCache.getDetailName());
-					detail.setGrouponId(grouponCache.getGrouponId());
-					detail.setGrouponName(grouponCache.getGrouponName());
-					detail.setListName(grouponCache.getListName());
-					detail.setMercName(grouponCache.getMercName());
-					detailList.add(detail);
+			
+			if (SUCCESS_CODE == Integer.valueOf(resultCode)) {
+				searchResponseMessage.setCurpage(pageInfo.getPageId());
+				searchResponseMessage.setTotalnum(pageInfo.getRecordCount());
+				searchResponseMessage.setTotalpage(pageInfo.getPageCount());
+				
+				if(grouponCacheList!= null){
+					searchResponseMessage.setCurnum(grouponCacheList.size());
+					for(GrouponCache grouponCache :grouponCacheList){
+						SearchResponseDetail detail = new SearchResponseDetail();
+						detail.setDetailName(grouponCache.getDetailName());
+						detail.setGrouponId(grouponCache.getGrouponId());
+						detail.setGrouponName(grouponCache.getGrouponName());
+						detail.setListName(grouponCache.getListName());
+						detail.setMercName(grouponCache.getMercName());
+						detailList.add(detail);
+					}
+				}else{
+					searchResponseMessage.setCurnum(0);
 				}
-			}else{
-
-				searchResponseMessage.setCurnum(0);
+				searchResponseMessage.setResult(SUCCESS_CODE);
+			} else {
+				searchResponseMessage.setResult(Integer.valueOf(resultCode));
 			}
 			searchResponseMessage.setDetail(detailList);
-			
-			searchResponseMessage.setResult(SUCCESS_CODE);
 		} catch (JsonGenerationException e) {
-			searchResponseMessage.setResult(ERROR_CODE);
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		} catch (MD5Exception e) {
-			searchResponseMessage.setResult(ERROR_CODE);
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		} catch (ParseXMLException e) {
-			searchResponseMessage.setResult(ERROR_CODE);
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		} catch (SendPostTimeOutException e) {
-			searchResponseMessage.setResult(ERROR_CODE);
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		} catch (SaveDBException e) {
-			searchResponseMessage.setResult(ERROR_CODE);
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
+		}catch (Throwable e) {
+			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		}
 		
 		searchResponseMessage.setCmdId(CmdConstant.SEARCH_CMD_ID_RESPONSE);
