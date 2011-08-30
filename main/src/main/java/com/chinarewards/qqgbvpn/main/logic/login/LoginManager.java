@@ -3,8 +3,6 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login;
 
-import java.io.File;
-
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
@@ -17,18 +15,6 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessag
  * @since 1.0.0 2011-08-25
  */
 public interface LoginManager {
-
-	/**
-	 * <ul>
-	 * <li>Check POS ID first</li>
-	 * <li>Check POS status.</li>
-	 * <li>Check POS secret code. If not existed, create it.</li>
-	 * </ul>
-	 * 
-	 * @param secretFile
-	 *            file to create serial number.(Not required).
-	 */
-	public InitResponseMessage init(InitRequestMessage req, File secretFile);
 
 	/**
 	 * <ul>
