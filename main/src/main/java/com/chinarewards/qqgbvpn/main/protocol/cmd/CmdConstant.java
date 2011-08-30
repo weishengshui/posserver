@@ -12,29 +12,29 @@ public class CmdConstant {
 	 */
 	public static final long INIT_CMD_ID_RESPONSE = 6;
 	/**
-	 * 登录
+	 * 登录请求
 	 */
 	public static final long LOGIN_CMD_ID = 7;
 	/**
-	 * 登录
+	 * 登录回复
 	 */
 	public static final long LOGIN_CMD_ID_RESPONSE = 8;
 	
 	/**
-	 * 查询
+	 * 查询请求
 	 */
 	public static final long SEARCH_CMD_ID = 1;
 	/**
-	 * 查询
+	 * 查询回复
 	 */
 	public static final long SEARCH_CMD_ID_RESPONSE = 2;
 	
 	/**
-	 * 验证
+	 * 验证请求
 	 */
 	public static final long VALIDATE_CMD_ID = 3;
 	/**
-	 * 验证
+	 * 验证回复
 	 */
 	public static final long VALIDATE_CMD_ID_RESPONSE = 4;
 	
@@ -42,4 +42,34 @@ public class CmdConstant {
 	 *分隔符 
 	 */
 	public static final char SEPARATOR = '\0';
+	
+	/**
+	 * 错误cmdId
+	 */
+	public static final long ERROR_CMD_ID = 4294967295L;
+	
+	/**
+	 * SEQ错误
+	 */
+	public static final long ERROR_SEQ_CODE = 1;
+	
+	/**
+	 * checksum 错误
+	 */
+	public static final long ERROR_CHECKSUM_CODE = 2;
+	/**
+	 * message size 错误
+	 */
+	public static final long ERROR_MESSAGE_SIZE_CODE = 3;
+	
+	/**
+	 * message 错误
+	 */
+	public static final long ERROR_MESSAGE_CODE = 4;
+	
+	/**
+	 * no login
+	 */
+	public static final long ERROR_NO_LOGIN_CODE = 7;
+
 }

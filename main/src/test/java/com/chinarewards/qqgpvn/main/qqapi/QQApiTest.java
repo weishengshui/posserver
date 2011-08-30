@@ -14,8 +14,14 @@ import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
@@ -189,7 +195,7 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		//params.put("key", "456789000");
-		params.put("curpage", "1");
+		params.put("curpage", "2");
 		params.put("pageSize", "1");
 		try {
 			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
@@ -274,6 +280,29 @@ public class QQApiTest extends JpaGuiceTest {
 			System.err.println("build test server failed");
 		}
 		//build test server end
+		
+		//init test data start
+		if (!this.emp.get().getTransaction().isActive()) {
+			this.emp.get().getTransaction().begin();
+		}
+		Pos pos = new Pos();
+		pos.setPosId("rewards-0001");
+		pos.setModel("model");
+		pos.setSn("sn");
+		pos.setSimPhoneNo("simphoneno");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);
+		pos.setSecret("secret");
+		this.emp.get().persist(pos);
+		Agent agent = new Agent();
+		agent.setName("agent");
+		this.emp.get().persist(agent);
+		PosAssignment pa = new PosAssignment();
+		pa.setAgent(agent);
+		pa.setPos(pos);
+		this.emp.get().persist(pa);
+		//init test data end
 		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);

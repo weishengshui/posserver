@@ -44,7 +44,9 @@ public class TransactionFilter extends IoFilterAdapter {
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 		logger.debug("end UnitOfWork");
-		em.get().getTransaction().commit();
+		if(em.get().getTransaction().isActive()){
+			em.get().getTransaction().commit();
+		}
 		uow.get().end();
 		nextFilter.messageSent(session, writeRequest);
 	}
