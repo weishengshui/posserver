@@ -4,6 +4,7 @@
 package com.chinarewards.qqgpvn.main;
 
 import org.apache.commons.configuration.Configuration;
+import org.junit.Ignore;
 
 import com.google.inject.AbstractModule;
 
@@ -13,6 +14,7 @@ import com.google.inject.AbstractModule;
  * @author Cyril
  * @since 0.1.0
  */
+@Ignore
 public class TestConfigModule extends AbstractModule {
 
 	private Configuration configuration;

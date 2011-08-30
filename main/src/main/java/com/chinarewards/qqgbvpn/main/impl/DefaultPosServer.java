@@ -153,7 +153,7 @@ public class DefaultPosServer implements PosServer {
 
 	@Override
 	public int getLocalPort() {
-		return port;
+		return acceptor;
 	}
 
 }
