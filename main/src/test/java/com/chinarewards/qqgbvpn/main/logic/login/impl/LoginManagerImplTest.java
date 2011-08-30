@@ -6,7 +6,6 @@ package com.chinarewards.qqgbvpn.main.logic.login.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -62,9 +61,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		InitRequestMessage request = new InitRequestMessage();
 		request.setPosid("pos-0001");
 
-		File secretFile = File.createTempFile("secret", "txt");
-
-		InitResponseMessage response = getManager().init(request, secretFile);
+		InitResponseMessage response = getManager().init(request);
 		assertNotNull(response.getChallenge());
 		assertEquals(InitResult.INIT.getPosCode(), response.getResult());
 

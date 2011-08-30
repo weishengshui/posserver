@@ -4,8 +4,6 @@ public class PosNetworkProperties extends LoadProperties {
 
 	private static final String SERVER_PORT = "server.port";
 
-	private static final String SECRET_FILE = "secretfile";
-
 	/**
 	 * get server port
 	 * 
@@ -13,10 +11,6 @@ public class PosNetworkProperties extends LoadProperties {
 	 */
 	public int getSearverPort() {
 		return Integer.valueOf(getProperties().getProperty(SERVER_PORT));
-	}
-
-	public String getSecretFilePaht() {
-		return getProperties().getProperty(SECRET_FILE);
 	}
 
 	@Override

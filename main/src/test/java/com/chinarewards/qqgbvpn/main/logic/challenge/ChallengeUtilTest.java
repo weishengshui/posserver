@@ -3,9 +3,11 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.challenge;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -24,16 +26,11 @@ public class ChallengeUtilTest {
 
 	@Test
 	public void testGeneratePosSecret() throws IOException {
-		File tmpFile = File.createTempFile("test", "txt");
-		String serial = ChallengeUtil.generatePosSecret(tmpFile);
+		String serial = ChallengeUtil.generatePosSecret();
 		assertNotNull(serial);
 		assertNotSame("", serial.trim());
-		assertEquals("000001", serial);
-
-		String serial2 = ChallengeUtil.generatePosSecret(tmpFile);
-		assertNotNull(serial2);
-		assertNotSame("", serial2.trim());
-		assertEquals("000002", serial2);
+		assertEquals(6, serial.length());
+		System.out.println(serial);
 	}
 
 	@Test
