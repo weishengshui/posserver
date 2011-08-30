@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
@@ -44,7 +46,6 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 		//check length, it must greater than head length
 		if (in.remaining() > ProtocolLengths.HEAD) {
 			
-			
 			log.debug("Do processing");
 			HeadMessage headMessage = new HeadMessage();
 			// read header
@@ -52,16 +53,12 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			log.debug("Read head");
 			long seq = in.getUnsignedInt();
 			headMessage.setSeq(seq);
-			log.debug("in.remaining() = " + in.remaining());
 
 			// read ack
-			log.debug("read ack");
 			long ack = in.getUnsignedInt(); 
 			headMessage.setAck(ack);
-			log.debug("in.remaining() = " + in.remaining());
 
 			// read flags
-			log.debug("read flags");
 			int flags = in.getUnsignedShort(); 
 			headMessage.setFlags(flags);
 			log.debug("in.remaining() = " + in.remaining());
@@ -83,7 +80,11 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			
 			//check length
 			if(messageSize != ProtocolLengths.HEAD + in.remaining()){
-				throw new PackgeException("packge message error");
+				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
+				Message message = new Message(headMessage,bodyMessage);
+				out.write(message);
+				return true;
 			}
 			int position = in.position();
 
@@ -96,11 +97,24 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			log.debug("checkSumTmp========:"+checkSumTmp);
 			
 			if(checkSumTmp != checksum){
-				throw new PackgeException("packge message error:checksum error");
+				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
+				Message message = new Message(headMessage,bodyMessage);
+				out.write(message);
+				return true;
 			}
-			in.position(position);
-			IBodyMessage bodyMessage = this.decodeMessageBody(in, charset);
 			
+			in.position(position);
+			IBodyMessage bodyMessage = null;
+			try{
+				bodyMessage = this.decodeMessageBody(in, charset);
+			}catch(Exception e){
+				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
+				errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
+				Message message = new Message(headMessage,errorBodyMessage);
+				out.write(message);
+				return true;
+			}
 			Message message = new Message(headMessage,bodyMessage);
 			out.write(message);
 			return true;

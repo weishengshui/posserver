@@ -6,10 +6,12 @@ package com.chinarewards.qqgbvpn.main.protocol.filter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
+import org.mortbay.log.Log;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.exception.PermissionDeniedException;
+import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
@@ -34,7 +36,8 @@ public class LoginFilter extends IoFilterAdapter {
 		Boolean isLogin = (Boolean) session.getAttribute(IS_LOGIN);
 
 		// Check whether the command ID is LOGIN
-		IBodyMessage msg = ((Message) message).getBodyMessage();
+		Message messageTmp = (Message)message;
+		IBodyMessage msg = messageTmp.getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// get POS ID
@@ -46,7 +49,12 @@ public class LoginFilter extends IoFilterAdapter {
 			session.setAttribute(POS_ID, lm.getPosid());
 
 		} else if (isLogin == null || !isLogin) {
-			throw new PermissionDeniedException("Not login yet!");
+			ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+			bodyMessage.setErrorCode(CmdConstant.ERROR_NO_LOGIN_CODE);
+			messageTmp.setBodyMessage(bodyMessage);
+			session.write(messageTmp);
+			Log.debug("not login....");
+			return;
 		}
 
 		// Check POS ID for other connection(NOT init or login).
@@ -59,7 +67,7 @@ public class LoginFilter extends IoFilterAdapter {
 		// pass the chain when
 		// case 1: cmdId is INIT or LOGIN.
 		// case 2: had login
-		nextFilter.messageReceived(session, message);
+		nextFilter.messageReceived(session, messageTmp);
 	}
 
 	@Override
