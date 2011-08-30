@@ -169,4 +169,7 @@ public class DefaultPosServerTest extends GuiceTest {
 		log.info("Server stopped");
 
 	}
+	
+	
+	
 }

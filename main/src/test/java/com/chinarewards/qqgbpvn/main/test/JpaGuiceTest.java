@@ -26,6 +26,21 @@ public abstract class JpaGuiceTest extends GuiceTest {
 	}
 
 	/**
+	 * Returns whether the persistence service should be started by this class,
+	 * or the client shall do it. If subclass managed their own start/stop of
+	 * Guice's persistence service, please override this method and return
+	 * <code>false</code>.
+	 * <p>
+	 * 
+	 * Default value is <code>true</code>
+	 * 
+	 * @return
+	 */
+	protected boolean isTestManagedJpaPersistence() {
+		return true;
+	}
+
+	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
