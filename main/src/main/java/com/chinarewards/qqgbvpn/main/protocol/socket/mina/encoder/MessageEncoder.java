@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -68,7 +69,7 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;
-		log.debug("cmdId is ()", cmdId);
+		log.debug("cmdId is ({})", cmdId);
 		
 		String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
 		if(cmdName == null || cmdName.length() == 0){
@@ -76,16 +77,17 @@ public class MessageEncoder implements ProtocolEncoder {
 		}
 		//Dispatcher
 		IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
-		
+
 		bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 
+		log.debug("bodyByte========:"+Arrays.toString(bodyByte));
+		
 		byte[] headByte = new byte[ProtocolLengths.HEAD];
 
 		Tools.putUnsignedInt(headByte, headMessage.getSeq(), 0);
 		Tools.putUnsignedInt(headByte, headMessage.getAck(), 4);
 		Tools.putUnsignedShort(headByte, headMessage.getFlags(), 8);
-		// TODO set checksum
-		Tools.putUnsignedShort(headByte, headMessage.getChecksum(), 10);
+		Tools.putUnsignedShort(headByte, 0, 10);
 		Tools.putUnsignedInt(headByte, ProtocolLengths.HEAD + bodyByte.length,
 				12);
 
@@ -93,8 +95,15 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		Tools.putBytes(result, headByte, 0);
 		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
-		IoBuffer buf = IoBuffer.allocate(result.length);
 		
+		int checkSumVal = Tools.checkSum(result, result.length);
+
+		Tools.putUnsignedShort(result, checkSumVal, 10);
+		
+		
+		IoBuffer buf = IoBuffer.allocate(result.length);
+
+		log.debug("result========length:"+result.length);
 		buf.put(result);
 		buf.flip();
 		out.write(buf);

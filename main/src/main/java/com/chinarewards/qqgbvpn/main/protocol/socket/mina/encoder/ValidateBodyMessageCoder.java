@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -17,8 +18,6 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.ValidateResponseMes
 public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-
-	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	@Override
 	public IBodyMessage decode(IoBuffer in, Charset charset)
@@ -110,7 +109,7 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND
 				+ ProtocolLengths.RESULT);
-
+		log.debug("validate message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		return resultByte;
 	}
 

@@ -44,6 +44,8 @@ public class SearchCommandHandler implements CommandHandler {
 		log.debug("SearchCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		SearchRequestMessage searchRequestMessage = (SearchRequestMessage) bodyMessage;
 		SearchResponseMessage searchResponseMessage = new SearchResponseMessage();
+
+		log.debug("SearchCommandHandler======execute==posId=:"+String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
@@ -52,22 +54,27 @@ public class SearchCommandHandler implements CommandHandler {
 		try {
 			PageInfo pageInfo = gbm.get().groupBuyingSearch(params);
 			List<GrouponCache> grouponCacheList = pageInfo.getItems();
-			searchResponseMessage.setCurnum(grouponCacheList.size());
+			
 			searchResponseMessage.setCurpage(pageInfo.getPageId());
 			searchResponseMessage.setTotalnum(pageInfo.getRecordCount());
 			searchResponseMessage.setTotalpage(pageInfo.getPageCount());
 			
 			List<SearchResponseDetail> detailList = new ArrayList<SearchResponseDetail>();
-			for(GrouponCache grouponCache :grouponCacheList){
-				SearchResponseDetail detail = new SearchResponseDetail();
-				detail.setDetailName(grouponCache.getDetailName());
-				detail.setGrouponId(grouponCache.getGrouponId());
-				detail.setGrouponName(grouponCache.getGrouponName());
-				detail.setListName(grouponCache.getListName());
-				detail.setMercName(grouponCache.getMercName());
-				detailList.add(detail);
+			if(grouponCacheList!= null){
+				searchResponseMessage.setCurnum(grouponCacheList.size());
+				for(GrouponCache grouponCache :grouponCacheList){
+					SearchResponseDetail detail = new SearchResponseDetail();
+					detail.setDetailName(grouponCache.getDetailName());
+					detail.setGrouponId(grouponCache.getGrouponId());
+					detail.setGrouponName(grouponCache.getGrouponName());
+					detail.setListName(grouponCache.getListName());
+					detail.setMercName(grouponCache.getMercName());
+					detailList.add(detail);
+				}
+			}else{
+
+				searchResponseMessage.setCurnum(0);
 			}
-			
 			searchResponseMessage.setDetail(detailList);
 			
 			searchResponseMessage.setResult(SUCCESS_CODE);
@@ -82,8 +89,6 @@ public class SearchCommandHandler implements CommandHandler {
 		} catch (SaveDBException e) {
 			searchResponseMessage.setResult(ERROR_CODE);
 		}
-		//TODO 
-		
 		
 		searchResponseMessage.setCmdId(CmdConstant.SEARCH_CMD_ID_RESPONSE);
 		return searchResponseMessage;
