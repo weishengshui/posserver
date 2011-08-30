@@ -42,6 +42,7 @@ public class BaseDaoImpl {
         //总页数
         int pages = (count - 1) / pageSize + 1;
         int newPageId = pageId > pages ? pages : pageId;
+        newPageId = newPageId < 1 ? 1 : newPageId;
         //记录开始行数
         int sIndex = (newPageId - 1) * pageSize + 1;
         sIndex = sIndex > count ? count : sIndex;

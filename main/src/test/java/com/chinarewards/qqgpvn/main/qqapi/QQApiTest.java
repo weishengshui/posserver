@@ -195,7 +195,7 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
 		//params.put("key", "456789000");
-		params.put("curpage", "1");
+		params.put("curpage", "2");
 		params.put("pageSize", "1");
 		try {
 			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
