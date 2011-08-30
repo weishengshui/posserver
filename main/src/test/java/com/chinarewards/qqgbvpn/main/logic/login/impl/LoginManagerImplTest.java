@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
@@ -25,7 +26,6 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
-import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 

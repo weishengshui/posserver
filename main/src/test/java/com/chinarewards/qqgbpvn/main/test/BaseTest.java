@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgpvn.main.test;
+package com.chinarewards.qqgbpvn.main.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

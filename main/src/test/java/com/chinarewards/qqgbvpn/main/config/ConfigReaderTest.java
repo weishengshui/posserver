@@ -17,8 +17,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.HomeDirLocator;
-import com.chinarewards.qqgpvn.main.test.GuiceTest;
 
 /**
  * 

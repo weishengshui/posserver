@@ -1,4 +1,4 @@
-package com.chinarewards.qqgpvn.main.qqapi;
+package com.chinarewards.qqgbpvn.main.qqapi;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,6 +13,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
@@ -35,7 +36,6 @@ import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
-import com.chinarewards.qqgpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 

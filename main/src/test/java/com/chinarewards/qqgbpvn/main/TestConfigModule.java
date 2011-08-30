@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgpvn.main;
+package com.chinarewards.qqgbpvn.main;
 
 import org.apache.commons.configuration.Configuration;
 import org.junit.Ignore;

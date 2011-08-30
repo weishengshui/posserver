@@ -14,12 +14,12 @@ import javax.persistence.EntityManager;
 
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.test.BaseTest;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
-import com.chinarewards.qqgpvn.main.test.BaseTest;
 import com.google.inject.Provider;
 
 /**

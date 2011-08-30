@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgpvn.main.test;
+package com.chinarewards.qqgbpvn.main.test;
 
 import org.junit.Test;
 

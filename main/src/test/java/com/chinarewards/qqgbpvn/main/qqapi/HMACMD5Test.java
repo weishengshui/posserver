@@ -1,4 +1,4 @@
-package com.chinarewards.qqgpvn.main.qqapi;
+package com.chinarewards.qqgbpvn.main.qqapi;
 
 import java.util.Arrays;
 
