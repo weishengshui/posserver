@@ -120,8 +120,14 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			return true;
 
 		} else {
-			// not yet done
-			return false;
+			HeadMessage headMessage = new HeadMessage();
+			ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
+			errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
+			Message message = new Message(headMessage,errorBodyMessage);
+			out.write(message);
+			byte[] tmp = new byte[in.remaining()];
+			in.get(tmp);
+			return true;
 		}
 
 	}
