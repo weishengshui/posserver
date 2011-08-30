@@ -16,13 +16,17 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
+import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.hander.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.MessageCoderFactory;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.persist.PersistService;
 
 /**
  * 
@@ -65,10 +69,21 @@ public class DefaultPosServer implements PosServer {
 	public void start() throws PosServerException {
 
 		printConfigValues();
+		
+		// start the JPA persistence service
+		startPersistenceService();
+		
 
 		// setup Apache Mina server.
 
 		port = configuration.getInt("server.port");
+		serverAddr = new InetSocketAddress(port);
+		
+		
+		// the TCP port to listen
+		int port = new PosNetworkProperties().getSearverPort();
+
+		// =============== server side ===================
 		serverAddr = new InetSocketAddress(port);
 
 		acceptor = new NioSocketAcceptor();
@@ -78,25 +93,28 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(injector)));
 
+		//bodyMessage filter
+		acceptor.getFilterChain().addLast("bodyMessage",
+				new BodyMessageFilter());
+		
+		// Transaction filter.
+		acceptor.getFilterChain().addLast("transaction",
+				injector.getInstance(TransactionFilter.class));
+
 		// Login filter.
 		acceptor.getFilterChain().addLast("login", new LoginFilter());
 
 		acceptor.setHandler(new ServerSessionHandler(injector));
-		// TODO make this configurable
 		acceptor.setCloseOnDeactivation(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
-		// TODO make this configurable
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
-			throw new PosServerException("Error binding server address "
-					+ serverAddr.getAddress().getHostAddress() + ":"
-					+ serverAddr.getPort());
+			throw new PosServerException("Error binding server port", e);
 		}
 
-		// XXX get the real port to listen.
 		log.info("Server running, listening on {}", getLocalPort());
 
 	}
@@ -121,7 +139,8 @@ public class DefaultPosServer implements PosServer {
 	}
 
 	protected void startPersistenceService() {
-		// PersistService ps = injector.getInstance(PersistService)
+		PersistService ps = injector.getInstance(PersistService.class);
+		ps.start();
 	}
 
 	/*
@@ -131,9 +150,12 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void stop() {
-
+		
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
+
+		PersistService ps = injector.getInstance(PersistService.class);
+		ps.stop();
 
 	}
 
