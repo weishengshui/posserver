@@ -40,6 +40,8 @@ import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
 public class QQApiTest extends JpaGuiceTest {
+	
+	private Server server = new Server(0);
 
 	@Override
 	protected Module[] getModules() {
@@ -49,60 +51,138 @@ public class QQApiTest extends JpaGuiceTest {
 						.properties(new DatabaseProperties().getProperties()) };
 	}
 	
-	@Test
-	public void testInitGrouponCache() {
-		
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		initTestServer();
+	}
+	
+	private void initTestServer() {
 		//build test server start
 		try {
-			Server server = new Server(0);
-
-			HardCodedServlet s = new HardCodedServlet();
-			s.init();
-			StringBuffer sb = new StringBuffer();
-			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
-			sb.append("<tuan>");
-			sb.append("<resultCode>0</resultCode>");
-			sb.append("<groupon>");
-			sb.append("<item>");
-			sb.append("<grouponId>132127</grouponId>");
-			sb.append("<grouponName>400.01元套餐POST</grouponName>");
-			sb.append("<mercName>三人行骨头王ggggg</mercName>");
-			sb.append("<listName>40元套餐\r\n        (132127)</listName>");
-			sb.append("<detailName>1111111111111140元套餐(132127)</detailName>");
-			sb.append("</item>");
-			sb.append("<item>");
-			sb.append("<grouponId>132123</grouponId>");
-			sb.append("<grouponName>400.01元套餐</grouponName>");
-			sb.append("<mercName>三人行骨头王</mercName>");
-			sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
-			sb.append("<detailName>400.01元套餐</detailName>");
-			sb.append("</item>");
-			sb.append("<item>");
-			sb.append("<grouponId>132154</grouponId>");
-			sb.append("<grouponName>测试商品</grouponName>");
-			sb.append("<mercName>测试商品王</mercName>");
-			sb.append("<listName>测试商品套餐\r\n        (132154)</listName>");
-			sb.append("<detailName>测试商品套餐</detailName>");
-			sb.append("</item>");
-			sb.append("</groupon>");
-			sb.append("</tuan>");
-			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
-			
-			ServletHolder h = new ServletHolder();
-			h.setServlet(s);
-
-			String servletPath = "/qqapi";
-			ServletHandler scHandler = new ServletHandler();
-			scHandler.addServletWithMapping(h, servletPath);
-			
-			// add handler to server
-			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8086);
-			server.start();
+			//Server server = new Server(0);
+			if (!server.isStarted()) {
+				ServletHandler scHandler = new ServletHandler();
+				scHandler.addServletWithMapping(getInitGrouponCacheServletHolder(), "/initGrouponCache");
+				scHandler.addServletWithMapping(getGroupBuyingValidateServletHolder(), "/groupBuyingValidate");
+				scHandler.addServletWithMapping(getGroupBuyingUnbindServletHolder(), "/groupBuyingUnbind");
+				// add handler to server
+				server.addHandler(scHandler);
+				server.getConnectors()[0].setPort(8086);
+				server.start();
+			}
 		} catch (Exception e) {
 			System.err.println("build test server failed");
 		}
 		//build test server end
+	}
+	
+	private ServletHolder getInitGrouponCacheServletHolder() throws Exception {
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+		sb.append("<tuan>");
+		sb.append("<resultCode>0</resultCode>");
+		sb.append("<groupon>");
+		sb.append("<item>");
+		sb.append("<grouponId>132127</grouponId>");
+		sb.append("<grouponName>400.01元套餐POST</grouponName>");
+		sb.append("<mercName>三人行骨头王ggggg</mercName>");
+		sb.append("<listName>40元套餐\r\n        (132127)</listName>");
+		sb.append("<detailName>1111111111111140元套餐(132127)</detailName>");
+		sb.append("</item>");
+		sb.append("<item>");
+		sb.append("<grouponId>132123</grouponId>");
+		sb.append("<grouponName>400.01元套餐</grouponName>");
+		sb.append("<mercName>三人行骨头王</mercName>");
+		sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
+		sb.append("<detailName>400.01元套餐</detailName>");
+		sb.append("</item>");
+		sb.append("<item>");
+		sb.append("<grouponId>132154</grouponId>");
+		sb.append("<grouponName>测试商品</grouponName>");
+		sb.append("<mercName>测试商品王</mercName>");
+		sb.append("<listName>测试商品套餐\r\n        (132154)</listName>");
+		sb.append("<detailName>测试商品套餐</detailName>");
+		sb.append("</item>");
+		sb.append("</groupon>");
+		sb.append("</tuan>");
+		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		/*String servletPath = "/initGrouponCache";
+		ServletHandler scHandler = new ServletHandler();
+		scHandler.addServletWithMapping(h, servletPath);*/
+		return h;
+	}
+	
+	private ServletHolder getGroupBuyingValidateServletHolder() throws Exception {
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+		sb.append("<tuan>");
+		sb.append("<resultCode>0</resultCode>");
+		sb.append("<groupon>");
+		sb.append("<resultName>验证已成功</resultName>");
+		sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
+		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+		sb.append("<useTime>2011-08-03 11:10:23</useTime>");
+		sb.append("<validTime>2011-08-10</validTime>");
+		sb.append("</groupon>");
+		sb.append("<groupon>");
+		sb.append("<resultName>已退款</resultName>");
+		sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
+		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
+		sb.append("<validTime>2011-08-10</validTime>");
+		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
+		sb.append("</groupon>");
+		sb.append("</tuan>");
+		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		/*String servletPath = "/groupBuyingValidate";
+		ServletHandler scHandler = new ServletHandler();
+		scHandler.addServletWithMapping(h, servletPath);*/
+		return h;
+	}
+	
+	private ServletHolder getGroupBuyingUnbindServletHolder() throws Exception {
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
+		sb.append("<tuan>");
+		sb.append("<resultCode>0</resultCode>");
+		sb.append("<groupon>");
+		sb.append("<item>");
+		sb.append("<posId>1</posId>");
+		sb.append("<resultStatus>0</resultStatus>");
+		sb.append("</item>");
+		sb.append("<item>");
+		sb.append("<posId>2</posId>");
+		sb.append("<resultStatus>1</resultStatus>");
+		sb.append("</item>");
+		sb.append("</groupon>");
+		sb.append("</tuan>");
+		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		/*String servletPath = "/groupBuyingUnbind";
+		ServletHandler scHandler = new ServletHandler();
+		scHandler.addServletWithMapping(h, servletPath);*/
+		return h;
+	}
+
+	@Test
+	public void testInitGrouponCache() {
 		
 		List<String> grouponIdList = new ArrayList<String>();
 		grouponIdList.add("132127");
@@ -238,49 +318,6 @@ public class QQApiTest extends JpaGuiceTest {
 	@Test
 	public void testGroupBuyingValidate() {
 		
-		//build test server start
-		try {
-			Server server = new Server(0);
-
-			HardCodedServlet s = new HardCodedServlet();
-			s.init();
-			StringBuffer sb = new StringBuffer();
-			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
-			sb.append("<tuan>");
-			sb.append("<resultCode>0</resultCode>");
-			sb.append("<groupon>");
-			sb.append("<resultName>验证已成功</resultName>");
-			sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
-			sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
-			sb.append("<useTime>2011-08-03 11:10:23</useTime>");
-			sb.append("<validTime>2011-08-10</validTime>");
-			sb.append("</groupon>");
-			sb.append("<groupon>");
-			sb.append("<resultName>已退款</resultName>");
-			sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
-			sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
-			sb.append("<validTime>2011-08-10</validTime>");
-			sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
-			sb.append("</groupon>");
-			sb.append("</tuan>");
-			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
-			
-			ServletHolder h = new ServletHolder();
-			h.setServlet(s);
-
-			String servletPath = "/qqapi";
-			ServletHandler scHandler = new ServletHandler();
-			scHandler.addServletWithMapping(h, servletPath);
-			
-			// add handler to server
-			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8087);
-			server.start();
-		} catch (Exception e) {
-			System.err.println("build test server failed");
-		}
-		//build test server end
-		
 		//init test data start
 		if (!this.emp.get().getTransaction().isActive()) {
 			this.emp.get().getTransaction().begin();
@@ -364,44 +401,42 @@ public class QQApiTest extends JpaGuiceTest {
 	@Test
 	public void testGroupBuyingUnbind() {
 		
-		//build test server start
-		try {
-			Server server = new Server(0);
-
-			HardCodedServlet s = new HardCodedServlet();
-			s.init();
-			StringBuffer sb = new StringBuffer();
-			sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
-			sb.append("<tuan>");
-			sb.append("<resultCode>0</resultCode>");
-			sb.append("<groupon>");
-			sb.append("<item>");
-			sb.append("<posId>1</posId>");
-			sb.append("<resultStatus>0</resultStatus>");
-			sb.append("</item>");
-			sb.append("<item>");
-			sb.append("<posId>2</posId>");
-			sb.append("<resultStatus>1</resultStatus>");
-			sb.append("</item>");
-			sb.append("</groupon>");
-			sb.append("</tuan>");
-			s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
-			
-			ServletHolder h = new ServletHolder();
-			h.setServlet(s);
-
-			String servletPath = "/qqapi";
-			ServletHandler scHandler = new ServletHandler();
-			scHandler.addServletWithMapping(h, servletPath);
-			
-			// add handler to server
-			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8088);
-			server.start();
-		} catch (Exception e) {
-			System.err.println("build test server failed");
+		//init test data start
+		if (!this.emp.get().getTransaction().isActive()) {
+			this.emp.get().getTransaction().begin();
 		}
-		//build test server end
+		Pos pos = new Pos();
+		pos.setPosId("rewards-0001");
+		pos.setModel("model");
+		pos.setSn("sn");
+		pos.setSimPhoneNo("simphoneno");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);
+		pos.setSecret("secret");
+		this.emp.get().persist(pos);
+		Pos pos2 = new Pos();
+		pos2.setPosId("rewards-0002");
+		pos2.setModel("model2");
+		pos2.setSn("sn2");
+		pos2.setSimPhoneNo("simphoneno2");
+		pos2.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos2.setIstatus(PosInitializationStatus.INITED);
+		pos2.setOstatus(PosOperationStatus.ALLOWED);
+		pos2.setSecret("secret2");
+		this.emp.get().persist(pos2);
+		Agent agent = new Agent();
+		agent.setName("agent");
+		this.emp.get().persist(agent);
+		PosAssignment pa = new PosAssignment();
+		pa.setAgent(agent);
+		pa.setPos(pos);
+		this.emp.get().persist(pa);
+		PosAssignment pa2 = new PosAssignment();
+		pa2.setAgent(agent);
+		pa2.setPos(pos2);
+		this.emp.get().persist(pa2);
+		//init test data end
 		
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
