@@ -59,6 +59,8 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 		int curpage = responseMessage.getCurpage();
 		int totalpage = responseMessage.getTotalpage();
 		List<SearchResponseDetail> detail = responseMessage.getDetail();
+		log.debug("search reault result is ({}), totalnum is ({}),curnum is ({}), curpage is ({}), totalpage is ({})detail size is ({})",
+				new Object[]{result,totalnum,curnum,curpage,totalpage,detail.size()});
 		
 		StringBuffer buffer = new StringBuffer();
 		for(SearchResponseDetail searchResponseDetail:detail){
@@ -69,6 +71,7 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 			buffer.append(searchResponseDetail.getDetailName()).append(CmdConstant.SEPARATOR);
 		}
 		byte[] detailByte = buffer.toString().getBytes(charset);
+		log.debug("detail buffer is ({})",buffer.toString());
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND + 10 + detailByte.length];
 		
 		Tools.putUnsignedInt(resultByte, cmdId, 0);

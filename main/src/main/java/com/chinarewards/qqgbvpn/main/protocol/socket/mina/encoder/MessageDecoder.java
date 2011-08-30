@@ -43,6 +43,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	protected boolean doDecode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 
+		log.debug("session.getId()=======:"+session.getId());
 		log.debug("MessageDecoder.doDecode invoked");
 		log.debug("in.remaining is {}", in.remaining());
 
