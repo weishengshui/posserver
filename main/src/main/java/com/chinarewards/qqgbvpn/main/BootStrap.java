@@ -373,19 +373,6 @@ public class BootStrap {
 	 * @throws IOException
 	 */
 	protected void startMinaServer() throws IOException {
-
-		Provider<EntityManager> em = injector.getProvider(EntityManager.class);
-		em.get().getTransaction().begin();
-		// prepared data
-		Pos pos = new Pos();
-		pos.setPosId("POS-56789012");
-		pos.setDstatus(PosDeliveryStatus.DELIVERED);
-		pos.setSecret("012345");
-		pos.setIstatus(PosInitializationStatus.INITED);
-		pos.setOstatus(PosOperationStatus.ALLOWED);
-		em.get().persist(pos);
-		em.get().getTransaction().commit();
-		
 		
 		// the TCP port to listen
 		int port = new PosNetworkProperties().getSearverPort();
