@@ -55,7 +55,7 @@ public class DefaultPosServerTest extends GuiceTest {
 
 		Configuration conf = new BaseConfiguration();
 		// hard-coded config
-		conf.setProperty("server.port", 1235);
+		conf.setProperty("server.port", 0);
 		// persistence
 		conf.setProperty("db.user", "sa");
 		conf.setProperty("db.password", "");
@@ -91,6 +91,60 @@ public class DefaultPosServerTest extends GuiceTest {
 	@Test
 	public void testStart() throws Exception {
 
+		// force changing of configuration
+		Configuration conf = getInjector().getInstance(Configuration.class);
+		conf.setProperty("server.port", 0);
+		
+		// get an new instance of PosServer
+		PosServer server = getInjector().getInstance(PosServer.class);
+		// make sure it is started, and port is correct
+		assertTrue(server.isStopped());
+		//
+		// start it!
+		server.start();
+		int runningPort = server.getLocalPort();
+		// stop it.
+		server.stop();
+		assertTrue(server.isStopped());
+		
+		//
+		// Now we know which free port to use.
+		//
+		// XXX it is a bit risky since the port maybe in use by another
+		// process.
+		//
+
+
+		// get an new instance of PosServer
+		conf.setProperty("server.port", runningPort);
+
+		// make sure it is stopped
+		assertTrue(server.isStopped());
+
+		// start it!
+		server.start();
+
+		// make sure it is started, and port is correct
+		assertFalse(server.isStopped());
+		assertEquals(runningPort, server.getLocalPort());
+
+		// sleep for a while...
+		Thread.sleep(500); // 0.5 seconds
+
+		// stop it, and make sure it is stopped.
+		server.stop();
+		assertTrue(server.isStopped());
+
+		log.info("Server stopped");
+
+	}
+
+	public void testStart_RandomPort() throws Exception {
+
+		// force changing of configuration
+		Configuration conf = getInjector().getInstance(Configuration.class);
+		conf.setProperty("server.port", 0);
+
 		// get an new instance of PosServer
 		PosServer server = getInjector().getInstance(PosServer.class);
 
@@ -102,7 +156,8 @@ public class DefaultPosServerTest extends GuiceTest {
 
 		// make sure it is started, and port is correct
 		assertFalse(server.isStopped());
-		assertEquals(1235, server.getLocalPort());
+		assertTrue(0 != server.getLocalPort());
+		assertTrue(server.getLocalPort() > 0);
 
 		// sleep for a while...
 		Thread.sleep(500); // 0.5 seconds
@@ -110,7 +165,7 @@ public class DefaultPosServerTest extends GuiceTest {
 		// stop it, and make sure it is stopped.
 		server.stop();
 		assertTrue(server.isStopped());
-		
+
 		log.info("Server stopped");
 
 	}

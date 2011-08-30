@@ -63,11 +63,11 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void start() throws PosServerException {
-		
+
 		printConfigValues();
 
 		// setup Apache Mina server.
-		
+
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -97,7 +97,7 @@ public class DefaultPosServer implements PosServer {
 		}
 
 		// XXX get the real port to listen.
-		log.info("Server running, listening on {}", port);
+		log.info("Server running, listening on {}", getLocalPort());
 
 	}
 
@@ -153,7 +153,14 @@ public class DefaultPosServer implements PosServer {
 
 	@Override
 	public int getLocalPort() {
-		return acceptor;
+
+		if (acceptor != null) {
+			InetSocketAddress d = (InetSocketAddress) acceptor
+					.getLocalAddress();
+			return d.getPort();
+		}
+
+		return port;
 	}
 
 }

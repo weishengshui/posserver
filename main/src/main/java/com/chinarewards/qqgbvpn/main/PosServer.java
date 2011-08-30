@@ -28,6 +28,7 @@ public interface PosServer {
 	public boolean isStopped();
 
 	/**
+	 * Returns the actual port this server is listening at.
 	 * 
 	 * @return
 	 */
