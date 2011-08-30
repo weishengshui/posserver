@@ -40,6 +40,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 		
 	}
 	
+	//@Test
 	public void testClientServer() throws Exception {
 
 		// the TCP port to listen
