@@ -5,6 +5,7 @@ package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.service.IoAcceptor;
@@ -62,11 +63,12 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void start() throws PosServerException {
+		
+		printConfigValues();
 
-		// the TCP port to listen
+		// setup Apache Mina server.
+		
 		port = configuration.getInt("server.port");
-
-		// =============== server side ===================
 		serverAddr = new InetSocketAddress(port);
 
 		acceptor = new NioSocketAcceptor();
@@ -94,8 +96,28 @@ public class DefaultPosServer implements PosServer {
 					+ serverAddr.getPort());
 		}
 
-		log.info("Server running, port is {}", port);
+		// XXX get the real port to listen.
+		log.info("Server running, listening on {}", port);
 
+	}
+
+	/**
+	 * Print configuration.
+	 */
+	private void printConfigValues() {
+		// get system configuration
+		Iterator iter = configuration.getKeys();
+		if (configuration.isEmpty()) {
+			log.debug("No configuration values");
+		} else {
+			log.debug("System configuration:");
+			while (iter.hasNext()) {
+				String key = (String) iter.next();
+				log.debug("- {}: {}", key, configuration.getProperty(key));
+			}
+		}
+
+		// TODO print command mapping
 	}
 
 	protected void startPersistenceService() {

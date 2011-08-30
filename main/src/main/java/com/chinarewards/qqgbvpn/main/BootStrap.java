@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.config.ConfigReader;
+import com.chinarewards.qqgbvpn.main.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
@@ -241,9 +242,11 @@ public class BootStrap {
 	protected void buildConfiguration() throws ConfigurationException {
 
 		// check if the directory is given via command line.
-		String homedir = cl.getOptionValue("d");	// TODO better API call?
+		String homedir = cl.getOptionValue("d"); // TODO better API call?
 		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
 		ConfigReader cr = new ConfigReader(homeDirLocator);
+
+		log.info("Home directory: {}", homeDirLocator.getHomeDir());
 
 		// read the configuration
 		Configuration conf = cr.read(this.getRootConfigFilename());
@@ -397,7 +400,8 @@ public class BootStrap {
 
 		// prepare Guice injector
 		log.debug("Bootstraping Guice injector...");
-		injector = Guice.createInjector(new AppModule(), jpaModule);
+		injector = Guice.createInjector(new AppModule(), new ServerModule(),
+				new HardCodedConfigModule(configuration), jpaModule);
 
 	}
 
