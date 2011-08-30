@@ -53,6 +53,8 @@ public class DefaultPosServer implements PosServer {
 	 * acceptor
 	 */
 	IoAcceptor acceptor;
+	
+	boolean persistenceServiceInited = false;
 
 	@Inject
 	public DefaultPosServer(Configuration configuration, Injector injector) {
@@ -139,8 +141,13 @@ public class DefaultPosServer implements PosServer {
 	}
 
 	protected void startPersistenceService() {
+		if (persistenceServiceInited) {
+			return;
+		}
+		
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
+		persistenceServiceInited = true;
 	}
 
 	/*
@@ -154,8 +161,10 @@ public class DefaultPosServer implements PosServer {
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
 
-		PersistService ps = injector.getInstance(PersistService.class);
-		ps.stop();
+		// XXX Should completely sstop the JPA service.
+		
+//		PersistService ps = injector.getInstance(PersistService.class);
+//		ps.stop();
 
 	}
 
