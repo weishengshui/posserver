@@ -10,9 +10,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.chinarewards.qqgbvpn.main.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
+import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgpvn.main.test.GuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;

@@ -12,7 +12,12 @@ package com.chinarewards.qqgbvpn.main;
 public class HomeDirLocator {
 
 	String hardCodedDir;
-	
+
+	/**
+	 * Specifies the directory which will be served as the final 
+	 * 
+	 * @param hardCodedDir
+	 */
 	public HomeDirLocator(String hardCodedDir) {
 		this.hardCodedDir = hardCodedDir;
 	}
@@ -61,7 +66,7 @@ public class HomeDirLocator {
 	 * @return
 	 */
 	public String getHomeDirEnvName() {
-		return "POSNET";
+		return "POSNET_HOME";
 	}
 
 }

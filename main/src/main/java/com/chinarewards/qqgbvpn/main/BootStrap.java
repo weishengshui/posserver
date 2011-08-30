@@ -14,6 +14,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -24,7 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
+import com.chinarewards.qqgbvpn.main.config.ConfigReader;
+import com.chinarewards.qqgbvpn.main.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
+import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.hander.ServerSessionHandler;
@@ -78,9 +83,17 @@ public class BootStrap {
 	IoAcceptor acceptor;
 
 	/**
+	 * The configuration object.
+	 */
+	Configuration configuration;
+
+	private String rootConfigFilename = "posnet.ini";
+
+	/**
 	 * Creates an instance of BootStrap.
 	 * 
-	 * @param args command line arguments
+	 * @param args
+	 *            command line arguments
 	 */
 	public BootStrap(String... args) {
 		this.args = args;
@@ -93,6 +106,13 @@ public class BootStrap {
 	 */
 	public Injector getInjector() {
 		return injector;
+	}
+
+	/**
+	 * @return the rootConfigFilename
+	 */
+	public String getRootConfigFilename() {
+		return rootConfigFilename;
 	}
 
 	protected void printAppVersion() {
@@ -119,6 +139,9 @@ public class BootStrap {
 		// parse command line arguments.
 		parseCmdArgs();
 
+		// build the configuration object.
+		buildConfiguration();
+
 		// print some text.
 		log.info("Bootstrapping...");
 
@@ -126,14 +149,14 @@ public class BootStrap {
 		createGuice();
 
 		// save the command line arguments
-		initAppPreference();
+		// initAppPreference();
 
 		// start the persistence services
-		PersistService ps = injector.getInstance(PersistService.class);
-		ps.start();
+		// PersistService ps = injector.getInstance(PersistService.class);
+		// ps.start();
 
 		// start mina server
-		startMinaServer();
+		// startMinaServer();
 		log.info("Bootstrapping completed");
 
 	}
@@ -205,11 +228,6 @@ public class BootStrap {
 			System.exit(0);
 		}
 
-		// create the configuration object.
-		// make sure we know where to read configuration file
-		
-		
-
 	}
 
 	/**
@@ -220,6 +238,29 @@ public class BootStrap {
 	protected void printHelp(Options options) {
 		HelpFormatter f = new HelpFormatter();
 		f.printHelp("java -jar posnet.jar", options, true);
+	}
+
+	protected void buildConfiguration() throws ConfigurationException {
+
+		// check if the directory is given via command line.
+		String homedir = cl.getOptionValue("d"); // TODO better API call?
+		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
+		ConfigReader cr = new ConfigReader(homeDirLocator);
+
+		log.info("Home directory: {}", homeDirLocator.getHomeDir());
+
+		// read the configuration
+		Configuration conf = cr.read(this.getRootConfigFilename());
+		configuration = conf;
+
+		if (this.configuration == null) {
+			// no configuration is found, throw exception
+			throw new RuntimeException(
+					"No configuration is found. Please specify "
+							+ "POSNET_HOME environment variable for the home directory, or -d <home_dir> ");
+
+		}
+
 	}
 
 	@SuppressWarnings("static-access")
@@ -280,14 +321,21 @@ public class BootStrap {
 		}
 
 		// optional parameters
+
 		{
 			// --verbose
 			main.addOption(OptionBuilder.withLongOpt("verbose").hasArg()
 					.withDescription("详细级别.支持0,1,小数等调试信息。默认为0").create());
-
 		}
 
-		// help mesasge
+		{
+			// -d : Home directory
+			main.addOption(OptionBuilder.withArgName("homedir")
+					.withLongOpt("home-dir").hasArg()
+					.withDescription("Home directory").create('d'));
+		}
+
+		// help message
 		{
 			Option help = OptionBuilder.withArgName("help").withLongOpt("help")
 					.withDescription("打印消息").create('h');
@@ -348,14 +396,13 @@ public class BootStrap {
 
 		log.info("Initializing dependency injection environment...");
 
-		// prepare the persistence module
-		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
-		Properties props = buildJpaProperties();
-		jpaModule.properties(props);
+		// prepare the JPA persistence module
+		JpaPersistModule jpaModule = buildJpaPersistModule();
 
 		// prepare Guice injector
 		log.debug("Bootstraping Guice injector...");
-		injector = Guice.createInjector(new AppModule(), jpaModule);
+		injector = Guice.createInjector(new AppModule(), new ServerModule(),
+				new HardCodedConfigModule(configuration), jpaModule);
 
 	}
 
@@ -401,6 +448,17 @@ public class BootStrap {
 		DatabaseProperties p = new DatabaseProperties();
 		return p.getProperties();
 
+	}
+
+	protected JpaPersistModule buildJpaPersistModule() {
+
+		// TODO make it not a builder.
+		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
+
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
+		builder.configModule(jpaModule, configuration, "db");
+
+		return jpaModule;
 	}
 
 }

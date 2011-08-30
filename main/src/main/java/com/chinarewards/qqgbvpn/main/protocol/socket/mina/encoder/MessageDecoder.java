@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -9,6 +10,7 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -41,7 +43,8 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 		//check length, it must greater than head length
 		if (in.remaining() > ProtocolLengths.HEAD) {
-
+			
+			
 			log.debug("Do processing");
 			HeadMessage headMessage = new HeadMessage();
 			// read header
@@ -66,6 +69,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			// read checksum   
 			log.debug("read checksum");
 			int checksum = in.getUnsignedShort();
+			log.debug("checksum========:"+checksum);
 			headMessage.setChecksum(checksum);
 			log.debug("in.remaining() = " + in.remaining());
 
@@ -81,8 +85,20 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			if(messageSize != ProtocolLengths.HEAD + in.remaining()){
 				throw new PackgeException("packge message error");
 			}
-			//TODO check message by checksum
+			int position = in.position();
+
+			in.position(0);
+			byte[] byteTmp = new byte[in.remaining()];
+			in.get(byteTmp);
+			Tools.putUnsignedShort(byteTmp, 0, 10);
+			log.debug("byteTmp==msg==:"+Arrays.toString(byteTmp));
+			int checkSumTmp = Tools.checkSum(byteTmp, byteTmp.length);
+			log.debug("checkSumTmp========:"+checkSumTmp);
 			
+			if(checkSumTmp != checksum){
+				throw new PackgeException("packge message error:checksum error");
+			}
+			in.position(position);
 			IBodyMessage bodyMessage = this.decodeMessageBody(in, charset);
 			
 			Message message = new Message(headMessage,bodyMessage);

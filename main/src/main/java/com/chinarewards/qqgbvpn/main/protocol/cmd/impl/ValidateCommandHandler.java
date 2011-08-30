@@ -38,10 +38,11 @@ public class ValidateCommandHandler implements CommandHandler {
 	@Override
 	public IBodyMessage execute(IoSession session, IBodyMessage bodyMessage) {
 		
-		// TODO Auto-generated method stub
 		log.debug("ValidateCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		ValidateRequestMessage validateRequestMessage = (ValidateRequestMessage) bodyMessage;
 		ValidateResponseMessage validateResponseMessage = new ValidateResponseMessage();
+
+		log.debug("ValidateCommandHandler======execute==posId=:"+String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		
 		HashMap<String, String> postParams = new HashMap<String, String>();
 		postParams.put("posId", String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
@@ -96,7 +97,6 @@ public class ValidateCommandHandler implements CommandHandler {
 			validateResponseMessage.setResult(ERROR_CODE);
 		} catch (SendPostTimeOutException e) {
 			log.debug("error=========:POST连接出错");
-			System.err.println("");
 			validateResponseMessage.setResult(ERROR_CODE);
 		} catch (SaveDBException e) {
 			log.debug("error=========:后台保存数据库出错 "+e.getMessage());
@@ -104,8 +104,9 @@ public class ValidateCommandHandler implements CommandHandler {
 		}
 		
 		validateResponseMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID_RESPONSE);
-		
-		return null;
+
+		log.debug("ValidateCommandHandler======execute==end=:"+validateResponseMessage.getCmdId());
+		return validateResponseMessage;
 	}
 
 }
