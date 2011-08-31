@@ -530,8 +530,14 @@ public class QQApiTest extends JpaGuiceTest {
 		server.start();
 		
 		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
 		GroupBuyingUtil.sendPost(url, null);
+		/*String url = "http://tuan-layenlin.qq.com/api/pos/query";
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		String posId = "REWARDS-0001";
+		params.put("posId", posId);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
+		
+		GroupBuyingUtil.sendPost(url, params);*/
 	}
 
 	@Test
