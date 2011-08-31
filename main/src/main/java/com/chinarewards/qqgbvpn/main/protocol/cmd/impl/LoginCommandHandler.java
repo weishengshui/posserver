@@ -40,7 +40,13 @@ public class LoginCommandHandler implements CommandHandler {
 	@Override
 	public IBodyMessage execute(IoSession session, IBodyMessage bodyMessage) {
 		log.debug("LoginCommandHandler======execute==bodyMessage=:"+bodyMessage);
-		LoginResponseMessage loginResponseMessage  = loginManager.login((LoginRequestMessage) bodyMessage);
+		LoginResponseMessage loginResponseMessage  = null;
+		try{
+			loginResponseMessage  = loginManager.login((LoginRequestMessage) bodyMessage);
+		}catch(Throwable e){
+			loginResponseMessage = new LoginResponseMessage();
+			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
+		}
 		loginResponseMessage.setCmdId(CmdConstant.LOGIN_CMD_ID_RESPONSE);
 		if(loginResponseMessage.getResult() == LoginResult.SUCCESS.getPosCode()){
 			HashMap<String, String> params = new HashMap<String, String>();

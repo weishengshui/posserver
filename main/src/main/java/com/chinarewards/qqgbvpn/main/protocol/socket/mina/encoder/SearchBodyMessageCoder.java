@@ -64,14 +64,17 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 		
 		StringBuffer buffer = new StringBuffer();
 		for(SearchResponseDetail searchResponseDetail:detail){
-			buffer.append(searchResponseDetail.getGrouponId()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getGrouponName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getMercName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getListName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getDetailName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getGrouponId() == null?"":searchResponseDetail.getGrouponId()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getGrouponName()== null?"":searchResponseDetail.getGrouponName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getMercName()== null?"":searchResponseDetail.getMercName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getListName()== null?"":searchResponseDetail.getListName()).append(CmdConstant.SEPARATOR);
+			buffer.append(searchResponseDetail.getDetailName()== null?"":searchResponseDetail.getDetailName()).append(CmdConstant.SEPARATOR);
 		}
-		byte[] detailByte = buffer.toString().getBytes(charset);
-		log.debug("detail buffer is ({})",buffer.toString());
+		String tmpStr = buffer.toString();
+		log.debug("detail buffer is ({})",buffer);
+		tmpStr = tmpStr.replaceAll("\\\\r\\\\n", String.valueOf(CmdConstant.ENTER));
+		byte[] detailByte = tmpStr.getBytes(charset);
+		log.debug("detail src is ({})",tmpStr);
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND + 10 + detailByte.length];
 		
 		Tools.putUnsignedInt(resultByte, cmdId, 0);

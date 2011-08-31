@@ -71,5 +71,10 @@ public class CmdConstant {
 	 * no login
 	 */
 	public static final long ERROR_NO_LOGIN_CODE = 7;
+	
+	/**
+	 * enter
+	 */
+	public static final char ENTER = 13;
 
 }
