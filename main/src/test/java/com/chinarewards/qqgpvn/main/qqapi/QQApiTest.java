@@ -1,11 +1,14 @@
 package com.chinarewards.qqgpvn.main.qqapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.persistence.Query;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
@@ -13,12 +16,15 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
@@ -35,7 +41,6 @@ import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
-import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
@@ -194,8 +199,10 @@ public class QQApiTest extends JpaGuiceTest {
 		GroupBuyingDao dao = getInjector().getInstance(
 				GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("posId", "rewards-0001");
-		params.put("key", "456789000");
+		String posId = "rewards-0001";
+		params.put("posId", posId);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
+		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
@@ -203,16 +210,27 @@ public class QQApiTest extends JpaGuiceTest {
 			PageInfo<GrouponCache> pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(50);
-			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, "rewards-0001").getItems();
-			for (int i = 0; i < cacheList.size(); i++) {
-				System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
-				System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
-				System.out.println("MercName-->" + cacheList.get(i).getMercName());
-				System.out.println("ListName-->" + cacheList.get(i).getListName());
-				System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
-				//验证排序是否正确
-				assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, posId).getItems();
+			if (cacheList != null && cacheList.size() > 0) {
+				for (int i = 0; i < cacheList.size(); i++) {
+					System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
+					System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
+					System.out.println("MercName-->" + cacheList.get(i).getMercName());
+					System.out.println("ListName-->" + cacheList.get(i).getListName());
+					System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
+					//验证排序是否正确
+					assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+				}
 			}
+			//check cache
+			Query jql = emp.get().createQuery(
+					"select j.eventDetail from Journal j where j.event = '"
+							+ DomainEvent.GROUPON_CACHE_INIT.toString()
+							+ "' and j.entityId = ?1 order by j.ts desc");
+			jql.setParameter(1, posId);
+			String result = (String) jql.getResultList().get(0);
+			System.out.println("result--->" + result);
+			assertTrue(result.startsWith("["));
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");
 			e.printStackTrace();
@@ -350,7 +368,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("posId", "rewards-0001");
 		params.put("grouponId", "456789");
 		params.put("token", "4567890");
-		params.put("key", "456789000");
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -445,7 +463,7 @@ public class QQApiTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", "456789000");
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");
