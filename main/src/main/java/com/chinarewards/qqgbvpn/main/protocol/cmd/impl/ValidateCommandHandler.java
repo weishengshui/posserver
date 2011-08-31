@@ -28,7 +28,7 @@ public class ValidateCommandHandler implements CommandHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private final int ERROR_CODE_THER = 1; 
+	private final int ERROR_CODE_THER = 999; 
 	
 	private final int SUCCESS_CODE = 0; 
 	
@@ -60,15 +60,18 @@ public class ValidateCommandHandler implements CommandHandler {
 			if (resultCode == SUCCESS_CODE ) {
 				List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
 						.get("items");
+				validateResponseMessage.setResult(SUCCESS_CODE);
 				for (GroupBuyingValidateResultVO item : items) {
+					log.debug("item.getResultStatus()=============:"+item.getResultStatus());
+					if (!"0".equals(item.getResultStatus())) {
+						validateResponseMessage.setResult(1);
+					}
 					validateResponseMessage.setResultName(item.getResultName());
 					validateResponseMessage.setCurrentTime(item.getCurrentTime());
 					validateResponseMessage.setResultExplain(item.getResultExplain());
 					validateResponseMessage.setUseTime(item.getUseTime());
 					validateResponseMessage.setValidTime(item.getValidTime());
 				}
-
-				validateResponseMessage.setResult(SUCCESS_CODE);
 			} else {
 				switch (resultCode) {
 				case -1:

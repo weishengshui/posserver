@@ -102,15 +102,15 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			int checkSumTmp = Tools.checkSum(byteTmp, byteTmp.length);
 			log.debug("checkSumTmp========:" + checkSumTmp);
 
-			// FIXME re-enable checksum
+			//checksum
 			
-//			if (checkSumTmp != checksum) {
-//				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-//				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
-//				Message message = new Message(headMessage, bodyMessage);
-//				out.write(message);
-//				return true;
-//			}
+			if (checkSumTmp != checksum) {
+				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
+				Message message = new Message(headMessage, bodyMessage);
+				out.write(message);
+				return true;
+			}
 
 			in.position(position);
 			IBodyMessage bodyMessage = null;

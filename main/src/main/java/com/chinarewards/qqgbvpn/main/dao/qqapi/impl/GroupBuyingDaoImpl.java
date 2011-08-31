@@ -401,7 +401,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	private List<GrouponCache> deleteGrouponCache(String posId) {
 		List<GrouponCache> list = getGrouponCacheByPosId(posId);
 		if (list != null && list.size() > 0) {
-			Query query = em.get().createQuery("delete from GrouponCache gc where gc.posId = ?1");
+			Query query = em.get().createQuery("delete from GrouponCache gc where gc.posId = ?");
 			query.setParameter(1, posId);
 			query.executeUpdate();
 		}

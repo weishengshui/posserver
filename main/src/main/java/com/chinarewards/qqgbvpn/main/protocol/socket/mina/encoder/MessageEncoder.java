@@ -88,7 +88,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		log.debug("bodyByte========:"+Arrays.toString(bodyByte));
+		log.debug("bodyByte====return====:({})",Arrays.toString(bodyByte));
 		
 		byte[] headByte = new byte[ProtocolLengths.HEAD];
 
@@ -107,7 +107,8 @@ public class MessageEncoder implements ProtocolEncoder {
 		int checkSumVal = Tools.checkSum(result, result.length);
 
 		Tools.putUnsignedShort(result, checkSumVal, 10);
-		
+
+		log.debug("checkSumVal=====return===:({})" ,checkSumVal);
 		
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
@@ -115,7 +116,8 @@ public class MessageEncoder implements ProtocolEncoder {
 		log.debug("Outgoing byte content");
 		CodecUtil.debugRaw(log, result);
 
-		log.debug("result========length:"+result.length);
+		log.debug("result========length:({})",result.length);
+		log.debug("result========value:({})",Arrays.toString(result));
 		buf.put(result);
 		buf.flip();
 		out.write(buf);
