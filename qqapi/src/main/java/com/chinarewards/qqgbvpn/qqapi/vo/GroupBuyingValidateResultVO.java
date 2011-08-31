@@ -3,6 +3,11 @@ package com.chinarewards.qqgbvpn.qqapi.vo;
 public class GroupBuyingValidateResultVO {
 
 	/**
+	 * 验证结果状态，0代表成功，非0代表出错
+	 */
+	private String resultStatus;
+	
+	/**
 	 * 验证结果名称-小票上显示
 	 */
 	private String resultName;
@@ -32,6 +37,14 @@ public class GroupBuyingValidateResultVO {
 	 */
 	private String refundTime;
 
+	public String getResultStatus() {
+		return resultStatus;
+	}
+
+	public void setResultStatus(String resultStatus) {
+		this.resultStatus = resultStatus;
+	}
+	
 	public String getResultName() {
 		return resultName;
 	}

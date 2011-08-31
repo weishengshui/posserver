@@ -250,8 +250,8 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		if ("0".equals(resultCode)) {
 			for (String posId : posIds) {
 				resultStatus = this.getResultStatusByPosIdForUnbind(items, posId);
-				//resultStatus取消状态，非0代表成功
-				if (!"0".equals(resultStatus)) {
+				//resultStatus取消状态，0代表成功
+				if ("0".equals(resultStatus)) {
 					PosAssignment pa = getPosAssignmentByIdPosId(posId);
 					if (pa != null) {
 						Journal journal = new Journal();
@@ -292,12 +292,36 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 							throw new SaveDBException(e);
 						}
 					} else {
-						log.error("group buying unbind get pos assignment error");
-						log.error("pos assignment not found by posId : " + posId);
-						throw new SaveDBException("group buying unbind error,pos assignment not found by posId : " + posId);
+						Journal journal = new Journal();
+						journal.setTs(data);
+						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+						journal.setEntityId(posId);
+						journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
+						journal.setEventDetail("group buying unbind error,pos assignment not found by posId : " + posId);
+						try {
+							if (!em.get().getTransaction().isActive()) {
+								em.get().getTransaction().begin();
+							}
+							saveJournal(journal);
+							if (em.get().getTransaction().isActive()) {
+								em.get().getTransaction().commit();
+							}
+						} catch (Exception e) {
+							if (em.get().getTransaction().isActive()) {
+								em.get().getTransaction().rollback();
+							}
+							log.error("group buying unbind save journal error");
+							log.error("posId: " + posId);
+							log.error("ts: " + journal.getTs());
+							log.error("entity: " + journal.getEntity());
+							log.error("entityId: " + journal.getEntityId());
+							log.error("event: " + journal.getEvent());
+							log.error("eventDetail: " + journal.getEventDetail());
+							throw new SaveDBException(e);
+						}
 					}
 				} else {
-					//resultStatus取消状态，0代表不成功，直接写失败日志
+					//resultStatus取消状态，非0代表不成功，直接写失败日志
 					Journal journal = new Journal();
 					journal.setTs(data);
 					journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
@@ -316,7 +340,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 						if (em.get().getTransaction().isActive()) {
 							em.get().getTransaction().rollback();
 						}
-						log.error("group buying unbind save error");
+						log.error("group buying unbind save journal error");
 						log.error("posId: " + posId);
 						log.error("ts: " + journal.getTs());
 						log.error("entity: " + journal.getEntity());
@@ -347,7 +371,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 				if (em.get().getTransaction().isActive()) {
 					em.get().getTransaction().rollback();
 				}
-				log.error("group buying unbind save error");
+				log.error("group buying unbind save journal error");
 				log.error("posIds: " + StringUtils.join(posIds, ","));
 				log.error("ts: " + journal.getTs());
 				log.error("entity: " + journal.getEntity());
@@ -421,7 +445,11 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		try {
 			Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
 			jql.setParameter(1, posId);
-			PosAssignment pa = (PosAssignment) jql.getSingleResult();
+			List resultList = jql.getResultList();
+			PosAssignment pa = null;
+			if (resultList != null) {
+				pa = (PosAssignment) resultList.get(0);
+			}
 			return pa;
 		} catch (Exception e) {
 			return null;
@@ -446,7 +474,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	}
 	
 	private String getResultStatusByPosIdForUnbind(List<GroupBuyingUnbindVO> items, String posId) {
-		String resultStatus = "0";
+		String resultStatus = "-1";
 		if (posId != null && items != null && items.size() > 0) {
 			for (GroupBuyingUnbindVO item : items) {
 				if (posId.equals(item.getPosId())) {
