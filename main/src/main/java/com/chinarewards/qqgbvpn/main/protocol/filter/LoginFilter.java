@@ -6,9 +6,13 @@ package com.chinarewards.qqgbvpn.main.protocol.filter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.main.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
@@ -18,6 +22,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.chinarewards.utils.StringUtil;
+import com.google.inject.Inject;
 
 /**
  * Login filter.
@@ -32,6 +37,9 @@ public class LoginFilter extends IoFilterAdapter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 	
+	@Inject
+	JournalLogic journalLogic;
+	
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
@@ -45,6 +53,20 @@ public class LoginFilter extends IoFilterAdapter {
 			// get POS ID
 			InitRequestMessage im = (InitRequestMessage) msg;
 			session.setAttribute(POS_ID, im.getPosid());
+
+			// add Journal.
+			ObjectMapper mapper = new ObjectMapper();
+			String eventDetail = null;
+			try {
+				eventDetail = mapper.writeValueAsString(im);
+			} catch (Exception e) {
+				log.error("mapping InitResponse error.", e);
+				eventDetail = e.toString();
+			}
+
+			journalLogic.logEvent(DomainEvent.POS_INIT_REQ.toString(),
+					DomainEntity.POS.toString(), im.getPosid(), eventDetail);
+
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			// get POS ID
 			LoginRequestMessage lm = (LoginRequestMessage) msg;

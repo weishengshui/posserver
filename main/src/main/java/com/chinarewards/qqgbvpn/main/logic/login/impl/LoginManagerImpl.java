@@ -5,14 +5,18 @@ package com.chinarewards.qqgbvpn.main.logic.login.impl;
 
 import javax.persistence.NoResultException;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
+import com.chinarewards.qqgbvpn.main.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
@@ -35,6 +39,9 @@ public class LoginManagerImpl implements LoginManager {
 	@Inject
 	Provider<PosDao> posDao;
 
+	@Inject
+	JournalLogic journalLogic;
+
 	@Override
 	public InitResponseMessage init(InitRequestMessage req) {
 		logger.debug("InitResponse() invoke");
@@ -50,6 +57,7 @@ public class LoginManagerImpl implements LoginManager {
 
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
+		DomainEvent domainEvent = null;
 		try {
 			pos = posDao.get().fetchPos(req.getPosid(),
 					PosDeliveryStatus.DELIVERED, null,
@@ -61,13 +69,15 @@ public class LoginManagerImpl implements LoginManager {
 			}
 
 			pos.setChallenge(challenge);
-
+			
 			switch (pos.getIstatus()) {
 			case INITED:
 				result = InitResult.INIT;
+				domainEvent = DomainEvent.POS_INIT_OK;
 				break;
 			case UNINITED:
 				result = InitResult.UNINIT;
+				domainEvent = DomainEvent.POS_INIT_FAILED;
 				break;
 			default:
 				result = InitResult.OTHERS;
@@ -80,6 +90,19 @@ public class LoginManagerImpl implements LoginManager {
 		resp.setChallenge(challenge);
 		resp.setResult(result.getPosCode());
 
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(resp);
+		} catch (Exception e) {
+			logger.error("mapping InitResponse error.", e);
+			eventDetail = e.toString();
+		}
+
+		journalLogic.logEvent(domainEvent.toString(),
+				DomainEntity.POS.toString(), req.getPosid(), eventDetail);
+
 		return resp;
 	}
 
@@ -89,6 +112,7 @@ public class LoginManagerImpl implements LoginManager {
 
 		LoginResult result = null;
 		byte[] challenge = ChallengeUtil.generateChallenge();
+		DomainEvent domainEvent = null;
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
 			logger.trace(
@@ -104,8 +128,10 @@ public class LoginManagerImpl implements LoginManager {
 
 			if (check) {
 				result = LoginResult.SUCCESS;
+				domainEvent = DomainEvent.POS_LOGGED_IN;
 			} else {
 				result = LoginResult.VALIDATE_FAILED;
+				domainEvent = DomainEvent.POS_LOGGED_FAILED;
 			}
 		} catch (NoResultException e) {
 			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
@@ -113,6 +139,19 @@ public class LoginManagerImpl implements LoginManager {
 		}
 		resp.setChallenge(challenge);
 		resp.setResult(result.getPosCode());
+
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(resp);
+		} catch (Exception e) {
+			logger.error("mapping InitResponse error.", e);
+			eventDetail = e.toString();
+		}
+
+		journalLogic.logEvent(domainEvent.toString(),
+				DomainEntity.POS.toString(), req.getPosid(), eventDetail);
 
 		return resp;
 	}

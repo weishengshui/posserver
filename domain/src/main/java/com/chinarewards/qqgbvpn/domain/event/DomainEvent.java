@@ -109,7 +109,31 @@ public enum DomainEvent {
 	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL,
 
 	// ---------- POS Server Related -------------
-	POS_INIT_REQ, POS_INIT_OK, POS_INIT_FAILED, POS_LOGGED_IN, //
+	/**
+	 * Event: A product search action has been performed.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>POS ID (pos.posId)</li>
+	 * </ol>
+	 */
+	POS_INIT_REQ, 
+	
+	/**
+	 * Event: 
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 */
+	POS_INIT_OK,
+	
+	POS_INIT_FAILED, POS_LOGGED_IN, POS_LOGGED_FAILED,//
 
 	/**
 	 * Event: A product search action has been performed.
