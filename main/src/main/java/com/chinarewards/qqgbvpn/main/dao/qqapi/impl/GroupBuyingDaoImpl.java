@@ -473,8 +473,10 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		List<String> resultList = jql.getResultList();
 		if (resultList !=  null && resultList.size() > 0) {
 			String result = resultList.get(0);
-			if (!"".equals(result.trim()) && !result.startsWith("[")) {
-				resultCode = result;
+			if (result != null) {
+				if (!"".equals(result.trim()) && !result.startsWith("[")) {
+					resultCode = result;
+				}
 			}
 		}
 		return resultCode;

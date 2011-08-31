@@ -108,6 +108,9 @@ public class GroupBuyingUtil {
 				}
 			}
 			HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
+			//与QQ联调时使用start
+			//post.addHeader("host", "tuan-layenlin.qq.com");
+			//与QQ联调时使用end
 			post.setEntity(httpentity);
 			HttpResponse httpResponse = client.execute(post);
 			//请求成功
@@ -139,7 +142,7 @@ public class GroupBuyingUtil {
 		try {
 			HashMap<String,Object> parseResult = new HashMap<String,Object>();
 			SAXReader reader = new SAXReader(); 
-			Document xmlDoc = reader.read(new InputStreamReader(in, "UTF-8"));
+			Document xmlDoc = reader.read(new InputStreamReader(in, "GBK"));
 			Element root = xmlDoc.getRootElement();
 			String resultCode = root.elementText("resultCode");
 			parseResult.put("resultCode", resultCode);
