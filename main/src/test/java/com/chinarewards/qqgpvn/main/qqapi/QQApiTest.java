@@ -18,6 +18,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -46,7 +47,6 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 public class QQApiTest extends JpaGuiceTest {
 	
 	private Server server = new Server(0);
-	private String txserver_key = "JXTPOS";
 
 	@Override
 	protected Module[] getModules() {
@@ -201,7 +201,8 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "rewards-0001";
 		params.put("posId", posId);
-		params.put("key", txserver_key);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
+		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
@@ -367,7 +368,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("posId", "rewards-0001");
 		params.put("grouponId", "456789");
 		params.put("token", "4567890");
-		params.put("key", txserver_key);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -462,7 +463,7 @@ public class QQApiTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", txserver_key);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");
