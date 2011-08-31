@@ -69,6 +69,11 @@ public class Validation {
 	ValidationStatus status;
 
 	/**
+	 * Result Status returned by QQ.
+	 */
+	String resultStatus;
+	
+	/**
 	 * Should be copied from <code>PosAssignment</code>. The value should be
 	 * <code>Agent.getId()</code>.
 	 */
@@ -79,6 +84,14 @@ public class Validation {
 	 * <code>Agent.getName()</code>.
 	 */
 	String agentName;
+
+	public String getResultStatus() {
+		return resultStatus;
+	}
+
+	public void setResultStatus(String resultStatus) {
+		this.resultStatus = resultStatus;
+	}
 
 	public String getId() {
 		return id;

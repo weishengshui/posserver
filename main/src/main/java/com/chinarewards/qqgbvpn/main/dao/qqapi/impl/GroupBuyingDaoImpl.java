@@ -27,6 +27,7 @@ import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
+import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
 public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 
@@ -184,6 +185,11 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		String token = (String) params.get("token");
 		String grouponId = (String) params.get("grouponId");
 		Pos pos = getPosByPosId(posId);
+		List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) params.get("items");
+		String resultStatus = "-999";
+		if (items != null && items.size() > 0) {
+			resultStatus = items.get(0).getResultStatus();
+		}
 		Agent agent = getAgentByPosId(posId);
 		if (pos != null && agent != null) {
 			Validation validation = new Validation();
@@ -200,6 +206,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 				validation.setPosModel(pos.getModel());
 				validation.setPosSimPhoneNo(pos.getSimPhoneNo());
 				validation.setStatus("0".equals(resultCode) ? ValidationStatus.SUCCESS : ValidationStatus.FAILED);
+				validation.setResultStatus(resultStatus);
 				validation.setAgentId(agent.getId());
 				validation.setAgentName(agent.getName());
 				saveValidation(validation);
