@@ -47,7 +47,17 @@ public class DefaultPosServer implements PosServer {
 	 */
 	InetSocketAddress serverAddr;
 
+	/**
+	 * The configured port to use.
+	 */
 	protected int port;
+
+	/**
+	 * Whether the PersistService of Guice has been initialized, i.e. 
+	 * the .start() method has been called. We need to remember this state
+	 * since it cannot be called twice (strange!).
+	 */
+	protected boolean isPersistServiceInited = false;
 
 	/**
 	 * acceptor
@@ -139,8 +149,11 @@ public class DefaultPosServer implements PosServer {
 	}
 
 	protected void startPersistenceService() {
+		if (isPersistServiceInited) return;
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
+		// see comment.
+		isPersistServiceInited = true;
 	}
 
 	/*
@@ -154,8 +167,9 @@ public class DefaultPosServer implements PosServer {
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
 
-		PersistService ps = injector.getInstance(PersistService.class);
-		ps.stop();
+		// XXX should gracefully shutdown this server.
+//		PersistService ps = injector.getInstance(PersistService.class);
+//		ps.stop();
 
 	}
 
