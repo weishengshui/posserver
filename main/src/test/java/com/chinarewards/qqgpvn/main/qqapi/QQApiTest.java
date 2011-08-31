@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
@@ -163,14 +164,14 @@ public class QQApiTest extends JpaGuiceTest {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
 		sb.append("<tuan>");
-		sb.append("<resultCode>0</resultCode>");
+		sb.append("<resultCode>-1</resultCode>");
 		sb.append("<groupon>");
 		sb.append("<item>");
-		sb.append("<posId>1</posId>");
+		sb.append("<posId>rewards-0001</posId>");
 		sb.append("<resultStatus>0</resultStatus>");
 		sb.append("</item>");
 		sb.append("<item>");
-		sb.append("<posId>2</posId>");
+		sb.append("<posId>rewards-0002</posId>");
 		sb.append("<resultStatus>1</resultStatus>");
 		sb.append("</item>");
 		sb.append("</groupon>");
