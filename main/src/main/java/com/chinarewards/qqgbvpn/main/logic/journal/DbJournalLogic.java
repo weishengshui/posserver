@@ -58,10 +58,11 @@ public class DbJournalLogic extends AbstractJpaLogic implements JournalLogic {
 		j.setTs(now);
 
 		// save the entity
+		em.get().persist(j);
 
 		// close the new transaction
 
-		throw new UnsupportedOperationException("implements me");
+//		throw new UnsupportedOperationException("implements me");
 
 	}
 

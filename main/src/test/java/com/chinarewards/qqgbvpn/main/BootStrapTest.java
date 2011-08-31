@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Arrays;
 
 import javax.persistence.EntityManager;
@@ -150,9 +151,15 @@ class BootThread extends Thread {
 
 	@Override
 	public void run() {
-		boot = new BootStrap((String[]) null);
+		URL url = BootThread.class.getResource("/");
+		String filePath = url.getPath();
+		String[] args = new String[] { "-d",filePath};
+		boot = new BootStrap(args);
 		try {
 			boot.run();
+			
+			PosServer server = boot.getInjector().getInstance(PosServer.class);
+			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
