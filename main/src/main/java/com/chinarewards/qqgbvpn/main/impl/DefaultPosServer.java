@@ -16,7 +16,6 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
@@ -89,12 +88,7 @@ public class DefaultPosServer implements PosServer {
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 		
-		
-		// the TCP port to listen
-		int port = new PosNetworkProperties().getSearverPort();
-
 		// =============== server side ===================
-		serverAddr = new InetSocketAddress(port);
 
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
@@ -112,7 +106,8 @@ public class DefaultPosServer implements PosServer {
 				injector.getInstance(TransactionFilter.class));
 
 		// Login filter.
-		acceptor.getFilterChain().addLast("login", new LoginFilter());
+		acceptor.getFilterChain().addLast("login",
+				injector.getInstance(LoginFilter.class));
 
 		acceptor.setHandler(new ServerSessionHandler(injector));
 		acceptor.setCloseOnDeactivation(true);

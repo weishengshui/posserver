@@ -15,7 +15,7 @@ import com.google.inject.Provider;
  */
 public class AbstractJpaLogic extends BaseLogic {
 
-	private final Provider<EntityManager> em;
+	protected final Provider<EntityManager> em;
 
 	/**
 	 * Constructor.
