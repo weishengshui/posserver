@@ -141,7 +141,7 @@ public class BootStrapTest extends BaseTest {
 			os.close();
 			socket.close();
 		}
-
+		t.interrupt();
 	}
 }
 
@@ -153,11 +153,11 @@ class BootThread extends Thread {
 	public void run() {
 		URL url = BootThread.class.getResource("/");
 		String filePath = url.getPath();
-		String[] args = new String[] { "-d",filePath};
+		String[] args = new String[] { "-d", filePath };
 		boot = new BootStrap(args);
 		try {
 			boot.run();
-			
+
 			PosServer server = boot.getInjector().getInstance(PosServer.class);
 			server.start();
 		} catch (Exception e) {

@@ -21,7 +21,7 @@ public class MinaTest {
 
 	@Test
 	public void testClientServer() throws Exception {
-		int PORT = 1234;
+		int PORT = 61234;
 		String HOSTNAME = "localhost";
 
 		// =============== server side ===================
