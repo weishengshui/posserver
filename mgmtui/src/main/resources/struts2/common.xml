@@ -5,4 +5,5 @@
 
 <struts>
 	<include file="struts2/helloworld.xml" />
+	<include file="struts2/pos.xml" />
 </struts>
