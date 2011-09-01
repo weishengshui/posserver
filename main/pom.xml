@@ -189,8 +189,8 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.chinarewards.indexer.Main</mainClass>
-							<packageName>com.chinarewards.indexer</packageName>
+							<mainClass>com.chinarewards.qqgbvpn.main.Main</mainClass>
+							<packageName>com.chinarewards.qqgbvpn.main</packageName>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 						</manifest>
