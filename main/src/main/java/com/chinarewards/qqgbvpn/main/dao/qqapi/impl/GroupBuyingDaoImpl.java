@@ -21,6 +21,7 @@ import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
+import com.chinarewards.qqgbvpn.domain.status.CommunicationStatus;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
@@ -186,9 +187,22 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		String grouponId = (String) params.get("grouponId");
 		Pos pos = getPosByPosId(posId);
 		List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) params.get("items");
-		String resultStatus = "-999";
+		String resultStatus = "";
+		String resultName = "";
+		String resultExplain = "";
+		String currentTime = "";
+		String useTime = "";
+		String validTime = "";
+		String refundTime = "";
 		if (items != null && items.size() > 0) {
-			resultStatus = items.get(0).getResultStatus();
+			GroupBuyingValidateResultVO item = items.get(0);
+			resultStatus = item.getResultStatus();
+			resultName = item.getResultName();
+			resultExplain = item.getResultExplain();
+			currentTime = item.getCurrentTime();
+			useTime = item.getUseTime();
+			validTime = item.getValidTime();
+			refundTime = item.getRefundTime();
 		}
 		Agent agent = getAgentByPosId(posId);
 		if (pos != null && agent != null) {
@@ -205,8 +219,15 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 				validation.setPosId(pos.getPosId());
 				validation.setPosModel(pos.getModel());
 				validation.setPosSimPhoneNo(pos.getSimPhoneNo());
-				validation.setStatus("0".equals(resultCode) ? ValidationStatus.SUCCESS : ValidationStatus.FAILED);
+				validation.setStatus("0".equals(resultStatus) ? ValidationStatus.SUCCESS : ValidationStatus.FAILED);
+				validation.setCstatus("0".equals(resultCode) ? CommunicationStatus.SUCCESS : CommunicationStatus.FAILED);
 				validation.setResultStatus(resultStatus);
+				validation.setResultName(resultName);
+				validation.setResultExplain(resultExplain);
+				validation.setCurrentTime(currentTime);
+				validation.setUseTime(useTime);
+				validation.setValidTime(validTime);
+				validation.setRefundTime(refundTime);
 				validation.setAgentId(agent.getId());
 				validation.setAgentName(agent.getName());
 				saveValidation(validation);

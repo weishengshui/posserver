@@ -133,6 +133,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<tuan>");
 		sb.append("<resultCode>0</resultCode>");
 		sb.append("<groupon>");
+		sb.append("<resultStatus>0</resultStatus>");
 		sb.append("<resultName>验证已成功</resultName>");
 		sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
 		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
@@ -140,6 +141,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<validTime>2011-08-10</validTime>");
 		sb.append("</groupon>");
 		sb.append("<groupon>");
+		sb.append("<resultStatus>-100</resultStatus>");
 		sb.append("<resultName>已退款</resultName>");
 		sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
 		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
