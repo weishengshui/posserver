@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+
 /**
  * message
  * 
@@ -8,7 +10,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.message;
  */
 public class Message {
 
-	private IBodyMessage bodyMessage;
+	private ICommand bodyMessage;
 
 	private HeadMessage headMessage;
 
@@ -16,17 +18,17 @@ public class Message {
 
 	}
 
-	public Message(HeadMessage headMessage, IBodyMessage bodyMessage) {
+	public Message(HeadMessage headMessage, ICommand bodyMessage) {
 		this.headMessage = headMessage;
 		this.bodyMessage = bodyMessage;
 	}
 
 	// -----------------------------------------//
-	public IBodyMessage getBodyMessage() {
+	public ICommand getBodyMessage() {
 		return bodyMessage;
 	}
 
-	public void setBodyMessage(IBodyMessage bodyMessage) {
+	public void setBodyMessage(ICommand bodyMessage) {
 		this.bodyMessage = bodyMessage;
 	}
 

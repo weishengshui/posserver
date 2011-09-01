@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
 
@@ -24,7 +24,7 @@ public class InitMessageCoder implements IBodyMessageCoder {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public IBodyMessage decode(IoBuffer in, Charset charset)
+	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackgeException {
 		log.debug("init message decode");
 		InitRequestMessage message = new InitRequestMessage();
@@ -42,7 +42,7 @@ public class InitMessageCoder implements IBodyMessageCoder {
 	}
 
 	@Override
-	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
+	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("init message encode");
 		InitResponseMessage responseMessage = (InitResponseMessage) bodyMessage;
 		long cmdId = responseMessage.getCmdId();

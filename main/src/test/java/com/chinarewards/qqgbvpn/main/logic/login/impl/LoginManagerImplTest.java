@@ -88,7 +88,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
-		req.setPosid("pos-0002");
+		req.setPosId("pos-0002");
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);

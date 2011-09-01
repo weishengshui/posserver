@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ValidateRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ValidateResponseMessage;
 
@@ -20,7 +20,7 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public IBodyMessage decode(IoBuffer in, Charset charset)
+	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackgeException {
 		log.debug("validate message decode");
 		ValidateRequestMessage message = new ValidateRequestMessage();
@@ -82,7 +82,7 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 	}
 
 	@Override
-	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
+	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("validate message encode");
 		ValidateResponseMessage responseMessage = (ValidateResponseMessage) bodyMessage;
 

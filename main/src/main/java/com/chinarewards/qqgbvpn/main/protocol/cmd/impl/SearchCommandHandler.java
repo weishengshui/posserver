@@ -15,8 +15,8 @@ import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchResponseDetail;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchResponseMessage;
@@ -39,7 +39,7 @@ public class SearchCommandHandler implements CommandHandler {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IBodyMessage execute(IoSession session, IBodyMessage bodyMessage) {
+	public ICommand execute(IoSession session, ICommand bodyMessage) {
 		// TODO Auto-generated method stub
 		log.debug("SearchCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		SearchRequestMessage searchRequestMessage = (SearchRequestMessage) bodyMessage;

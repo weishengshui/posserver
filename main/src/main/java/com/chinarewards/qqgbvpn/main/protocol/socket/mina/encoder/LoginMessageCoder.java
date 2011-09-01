@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 
@@ -24,7 +24,7 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public IBodyMessage decode(IoBuffer in, Charset charset)
+	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackgeException {
 		log.debug("login message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
@@ -40,13 +40,13 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 		in.get(challeugeresponse);
 		message.setCmdId(cmdId);
 		message.setChallengeResponse(challeugeresponse);
-		message.setPosid(new String(posid, charset));
+		message.setPosId(new String(posid, charset));
 		log.debug("login message request:cmdId is ({}) , posid is ({}) ,challengeResponse is ({})",new Object[]{cmdId,posid,challeugeresponse});
 		return message;
 	}
 
 	@Override
-	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
+	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("login message encode");
 
 		LoginResponseMessage responseMessage = (LoginResponseMessage) bodyMessage;

@@ -2,13 +2,15 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
 import java.util.List;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+
 /**
  * Search Response Message
  * 
  * @author huangwei
  *
  */
-public class SearchResponseMessage implements IBodyMessage {
+public class SearchResponseMessage implements ICommand {
 	
 	public long cmdId;
 	

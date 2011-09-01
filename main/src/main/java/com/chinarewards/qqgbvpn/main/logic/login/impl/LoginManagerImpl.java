@@ -90,7 +90,7 @@ public class LoginManagerImpl implements LoginManager {
 		LoginResult result = null;
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		try {
-			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
+			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
 			logger.trace(
 					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
@@ -108,7 +108,7 @@ public class LoginManagerImpl implements LoginManager {
 				result = LoginResult.VALIDATE_FAILED;
 			}
 		} catch (NoResultException e) {
-			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
+			logger.warn("Pos ID not found in DB. PosId={}", req.getPosId());
 			result = LoginResult.POSID_NOT_EXIST;
 		}
 		resp.setChallenge(challenge);

@@ -1,20 +1,21 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+
 /**
  * login request message body
  * 
  * @author huangwei
- *
+ * 
  */
-public class LoginRequestMessage implements IBodyMessage {
+public class LoginRequestMessage implements ICommand {
 
 	private long cmdId;
 
-	private String posid;
-	
-	private byte[] challengeResponse; 
+	private String posId;
 
-	
+	private byte[] challengeResponse;
+
 	public long getCmdId() {
 		return cmdId;
 	}
@@ -24,19 +25,19 @@ public class LoginRequestMessage implements IBodyMessage {
 
 	}
 
-	public String getPosid() {
-		return posid;
+	public String getPosId() {
+		return posId;
 	}
 
-	public void setPosid(String posid) {
-		this.posid = posid;
+	public void setPosId(String posId) {
+		this.posId = posId;
 	}
 
 	public byte[] getChallengeResponse() {
 		return challengeResponse;
 	}
 
-	public void setChallengeResponse(byte[] challeugeresponse) {
-		this.challengeResponse = challeugeresponse;
+	public void setChallengeResponse(byte[] challengeResponse) {
+		this.challengeResponse = challengeResponse;
 	}
 }

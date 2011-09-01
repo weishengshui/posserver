@@ -1,12 +1,14 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+
 /**
  * login request message body
  * 
  * @author huangwei
  *
  */
-public class LoginResponseMessage implements IBodyMessage {
+public class LoginResponseMessage implements ICommand {
 
 	private long cmdId;
 	

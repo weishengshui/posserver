@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchResponseDetail;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchResponseMessage;
@@ -27,7 +27,7 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Override
-	public IBodyMessage decode(IoBuffer in, Charset charset)
+	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackgeException {
 		log.debug("search message decode");
 		SearchRequestMessage message = new SearchRequestMessage();
@@ -48,7 +48,7 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 	}
 
 	@Override
-	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
+	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("search message encode");
 
 		SearchResponseMessage responseMessage = (SearchResponseMessage) bodyMessage;

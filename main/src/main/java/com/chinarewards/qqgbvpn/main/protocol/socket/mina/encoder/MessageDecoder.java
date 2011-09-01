@@ -14,10 +14,10 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackgeException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -105,7 +105,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			}
 			
 			in.position(position);
-			IBodyMessage bodyMessage = null;
+			ICommand bodyMessage = null;
 			try{
 				bodyMessage = this.decodeMessageBody(in, charset);
 			}catch(Exception e){
@@ -132,7 +132,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	}
 	
-	private IBodyMessage decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
+	private ICommand decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
 		//get cmdId and process it
 		int position = in.position();
 		long cmdId = in.getUnsignedInt();

@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 
 /**
  * error body message
@@ -8,7 +9,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
  * @author huangwei
  *
  */
-public class ErrorBodyMessage implements IBodyMessage {
+public class ErrorBodyMessage implements ICommand {
 
 	private long cmdId = CmdConstant.ERROR_CMD_ID;
 	

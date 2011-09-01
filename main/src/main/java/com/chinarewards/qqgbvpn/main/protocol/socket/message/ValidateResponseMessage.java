@@ -1,7 +1,9 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.message;
 
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 
-public class ValidateResponseMessage implements IBodyMessage {
+
+public class ValidateResponseMessage implements ICommand {
 
 	private long cmdId;
 	

@@ -5,8 +5,6 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
 import org.apache.mina.core.session.IoSession;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
-
 /**
  * Defines the interface which can properly handles the execution of an command.
  * 
@@ -16,12 +14,12 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 public interface CommandHandler {
 
 	/**
-	 * Execute cmd
+	 * Execute the specified command.
 	 * 
 	 * @param session
 	 * @param bodyMessage
 	 * @return
 	 */
-	public IBodyMessage execute(IoSession session,IBodyMessage bodyMessage);
+	public ICommand execute(IoSession session, ICommand bodyMessage);
 
 }

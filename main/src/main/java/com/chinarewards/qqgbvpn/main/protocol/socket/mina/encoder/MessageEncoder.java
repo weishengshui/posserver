@@ -12,12 +12,10 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -67,7 +65,7 @@ public class MessageEncoder implements ProtocolEncoder {
 		log.debug("message========:"+message.getClass());
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
-		IBodyMessage bodyMessage = msg.getBodyMessage();
+		ICommand bodyMessage = msg.getBodyMessage();
 
 		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;

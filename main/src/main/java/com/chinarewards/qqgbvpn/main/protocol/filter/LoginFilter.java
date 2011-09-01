@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
@@ -39,7 +39,7 @@ public class LoginFilter extends IoFilterAdapter {
 
 		// Check whether the command ID is LOGIN
 		Message messageTmp = (Message)message;
-		IBodyMessage msg = messageTmp.getBodyMessage();
+		ICommand msg = messageTmp.getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// get POS ID
@@ -48,7 +48,7 @@ public class LoginFilter extends IoFilterAdapter {
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
 			// get POS ID
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
-			session.setAttribute(POS_ID, lm.getPosid());
+			session.setAttribute(POS_ID, lm.getPosId());
 
 		} else if (isLogin == null || !isLogin) {
 			ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
@@ -75,7 +75,7 @@ public class LoginFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		IBodyMessage msg = ((Message) writeRequest.getMessage())
+		ICommand msg = ((Message) writeRequest.getMessage())
 				.getBodyMessage();
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE) {

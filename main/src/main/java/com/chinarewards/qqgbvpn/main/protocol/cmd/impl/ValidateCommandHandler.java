@@ -12,8 +12,8 @@ import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ValidateRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
@@ -36,7 +36,7 @@ public class ValidateCommandHandler implements CommandHandler {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public IBodyMessage execute(IoSession session, IBodyMessage bodyMessage) {
+	public ICommand execute(IoSession session, ICommand bodyMessage) {
 		
 		log.debug("ValidateCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		ValidateRequestMessage validateRequestMessage = (ValidateRequestMessage) bodyMessage;
