@@ -131,8 +131,14 @@ public class LoginManagerImpl implements LoginManager {
 			pos.setChallenge(challenge);
 
 			if (check) {
-				result = LoginResult.SUCCESS;
-				domainEvent = DomainEvent.POS_LOGGED_IN.toString();
+				if (pos.getIstatus() == PosInitializationStatus.INITED) {
+					result = LoginResult.SUCCESS;
+					domainEvent = DomainEvent.POS_LOGGED_IN.toString();
+				} else {
+					// Check POS initialization status. Must be INITED.
+					result = LoginResult.OTHERS;
+					domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
+				}
 			} else {
 				result = LoginResult.VALIDATE_FAILED;
 				domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
@@ -182,9 +188,15 @@ public class LoginManagerImpl implements LoginManager {
 			pos.setChallenge(challenge);
 
 			if (check) {
-				result = LoginResult.SUCCESS;
-				pos.setIstatus(PosInitializationStatus.INITED);
-				domainEvent = DomainEvent.POS_INIT_OK.toString();
+				if (pos.getIstatus() == PosInitializationStatus.UNINITED) {
+					result = LoginResult.SUCCESS;
+					pos.setIstatus(PosInitializationStatus.INITED);
+					domainEvent = DomainEvent.POS_INIT_OK.toString();
+				} else {
+					// Check POS initialization status. Must be INITED.
+					result = LoginResult.OTHERS;
+					domainEvent = DomainEvent.POS_INIT_FAILED.toString();
+				}
 			} else {
 				result = LoginResult.VALIDATE_FAILED;
 				domainEvent = DomainEvent.POS_INIT_FAILED.toString();
