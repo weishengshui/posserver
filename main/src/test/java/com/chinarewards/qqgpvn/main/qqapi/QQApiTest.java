@@ -114,7 +114,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -147,7 +147,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -176,7 +176,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -596,7 +596,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
 		sb.append("<detailName>400.01元套餐</detailName>");
 		sb.append("</item>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -678,7 +678,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -751,7 +751,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -824,7 +824,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
