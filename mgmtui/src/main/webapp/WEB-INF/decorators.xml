@@ -4,69 +4,7 @@
 
 	<!-- Any URLs that are excluded will never be decorated by Sitemesh -->
 	<excludes>
-		<!-- All test files are excluded -->
-		<!-- <pattern>/test/*</pattern> -->
 		<pattern>/error.jsp</pattern>
-		<pattern>/webx/performedWebxComponentAction*</pattern>
-		<pattern>/microblog/attblog*</pattern>
-		<pattern>/card/bindingcardinit*</pattern>
-		<pattern>/card/pagectrl*</pattern>
-		<pattern>/card/linktobinding*</pattern>
-		<pattern>/card/applycard*</pattern>
-		<pattern>/card/applycardsuccess*</pattern>
-		<pattern>/card/intro*</pattern>
-
-		<pattern>/broadcast/toUploadBroadcastItem*</pattern>
-		<pattern>/broadcast/uploadBroadcastItem*</pattern>
-		<pattern>/broadcast/toSelectPhoneItem*</pattern>
-		<pattern>/broadcast/attBroadCenterAjax*</pattern>
-		<pattern>/broadcast/myBroadcastCenter*</pattern>
-		<pattern>/profile/save_ta_message_borad*</pattern>
-		<pattern>/broadcast/topicCenter*</pattern>
-		<pattern>/broadcast/taBroadcastCenter*</pattern>
-		<pattern>/broadcast/topBroadcast*</pattern>
-		<pattern>/photo/photo_list*</pattern>
-		<pattern>/photo/my_allAlbum*</pattern>
-		<pattern>/livingChannel_details/find_allUserFocus*</pattern>
-		<pattern>/livingChannel_details/find_latestShops*</pattern>
-		<pattern>/profile/rightHome*</pattern>
-		<pattern>/profile/taRightHome*</pattern>
-
-		<!-- map -->
-		<pattern>/livingChannel_details/map/*</pattern>
-		<pattern>/photo/photoComment*</pattern>
-		
-		<!-- admin -->
-		<pattern>/admin*</pattern>
-		
-		<!-- kindeditor -->
-		<pattern>/kindeditor/*</pattern>
-		
-		<!-- my97 -->
-		<pattern>/my97/*</pattern>
-		<!-- cact -->
-		<pattern>/activaty/homeCenter*</pattern>
-		<pattern>/photo/original*</pattern>
-		<!-- coupon -->
-		<pattern>/coupon/listcenter*</pattern>
-		<!-- shop top -->
-		<pattern>/livingChannel_details/shoptop/*</pattern>
-		<!-- privilege top -->
-		<pattern>/privilege/privilegeTop/*</pattern>
-		<!-- memberSystem top -->
-		<pattern>/privilege/memberSystemTop/*</pattern>
-		<!-- living ajax -->
-		<pattern>/livingChannel_details/ajax*</pattern>
-		<pattern>/search/privilegeCenter*</pattern>
-		<pattern>/search/privilegeSearchUrl*</pattern>
-		<pattern>/search/findMsmemberGroup*</pattern>
-		
-		<!-- search shop -->
-		<pattern>/search/queryShopList*</pattern>
-		
-		<!-- hotWeek and upDay -->
-		<pattern>/livingChannel_details/show_upDoday_ShopList*</pattern>
-		<pattern>/livingChannel_details/show_hotWeek_ShopList*</pattern>
 	</excludes>
 
 	<decorator name="main" page="main.jsp">
