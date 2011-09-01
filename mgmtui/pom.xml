@@ -206,6 +206,9 @@
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.11</version>
 				<configuration>
+					<!-- shutdown jetty -->
+					<stopPort>9966</stopPort>
+                    <stopKey>foo</stopKey>
 					<!-- configure the container -->
 					<jettyEnvXml>${basedir}/src/etc/jetty-env.xml</jettyEnvXml>
 
