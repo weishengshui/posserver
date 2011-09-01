@@ -16,6 +16,7 @@ import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
@@ -44,6 +45,7 @@ public class LoginCommandHandler implements CommandHandler {
 		try{
 			loginResponseMessage  = loginManager.login((LoginRequestMessage) bodyMessage);
 		}catch(Throwable e){
+			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}

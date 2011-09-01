@@ -8,6 +8,7 @@ import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.IBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
@@ -28,6 +29,7 @@ public class InitCommandHandler implements CommandHandler {
 			initResponseMessage = loginManager.init((InitRequestMessage) bodyMessage);
 		}catch(Throwable e){
 			initResponseMessage = new InitResponseMessage();
+			initResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGE]);
 			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
 		}
 		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
