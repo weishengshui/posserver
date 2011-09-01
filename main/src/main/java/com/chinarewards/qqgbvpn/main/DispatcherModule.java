@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.impl.BindCommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.impl.InitCommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.impl.LoginCommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.impl.SearchCommandHandler;
@@ -29,6 +30,8 @@ public class DispatcherModule extends AbstractModule {
 				LoginMessageCoder.class).in(Singleton.class);
 		bind(IBodyMessageCoder.class).annotatedWith(Names.named("init")).to(
 				InitMessageCoder.class).in(Singleton.class);
+		bind(IBodyMessageCoder.class).annotatedWith(Names.named("bind")).to(
+				LoginMessageCoder.class).in(Singleton.class);
 		bind(IBodyMessageCoder.class).annotatedWith(Names.named("search")).to(
 				SearchBodyMessageCoder.class).in(Singleton.class);
 		bind(IBodyMessageCoder.class).annotatedWith(Names.named("validate")).to(
@@ -39,6 +42,8 @@ public class DispatcherModule extends AbstractModule {
 				LoginCommandHandler.class).in(Singleton.class);
 		bind(CommandHandler.class).annotatedWith(Names.named("init")).to(
 				InitCommandHandler.class).in(Singleton.class);
+		bind(CommandHandler.class).annotatedWith(Names.named("bind")).to(
+				BindCommandHandler.class).in(Singleton.class);
 		bind(CommandHandler.class).annotatedWith(Names.named("search")).to(
 				SearchCommandHandler.class).in(Singleton.class);
 		bind(CommandHandler.class).annotatedWith(Names.named("validate"))

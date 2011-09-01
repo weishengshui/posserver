@@ -19,6 +19,14 @@ public class CmdConstant {
 	 * 登录回复
 	 */
 	public static final long LOGIN_CMD_ID_RESPONSE = 8;
+	/**
+	 * 绑定请求
+	 */
+	public static final long BIND_CMD_ID = 9;
+	/**
+	 * 绑定回复
+	 */
+	public static final long BIND_CMD_ID_RESPONSE = 10;
 	
 	/**
 	 * 查询请求

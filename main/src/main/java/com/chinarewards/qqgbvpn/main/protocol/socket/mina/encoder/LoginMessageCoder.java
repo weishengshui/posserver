@@ -14,7 +14,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 
 /**
- * login coder
+ * login coder/bind coder.
  * 
  * @author huangwei
  * 
@@ -26,7 +26,7 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 	@Override
 	public IBodyMessage decode(IoBuffer in, Charset charset)
 			throws PackgeException {
-		log.debug("login message decode");
+		log.debug("login/bind message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
 		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
 				+ ProtocolLengths.CHALLEUGERESPONSE) {
@@ -41,13 +41,13 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 		message.setCmdId(cmdId);
 		message.setChallengeResponse(challeugeresponse);
 		message.setPosid(new String(posid, charset));
-		log.debug("login message request:cmdId is ({}) , posid is ({}) ,challengeResponse is ({})",new Object[]{cmdId,posid,challeugeresponse});
+		log.debug("login/bind message request:cmdId is ({}) , posid is ({}) ,challengeResponse is ({})",new Object[]{cmdId,posid,challeugeresponse});
 		return message;
 	}
 
 	@Override
 	public byte[] encode(IBodyMessage bodyMessage, Charset charset) {
-		log.debug("login message encode");
+		log.debug("login/bind message encode");
 
 		LoginResponseMessage responseMessage = (LoginResponseMessage) bodyMessage;
 		long cmdId = responseMessage.getCmdId();
