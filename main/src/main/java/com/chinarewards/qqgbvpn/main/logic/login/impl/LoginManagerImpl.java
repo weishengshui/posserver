@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login.impl;
 
+import java.util.Arrays;
+
 import javax.persistence.NoResultException;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -13,6 +15,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
@@ -69,6 +72,8 @@ public class LoginManagerImpl implements LoginManager {
 			}
 
 			pos.setChallenge(challenge);
+			logger.debug("init challenge saved - {}",
+					Arrays.toString(challenge));
 
 			switch (pos.getIstatus()) {
 			case INITED:
@@ -130,6 +135,7 @@ public class LoginManagerImpl implements LoginManager {
 
 			if (check) {
 				result = LoginResult.SUCCESS;
+				pos.setIstatus(PosInitializationStatus.INITED);
 				domainEvent = DomainEvent.POS_LOGGED_IN.toString();
 			} else {
 				result = LoginResult.VALIDATE_FAILED;
