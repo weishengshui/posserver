@@ -57,7 +57,7 @@ public class LoginManagerImpl implements LoginManager {
 
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
-		DomainEvent domainEvent = null;
+		String domainEvent = null;
 		try {
 			pos = posDao.get().fetchPos(req.getPosid(),
 					PosDeliveryStatus.DELIVERED, null,
@@ -69,23 +69,25 @@ public class LoginManagerImpl implements LoginManager {
 			}
 
 			pos.setChallenge(challenge);
-			
+
 			switch (pos.getIstatus()) {
 			case INITED:
 				result = InitResult.INIT;
-				domainEvent = DomainEvent.POS_INIT_OK;
+				domainEvent = DomainEvent.POS_INIT_OK.toString();
 				break;
 			case UNINITED:
 				result = InitResult.UNINIT;
-				domainEvent = DomainEvent.POS_INIT_FAILED;
+				domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 				break;
 			default:
 				result = InitResult.OTHERS;
+				domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 				break;
 			}
 		} catch (NoResultException e) {
 			logger.warn("NO result fetch.");
 			result = InitResult.OTHERS;
+			domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 		}
 		resp.setChallenge(challenge);
 		resp.setResult(result.getPosCode());
@@ -100,8 +102,8 @@ public class LoginManagerImpl implements LoginManager {
 			eventDetail = e.toString();
 		}
 
-		journalLogic.logEvent(domainEvent.toString(),
-				DomainEntity.POS.toString(), req.getPosid(), eventDetail);
+		journalLogic.logEvent(domainEvent, DomainEntity.POS.toString(),
+				req.getPosid(), eventDetail);
 
 		return resp;
 	}
@@ -112,7 +114,7 @@ public class LoginManagerImpl implements LoginManager {
 
 		LoginResult result = null;
 		byte[] challenge = ChallengeUtil.generateChallenge();
-		DomainEvent domainEvent = null;
+		String domainEvent = null;
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
 			logger.trace(
@@ -128,13 +130,14 @@ public class LoginManagerImpl implements LoginManager {
 
 			if (check) {
 				result = LoginResult.SUCCESS;
-				domainEvent = DomainEvent.POS_LOGGED_IN;
+				domainEvent = DomainEvent.POS_LOGGED_IN.toString();
 			} else {
 				result = LoginResult.VALIDATE_FAILED;
-				domainEvent = DomainEvent.POS_LOGGED_FAILED;
+				domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			}
 		} catch (NoResultException e) {
 			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
+			domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			result = LoginResult.POSID_NOT_EXIST;
 		}
 		resp.setChallenge(challenge);
@@ -150,8 +153,8 @@ public class LoginManagerImpl implements LoginManager {
 			eventDetail = e.toString();
 		}
 
-		journalLogic.logEvent(domainEvent.toString(),
-				DomainEntity.POS.toString(), req.getPosid(), eventDetail);
+		journalLogic.logEvent(domainEvent, DomainEntity.POS.toString(),
+				req.getPosid(), eventDetail);
 
 		return resp;
 	}
