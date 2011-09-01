@@ -31,7 +31,7 @@ public class LoginFilter extends IoFilterAdapter {
 	public final static String POS_ID = "pos_id";
 
 	Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
@@ -44,8 +44,10 @@ public class LoginFilter extends IoFilterAdapter {
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// get POS ID
 			InitRequestMessage im = (InitRequestMessage) msg;
-			session.setAttribute(POS_ID, im.getPosid());
-		} else if (cmdId == CmdConstant.LOGIN_CMD_ID) {
+			session.setAttribute(POS_ID, im.getPosId());
+
+		} else if (cmdId == CmdConstant.LOGIN_CMD_ID
+				|| cmdId == CmdConstant.BIND_CMD_ID) {
 			// get POS ID
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
 			session.setAttribute(POS_ID, lm.getPosId());
@@ -78,7 +80,8 @@ public class LoginFilter extends IoFilterAdapter {
 		ICommand msg = ((Message) writeRequest.getMessage())
 				.getBodyMessage();
 		long cmdId = msg.getCmdId();
-		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE) {
+		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE
+				|| cmdId == CmdConstant.BIND_CMD_ID_RESPONSE) {
 			session.setAttribute(IS_LOGIN, false);
 
 			LoginResponseMessage lm = (LoginResponseMessage) msg;

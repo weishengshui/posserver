@@ -18,7 +18,7 @@ public class InitRequestMessage implements ICommand {
 		return cmdId;
 	}
 
-	public String getPosid() {
+	public String getPosId() {
 		return posid;
 	}
 

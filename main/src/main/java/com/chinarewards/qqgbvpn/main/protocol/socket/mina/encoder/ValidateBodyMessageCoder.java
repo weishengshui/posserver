@@ -32,7 +32,7 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 		long cmdId = in.getUnsignedInt();
 		byte[] requestByte = new byte[in.remaining()];
 		in.get(requestByte);
-
+		log.debug("requestByte==========:"+Arrays.toString(requestByte));
 		int grouponIdEnd = -1;
 		int grouponVCodeEnd = -1;
 		boolean errorFlag = false;
@@ -90,18 +90,22 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 		int result = responseMessage.getResult();
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(responseMessage.getResultName()).append(
+		buffer.append(responseMessage.getResultName()==null?"":responseMessage.getResultName()).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getResultExplain()).append(
+		buffer.append(responseMessage.getResultExplain()==null?"":responseMessage.getResultExplain()).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getCurrentTime()).append(
+		buffer.append(responseMessage.getCurrentTime()==null?"":responseMessage.getCurrentTime()).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getUseTime()).append(
+		buffer.append(responseMessage.getUseTime()==null?"":responseMessage.getUseTime()).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getValidTime()).append(
+		buffer.append(responseMessage.getValidTime()==null?"":responseMessage.getValidTime()).append(
 				CmdConstant.SEPARATOR);
 
-		byte[] tmp = buffer.toString().getBytes(charset);
+		String tmpStr = buffer.toString();
+		log.debug("validate result buffer is ({})",buffer);
+		tmpStr = tmpStr.replaceAll("\\\\r\\\\n", String.valueOf(CmdConstant.ENTER));
+		byte[] tmp = tmpStr.getBytes(charset);
+		log.debug("validate src is ({})",tmpStr);
 
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND
 				+ ProtocolLengths.RESULT + tmp.length];

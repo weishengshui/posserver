@@ -13,7 +13,7 @@ public interface GroupBuyingDao {
 	
 	public void initGrouponCache(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException, CopyPropertiesException;
 
-	public PageInfo handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException;
+	public HashMap<String, Object> handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException;
 	
 	public PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId);
 	

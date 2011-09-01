@@ -48,43 +48,43 @@ public class MinaProtcolTest extends JpaGuiceTest {
 //		getEm().flush();
 //		
 //
-		Socket socket = new Socket("localhost", 1234);
-
-		OutputStream os = socket.getOutputStream();
-
-		byte[] initMsg = new byte[] {
-				// SEQ
-				0, 0, 0, 24,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				0, 0, 
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 32,
-				// command ID
-				0, 0, 0, 5,
-				// POS ID
-				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
-				'0', '1', '2' };
-		int num = Tools.checkSum(initMsg, initMsg.length);
-		Tools.putUnsignedShort(initMsg, num, 10);
-		System.out.println("Packet size: " + initMsg.length);
-		os.write(initMsg);
-		os.flush();
-		
-		System.out.println("Going to read data");
-		InputStream in = socket.getInputStream();
-		byte[] result = new byte[30];
-		in.read(result);
-		
-		
-		in.close();
-		os.close();
-
-		
-		System.out.println("result=========:"+Arrays.toString(result));
+//		Socket socket = new Socket("localhost", 1234);
+//
+//		OutputStream os = socket.getOutputStream();
+//
+//		byte[] initMsg = new byte[] {
+//				// SEQ
+//				0, 0, 0, 24,
+//				// ACK
+//				0, 0, 0, 0,
+//				// flags
+//				0, 0, 
+//				// checksum
+//				0, 0,
+//				// message length
+//				0, 0, 0, 32,
+//				// command ID
+//				0, 0, 0, 5,
+//				// POS ID
+//				'P', 'O', 'S', '-', '5', '6', '7', '8', '9',
+//				'0', '1', '2' };
+//		int num = Tools.checkSum(initMsg, initMsg.length);
+//		Tools.putUnsignedShort(initMsg, num, 10);
+//		System.out.println("Packet size: " + initMsg.length);
+//		os.write(initMsg);
+//		os.flush();
+//		
+//		System.out.println("Going to read data");
+//		InputStream in = socket.getInputStream();
+//		byte[] result = new byte[30];
+//		in.read(result);
+//		
+//		
+//		in.close();
+//		os.close();
+//
+//		
+//		System.out.println("result=========:"+Arrays.toString(result));
 //		for(byte b:result){
 //			System.out.println("b=====:"+b);
 //		}

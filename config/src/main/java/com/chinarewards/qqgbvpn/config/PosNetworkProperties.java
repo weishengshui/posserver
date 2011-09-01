@@ -3,6 +3,8 @@ package com.chinarewards.qqgbvpn.config;
 public class PosNetworkProperties extends LoadProperties {
 
 	private static final String SERVER_PORT = "server.port";
+	
+	private static final String TXSERVER_KEY = "txserver.key";
 
 	/**
 	 * get server port
@@ -11,6 +13,10 @@ public class PosNetworkProperties extends LoadProperties {
 	 */
 	public int getSearverPort() {
 		return Integer.valueOf(getProperties().getProperty(SERVER_PORT));
+	}
+	
+	public String getTxServerKey(){
+		return getProperties().getProperty(TXSERVER_KEY);
 	}
 
 	@Override

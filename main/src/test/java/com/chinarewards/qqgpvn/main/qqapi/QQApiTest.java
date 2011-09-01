@@ -1,12 +1,16 @@
-package com.chinarewards.qqgbpvn.main.qqapi;
+package com.chinarewards.qqgpvn.main.qqapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.persistence.Query;
+
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
@@ -15,18 +19,20 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
-import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.HardCodedServlet;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
@@ -46,7 +52,7 @@ public class QQApiTest extends JpaGuiceTest {
 	@Override
 	protected Module[] getModules() {
 		return new Module[] {
-				new QQApiModule(),
+				new AppModule(),
 				new JpaPersistModule("posnet")
 						.properties(new DatabaseProperties().getProperties()) };
 	}
@@ -108,7 +114,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -127,6 +133,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<tuan>");
 		sb.append("<resultCode>0</resultCode>");
 		sb.append("<groupon>");
+		sb.append("<resultStatus>0</resultStatus>");
 		sb.append("<resultName>验证已成功</resultName>");
 		sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
 		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
@@ -134,6 +141,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<validTime>2011-08-10</validTime>");
 		sb.append("</groupon>");
 		sb.append("<groupon>");
+		sb.append("<resultStatus>-100</resultStatus>");
 		sb.append("<resultName>已退款</resultName>");
 		sb.append("<resultExplain>验证已退款于\r\n08.03 11:10:23</resultExplain>");
 		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
@@ -141,7 +149,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -158,19 +166,19 @@ public class QQApiTest extends JpaGuiceTest {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
 		sb.append("<tuan>");
-		sb.append("<resultCode>0</resultCode>");
+		sb.append("<resultCode>-1</resultCode>");
 		sb.append("<groupon>");
 		sb.append("<item>");
-		sb.append("<posId>1</posId>");
+		sb.append("<posId>rewards-0001</posId>");
 		sb.append("<resultStatus>0</resultStatus>");
 		sb.append("</item>");
 		sb.append("<item>");
-		sb.append("<posId>2</posId>");
+		sb.append("<posId>rewards-0002</posId>");
 		sb.append("<resultStatus>1</resultStatus>");
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -194,8 +202,10 @@ public class QQApiTest extends JpaGuiceTest {
 		GroupBuyingDao dao = getInjector().getInstance(
 				GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("posId", "rewards-0001");
-		params.put("key", "456789000");
+		String posId = "rewards-0001";
+		params.put("posId", posId);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
+		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
@@ -203,16 +213,27 @@ public class QQApiTest extends JpaGuiceTest {
 			PageInfo<GrouponCache> pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(50);
-			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, "rewards-0001").getItems();
-			for (int i = 0; i < cacheList.size(); i++) {
-				System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
-				System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
-				System.out.println("MercName-->" + cacheList.get(i).getMercName());
-				System.out.println("ListName-->" + cacheList.get(i).getListName());
-				System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
-				//验证排序是否正确
-				assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, posId).getItems();
+			if (cacheList != null && cacheList.size() > 0) {
+				for (int i = 0; i < cacheList.size(); i++) {
+					System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
+					System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
+					System.out.println("MercName-->" + cacheList.get(i).getMercName());
+					System.out.println("ListName-->" + cacheList.get(i).getListName());
+					System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
+					//验证排序是否正确
+					assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+				}
 			}
+			//check cache
+			Query jql = emp.get().createQuery(
+					"select j.eventDetail from Journal j where j.event = '"
+							+ DomainEvent.GROUPON_CACHE_INIT.toString()
+							+ "' and j.entityId = ?1 order by j.ts desc");
+			jql.setParameter(1, posId);
+			String result = (String) jql.getResultList().get(0);
+			System.out.println("result--->" + result);
+			assertTrue(result.startsWith("["));
 		} catch (JsonGenerationException e) {
 			System.err.println("生成JSON对象出错");
 			e.printStackTrace();
@@ -278,7 +299,10 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("curpage", "2");
 		params.put("pageSize", "1");
 		try {
-			PageInfo<GrouponCache> pageInfo = gbm.groupBuyingSearch(params);
+			HashMap<String,Object> resultMap = gbm.groupBuyingSearch(params);
+			String resultCode = (String) resultMap.get("resultCode");
+			System.out.println("resultCode->" + resultCode);
+			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap.get("pageInfo");
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());
@@ -347,7 +371,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("posId", "rewards-0001");
 		params.put("grouponId", "456789");
 		params.put("token", "4567890");
-		params.put("key", "456789000");
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -442,7 +466,7 @@ public class QQApiTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", "456789000");
+		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");
@@ -509,8 +533,14 @@ public class QQApiTest extends JpaGuiceTest {
 		server.start();
 		
 		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
 		GroupBuyingUtil.sendPost(url, null);
+		/*String url = "http://tuan-layenlin.qq.com/api/pos/query";
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		String posId = "REWARDS-0001";
+		params.put("posId", posId);
+		params.put("key", new PosNetworkProperties().getTxServerKey());
+		
+		GroupBuyingUtil.sendPost(url, params);*/
 	}
 
 	@Test
@@ -568,7 +598,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
 		sb.append("<detailName>400.01元套餐</detailName>");
 		sb.append("</item>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -650,7 +680,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -723,7 +753,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<refundTime>2011-08-03 11:10:23</refundTime>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
@@ -796,7 +826,7 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</item>");
 		sb.append("</groupon>");
 		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("utf-8"), "iso-8859-1"));
+		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);

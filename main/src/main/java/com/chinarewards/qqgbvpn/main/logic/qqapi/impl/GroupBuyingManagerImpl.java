@@ -55,10 +55,10 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
      * @throws SaveDBException 
      * @throws JsonGenerationException 
 	 */
-	public PageInfo groupBuyingSearch(
+	public HashMap<String, Object> groupBuyingSearch(
 			HashMap<String, String> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException {
-		PageInfo pageInfo = dao.get().handleGroupBuyingSearch(params);
-		return pageInfo;
+		HashMap<String, Object> result = dao.get().handleGroupBuyingSearch(params);
+		return result;
 	}
 
 	/**

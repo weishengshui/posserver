@@ -8,6 +8,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
@@ -27,7 +28,7 @@ public class ValidateCommandHandler implements CommandHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private final int ERROR_CODE = 1; 
+	private final int ERROR_CODE_THER = 999; 
 	
 	private final int SUCCESS_CODE = 0; 
 	
@@ -48,59 +49,67 @@ public class ValidateCommandHandler implements CommandHandler {
 		postParams.put("posId", String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		postParams.put("grouponId", validateRequestMessage.getGrouponId());
 		postParams.put("token", validateRequestMessage.getGrouponVCode());
-		
+		postParams.put("key", new PosNetworkProperties().getTxServerKey());
+		log.debug("ValidateCommandHandler======execute==key=:"+new PosNetworkProperties().getTxServerKey());
+
 		
 		try {
 			HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
-			String resultCode = (String) result.get("resultCode");
+			int resultCode = Integer.valueOf((String) result.get("resultCode"));
 			log.debug("resultCode=========:"+resultCode);
-			if ("0".equals(resultCode)) {
+			if (resultCode == SUCCESS_CODE ) {
 				List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
 						.get("items");
+				validateResponseMessage.setResult(SUCCESS_CODE);
 				for (GroupBuyingValidateResultVO item : items) {
+					log.debug("item.getResultStatus()=============:"+item.getResultStatus());
+					if (!"0".equals(item.getResultStatus())) {
+						validateResponseMessage.setResult(1);
+					}
 					validateResponseMessage.setResultName(item.getResultName());
 					validateResponseMessage.setCurrentTime(item.getCurrentTime());
 					validateResponseMessage.setResultExplain(item.getResultExplain());
 					validateResponseMessage.setUseTime(item.getUseTime());
 					validateResponseMessage.setValidTime(item.getValidTime());
 				}
-
-				validateResponseMessage.setResult(SUCCESS_CODE);
 			} else {
-				switch (Integer.valueOf(resultCode)) {
+				switch (resultCode) {
 				case -1:
 					log.debug("error=========:服务器繁忙");
-					validateResponseMessage.setResult(ERROR_CODE);
+					validateResponseMessage.setResult(resultCode);
 					break;
 				case -2:
 					log.debug("error=========:md5校验失败");
-					validateResponseMessage.setResult(ERROR_CODE);
+					validateResponseMessage.setResult(resultCode);
 					break;
 				case -3:
 					log.debug("error=========:没有权限");
-					validateResponseMessage.setResult(ERROR_CODE);
+					validateResponseMessage.setResult(resultCode);
 					break;
 				default:
 					log.debug("error=========:未知错误");
-					validateResponseMessage.setResult(ERROR_CODE);
+					validateResponseMessage.setResult(resultCode);
 					break;
 				}
 			}
 		} catch (JsonGenerationException e) {
 			log.debug("error=========:生成JSON对象出错");
-			validateResponseMessage.setResult(ERROR_CODE);
+			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (MD5Exception e) {
 			log.debug("error=========:生成MD5校验位出错");
-			validateResponseMessage.setResult(ERROR_CODE);
+			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (ParseXMLException e) {
 			log.debug("error=========:解析XML出错");
-			validateResponseMessage.setResult(ERROR_CODE);
+			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (SendPostTimeOutException e) {
 			log.debug("error=========:POST连接出错");
-			validateResponseMessage.setResult(ERROR_CODE);
+			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (SaveDBException e) {
 			log.debug("error=========:后台保存数据库出错 "+e.getMessage());
-			validateResponseMessage.setResult(ERROR_CODE);
+			validateResponseMessage.setResult(ERROR_CODE_THER);
+		}catch (Throwable e) {
+			log.debug("error========= "+e.getMessage());
+			validateResponseMessage.setResult(ERROR_CODE_THER);
 		}
 		
 		validateResponseMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID_RESPONSE);

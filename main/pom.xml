@@ -181,12 +181,55 @@
 				</executions>
 			</plugin>
 
-
-			<!-- Uncomment this to allow quick development. <plugin> <groupId>org.zeroturnaround</groupId> 
-				<artifactId>javarebel-maven-plugin</artifactId> <executions> <execution> 
-				<id>generate-rebel-xml</id> <phase>process-resources</phase> <goals> <goal>generate</goal> 
-				</goals> </execution> </executions> <configuration> <downloadJavadocs>true</downloadJavadocs> 
-				</configuration> <version>1.0.5</version> </plugin> -->
+			<!-- For packaging the project as a jar which is executable -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>com.chinarewards.qqgbvpn.main.Main</mainClass>
+							<packageName>com.chinarewards.qqgbvpn.main</packageName>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assemble/bin.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+						<version>${slf4j.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
 		</plugins>
 
 	</build>

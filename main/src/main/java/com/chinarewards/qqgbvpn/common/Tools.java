@@ -140,30 +140,34 @@ public class Tools {
 
 	
 	public static void main(String[] args) {
-		byte[] b = new byte[2];
-		IoBuffer buf = IoBuffer.allocate(2);
-
-		int i = 65535;
-		b = new byte[2];
-		putUnsignedShort(b, i, 0);
-		buf = IoBuffer.allocate(2);
-		buf.put(b);
-		buf.flip();
-		System.out.println(getUnsignedShort(b, 0));
-		System.out.println(byteToUnsignedShort(b));
-		System.out.println(buf.getUnsignedShort());
-		System.out.println(byteToUnsignedShort(unsignedShortToByte(i)));
-		System.out.println("***************************");
-		long l = 50;
-		b = new byte[4];
-		putUnsignedInt(b, l, 0);
-		buf = IoBuffer.allocate(4);
-		buf.put(b);
-		buf.flip();
-		System.out.println(getUnsignedInt(b, 0));
-		System.out.println(byteToUnsignedInt(b));
-		System.out.println(buf.getUnsignedInt());
-		System.out.println(byteToUnsignedInt(unsignedIntToByte(l)));
-		System.out.println("***************************");
+//		byte[] b = new byte[2];
+//		IoBuffer buf = IoBuffer.allocate(2);
+//
+//		int i = 65535;
+//		b = new byte[2];
+//		putUnsignedShort(b, i, 0);
+//		buf = IoBuffer.allocate(2);
+//		buf.put(b);
+//		buf.flip();
+//		System.out.println(getUnsignedShort(b, 0));
+//		System.out.println(byteToUnsignedShort(b));
+//		System.out.println(buf.getUnsignedShort());
+//		System.out.println(byteToUnsignedShort(unsignedShortToByte(i)));
+//		System.out.println("***************************");
+//		long l = 50;
+//		b = new byte[4];
+//		putUnsignedInt(b, l, 0);
+//		buf = IoBuffer.allocate(4);
+//		buf.put(b);
+//		buf.flip();
+//		System.out.println(getUnsignedInt(b, 0));
+//		System.out.println(byteToUnsignedInt(b));
+//		System.out.println(buf.getUnsignedInt());
+//		System.out.println(byteToUnsignedInt(unsignedIntToByte(l)));
+//		System.out.println("***************************");
+		
+		byte b[] = {0, 0, 0, 1, 32, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 5, 67, 82, 45, 48, 48, 48, 48, 48, 48, 49, 54, 56};
+		System.out.println(checkSum(b, b.length));
+		
 	}
 }

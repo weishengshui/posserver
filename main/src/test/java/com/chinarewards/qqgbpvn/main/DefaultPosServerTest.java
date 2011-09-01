@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
+import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
@@ -46,7 +47,7 @@ public class DefaultPosServerTest extends GuiceTest {
 		// build the Guice modules.
 		Module[] modules = new Module[] { confModule,
 				buildPersistModule(confModule.getConfiguration()),
-				new ServerModule() };
+				new ServerModule(), new AppModule() };
 
 		return modules;
 	}

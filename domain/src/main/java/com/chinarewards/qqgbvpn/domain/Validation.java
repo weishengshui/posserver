@@ -10,6 +10,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.chinarewards.qqgbvpn.domain.status.CommunicationStatus;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 
 /**
@@ -67,7 +68,48 @@ public class Validation {
 	 */
 	@Enumerated(EnumType.STRING)
 	ValidationStatus status;
+	
+	/**
+	 * Communication Status returned by QQ.
+	 */
+	@Enumerated(EnumType.STRING)
+	CommunicationStatus cstatus;
 
+	/**
+	 * Result Status returned by QQ.
+	 */
+	String resultStatus;
+	
+	/**
+	 * Result Name returned by QQ.
+	 */
+	String resultName;
+	
+	/**
+	 * Result Explain returned by QQ.
+	 */
+	String resultExplain;
+	
+	/**
+	 * Current Time returned by QQ.
+	 */
+	String currentTime;
+	
+	/**
+	 * Use Time returned by QQ.
+	 */
+	String useTime;
+	
+	/**
+	 * Valid Time returned by QQ.
+	 */
+	String validTime;
+	
+	/**
+	 * Refund Time returned by QQ.
+	 */
+	String refundTime;
+	
 	/**
 	 * Should be copied from <code>PosAssignment</code>. The value should be
 	 * <code>Agent.getId()</code>.
@@ -79,6 +121,70 @@ public class Validation {
 	 * <code>Agent.getName()</code>.
 	 */
 	String agentName;
+
+	public String getResultName() {
+		return resultName;
+	}
+
+	public void setResultName(String resultName) {
+		this.resultName = resultName;
+	}
+
+	public String getResultExplain() {
+		return resultExplain;
+	}
+
+	public void setResultExplain(String resultExplain) {
+		this.resultExplain = resultExplain;
+	}
+
+	public String getCurrentTime() {
+		return currentTime;
+	}
+
+	public void setCurrentTime(String currentTime) {
+		this.currentTime = currentTime;
+	}
+
+	public String getUseTime() {
+		return useTime;
+	}
+
+	public void setUseTime(String useTime) {
+		this.useTime = useTime;
+	}
+
+	public String getValidTime() {
+		return validTime;
+	}
+
+	public void setValidTime(String validTime) {
+		this.validTime = validTime;
+	}
+
+	public String getRefundTime() {
+		return refundTime;
+	}
+
+	public void setRefundTime(String refundTime) {
+		this.refundTime = refundTime;
+	}
+
+	public CommunicationStatus getCstatus() {
+		return cstatus;
+	}
+
+	public void setCstatus(CommunicationStatus cstatus) {
+		this.cstatus = cstatus;
+	}
+
+	public String getResultStatus() {
+		return resultStatus;
+	}
+
+	public void setResultStatus(String resultStatus) {
+		this.resultStatus = resultStatus;
+	}
 
 	public String getId() {
 		return id;

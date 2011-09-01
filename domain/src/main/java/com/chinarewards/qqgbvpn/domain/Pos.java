@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.domain;
 
 import java.util.Arrays;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,6 +31,7 @@ public class Pos {
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	String id;
 
+	@Column(unique = true, nullable = false)
 	String posId;
 
 	String model;

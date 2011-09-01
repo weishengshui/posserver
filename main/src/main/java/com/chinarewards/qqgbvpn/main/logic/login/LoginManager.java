@@ -32,4 +32,12 @@ public interface LoginManager {
 	 */
 	public LoginResponseMessage login(LoginRequestMessage req);
 
+	/**
+	 * Bind POS. The Message will be the same with Login. So reuse LoginMessage.
+	 * 
+	 * @param req
+	 * @return
+	 */
+	LoginResponseMessage bind(LoginRequestMessage req);
+
 }
