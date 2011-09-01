@@ -52,6 +52,7 @@ public class DbJournalLogic extends AbstractJpaLogic implements JournalLogic {
 
 		// start new transaction on top of this transaction.
 		Journal j = new Journal();
+		j.setEvent(event);
 		j.setEntity(entity);
 		j.setEntityId(entityId);
 		j.setEventDetail(eventDetail);
