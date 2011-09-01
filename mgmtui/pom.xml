@@ -65,6 +65,13 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 		</dependency>
+		
+		<!-- MYSQL -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.17</version>
+		</dependency>
 
 		<!-- Struts 2 -->
 		<dependency>
@@ -132,6 +139,11 @@
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>qqapi</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>config</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Test Scope STARTS -->
