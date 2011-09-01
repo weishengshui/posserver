@@ -42,6 +42,10 @@ public class QQApiUATTest extends JpaGuiceTest {
 						.properties(new DatabaseProperties().getProperties()) };
 	}
 	
+	@Test
+	public void testEmpty() {
+		
+	}
 
 	//@Test
 	public void testSendPostSuccess() throws Exception {
