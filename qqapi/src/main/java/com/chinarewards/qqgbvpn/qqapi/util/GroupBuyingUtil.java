@@ -109,7 +109,7 @@ public class GroupBuyingUtil {
 			}
 			HttpEntity httpentity = new UrlEncodedFormEntity(params, HTTP.UTF_8);
 			//与QQ联调时使用start
-			//post.addHeader("host", "tuan-layenlin.qq.com");
+			post.addHeader("host", "tuan-layenlin.qq.com");
 			//与QQ联调时使用end
 			post.setEntity(httpentity);
 			HttpResponse httpResponse = client.execute(post);
