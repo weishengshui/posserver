@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.mgmtui.helloworld;
+package com.chinarewards.qqgbvpn.mgmtui.status.helloworld;
 
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 
