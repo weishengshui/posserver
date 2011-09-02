@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +11,16 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.ReturnNote;
+import com.chinarewards.qqgbvpn.domain.ReturnNoteDetail;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
+import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
@@ -193,6 +200,187 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			}
 		}
 		return resultStatus;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getPosByAgentId(com.chinarewards.qqgbvpn.domain.PageInfo, java.lang.String)
+	 * 回收单页面查询调用
+	 */
+	public PageInfo getPosByAgentId(PageInfo pageInfo, String agentId) {
+		try {
+			String sql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1";
+			List params = new ArrayList();
+			params.add(agentId);
+			PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
+			return resultList;
+		} catch (Exception e) {
+			return pageInfo;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getAgentByName(java.lang.String)
+	 * 发送URL页面查询调用
+	 */
+	public Agent getAgentByName(String agentName) {
+		try {
+			Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
+			jql.setParameter(1, agentName);
+			List resultList = jql.getResultList();
+			Agent agent = null;
+			if (resultList != null) {
+				agent = (Agent) resultList.get(0);
+			}
+			return agent;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getPosByPosInfo(java.lang.String)
+	 * 解绑页面查询调用
+	 */
+	public List<Pos> getPosByPosInfo(String info) {
+		try {
+			Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
+			jql.setParameter(1, info);
+			List<Pos> resultList = jql.getResultList();
+			return resultList;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#createReturnNoteByAgentId(java.lang.String)
+	 * 生成URL时调用
+	 */
+	public ReturnNote createReturnNoteByAgentId(String agentId) throws JsonGenerationException,SaveDBException {
+		Agent a = this.getAgentById(agentId);
+		if (a != null) {
+			Date date = new Date();
+			ReturnNote rn = new ReturnNote();
+			rn.setAgent(a);
+			rn.setAgentName(a.getName());
+			rn.setStatus(ReturnNoteStatus.DRAFT);
+			rn.setCreateDate(date);
+			
+			try {
+				if (!em.get().getTransaction().isActive()) {
+					em.get().getTransaction().begin();
+				}
+				
+				saveReturnNote(rn);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					journal.setEventDetail(mapper.writeValueAsString(rn));
+				} catch (Exception e) {
+					throw new JsonGenerationException(e);
+				}
+				saveJournal(journal);
+				if (em.get().getTransaction().isActive()) {
+					em.get().getTransaction().commit();
+				}
+			} catch (Exception e) {
+				if (em.get().getTransaction().isActive()) {
+					em.get().getTransaction().rollback();
+				}
+				throw new SaveDBException(e);
+			}
+			return rn;
+		}
+		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#confirmReturnNote(java.lang.String, java.lang.String, java.util.List)
+	 * 回收单页面调用
+	 */
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<Pos> posList) throws JsonGenerationException,SaveDBException {
+		ReturnNote rn = null;
+		Date date = new Date();
+		Agent a = this.getAgentById(agentId);
+		if (a != null) {
+			if (rnId != null && !"".equals(rnId.trim())) {
+				rn = this.getReturnNote(rnId);
+			}
+			if (rn == null) {
+				rn = new ReturnNote();
+				rn.setAgent(a);
+				rn.setAgentName(a.getName());
+				rn.setStatus(ReturnNoteStatus.CONFIRMED);
+				rn.setCreateDate(date);
+				rn.setConfirmDate(date);
+			}
+			try {
+				if (!em.get().getTransaction().isActive()) {
+					em.get().getTransaction().begin();
+				}
+				
+				saveReturnNote(rn);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+				ObjectMapper mapper = new ObjectMapper();
+				try {
+					journal.setEventDetail(mapper.writeValueAsString(rn));
+				} catch (Exception e) {
+					throw new JsonGenerationException(e);
+				}
+				saveJournal(journal);
+				
+				if (posList != null && posList.size() > 0) {
+					for (Pos p : posList) {
+						ReturnNoteDetail rnd = new ReturnNoteDetail();
+						rnd.setRn(rn);
+						rnd.setPosId(p.getPosId());
+						rnd.setModel(p.getModel());
+						rnd.setSimPhoneNo(p.getSimPhoneNo());
+						rnd.setSn(p.getSn());
+						saveReturnNoteDetail(rnd);
+					}
+				}
+				
+				if (em.get().getTransaction().isActive()) {
+					em.get().getTransaction().commit();
+				}
+			} catch (Exception e) {
+				if (em.get().getTransaction().isActive()) {
+					em.get().getTransaction().rollback();
+				}
+				throw new SaveDBException(e);
+			}
+			return rn;
+		}
+		return null;
+	}
+	
+	private void saveReturnNote(ReturnNote rn) {
+		em.get().persist(rn);
+	}
+	
+	private void saveReturnNoteDetail(ReturnNoteDetail rnd) {
+		em.get().persist(rnd);
+	}
+	
+	private ReturnNote getReturnNote(String rnId) {
+		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		return rn;
+	}
+	
+	private Agent getAgentById(String agentId) {
+		Agent a = em.get().find(Agent.class, agentId);
+		return a;
 	}
 	
 }

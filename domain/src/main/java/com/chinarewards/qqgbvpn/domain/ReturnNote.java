@@ -44,4 +44,68 @@ public class ReturnNote {
 	 */
 	String agentName;
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getRnNumber() {
+		return rnNumber;
+	}
+
+	public void setRnNumber(String rnNumber) {
+		this.rnNumber = rnNumber;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+
+	public ReturnNoteStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ReturnNoteStatus status) {
+		this.status = status;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getConfirmDate() {
+		return confirmDate;
+	}
+
+	public void setConfirmDate(Date confirmDate) {
+		this.confirmDate = confirmDate;
+	}
+
+	public Date getPrintDate() {
+		return printDate;
+	}
+
+	public void setPrintDate(Date printDate) {
+		this.printDate = printDate;
+	}
+
+	public String getAgentName() {
+		return agentName;
+	}
+
+	public void setAgentName(String agentName) {
+		this.agentName = agentName;
+	}
+
 }
