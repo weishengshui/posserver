@@ -3,11 +3,11 @@ package com.chinarewards.qqgbvpn.main.protocol.handler;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
 import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
@@ -36,6 +36,8 @@ public class ValidateCommandHandler implements ServiceHandler {
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
 	
+	@Inject
+	protected Configuration configuration;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -54,8 +56,8 @@ public class ValidateCommandHandler implements ServiceHandler {
 		postParams.put("posId", String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		postParams.put("grouponId", validateRequestMessage.getGrouponId());
 		postParams.put("token", validateRequestMessage.getGrouponVCode());
-		postParams.put("key", new PosNetworkProperties().getTxServerKey());
-		log.debug("ValidateCommandHandler======execute==key=:"+new PosNetworkProperties().getTxServerKey());
+		postParams.put("key", configuration.getString("txserver.key"));
+		log.debug("ValidateCommandHandler======execute==key=:"+configuration.getString("txserver.key"));
 
 		
 		try {

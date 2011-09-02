@@ -14,8 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author cream
  * 
+ * 
+ * @author cream
+ * @deprecated
  */
 public abstract class LoadProperties {
 

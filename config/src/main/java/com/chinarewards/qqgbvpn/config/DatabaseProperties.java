@@ -1,5 +1,9 @@
 package com.chinarewards.qqgbvpn.config;
 
+/**
+ * 
+ * @deprecated 
+ */
 public class DatabaseProperties extends LoadProperties {
 
 	@Override

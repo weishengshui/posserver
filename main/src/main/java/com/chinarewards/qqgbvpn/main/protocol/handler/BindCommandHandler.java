@@ -2,10 +2,10 @@ package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import java.util.HashMap;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
@@ -24,10 +24,13 @@ public class BindCommandHandler implements ServiceHandler {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Inject
-	public LoginManager loginManager;
+	protected LoginManager loginManager;
 
 	@Inject
-	public Provider<GroupBuyingManager> gbm;
+	protected Provider<GroupBuyingManager> gbm;
+	
+	@Inject
+	protected Configuration configuration;
 	
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
@@ -47,7 +50,7 @@ public class BindCommandHandler implements ServiceHandler {
 		if(loginResponseMessage.getResult() == LoginResult.SUCCESS.getPosCode()){
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("posId", ((LoginRequestMessage) bodyMessage).getPosId());
-			String serverKey = new PosNetworkProperties().getTxServerKey();
+			String serverKey = configuration.getString("txserver.key");
 			log.debug("BindCommandHandler======execute==serverKey=:"+serverKey);
 			params.put("key", serverKey);
 			try {

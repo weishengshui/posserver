@@ -359,13 +359,6 @@ public class BootStrap {
 		
 	}
 
-	protected Properties buildJpaProperties() {
-
-		DatabaseProperties p = new DatabaseProperties();
-		return p.getProperties();
-
-	}
-
 	protected JpaPersistModule buildJpaPersistModule() {
 
 		// TODO make it not a builder.

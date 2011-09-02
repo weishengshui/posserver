@@ -25,6 +25,7 @@ import com.google.inject.util.Modules;
 
 /**
  * 
+ * 
  * @author Cyril
  * @since 0.1.0
  */
@@ -46,18 +47,22 @@ public class DefaultPosServerTest extends GuiceTest {
 	 */
 	@Override
 	protected Module[] getModules() {
-
-		TestConfigModule confModule = (TestConfigModule) buildTestConfigModule();
 		
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
-		ServiceMapping mapping = mappingBuilder.buildMapping(confModule.getConfiguration());
+		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
+				.getConfiguration());
 
 		// build the Guice modules.
-		Module[] modules = new Module[] { confModule,
+		Module[] modules = new Module[] {
+				new CommonTestConfigModule(),
 				buildPersistModule(confModule.getConfiguration()),
-				new ServerModule(), new AppModule(),
-				Modules.override(new ServiceHandlerModule(confModule.getConfiguration())).with(new ServiceHandlerGuiceModule(mapping))
-		};
+				new ServerModule(),
+				new AppModule(),
+				Modules.override(
+						new ServiceHandlerModule(confModule.getConfiguration()))
+						.with(new ServiceHandlerGuiceModule(mapping)) };
 
 		return modules;
 	}

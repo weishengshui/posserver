@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
  * cmd properties
  * 
  * @author huangwei
- *
+ * @deprecated
  */
 public class CmdProperties extends LoadProperties {
 	

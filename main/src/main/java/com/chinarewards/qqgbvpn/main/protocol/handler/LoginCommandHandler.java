@@ -59,7 +59,6 @@ public class LoginCommandHandler implements ServiceHandler {
 			
 			
 			
-//			String serverKey = new PosNetworkProperties().getTxServerKey();
 			String serverKey = configuration.getString("txserver.key");
 			log.debug("LoginCommandHandler======execute==serverKey=:"
 					+ serverKey);
