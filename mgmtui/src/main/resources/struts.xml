@@ -12,6 +12,7 @@
 	<constant name="struts.objectFactory" value="com.google.inject.struts2.GuiceObjectFactory" />
 	<constant name="guice.module" value="com.chinarewards.qqgbvpn.mgmtui.guice.QqgbvpnServletModule"/>
 	 -->
+	
 	<!-- Enable Struts debugging. -->
 	<!-- FIXME disable this for production -->
 	<constant name="struts.devMode" value="false" />
@@ -34,25 +35,16 @@
 	 -->
 	<package name="default" extends="struts-default" abstract="true">
 	
+		<result-types>
+			<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
+		</result-types>
 		<!-- Our own secure stack -->
 		<interceptors>
 			
-			<!-- 
-			<interceptor name="exception2" class="com.chinarewards.tiger2.b2c.struts.interceptor.EJBExceptionMappingInterceptor">
-				<param name="logEnabled">true</param>
-			</interceptor>
-			<interceptor name="login" class="com.chinarewards.tiger2.b2c.struts.LoginCheckInterceptor" />
-			<interceptor name="adminLoginCheckInterceptor" class="com.chinarewards.tiger2.b2c.struts.AdminLoginCheckInterceptor"/>
-			 --> 
+			<interceptor name="login" class="com.chinarewards.qqgbvpn.mgmtui.struts.interceptor.LoginCheckInterceptor" />
 			
 			<!-- The China Rewards default stack -->
 			<interceptor-stack name="crStack">
-				<!-- 
-				<interceptor-ref name="exception2">
-					<param name="logEnabled">true</param>
-					<param name="logLevel">error</param>
-				</interceptor-ref>
-				 -->
                 <interceptor-ref name="alias"/>
                 <interceptor-ref name="servletConfig"/>
                 <interceptor-ref name="i18n"/>
@@ -76,34 +68,24 @@
                 <interceptor-ref name="workflow">
                     <param name="excludeMethods">input,back,cancel,browse</param>
                 </interceptor-ref>
-                <!-- admin后台模块的 -->
-                <!-- 
-                <interceptor-ref name="adminLoginCheckInterceptor"/>
-                 -->
-		        <interceptor-ref name="defaultStack"/>     <!--必需引用这个，否则点下一个子ACTION会报错-->
-			
 			</interceptor-stack>
 			
 			<!-- This stack checks if the user has logged in. -->
 			<interceptor-stack name="secureStack">
-				<!-- <interceptor-ref name="login" /> -->
+				<interceptor-ref name="login" />
 				<interceptor-ref name="crStack" />
 			</interceptor-stack>
 		</interceptors>
 		
 		<default-interceptor-ref name="crStack"/>
-		
+
 		<global-results>
 		
 			<result name="error">/error.jsp</result>
 			<result name="login" type="redirectAction">
 				<param name="namespace">/</param>
 				<param name="actionName">login</param>
-				<param name="login.backUrl">${backUrl}</param>
-			</result>
-			<result name="admin" type="redirectAction">
-				<param name="namespace">/admin</param>
-				<param name="actionName">index</param>
+				<param name="backUrl">${backUrl}</param>
 			</result>
 			
 			<!-- For use by global-exception-mappings -->

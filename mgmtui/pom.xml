@@ -102,7 +102,11 @@
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-struts2-plugin</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-tiles-plugin</artifactId>
+			<version>${struts.version}</version>
+		</dependency>
 		<!-- Web UI related -->
 		<dependency>
 			<groupId>com.google.code</groupId>

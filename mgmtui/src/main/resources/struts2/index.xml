@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+	<package name="home" extends="default" namespace="/">
+		<!-- find all album -->
+		<action name="login" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction" method="login">
+			<result name="success" type="redirectAction">home</result>
+			<result name="input" type="tiles">login</result>
+		</action>
+		<action name="logout" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction" method="logout">
+			<result name="success" type="redirectAction">home</result>
+		</action>
+		<action name="home" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction">
+			<result name="success" type="redirectAction">login</result>
+		</action>
+	</package>
+</struts>
