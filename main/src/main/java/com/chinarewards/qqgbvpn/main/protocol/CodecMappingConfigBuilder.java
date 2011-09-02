@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class CodecMappingConfigBuilder {
 			long commandId = Long.parseLong(sCmdId);
 			
 			try {
-				Class<IBodyMessageCoder> clazz = (Class<IBodyMessageCoder>) Class
+				Class<ICommandCodec> clazz = (Class<ICommandCodec>) Class
 						.forName(className);
 				mapping.addMapping(commandId, clazz);
 			} catch (ClassNotFoundException e) {

@@ -6,7 +6,7 @@ package com.chinarewards.qqgbvpn.main.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class SimpleCmdMapping implements CmdMapping {
 	 */
 	@Override
 	public void addMapping(long commandId,
-			Class<? extends IBodyMessageCoder> clazz) {
+			Class<? extends ICommandCodec> clazz) {
 		mapping.put(commandId, clazz);
 	}
 

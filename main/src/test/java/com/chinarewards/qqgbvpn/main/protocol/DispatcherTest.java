@@ -18,7 +18,7 @@ import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceMapping;
-import com.chinarewards.qqgbvpn.main.protocol.mina.SimpleSession;
+import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleSession;
 
 /**
  * 

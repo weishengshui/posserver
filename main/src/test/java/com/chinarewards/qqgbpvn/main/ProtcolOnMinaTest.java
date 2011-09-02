@@ -25,7 +25,7 @@ import com.chinarewards.qqgbpvn.main.test.BaseTest;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.InitMsgSocketFactory;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 
 /**

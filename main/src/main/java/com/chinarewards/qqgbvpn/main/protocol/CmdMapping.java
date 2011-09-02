@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * Defines the command codec mapping.
@@ -23,7 +23,7 @@ public interface CmdMapping {
 	 *            mapping.
 	 */
 	public void addMapping(long commandId,
-			Class<? extends IBodyMessageCoder> clazz);
+			Class<? extends ICommandCodec> clazz);
 
 	/**
 	 * Returns the command handler with matching command ID. If no mapping

@@ -15,9 +15,9 @@ import org.junit.Test;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.InitMessageCodec;
 
 /**
  * 
@@ -128,7 +128,7 @@ public class CmdCodecTest extends GuiceTest {
 		msg.setPosid("POS-56789012");
 
 		CmdMapping cmdMapping = new SimpleCmdMapping();
-		cmdMapping.addMapping(1, InitMessageCoder.class);
+		cmdMapping.addMapping(1, InitMessageCodec.class);
 
 		Charset charset = Charset.forName("ISO-8859-1");
 
@@ -140,7 +140,7 @@ public class CmdCodecTest extends GuiceTest {
 
 		// get an instance of command codec
 		CmdCodecFactory cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
-		IBodyMessageCoder codec = cmdCodecFactory.getCodec(1);
+		ICommandCodec codec = cmdCodecFactory.getCodec(1);
 		InitRequestMessage decodedMsg = (InitRequestMessage)codec.decode(buffer, charset);
 		
 		// validation

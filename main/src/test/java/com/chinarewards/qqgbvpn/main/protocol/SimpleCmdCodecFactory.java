@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * 
@@ -26,16 +26,16 @@ public class SimpleCmdCodecFactory implements CmdCodecFactory {
 	 * com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory#getCodec(long)
 	 */
 	@Override
-	public IBodyMessageCoder getCodec(long commandId) {
+	public ICommandCodec getCodec(long commandId) {
 
-		Class<IBodyMessageCoder> codecClazz = (Class<IBodyMessageCoder>) mapping
+		Class<ICommandCodec> codecClazz = (Class<ICommandCodec>) mapping
 				.getMapping(commandId);
 
 		if (codecClazz == null)
 			return null;
 
 		// return an new instance.
-		IBodyMessageCoder codec;
+		ICommandCodec codec;
 		try {
 			codec = codecClazz.newInstance();
 			return codec;

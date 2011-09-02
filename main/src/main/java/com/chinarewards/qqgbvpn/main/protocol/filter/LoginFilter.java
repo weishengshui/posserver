@@ -10,13 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.chinarewards.utils.StringUtil;
 
 /**

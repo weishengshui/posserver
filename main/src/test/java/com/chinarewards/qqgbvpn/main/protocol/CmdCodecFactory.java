@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * 
@@ -13,6 +13,6 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCo
  */
 public interface CmdCodecFactory {
 
-	public IBodyMessageCoder getCodec(long commandId);
+	public ICommandCodec getCodec(long commandId);
 
 }

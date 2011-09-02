@@ -11,10 +11,10 @@ import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
-import com.chinarewards.qqgbvpn.main.protocol.mina.MinaSession;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
+import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
 import com.google.inject.Injector;
 
 /**
