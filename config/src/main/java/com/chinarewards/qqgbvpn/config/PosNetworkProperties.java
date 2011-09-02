@@ -1,5 +1,10 @@
 package com.chinarewards.qqgbvpn.config;
 
+/**
+ * 
+ * 
+ * @deprecated
+ */
 public class PosNetworkProperties extends LoadProperties {
 
 	private static final String SERVER_PORT = "server.port";

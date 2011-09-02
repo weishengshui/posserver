@@ -1,5 +1,10 @@
 package com.chinarewards.qqgbvpn.config;
 
+/**
+ * 
+ * 
+ * @deprecated
+ */
 public class URLProperties extends LoadProperties {
 
 	@Override
