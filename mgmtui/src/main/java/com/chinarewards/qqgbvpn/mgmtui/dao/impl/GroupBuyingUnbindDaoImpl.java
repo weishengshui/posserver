@@ -310,6 +310,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		if (a != null) {
 			if (rnId != null && !"".equals(rnId.trim())) {
 				rn = this.getReturnNote(rnId);
+				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
+					throw new SaveDBException("Return Note already confirmed!");
+				}
 			}
 			if (rn == null) {
 				rn = new ReturnNote();
