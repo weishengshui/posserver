@@ -73,8 +73,9 @@ public class LoginManagerImpl implements LoginManager {
 			}
 
 			pos.setChallenge(challenge);
-			logger.debug("init challenge saved - {}",
-					Arrays.toString(challenge));
+			posDao.get().merge(pos);
+			logger.debug("PosId:{}, init challenge saved - {}", new Object[] {
+					req.getPosid(), Arrays.toString(challenge) });
 
 			switch (pos.getIstatus()) {
 			case INITED:
@@ -120,15 +121,16 @@ public class LoginManagerImpl implements LoginManager {
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
 			logger.trace(
-					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
+					"Loaded from db: pos.posId:{}, pos.secret:{}, pos.challenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
 							pos.getChallenge() });
 			boolean check = ChallengeUtil.checkChallenge(
 					req.getChallengeResponse(), pos.getSecret(),
 					pos.getChallenge());
 
-			logger.debug("new challenge:{}", challenge);
+			logger.debug("new challenge for POS (POS ID):{}", challenge, pos.getPosId());
 			pos.setChallenge(challenge);
+			posDao.get().merge(pos);
 
 			if (check) {
 				if (pos.getIstatus() == PosInitializationStatus.INITED) {
@@ -186,6 +188,7 @@ public class LoginManagerImpl implements LoginManager {
 
 			logger.debug("new challenge:{}", challenge);
 			pos.setChallenge(challenge);
+			posDao.get().merge(pos);
 
 			if (check) {
 				if (pos.getIstatus() == PosInitializationStatus.UNINITED) {
