@@ -1,23 +1,11 @@
 package com.chinarewards.qqgbpvn.main.server;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.Arrays;
-
 import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
-import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
-import com.chinarewards.qqgbvpn.domain.Pos;
-import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
@@ -31,6 +19,11 @@ public class MinaProtcolTest extends JpaGuiceTest {
 				new AppModule(),
 				new JpaPersistModule("posnet")
 						.properties(new DatabaseProperties().getProperties()) };
+	}
+	
+	@Test
+	public void dummyTest() {
+		
 	}
 	
 	//@Test

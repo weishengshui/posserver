@@ -204,7 +204,7 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "rewards-0001";
 		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
@@ -371,7 +371,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("posId", "rewards-0001");
 		params.put("grouponId", "456789");
 		params.put("token", "4567890");
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -466,7 +466,7 @@ public class QQApiTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");
