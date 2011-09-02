@@ -3,7 +3,8 @@ package com.chinarewards.qqgbvpn.qqapi.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+
+import org.apache.commons.configuration.Configuration;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -13,26 +14,19 @@ import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
+import com.google.inject.Inject;
 
 public class GroupBuyingServiceImpl implements GroupBuyingService {
 
-	Properties config;
-
-	/**
-	 * 
-	 */
-	public GroupBuyingServiceImpl() {
-		this(new Properties());
-	}
+	final Configuration configuration;
 
 	/**
 	 * 
 	 * @param config
 	 */
-	public GroupBuyingServiceImpl(Properties config) {
-		if (config == null)
-			throw new NullPointerException();
-		this.config = config;
+	@Inject
+	public GroupBuyingServiceImpl(Configuration configuration) {
+		this.configuration = configuration;
 	}
 	
 	/**
@@ -60,7 +54,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
-		String url = config.getProperty("qq.groupbuy.url.groupBuyingSearchGroupon");
+		String url = configuration.getString("qq.groupbuy.url.groupBuyingSearchGroupon");
 		System.out.println(url);
 		HashMap<String, Object> searchResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
@@ -100,7 +94,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
-		String url = config.getProperty("qq.groupbuy.url.groupBuyingValidationUrl");
+		String url = configuration.getString("qq.groupbuy.url.groupBuyingValidationUrl");
 		HashMap<String, Object> validateResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon",
 				GroupBuyingValidateResultVO.class);
@@ -142,7 +136,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
-		String url = config.getProperty("qq.groupbuy.url.groupBuyingUnbindPosUrl");
+		String url = configuration.getString("qq.groupbuy.url.groupBuyingUnbindPosUrl");
 		HashMap<String, Object> unbindResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
 				GroupBuyingUnbindVO.class);

@@ -8,9 +8,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
@@ -33,21 +36,48 @@ import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
 public class QQApiUATTest extends JpaGuiceTest {
-	
+
 	@Override
 	protected Module[] getModules() {
 		return new Module[] {
 				new AppModule(),
+				buildTestConfigModule(),
 				new JpaPersistModule("posnet")
 						.properties(new DatabaseProperties().getProperties()) };
 	}
-	
+
 	@Test
 	public void testEmpty() {
-		
+
 	}
 
-	//@Test
+	protected Module buildTestConfigModule() {
+
+		Configuration conf = new BaseConfiguration();
+		// hard-coded config
+		conf.setProperty("server.port", 0);
+		// persistence
+		conf.setProperty("db.user", "sa");
+		conf.setProperty("db.password", "");
+		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
+		conf.setProperty("db.url", "jdbc:hsqldb:.");
+		// additional Hibernate properties
+		conf.setProperty("db.hibernate.dialect",
+				"org.hibernate.dialect.HSQLDialect");
+		conf.setProperty("db.hibernate.show_sql", true);
+		// URL for QQ
+		conf.setProperty("qq.groupbuy.url.groupBuyingSearchGroupon",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingValidationUrl",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingUnbindPosUrl",
+				"http://localhost:8086/qqapi");
+
+		TestConfigModule confModule = new TestConfigModule(conf);
+		return confModule;
+	}
+
+	// @Test
 	public void testSendPostSuccess() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
@@ -63,17 +93,17 @@ public class QQApiUATTest extends JpaGuiceTest {
 		sb.append(params.get("key"));
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
-		
+
 		System.out.println("posId-->" + postParams.get("posId"));
 		System.out.println("key-->" + params.get("key"));
 		System.out.println("sign-->" + postParams.get("sign"));
-		
+
 		String url = "http://121.14.96.114/api/pos/query";
-		
+
 		GroupBuyingUtil.sendPost(url, postParams);
 	}
 
-	//@Test
+	// @Test
 	public void testGroupBuyingSearchParseXML() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
@@ -89,9 +119,9 @@ public class QQApiUATTest extends JpaGuiceTest {
 		sb.append(params.get("key"));
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
-		
+
 		String url = "http://121.14.96.114/api/pos/query";
-		
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
 				GroupBuyingSearchListVO.class);
@@ -124,8 +154,8 @@ public class QQApiUATTest extends JpaGuiceTest {
 			}
 		}
 	}
-	
-	//@Test
+
+	// @Test
 	public void testGroupBuyingValidateParseXML() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "REWARDS-0001");
@@ -150,9 +180,9 @@ public class QQApiUATTest extends JpaGuiceTest {
 		sb.append(params.get("key"));
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
-		
+
 		String url = "http://121.14.96.114/api/pos/verify";
-		
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon",
 				GroupBuyingValidateResultVO.class);
@@ -187,11 +217,11 @@ public class QQApiUATTest extends JpaGuiceTest {
 			}
 		}
 	}
-	
-	//@Test
+
+	// @Test
 	public void testGroupBuyingUnbindParseXML() throws Exception {
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("posId", new String[] { "REWARDS-0001", "REWARDS-0002"});
+		params.put("posId", new String[] { "REWARDS-0001", "REWARDS-0002" });
 		params.put("key", new PosNetworkProperties().getTxServerKey());
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
@@ -205,7 +235,8 @@ public class QQApiUATTest extends JpaGuiceTest {
 				posIdList.add(s);
 			}
 		}
-		String posIdStr = posId.length() > 1 ? posId.toString().substring(1) : "";
+		String posIdStr = posId.length() > 1 ? posId.toString().substring(1)
+				: "";
 		// post参数:posId
 		postParams.put("posId[]", posIdList);
 		StringBuffer sb = new StringBuffer(posIdStr);
@@ -213,9 +244,9 @@ public class QQApiUATTest extends JpaGuiceTest {
 		sb.append(params.get("key"));
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
-		
+
 		String url = "http://121.14.96.114/api/pos/reset";
-		
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
 				GroupBuyingUnbindVO.class);
@@ -246,13 +277,12 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
-	//@Test
+	// @Test
 	public void testInitGrouponCache() {
-		
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
-		GroupBuyingDao dao = getInjector().getInstance(
-				GroupBuyingDao.class);
+		GroupBuyingDao dao = getInjector().getInstance(GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
 		params.put("posId", posId);
@@ -261,21 +291,27 @@ public class QQApiUATTest extends JpaGuiceTest {
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
-			//search groupon cache
+			// search groupon cache
 			PageInfo<GrouponCache> pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(50);
-			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, posId).getItems();
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(
+					pageInfo, posId).getItems();
 			if (cacheList != null && cacheList.size() > 0) {
 				for (int i = 0; i < cacheList.size(); i++) {
-					System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
-					System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
-					System.out.println("MercName-->" + cacheList.get(i).getMercName());
-					System.out.println("ListName-->" + cacheList.get(i).getListName());
-					System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
+					System.out.println("GrouponId-->"
+							+ cacheList.get(i).getGrouponId());
+					System.out.println("GrouponName-->"
+							+ cacheList.get(i).getGrouponName());
+					System.out.println("MercName-->"
+							+ cacheList.get(i).getMercName());
+					System.out.println("ListName-->"
+							+ cacheList.get(i).getListName());
+					System.out.println("DetailName-->"
+							+ cacheList.get(i).getDetailName());
 				}
 			}
-			//check cache
+			// check cache
 			Query jql = emp.get().createQuery(
 					"select j.eventDetail from Journal j where j.event = '"
 							+ DomainEvent.GROUPON_CACHE_INIT.toString()
@@ -309,9 +345,9 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
-	//@Test
+	// @Test
 	public void testGroupBuyingSearch() {
-		
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -319,10 +355,11 @@ public class QQApiUATTest extends JpaGuiceTest {
 		params.put("curpage", "6");
 		params.put("pageSize", "1");
 		try {
-			HashMap<String,Object> resultMap = gbm.groupBuyingSearch(params);
+			HashMap<String, Object> resultMap = gbm.groupBuyingSearch(params);
 			String resultCode = (String) resultMap.get("resultCode");
 			System.out.println("resultCode->" + resultCode);
-			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap.get("pageInfo");
+			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap
+					.get("pageInfo");
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());
@@ -334,7 +371,8 @@ public class QQApiUATTest extends JpaGuiceTest {
 			if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
 				for (GrouponCache item : pageInfo.getItems()) {
 					System.out.println("GrouponId-->" + item.getGrouponId());
-					System.out.println("GrouponName-->" + item.getGrouponName());
+					System.out
+							.println("GrouponName-->" + item.getGrouponName());
 					System.out.println("MercName-->" + item.getMercName());
 					System.out.println("ListName-->" + item.getListName());
 					System.out.println("DetailName-->" + item.getDetailName());
@@ -359,9 +397,9 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
-	//@Test
+	// @Test
 	public void testGroupBuyingValidate() {
-		
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -377,9 +415,11 @@ public class QQApiUATTest extends JpaGuiceTest {
 				List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
 						.get("items");
 				for (GroupBuyingValidateResultVO item : items) {
-					System.out.println("ResultStatus: " + item.getResultStatus());
+					System.out.println("ResultStatus: "
+							+ item.getResultStatus());
 					System.out.println("ResultName: " + item.getResultName());
-					System.out.println("ResultExplain: " + item.getResultExplain());
+					System.out.println("ResultExplain: "
+							+ item.getResultExplain());
 					System.out.println("CurrentTime: " + item.getCurrentTime());
 					System.out.println("UseTime: " + item.getUseTime());
 					System.out.println("ValidTime: " + item.getValidTime());
@@ -420,13 +460,13 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
-	//@Test
+	// @Test
 	public void testGroupBuyingUnbind() {
-		
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("posId", new String[] { "rEWARDS-0001", "rEWARDS-0002"});
+		params.put("posId", new String[] { "rEWARDS-0001", "rEWARDS-0002" });
 		params.put("key", new PosNetworkProperties().getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
@@ -437,7 +477,8 @@ public class QQApiUATTest extends JpaGuiceTest {
 						.get("items");
 				for (GroupBuyingUnbindVO item : items) {
 					System.out.println("PosId: " + item.getPosId());
-					System.out.println("ResultStatus: " + item.getResultStatus());
+					System.out.println("ResultStatus: "
+							+ item.getResultStatus());
 				}
 			} else {
 				switch (Integer.valueOf(resultCode)) {

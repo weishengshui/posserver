@@ -21,16 +21,7 @@ public class QQApiModule extends AbstractModule {
 	@Override
 	protected void configure() {
 
-		bind(GroupBuyingService.class).toProvider(new Provider<GroupBuyingService>() {
-			@Override
-			public GroupBuyingService get() {
-				try {
-					return new GroupBuyingServiceImpl(new URLProperties().getProperties());
-				} catch (Exception e) {
-					return null;
-				}
-			}
-		}).in(Singleton.class);
+		bind(GroupBuyingService.class).to(GroupBuyingServiceImpl.class).in(Singleton.class);
 
 		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class).in(Singleton.class);
 		bind(LoginManager.class).to(LoginManagerImpl.class);
