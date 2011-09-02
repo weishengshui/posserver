@@ -75,7 +75,7 @@ public class LoginManagerImpl implements LoginManager {
 			pos.setChallenge(challenge);
 			posDao.get().merge(pos);
 			logger.debug("PosId:{}, init challenge saved - {}", new Object[] {
-					req.getPosid(), Arrays.toString(challenge) });
+					req.getPosId(), Arrays.toString(challenge) });
 
 			switch (pos.getIstatus()) {
 			case INITED:

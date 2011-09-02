@@ -6,25 +6,25 @@ package com.chinarewards.qqgbvpn.main.exception;
  * @author huangwei
  *
  */
-public class PackgeException extends Exception {
+public class PackageException extends Exception {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8636507809837787365L;
 	
-	public PackgeException() {
+	public PackageException() {
 		super();
 	}
 
-	public PackgeException(String message, Throwable cause) {
+	public PackageException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public PackgeException(String message) {
+	public PackageException(String message) {
 		super(message);
 	}
 
-	public PackgeException(Throwable cause) {
+	public PackageException(Throwable cause) {
 		super(cause);
 	}
 }

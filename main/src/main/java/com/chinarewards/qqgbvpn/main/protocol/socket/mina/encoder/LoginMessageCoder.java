@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
@@ -25,12 +25,12 @@ public class LoginMessageCoder implements IBodyMessageCoder {
 
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
-			throws PackgeException {
+			throws PackageException {
 		log.debug("login/bind message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
 		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
 				+ ProtocolLengths.CHALLEUGERESPONSE) {
-			throw new PackgeException(
+			throw new PackageException(
 					"login packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();

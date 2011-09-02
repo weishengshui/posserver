@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -21,11 +21,11 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
-			throws PackgeException {
+			throws PackageException {
 		log.debug("validate message decode");
 		ValidateRequestMessage message = new ValidateRequestMessage();
 		if (in.remaining() < ProtocolLengths.COMMAND + 2) {
-			throw new PackgeException(
+			throw new PackageException(
 					"validate packge message body error, body message is :"
 							+ in);
 		}
@@ -51,7 +51,7 @@ public class ValidateBodyMessageCoder implements IBodyMessageCoder {
 			errorFlag = true;
 		}
 		if (errorFlag) {
-			throw new PackgeException(
+			throw new PackageException(
 					"validate packge message body error, body message");
 		}
 		String grouponId = null;

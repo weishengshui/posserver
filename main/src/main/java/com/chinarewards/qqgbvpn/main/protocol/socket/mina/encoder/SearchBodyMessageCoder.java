@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -28,12 +28,12 @@ public class SearchBodyMessageCoder implements IBodyMessageCoder {
 	
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
-			throws PackgeException {
+			throws PackageException {
 		log.debug("search message decode");
 		SearchRequestMessage message = new SearchRequestMessage();
 		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.PAGE
 				+ ProtocolLengths.SIZE) {
-			throw new PackgeException(
+			throw new PackageException(
 					"search packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();

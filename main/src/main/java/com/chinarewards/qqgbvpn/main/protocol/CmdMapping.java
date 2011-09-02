@@ -3,13 +3,15 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.IBodyMessageCoder;
+
 /**
- * Defines the service mapping.
+ * Defines the command codec mapping.
  * 
  * @author Cyril
  * @since 0.1.0
  */
-public interface ServiceMapping {
+public interface CmdMapping {
 
 	/**
 	 * Add a mapping between the command ID and the class.
@@ -20,7 +22,8 @@ public interface ServiceMapping {
 	 *            the corresponding service handler class to be used for this
 	 *            mapping.
 	 */
-	public void addMapping(long commandId, Class<? extends ServiceHandler> clazz);
+	public void addMapping(long commandId,
+			Class<? extends IBodyMessageCoder> clazz);
 
 	/**
 	 * Returns the command handler with matching command ID. If no mapping
@@ -28,7 +31,8 @@ public interface ServiceMapping {
 	 * 
 	 * @param commandId
 	 *            the command ID.
-	 * @return the command handler class, or <code>null</code> if none is found.
+	 * @return the codec class which extends <code>IBodyMessageCoder</code>, or
+	 *         <code>null</code> if none is found.
 	 */
 	public Object getMapping(long commandId);
 

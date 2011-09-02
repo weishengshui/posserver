@@ -1,11 +1,8 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import org.apache.commons.io.HexDump;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
@@ -15,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.exception.PackageException;
+import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -33,10 +31,13 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	private Charset charset;
 
 	private Injector injector;
+	
+	protected CmdCodecFactory cmdCodecFactory;
 
-	public MessageDecoder(Charset charset, Injector injector) {
+	public MessageDecoder(Charset charset, Injector injector, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
 		this.injector = injector;
+		this.cmdCodecFactory = cmdCodecFactory;
 	}
 
 	@Override
@@ -140,7 +141,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	}
 	
-	private ICommand decodeMessageBody(IoBuffer in,Charset charset) throws PackgeException{
+	private ICommand decodeMessageBody(IoBuffer in,Charset charset) throws PackageException{
 		//get cmdId and process it
 		int position = in.position();
 		long cmdId = in.getUnsignedInt();
@@ -153,12 +154,13 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 				.getCmdNameById(cmdId);
 		log.debug("cmdName========:" + cmdName);
 		if (cmdName == null || cmdName.length() == 0) {
-			throw new PackgeException("cmd id is not exits,cmdId is :" + cmdId);
+			throw new PackageException("cmd id is not exits,cmdId is :" + cmdId);
 		}
 		// Dispatcher
-		IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(
-				IBodyMessageCoder.class, Names.named(cmdName)));
-
+//		IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(
+//				IBodyMessageCoder.class, Names.named(cmdName)));
+		IBodyMessageCoder bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
+				
 		return bodyMessageCoder.decode(in, charset);
 	}
 

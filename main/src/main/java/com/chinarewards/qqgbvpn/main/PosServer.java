@@ -23,6 +23,11 @@ public interface PosServer {
 	public void stop();
 
 	/**
+	 * Complete shutdown the server and release all resources.
+	 */
+	public void shutdown();
+
+	/**
 	 * Check whether the server is stopped.
 	 */
 	public boolean isStopped();

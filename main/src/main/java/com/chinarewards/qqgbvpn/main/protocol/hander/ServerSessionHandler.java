@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.config.CmdProperties;
-import com.chinarewards.qqgbvpn.main.exception.PackgeException;
+import com.chinarewards.qqgbvpn.main.exception.PackageException;
+import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
@@ -39,7 +40,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	protected final ServiceDispatcher serviceDispatcher;
 
 	protected final ServiceMapping serviceMapping;
-
+	
 	public ServerSessionHandler(Injector injector,
 			ServiceDispatcher serviceDispatcher, ServiceMapping serviceMapping) {
 		this.injector = injector;
@@ -68,7 +69,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		String cmdName = injector.getInstance(CmdProperties.class)
 				.getCmdNameById(cmdId);
 		if (cmdName == null || cmdName.length() == 0) {
-			throw new PackgeException("cmd id is not exits,cmdId is :" + cmdId);
+			throw new PackageException("cmd id is not exits,cmdId is :" + cmdId);
 		}
 
 		// Dispatcher
@@ -91,7 +92,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	 * <code>ServiceHandler</code>, and write back the response.
 	 * <p>
 	 * 
-	 * The request and response 
+	 * The request and response
 	 * 
 	 * @param session
 	 * @param message

@@ -138,15 +138,7 @@ public class BootStrap {
 		// create the dependency injection environment.
 		createGuice();
 
-		// save the command line arguments
-		// initAppPreference();
-
-		// start the persistence services
-		// PersistService ps = injector.getInstance(PersistService.class);
-		// ps.start();
-
 		// start mina server
-		// startMinaServer();
 		log.info("Bootstrapping completed");
 
 	}
@@ -332,42 +324,6 @@ public class BootStrap {
 		return main;
 	}
 
-	/**
-	 * Initialize the app preference. This must be done AFTER the Guice injector
-	 * is created.
-	 */
-	protected void initAppPreference() {
-
-		AppPreference pref = injector.getInstance(AppPreference.class);
-
-		// initialize the Application Preference object using command line
-		// arguments.
-		pref.setDb(cl.getOptionValue("db"));
-		pref.setDbType(cl.getOptionValue("dbtype"));
-		pref.setDbUsername(cl.getOptionValue("dbuser"));
-		pref.setDbPassword(cl.getOptionValue("dbpass"));
-
-		// verbose level
-		{
-			String raw = cl.getOptionValue("verbose");
-			int level = 0;
-			if (raw != null) {
-				try {
-					level = Integer.parseInt(raw);
-				} catch (NumberFormatException e) {
-					// use default
-				}
-				if (level < 0 || level > 1) {
-					level = 0;
-				}
-			}
-
-			com.chinarewards.qqgbvpn.main.LogConfig l = injector
-					.getInstance(com.chinarewards.qqgbvpn.main.LogConfig.class);
-			l.setVerboseLevel(level);
-		}
-
-	}
 
 	/**
 	 * Create the guice injector environment.

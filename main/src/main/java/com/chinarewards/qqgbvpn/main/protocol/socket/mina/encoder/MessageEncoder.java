@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.config.CmdProperties;
+import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
@@ -28,10 +29,21 @@ public class MessageEncoder implements ProtocolEncoder {
 	private Charset charset;
 
 	private Injector injector;
+	
+	protected CmdCodecFactory cmdCodecFactory;
 
-	public MessageEncoder(Charset charset, Injector injector) {
+	/**
+	 * XXX can 'injector' be skipped?
+	 * 
+	 * @param charset
+	 * @param injector
+	 * @param cmdCodecFactory
+	 */
+	public MessageEncoder(Charset charset, Injector injector,
+			CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
 		this.injector = injector;
+		this.cmdCodecFactory = cmdCodecFactory;
 	}
 
 	/*
@@ -82,7 +94,8 @@ public class MessageEncoder implements ProtocolEncoder {
 				throw new RuntimeException("cmd id is not exits,cmdId is :"+cmdId);
 			}
 			//Dispatcher
-			IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+			//IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+			IBodyMessageCoder bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 

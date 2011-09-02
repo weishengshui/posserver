@@ -23,50 +23,6 @@ public class Main {
 	 * Java shutdown hook. Let the application gracefully handles termination
 	 * when the operating system request this application to terminate.
 	 */
-	private static class AppShutdownThread extends Thread {
-
-		Logger log = LoggerFactory.getLogger(Main.class);
-
-		final Application app;
-		final Thread mainThread;
-
-		/**
-		 * 
-		 * @param app
-		 * @param mainThread
-		 *            the thread which runs the main application.
-		 */
-		public AppShutdownThread(Application app, Thread mainThread) {
-			this.app = app;
-			this.mainThread = mainThread;
-		}
-
-		@Override
-		public void run() {
-
-			log.info("Shutdown hook triggered.");
-
-			// request the application to stop.
-			log.info("Requesting message sender to stop...");
-
-			app.requestShutdown();
-			mainThread.interrupt();
-
-			log.info("Waiting for main thread to stop...");
-			try {
-				mainThread.join();
-			} catch (Throwable t) {
-			}
-
-			log.info("Shutdown hook completed.");
-		}
-
-	}
-
-	/**
-	 * Java shutdown hook. Let the application gracefully handles termination
-	 * when the operating system request this application to terminate.
-	 */
 	private static class PosServerShutdownThread extends Thread {
 	
 		Logger log = LoggerFactory.getLogger(Main.class);

@@ -37,7 +37,7 @@ public class DispatcherModule extends AbstractModule {
 		bind(IBodyMessageCoder.class).annotatedWith(Names.named("validate")).to(
 				ValidateBodyMessageCoder.class).in(Singleton.class);
 		
-		// command hander
+		// command handler
 		bind(CommandHandler.class).annotatedWith(Names.named("login")).to(
 				LoginCommandHandler.class).in(Singleton.class);
 		bind(CommandHandler.class).annotatedWith(Names.named("init")).to(
