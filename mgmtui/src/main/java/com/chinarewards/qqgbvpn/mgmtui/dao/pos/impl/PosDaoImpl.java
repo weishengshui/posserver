@@ -15,11 +15,14 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.LogicException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * pos dao
@@ -32,17 +35,17 @@ public class PosDaoImpl implements PosDao {
 	Logger log = LoggerFactory.getLogger(PosDaoImpl.class);
 
 	@Inject
-	EntityManager em;
+	Provider<EntityManager> em;
 
 	public EntityManager getEm() {
-		return em;
+		return em.get();
 	}
 
 	@Override
-	public void deletePosById(String id) throws LogicException {
+	public void deletePosById(String id) throws ParamsException {
 		log.trace("calling deletePosById start and params is {}", id);
 		if (Tools.isEmptyString(id)) {
-			throw new LogicException("id is null");
+			throw new ParamsException("id is null");
 		}
 		Pos pos = getEm().find(Pos.class, id);
 		if(pos != null){
@@ -106,17 +109,17 @@ public class PosDaoImpl implements PosDao {
 	}
 
 	@Override
-	public PosVO savePos(PosVO posVO) throws LogicException {
+	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException {
 		log.trace("calling savePos start and params is {}", Tools
 				.objToString(posVO));
 		if (Tools.isEmptyString(posVO)) {
-			throw new LogicException("posVO is null");
+			throw new ParamsException("posVO is null");
 		}
 		if (Tools.isEmptyString(posVO.getPosId())) {
-			throw new LogicException("posId is null");
+			throw new ParamsException("posId is null");
 		}
 		if (posIdIsExits(posVO.getPosId())) {
-			throw new LogicException("posId is exits");
+			throw new PosIdIsExitsException("posId is exits");
 		}
 		Pos pos = new Pos();
 		pos.setDstatus(posVO.getDstatus());
@@ -146,18 +149,18 @@ public class PosDaoImpl implements PosDao {
 	}
 
 	@Override
-	public void updatePos(PosVO posVO) throws LogicException {
+	public void updatePos(PosVO posVO) throws PosIdIsExitsException, ParamsException {
 		log.trace("calling updatePos start and params is {}", Tools
 				.objToString(posVO));
 		if (Tools.isEmptyString(posVO)) {
-			throw new LogicException("posVO is null");
+			throw new ParamsException("posVO is null");
 		}
 		if (Tools.isEmptyString(posVO.getId())) {
-			throw new LogicException("id is null");
+			throw new ParamsException("id is null");
 		}
 
 		if (Tools.isEmptyString(posVO.getPosId())) {
-			throw new LogicException("posId is null");
+			throw new ParamsException("posId is null");
 		}
 
 		long count = (Long) getEm()
@@ -166,12 +169,12 @@ public class PosDaoImpl implements PosDao {
 				.setParameter("posId", posVO.getPosId()).setParameter("id",
 						posVO.getId()).getSingleResult();
 		if (count > 0) {
-			throw new LogicException("posId is exits");
+			throw new PosIdIsExitsException("posId is exits");
 		}
 
 		Pos pos = getEm().find(Pos.class, posVO.getId());
 		if (pos == null) {
-			throw new LogicException("pos is not exits,id is:" + posVO.getId());
+			throw new ParamsException("pos is not exits,id is:" + posVO.getId());
 		}
 		pos.setDstatus(posVO.getDstatus());
 		pos.setIstatus(posVO.getIstatus());
@@ -186,10 +189,10 @@ public class PosDaoImpl implements PosDao {
 	}
 
 	@Override
-	public PosVO getPosById(String id) throws LogicException {
+	public PosVO getPosById(String id) throws ParamsException {
 		log.trace("calling getPosById start and params is {}", id);
 		if (Tools.isEmptyString(id)) {
-			throw new LogicException("id is null");
+			throw new ParamsException("id is null");
 		}
 		Pos pos = getEm().find(Pos.class, id);
 		if (pos != null) {
