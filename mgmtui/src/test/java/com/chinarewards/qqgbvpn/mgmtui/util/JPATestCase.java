@@ -64,6 +64,10 @@ public class JPATestCase extends TestCase{
 		return properties;
 	}
 	
+	public void testEm(){
+		assertNotNull(em);
+	}
+	
 	public void begin() {
 		em.getTransaction().begin();
 	}
