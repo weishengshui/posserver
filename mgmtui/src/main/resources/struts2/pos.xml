@@ -24,7 +24,9 @@
 		<action name="del/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction"
 			method="delPos">
 			<param name="id">{1}</param>
-			<result name="success">/WEB-INF/jsp/pos/posList.jsp</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">list</param>
+			</result>
 		</action>
 	</package>
 </struts>
