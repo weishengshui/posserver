@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceDispatcher;
@@ -121,7 +123,7 @@ public class DispatcherTest extends GuiceTest {
 	 * Most simple case for dispatching a command.
 	 */
 	@Test
-	public void testDispatch_Simple_OK() {
+	public void testDispatch_Simple_OK() throws Exception {
 
 		// fake a message
 		TestRequestCmd req = new TestRequestCmd("john", 444);
@@ -153,6 +155,43 @@ public class DispatcherTest extends GuiceTest {
 		assertTrue(response.getResponse() instanceof TestResponseCmd);
 		TestResponseCmd respObj = (TestResponseCmd) response.getResponse();
 		assertEquals("Result: 444 - john", respObj.getName());
+
+	}
+
+
+	/**
+	 * Most simple case for dispatching a command with no mapping.
+	 */
+	@Test
+	public void testDispatch_NoMapping() throws Exception {
+
+		// fake a message
+		TestRequestCmd req = new TestRequestCmd("john", 444);
+
+		// Construct a service mapping
+		ServiceMapping mapping = new SimpleServiceMapping();
+		mapping.addMapping(654 + 777, TestServiceHandler.class);	// non exist mapping
+
+		// and the corresponding ServiceHandlerObjectFactory
+		SimpleServiceHandlerObjectFactory objFactory = new SimpleServiceHandlerObjectFactory(
+				mapping);
+
+		// get an instance of dispatcher using that object factory
+		ServiceDispatcher dispatcher = new SimpleServiceDispatcher(objFactory);
+
+		// build a request (for dispatcher)
+		ServiceSession session = new SimpleSession();
+		ServiceRequestImpl request = new ServiceRequestImpl(req, session);
+		// build a response (for dispatcher)
+		ServiceResponseImpl response = new ServiceResponseImpl();
+
+		// and dispatch the message!
+		try {
+			dispatcher.dispatch(mapping, request, response);
+			fail("Should throw ServiceDispatcherException");
+		} catch (ServiceDispatcherException e) {
+			// correct
+		}
 
 	}
 }

@@ -24,7 +24,7 @@ import com.google.inject.Inject;
 public class SimpleServiceDispatcher implements ServiceDispatcher {
 
 	protected final ServiceHandlerObjectFactory objFactory;
-	
+
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
@@ -48,13 +48,17 @@ public class SimpleServiceDispatcher implements ServiceDispatcher {
 	 */
 	@Override
 	public void dispatch(ServiceMapping mapping, ServiceRequest request,
-			ServiceResponse response) {
+			ServiceResponse response) throws ServiceDispatcherException {
 
 		ICommand cmd = (ICommand) request.getParameter();
 		long commandId = cmd.getCmdId();
 
 		ServiceHandler handler = objFactory.getHandler(commandId);
 		
+		if (handler == null) {
+			throw new ServiceDispatcherException("No mapping found for command ID " + commandId);
+		}
+
 		log.debug("Handler for command ID {} is {}", commandId, handler);
 
 		handler.execute(request, response);
