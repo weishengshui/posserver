@@ -22,6 +22,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.main.test.BaseTest;
+import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.InitMsgSocketFactory;
@@ -254,9 +255,10 @@ public class ProtcolOnMinaTest extends BaseTest {
 		}
 	}
 
+	@Test
 	public void testSendViaJavaSocket() throws Exception {
 
-		Socket socket = new Socket("localhost", 1234);
+		Socket socket = new Socket("localhost", 1235);
 
 		OutputStream os = socket.getOutputStream();
 		InputStream is = socket.getInputStream();
@@ -269,13 +271,18 @@ public class ProtcolOnMinaTest extends BaseTest {
 				// flags
 				0, 0,
 				// checksum
-				0, 2,
+				0, 0,
 				// message length
 				0, 0, 0, 32,
 				// command ID
 				0, 0, 0, 5,
 				// POS ID
 				'P', 'O', 'S', '-', '5', '6', '7', '8', '9', '0', '1', '2' };
+		
+		// calculate checksum
+		int checksum = Tools.checkSum(msg, msg.length);
+		Tools.putUnsignedShort(msg, checksum, 10);
+		
 		System.out.println("Packet size: " + msg.length);
 
 		long runForSeconds = 1;

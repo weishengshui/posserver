@@ -2,16 +2,16 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd.impl;
 
 import java.util.HashMap;
 
-import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
@@ -19,7 +19,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessag
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class BindCommandHandler implements CommandHandler {
+public class BindCommandHandler implements ServiceHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -29,14 +29,15 @@ public class BindCommandHandler implements CommandHandler {
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
 	
-	
-	
 	@Override
-	public ICommand execute(IoSession session, ICommand bodyMessage) {
+	public void execute(ServiceRequest request, ServiceResponse response) {
+		
+		LoginRequestMessage bodyMessage = (LoginRequestMessage)request.getParameter();
+		
 		log.debug("BindCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		LoginResponseMessage loginResponseMessage  = null;
 		try{
-			loginResponseMessage  = loginManager.bind((LoginRequestMessage) bodyMessage);
+			loginResponseMessage  = loginManager.bind(bodyMessage);
 		}catch(Throwable e){
 			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
@@ -55,7 +56,8 @@ public class BindCommandHandler implements CommandHandler {
 				log.error("initGrouponCache fail:"+e);
 			}
 		}
-		return loginResponseMessage;
+		
+		response.writeResponse(loginResponseMessage);
 	}
 
 }

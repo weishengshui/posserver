@@ -50,6 +50,7 @@ public class Main {
 			log.info("Requesting message sender to stop...");
 	
 			server.stop();
+			server.shutdown();
 			mainThread.interrupt();
 	
 			log.info("Waiting for main thread to stop...");

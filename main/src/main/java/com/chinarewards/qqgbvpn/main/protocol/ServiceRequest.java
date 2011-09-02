@@ -18,4 +18,10 @@ public interface ServiceRequest {
 	 */
 	public Object getParameter();
 
+	/**
+	 * 
+	 * @return
+	 */
+	public ServiceSession getSession();
+	
 }

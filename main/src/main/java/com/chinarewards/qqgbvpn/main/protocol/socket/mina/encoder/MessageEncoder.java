@@ -19,8 +19,6 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.message.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 public class MessageEncoder implements ProtocolEncoder {
 

@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
+import java.util.Iterator;
+
 /**
  * Defines the service mapping.
  * 
@@ -31,5 +33,7 @@ public interface ServiceMapping {
 	 * @return the command handler class, or <code>null</code> if none is found.
 	 */
 	public Object getMapping(long commandId);
+	
+	public Iterator<Long> getCommandIds();
 
 }

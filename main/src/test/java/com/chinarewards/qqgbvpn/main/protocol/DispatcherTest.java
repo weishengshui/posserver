@@ -18,6 +18,7 @@ import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceMapping;
+import com.chinarewards.qqgbvpn.main.protocol.mina.SimpleSession;
 
 /**
  * 
@@ -137,7 +138,8 @@ public class DispatcherTest extends GuiceTest {
 		ServiceDispatcher dispatcher = new SimpleServiceDispatcher(objFactory);
 
 		// build a request (for dispatcher)
-		ServiceRequestImpl request = new ServiceRequestImpl(req);
+		ServiceSession session = new SimpleSession();
+		ServiceRequestImpl request = new ServiceRequestImpl(req, session);
 		// build a response (for dispatcher)
 		ServiceResponseImpl response = new ServiceResponseImpl();
 

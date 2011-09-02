@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.mina.core.session.IoSession;
 import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +12,11 @@ import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.SearchResponseDetail;
@@ -26,7 +27,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class SearchCommandHandler implements CommandHandler {
+public class SearchCommandHandler implements ServiceHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -37,9 +38,15 @@ public class SearchCommandHandler implements CommandHandler {
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
 	
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public ICommand execute(IoSession session, ICommand bodyMessage) {
+	public void execute(ServiceRequest request, ServiceResponse response) {
+		
+		SearchRequestMessage bodyMessage = (SearchRequestMessage) request.getParameter();
+		
+		ServiceSession session = request.getSession();
+		
 		// TODO Auto-generated method stub
 		log.debug("SearchCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		SearchRequestMessage searchRequestMessage = (SearchRequestMessage) bodyMessage;
@@ -98,7 +105,9 @@ public class SearchCommandHandler implements CommandHandler {
 		}
 		
 		searchResponseMessage.setCmdId(CmdConstant.SEARCH_CMD_ID_RESPONSE);
-		return searchResponseMessage;
+		
+		response.writeResponse(searchResponseMessage);
+		
 	}
 
 }

@@ -24,21 +24,18 @@ import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
-import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.hander.ServerSessionHandler;
-import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceDispatcher;
-import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.MessageCoderFactory;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
 
 /**
- * 
+ * Concrete implementation of <code>PosServer</code>.
  * 
  * @author Cyril
  * @since 0.1.0
@@ -52,14 +49,14 @@ public class DefaultPosServer implements PosServer {
 	protected Logger log = LoggerFactory.getLogger(PosServer.class);
 
 	protected ServiceMapping mapping;
-	
+
 	protected CmdMapping cmdMapping;
 
 	protected CmdCodecFactory cmdCodecFactory;
-	
-	protected ServiceHandlerObjectFactory serviceHandlerObjectFactory;
-	
-	protected ServiceDispatcher serviceDispatcher;
+
+	protected final ServiceHandlerObjectFactory serviceHandlerObjectFactory;
+
+	protected final ServiceDispatcher serviceDispatcher;
 
 	/**
 	 * socket server address
@@ -86,9 +83,13 @@ public class DefaultPosServer implements PosServer {
 	boolean persistenceServiceInited = false;
 
 	@Inject
-	public DefaultPosServer(Configuration configuration, Injector injector) {
+	public DefaultPosServer(Configuration configuration, Injector injector,
+			ServiceDispatcher serviceDispatcher,
+			ServiceHandlerObjectFactory serviceHandlerObjectFactory) {
 		this.configuration = configuration;
 		this.injector = injector;
+		this.serviceDispatcher = serviceDispatcher;
+		this.serviceHandlerObjectFactory = serviceHandlerObjectFactory;
 	}
 
 	/*
@@ -103,8 +104,6 @@ public class DefaultPosServer implements PosServer {
 
 		buildCodecMapping();
 
-		buildHandlerMapping();
-
 		// start the JPA persistence service
 		startPersistenceService();
 
@@ -115,26 +114,11 @@ public class DefaultPosServer implements PosServer {
 
 	}
 
-	protected void buildHandlerMapping() {
-
-		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
-		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
-
-		// XX make this Guice friendly
-		ServiceHandlerObjectFactory serviceHandlerObjectFactory = new SimpleServiceHandlerObjectFactory(mapping);
-
-		// XX make this Guice friendly
-		serviceDispatcher = new SimpleServiceDispatcher(serviceHandlerObjectFactory);
-
-		this.mapping = mapping;
-
-	}
-
 	protected void buildCodecMapping() {
 
 		CodecMappingConfigBuilder builder = new CodecMappingConfigBuilder();
 		CmdMapping cmdMapping = builder.buildMapping(configuration);
-		
+
 		// and then the factory
 		this.cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
 		this.cmdMapping = cmdMapping;
@@ -143,7 +127,8 @@ public class DefaultPosServer implements PosServer {
 
 	/**
 	 * Start the Apache Mina service.
-	 * @throws PosServerException 
+	 * 
+	 * @throws PosServerException
 	 */
 	protected void startMinaService() throws PosServerException {
 		port = configuration.getInt("server.port");
@@ -155,8 +140,10 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
 		// not this
-		acceptor.getFilterChain().addLast("codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(injector, cmdCodecFactory)));
+		acceptor.getFilterChain().addLast(
+				"codec",
+				new ProtocolCodecFilter(new MessageCoderFactory(injector,
+						cmdCodecFactory)));
 
 		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
@@ -170,7 +157,8 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
-		acceptor.setHandler(new ServerSessionHandler(injector, serviceDispatcher, mapping));
+		acceptor.setHandler(new ServerSessionHandler(injector,
+				serviceDispatcher, mapping));
 		acceptor.setCloseOnDeactivation(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);

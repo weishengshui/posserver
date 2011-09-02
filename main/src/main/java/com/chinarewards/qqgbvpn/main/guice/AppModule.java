@@ -4,7 +4,6 @@
 package com.chinarewards.qqgbvpn.main.guice;
 
 import com.chinarewards.qqgbvpn.main.ApplicationModule;
-import com.chinarewards.qqgbvpn.main.DispatcherModule;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.chinarewards.qqgbvpn.main.logic.journal.DefaultJournalModule;
 import com.google.inject.AbstractModule;
@@ -29,8 +28,6 @@ public class AppModule extends AbstractModule {
 		install(new ApplicationModule());
 
 		install(new QQApiModule());
-		
-		install(new DispatcherModule());
 
 		install(new DefaultJournalModule());
 	}

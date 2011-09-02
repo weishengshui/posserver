@@ -4,6 +4,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.impl;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
@@ -44,6 +45,14 @@ public class SimpleServiceMapping implements ServiceMapping {
 	@Override
 	public Object getMapping(long commandId) {
 		return mapping.get(commandId);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.main.protocol.ServiceMapping#getCommandIds()
+	 */
+	@Override
+	public Iterator<Long> getCommandIds() {
+		return this.mapping.keySet().iterator();
 	}
 
 }

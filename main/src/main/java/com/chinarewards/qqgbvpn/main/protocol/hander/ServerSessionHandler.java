@@ -8,17 +8,14 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
-import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CommandHandler;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
+import com.chinarewards.qqgbvpn.main.protocol.mina.MinaSession;
 import com.chinarewards.qqgbvpn.main.protocol.socket.message.Message;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 
 /**
  * Server handler.
@@ -40,7 +37,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	protected final ServiceDispatcher serviceDispatcher;
 
 	protected final ServiceMapping serviceMapping;
-	
+
 	public ServerSessionHandler(Injector injector,
 			ServiceDispatcher serviceDispatcher, ServiceMapping serviceMapping) {
 		this.injector = injector;
@@ -73,11 +70,21 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		}
 
 		// Dispatcher
-		CommandHandler commandHandler = injector.getInstance(Key.get(
-				CommandHandler.class, Names.named(cmdName)));
+		// CommandHandler commandHandler = injector.getInstance(Key.get(
+		// CommandHandler.class, Names.named(cmdName)));
 
-		ICommand responseMsgBody = commandHandler.execute(session,
-				msg.getBodyMessage());
+		// build a request (for dispatcher)
+		MinaSession serviceSession = new MinaSession(session);
+		ServiceRequestImpl request = new ServiceRequestImpl(msg.getBodyMessage(), serviceSession);
+		// build a response (for dispatcher)
+		ServiceResponseImpl response = new ServiceResponseImpl();
+		
+		serviceDispatcher.dispatch(serviceMapping, request, response);
+
+		ICommand responseMsgBody = (ICommand) response.getResponse();
+
+		// ICommand responseMsgBody = commandHandler.execute(session,
+		// msg.getBodyMessage());
 
 		msg.setBodyMessage(responseMsgBody);
 		session.write(msg);
@@ -100,26 +107,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	 */
 	protected void doDispatch(IoSession session, Object message)
 			throws Exception {
-
-		// get the message
-		Message msg = (Message) message;
-		long cmdId = msg.getBodyMessage().getCmdId();
-
-		// construct the request & response pair.
-		ServiceRequestImpl request = new ServiceRequestImpl(
-				msg.getBodyMessage());
-		ServiceResponseImpl response = new ServiceResponseImpl();
-
-		// dispatch it!
-		serviceDispatcher.dispatch(serviceMapping, request, response);
-
-		// and then encode the response.
-		Object responseContent = response.getResponse();
-
-		// and write back to the socket as response.
-		if (responseContent != null) {
-			session.write(responseContent);
-		}
 
 	}
 

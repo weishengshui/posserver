@@ -23,7 +23,8 @@ public interface PosServer {
 	public void stop();
 
 	/**
-	 * Complete shutdown the server and release all resources.
+	 * Complete shutdown the server and release all resources. This should be
+	 * the last method to call.
 	 */
 	public void shutdown();
 

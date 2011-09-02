@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.google.inject.Inject;
 
 /**
  * Simple implementation of <code>ServiceDispatcher</code>.
@@ -25,6 +26,7 @@ public class SimpleServiceDispatcher implements ServiceDispatcher {
 	 * 
 	 * @param objFactory
 	 */
+	@Inject
 	public SimpleServiceDispatcher(ServiceHandlerObjectFactory objFactory) {
 		this.objFactory = objFactory;
 	}

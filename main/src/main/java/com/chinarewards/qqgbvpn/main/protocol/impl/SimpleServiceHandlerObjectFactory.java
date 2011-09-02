@@ -6,6 +6,7 @@ package com.chinarewards.qqgbvpn.main.protocol.impl;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.google.inject.Inject;
 
 /**
  * 
@@ -18,6 +19,7 @@ public class SimpleServiceHandlerObjectFactory implements
 
 	protected final ServiceMapping mapping;
 
+	@Inject
 	public SimpleServiceHandlerObjectFactory(ServiceMapping mapping) {
 		this.mapping = mapping;
 	}
