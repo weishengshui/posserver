@@ -318,6 +318,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);
 				rn.setCreateDate(date);
 				rn.setConfirmDate(date);
+			} else {
+				rn.setStatus(ReturnNoteStatus.CONFIRMED);
+				rn.setConfirmDate(date);
 			}
 			try {
 				if (!em.get().getTransaction().isActive()) {
