@@ -34,7 +34,7 @@ import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
  * @author Cyril
  * @since 0.1.0
  */
-public class ProtcolOnMinaTest extends BaseTest {
+public class ProtocolOnMinaTest extends BaseTest {
 
 	@Test
 	public void testDummy() {
@@ -255,7 +255,7 @@ public class ProtcolOnMinaTest extends BaseTest {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testSendViaJavaSocket() throws Exception {
 
 		Socket socket = new Socket("localhost", 1235);
