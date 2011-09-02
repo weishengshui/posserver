@@ -1,15 +1,18 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.chinarewards.qqgbvpn.mgmtui.logic.exception.LogicException;
+import org.apache.struts2.ServletActionContext;
+
+import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
-import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 /**
  * pos manager action
@@ -17,46 +20,54 @@ import com.google.inject.Inject;
  * @author huangwei
  *
  */
-public class PosAction extends BaseAction {
+public class PosAction extends BaseAction{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6936323925311944355L;
 	
-	private final  PosLogic posLogic;
-	
-	
 	private String id;
 	
 	private PosVO posVO;
+
+	private PosLogic posLogic;
 	
-	@Inject
-	public PosAction(PosLogic posLogic){
-		this.posLogic = posLogic;
-	}
+	private List<PosVO> posVOList;
 	
 	public String detail(){
 		log.debug("posAction call detail");
-		try {
-			posVO = posLogic.getPosById(id);
-		} catch (LogicException e) {
-			log.error("getPosById fail",e);
-			return ERROR;
+		if(!Tools.isEmptyString(id)){
+			try {
+				posVO = getPosLogic().getPosById(id);
+			} catch (ParamsException e) {
+				log.error("getPosById fail",e);
+				return ERROR;
+			}catch (Exception e) {
+				log.error("getPosById fail",e);
+				return ERROR;
+			}
+		}else{
+			posVO = new PosVO();
 		}
 		return SUCCESS;
 	}
 	
 	public String editPos(){
 		log.debug("posAction call editPos");
-		PosVO posVO = new PosVO();
 		try {
-			if(Tools.isEmptyString(id)){
-				posLogic.savePos(posVO);
+			if(Tools.isEmptyString(posVO.getId())){
+				getPosLogic().savePos(posVO);
 			}else{
-				posLogic.updatePos(posVO);
+				getPosLogic().updatePos(posVO);
 			}
-		} catch (LogicException e) {
+		} catch (ParamsException e) {
+			log.error("editPos fail",e);
+			return INPUT;
+		}catch (PosIdIsExitsException e) {
+			log.error("editPos fail",e);
+			return INPUT;
+		}catch (Exception e) {
 			log.error("editPos fail",e);
 			return ERROR;
 		}
@@ -66,9 +77,12 @@ public class PosAction extends BaseAction {
 	public String delPos(){
 		log.debug("posAction call delPos");
 		try {
-			posLogic.deletePosById(id);
-		} catch (LogicException e) {
+			getPosLogic().deletePosById(id);
+		} catch (ParamsException e) {
 			log.error("deletePosById fail",e);
+			return ERROR;
+		}catch (Exception e) {
+			log.error("delPos fail",e);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -78,9 +92,17 @@ public class PosAction extends BaseAction {
 	public String execute(){
 		log.debug("posAction call list");
 		PosSearchVO posSearchVO = new PosSearchVO();
-		posLogic.queryPos(posSearchVO, null);
+		try{
+			PageInfo<PosVO> pageInfo =getPosLogic().queryPos(posSearchVO, null);
+			posVOList = pageInfo.getItems();
+		}catch(Exception e){
+			log.error("list fail",e);
+			return ERROR;
+		}
 		return SUCCESS;
 	}
+	
+	//---------------------------------------------------//
 
 	public String getId() {
 		return id;
@@ -98,11 +120,20 @@ public class PosAction extends BaseAction {
 		this.posVO = posVO;
 	}
 
-	public PosLogic getPosLogic() {
+	private PosLogic getPosLogic() {
+		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
+		posLogic = injector.getInstance(PosLogic.class);
 		return posLogic;
 	}
+
+	public List<PosVO> getPosVOList() {
+		return posVOList;
+	}
+
+	public void setPosVOList(List<PosVO> posVOList) {
+		this.posVOList = posVOList;
+	}
 	
-	//---------------------------------------------------//
 	
 
 }
