@@ -19,12 +19,12 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
@@ -88,7 +88,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
-		req.setPosid("pos-0002");
+		req.setPosId("pos-0002");
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
@@ -120,7 +120,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
-		req.setPosid("pos-0002");
+		req.setPosId("pos-0002");
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
@@ -152,7 +152,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
-		req.setPosid("pos-0002");
+		req.setPosId("pos-0002");
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
@@ -184,7 +184,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		LoginRequestMessage req = new LoginRequestMessage();
-		req.setPosid("pos-0002");
+		req.setPosId("pos-0002");
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);

@@ -24,11 +24,6 @@ public class ApplicationModule extends AbstractModule {
 
 		install(new SimpleDateTimeModule());
 
-		bind(AppPreference.class).in(Singleton.class);
-
-		// singleton first. can change.
-		bind(Application.class).in(Singleton.class);
-
 		// log
 		bind(LogConfig.class).to(LogConfigImpl.class).in(Singleton.class);
 		

@@ -18,17 +18,24 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
+import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
+import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
+import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.hander.ServerSessionHandler;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.encoder.MessageCoderFactory;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
 
 /**
- * 
+ * Concrete implementation of <code>PosServer</code>.
  * 
  * @author Cyril
  * @since 0.1.0
@@ -41,6 +48,16 @@ public class DefaultPosServer implements PosServer {
 
 	protected Logger log = LoggerFactory.getLogger(PosServer.class);
 
+	protected ServiceMapping mapping;
+
+	protected CmdMapping cmdMapping;
+
+	protected CmdCodecFactory cmdCodecFactory;
+
+	protected final ServiceHandlerObjectFactory serviceHandlerObjectFactory;
+
+	protected final ServiceDispatcher serviceDispatcher;
+
 	/**
 	 * socket server address
 	 */
@@ -52,9 +69,9 @@ public class DefaultPosServer implements PosServer {
 	protected int port;
 
 	/**
-	 * Whether the PersistService of Guice has been initialized, i.e. 
-	 * the .start() method has been called. We need to remember this state
-	 * since it cannot be called twice (strange!).
+	 * Whether the PersistService of Guice has been initialized, i.e. the
+	 * .start() method has been called. We need to remember this state since it
+	 * cannot be called twice (strange!).
 	 */
 	protected boolean isPersistServiceInited = false;
 
@@ -63,10 +80,16 @@ public class DefaultPosServer implements PosServer {
 	 */
 	IoAcceptor acceptor;
 
+	boolean persistenceServiceInited = false;
+
 	@Inject
-	public DefaultPosServer(Configuration configuration, Injector injector) {
+	public DefaultPosServer(Configuration configuration, Injector injector,
+			ServiceDispatcher serviceDispatcher,
+			ServiceHandlerObjectFactory serviceHandlerObjectFactory) {
 		this.configuration = configuration;
 		this.injector = injector;
+		this.serviceDispatcher = serviceDispatcher;
+		this.serviceHandlerObjectFactory = serviceHandlerObjectFactory;
 	}
 
 	/*
@@ -78,29 +101,54 @@ public class DefaultPosServer implements PosServer {
 	public void start() throws PosServerException {
 
 		printConfigValues();
-		
+
+		buildCodecMapping();
+
 		// start the JPA persistence service
 		startPersistenceService();
-		
 
 		// setup Apache Mina server.
+		startMinaService();
 
+		log.info("Server running, listening on {}", getLocalPort());
+
+	}
+
+	protected void buildCodecMapping() {
+
+		CodecMappingConfigBuilder builder = new CodecMappingConfigBuilder();
+		CmdMapping cmdMapping = builder.buildMapping(configuration);
+
+		// and then the factory
+		this.cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
+		this.cmdMapping = cmdMapping;
+
+	}
+
+	/**
+	 * Start the Apache Mina service.
+	 * 
+	 * @throws PosServerException
+	 */
+	protected void startMinaService() throws PosServerException {
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
-		
+
 		// =============== server side ===================
 
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
 		// not this
-		acceptor.getFilterChain().addLast("codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(injector)));
+		acceptor.getFilterChain().addLast(
+				"codec",
+				new ProtocolCodecFilter(new MessageCoderFactory(injector,
+						cmdCodecFactory)));
 
-		//bodyMessage filter
+		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
-		
+
 		// Transaction filter.
 		acceptor.getFilterChain().addLast("transaction",
 				injector.getInstance(TransactionFilter.class));
@@ -109,7 +157,8 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
-		acceptor.setHandler(new ServerSessionHandler(injector));
+		acceptor.setHandler(new ServerSessionHandler(injector,
+				serviceDispatcher, mapping));
 		acceptor.setCloseOnDeactivation(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
@@ -119,9 +168,6 @@ public class DefaultPosServer implements PosServer {
 		} catch (IOException e) {
 			throw new PosServerException("Error binding server port", e);
 		}
-
-		log.info("Server running, listening on {}", getLocalPort());
-
 	}
 
 	/**
@@ -144,11 +190,16 @@ public class DefaultPosServer implements PosServer {
 	}
 
 	protected void startPersistenceService() {
-		if (isPersistServiceInited) return;
+
+		// the guice-persist's PersistService can only be started once.
+		if (persistenceServiceInited) {
+			return;
+		}
+
+		// start the PersistService.
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
-		// see comment.
-		isPersistServiceInited = true;
+		persistenceServiceInited = true;
 	}
 
 	/*
@@ -158,14 +209,26 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void stop() {
-		
+
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
 
-		// XXX should gracefully shutdown this server.
-//		PersistService ps = injector.getInstance(PersistService.class);
-//		ps.stop();
+	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.chinarewards.qqgbvpn.main.PosServer#shutdown()
+	 */
+	@Override
+	public void shutdown() {
+		try {
+			PersistService ps = injector.getInstance(PersistService.class);
+			ps.stop();
+		} catch (Throwable t) {
+			// mute
+			log.warn("An error occurred when stopping persistence service", t);
+		}
 	}
 
 	/*

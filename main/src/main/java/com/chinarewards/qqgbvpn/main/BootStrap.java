@@ -24,7 +24,9 @@ import com.chinarewards.qqgbvpn.main.config.ConfigReader;
 import com.chinarewards.qqgbvpn.main.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
 import com.chinarewards.utils.appinfo.AppInfo;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
@@ -39,7 +41,7 @@ import com.google.inject.persist.jpa.JpaPersistModule;
  * respectively.
  * 
  * @author cyril
- * @since 1.0.0
+ * @since 0.1.0
  */
 public class BootStrap {
 
@@ -138,15 +140,7 @@ public class BootStrap {
 		// create the dependency injection environment.
 		createGuice();
 
-		// save the command line arguments
-		// initAppPreference();
-
-		// start the persistence services
-		// PersistService ps = injector.getInstance(PersistService.class);
-		// ps.start();
-
 		// start mina server
-		// startMinaServer();
 		log.info("Bootstrapping completed");
 
 	}
@@ -333,43 +327,6 @@ public class BootStrap {
 	}
 
 	/**
-	 * Initialize the app preference. This must be done AFTER the Guice injector
-	 * is created.
-	 */
-	protected void initAppPreference() {
-
-		AppPreference pref = injector.getInstance(AppPreference.class);
-
-		// initialize the Application Preference object using command line
-		// arguments.
-		pref.setDb(cl.getOptionValue("db"));
-		pref.setDbType(cl.getOptionValue("dbtype"));
-		pref.setDbUsername(cl.getOptionValue("dbuser"));
-		pref.setDbPassword(cl.getOptionValue("dbpass"));
-
-		// verbose level
-		{
-			String raw = cl.getOptionValue("verbose");
-			int level = 0;
-			if (raw != null) {
-				try {
-					level = Integer.parseInt(raw);
-				} catch (NumberFormatException e) {
-					// use default
-				}
-				if (level < 0 || level > 1) {
-					level = 0;
-				}
-			}
-
-			com.chinarewards.qqgbvpn.main.LogConfig l = injector
-					.getInstance(com.chinarewards.qqgbvpn.main.LogConfig.class);
-			l.setVerboseLevel(level);
-		}
-
-	}
-
-	/**
 	 * Create the guice injector environment.
 	 */
 	protected void createGuice() {
@@ -378,12 +335,20 @@ public class BootStrap {
 
 		// prepare the JPA persistence module
 		JpaPersistModule jpaModule = buildJpaPersistModule();
+		
+		AbstractModule serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
 		log.debug("Bootstraping Guice injector...");
 		injector = Guice.createInjector(new AppModule(), new ServerModule(),
-				new HardCodedConfigModule(configuration), jpaModule);
+				new HardCodedConfigModule(configuration), jpaModule, serviceHandlerModule);
 
+	}
+	
+	protected AbstractModule buildServiceHandlerModule() {
+
+		return new ServiceHandlerModule(configuration);
+		
 	}
 
 	protected Properties buildJpaProperties() {

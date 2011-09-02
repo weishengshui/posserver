@@ -33,7 +33,7 @@ public class MinaProtcolTest extends JpaGuiceTest {
 						.properties(new DatabaseProperties().getProperties()) };
 	}
 	
-	@Test
+	//@Test
 	public void testSendViaJavaSocket() throws Exception {
 		
 

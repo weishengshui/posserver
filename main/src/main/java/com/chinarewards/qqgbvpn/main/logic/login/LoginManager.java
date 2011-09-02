@@ -3,10 +3,10 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.login;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 
 /**
  * Defined Login logic.

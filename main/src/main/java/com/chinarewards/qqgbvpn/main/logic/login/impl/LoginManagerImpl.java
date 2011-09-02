@@ -21,12 +21,12 @@ import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.InitResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.message.LoginResponseMessage;
 import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -53,7 +53,7 @@ public class LoginManagerImpl implements LoginManager {
 
 		InitResponseMessage resp = new InitResponseMessage();
 
-		if (StringUtil.isEmptyString(req.getPosid())) {
+		if (StringUtil.isEmptyString(req.getPosId())) {
 			throw new IllegalArgumentException("POS ID is missing!");
 		}
 
@@ -63,7 +63,7 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
 		try {
-			pos = posDao.get().fetchPos(req.getPosid(),
+			pos = posDao.get().fetchPos(req.getPosId(),
 					PosDeliveryStatus.DELIVERED, null,
 					PosOperationStatus.ALLOWED);
 
@@ -75,7 +75,7 @@ public class LoginManagerImpl implements LoginManager {
 			pos.setChallenge(challenge);
 			posDao.get().merge(pos);
 			logger.debug("PosId:{}, init challenge saved - {}", new Object[] {
-					req.getPosid(), Arrays.toString(challenge) });
+					req.getPosId(), Arrays.toString(challenge) });
 
 			switch (pos.getIstatus()) {
 			case INITED:
@@ -106,7 +106,7 @@ public class LoginManagerImpl implements LoginManager {
 		}
 
 		journalLogic.logEvent(DomainEvent.POS_INIT_REQ.toString(),
-				DomainEntity.POS.toString(), req.getPosid(), eventDetail);
+				DomainEntity.POS.toString(), req.getPosId(), eventDetail);
 
 		return resp;
 	}
@@ -119,7 +119,7 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		String domainEvent = null;
 		try {
-			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
+			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
 			logger.trace(
 					"Loaded from db: pos.posId:{}, pos.secret:{}, pos.challenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
@@ -146,7 +146,7 @@ public class LoginManagerImpl implements LoginManager {
 				domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			}
 		} catch (NoResultException e) {
-			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
+			logger.warn("POS ID '{}' not found in DB", req.getPosId());
 			domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			result = LoginResult.POSID_NOT_EXIST;
 		}
@@ -164,7 +164,7 @@ public class LoginManagerImpl implements LoginManager {
 		}
 
 		journalLogic.logEvent(domainEvent, DomainEntity.POS.toString(),
-				req.getPosid(), eventDetail);
+				req.getPosId(), eventDetail);
 
 		return resp;
 	}
@@ -177,7 +177,7 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 		String domainEvent = null;
 		try {
-			Pos pos = posDao.get().fetchPos(req.getPosid(), null, null, null);
+			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
 			logger.trace(
 					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
@@ -205,7 +205,7 @@ public class LoginManagerImpl implements LoginManager {
 				domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 			}
 		} catch (NoResultException e) {
-			logger.warn("Pos ID not found in DB. PosId={}", req.getPosid());
+			logger.warn("Pos ID not found in DB. PosId={}", req.getPosId());
 			domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 			result = LoginResult.POSID_NOT_EXIST;
 		}
@@ -223,7 +223,7 @@ public class LoginManagerImpl implements LoginManager {
 		}
 
 		journalLogic.logEvent(domainEvent, DomainEntity.POS.toString(),
-				req.getPosid(), eventDetail);
+				req.getPosId(), eventDetail);
 
 		return resp;
 	}
