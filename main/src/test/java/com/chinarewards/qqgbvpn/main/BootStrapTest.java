@@ -69,7 +69,7 @@ public class BootStrapTest extends BaseTest {
 	 * 
 	 * @throws Exception
 	 */
-	 @Test
+//	 @Test
 	public void testBatchInitLogin() throws Exception {
 
 		int threadNum = 30;
