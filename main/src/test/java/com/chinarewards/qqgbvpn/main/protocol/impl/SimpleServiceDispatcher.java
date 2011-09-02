@@ -3,6 +3,9 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
@@ -21,6 +24,8 @@ import com.google.inject.Inject;
 public class SimpleServiceDispatcher implements ServiceDispatcher {
 
 	protected final ServiceHandlerObjectFactory objFactory;
+	
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 
@@ -28,6 +33,7 @@ public class SimpleServiceDispatcher implements ServiceDispatcher {
 	 */
 	@Inject
 	public SimpleServiceDispatcher(ServiceHandlerObjectFactory objFactory) {
+		log.debug("ServiceHandlerObjectFactory is {}", objFactory);
 		this.objFactory = objFactory;
 	}
 
@@ -48,6 +54,8 @@ public class SimpleServiceDispatcher implements ServiceDispatcher {
 		long commandId = cmd.getCmdId();
 
 		ServiceHandler handler = objFactory.getHandler(commandId);
+		
+		log.debug("Handler for command ID {} is {}", commandId, handler);
 
 		handler.execute(request, response);
 

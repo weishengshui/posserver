@@ -63,6 +63,9 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		Message msg = (Message) message;
 
 		long cmdId = msg.getBodyMessage().getCmdId();
+
+		// FIXME throw PackageException if no handler found for command ID
+		
 		String cmdName = injector.getInstance(CmdProperties.class)
 				.getCmdNameById(cmdId);
 		if (cmdName == null || cmdName.length() == 0) {

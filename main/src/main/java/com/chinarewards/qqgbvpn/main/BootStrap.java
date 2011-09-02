@@ -25,12 +25,16 @@ import com.chinarewards.qqgbvpn.main.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.guice.ServiceHandlerGuiceModule;
 import com.chinarewards.utils.appinfo.AppInfo;
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.jpa.JpaPersistModule;
+import com.google.inject.util.Modules;
 
 /**
  * Bootstrap class contains bootstrapping code.
@@ -336,7 +340,7 @@ public class BootStrap {
 		// prepare the JPA persistence module
 		JpaPersistModule jpaModule = buildJpaPersistModule();
 		
-		AbstractModule serviceHandlerModule = buildServiceHandlerModule();
+		Module serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
 		log.debug("Bootstraping Guice injector...");
@@ -345,9 +349,13 @@ public class BootStrap {
 
 	}
 	
-	protected AbstractModule buildServiceHandlerModule() {
-
-		return new ServiceHandlerModule(configuration);
+	protected Module buildServiceHandlerModule() {
+		
+		// XXX improve this.
+		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
+		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
+		
+		return Modules.override(new ServiceHandlerModule(configuration)).with(new ServiceHandlerGuiceModule(mapping));
 		
 	}
 

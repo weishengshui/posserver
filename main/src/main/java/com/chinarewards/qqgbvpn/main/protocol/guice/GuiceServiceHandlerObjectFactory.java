@@ -3,9 +3,13 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol.guice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 /**
@@ -20,7 +24,10 @@ public class GuiceServiceHandlerObjectFactory implements
 	protected final ServiceMapping mapping;
 
 	protected final Injector injector;
+	
+	Logger log = LoggerFactory.getLogger(getClass());
 
+	@Inject
 	public GuiceServiceHandlerObjectFactory(Injector injector,
 			ServiceMapping mapping) {
 		this.mapping = mapping;
@@ -40,6 +47,7 @@ public class GuiceServiceHandlerObjectFactory implements
 		if (o instanceof Class) {
 			Class clazz = (Class) o;
 			ServiceHandler handler = injector.getInstance(clazz);
+			log.trace("Handler class {} obtained for command ID {}", handler, commandId);
 			return handler;
 		} else {
 			throw new UnsupportedOperationException("Handler object of type "

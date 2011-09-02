@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import java.util.HashMap;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,42 +23,54 @@ import com.google.inject.Provider;
 public class LoginCommandHandler implements ServiceHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	@Inject
 	public LoginManager loginManager;
 
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
 	
-	
+	@Inject
+	Configuration configuration;
+
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
-		
-		LoginRequestMessage bodyMessage = (LoginRequestMessage)request.getParameter();
-		
-		log.debug("LoginCommandHandler======execute==bodyMessage=:"+bodyMessage);
-		LoginResponseMessage loginResponseMessage  = null;
-		try{
-			loginResponseMessage  = loginManager.login(bodyMessage);
-		}catch(Throwable e){
-			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
+
+		LoginRequestMessage bodyMessage = (LoginRequestMessage) request
+				.getParameter();
+
+		log.debug("LoginCommandHandler======execute==bodyMessage=:"
+				+ bodyMessage);
+		LoginResponseMessage loginResponseMessage = null;
+		try {
+			loginResponseMessage = loginManager.login(bodyMessage);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			loginResponseMessage
+					.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}
 		loginResponseMessage.setCmdId(CmdConstant.LOGIN_CMD_ID_RESPONSE);
-		if(loginResponseMessage.getResult() == LoginResult.SUCCESS.getPosCode()){
+		if (loginResponseMessage.getResult() == LoginResult.SUCCESS
+				.getPosCode()) {
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("posId", ((LoginRequestMessage) bodyMessage).getPosId());
-			String serverKey = new PosNetworkProperties().getTxServerKey();
-			log.debug("LoginCommandHandler======execute==serverKey=:"+serverKey);
+			
+			
+			
+//			String serverKey = new PosNetworkProperties().getTxServerKey();
+			String serverKey = configuration.getString("txserver.key");
+			log.debug("LoginCommandHandler======execute==serverKey=:"
+					+ serverKey);
 			params.put("key", serverKey);
 			try {
 				gbm.get().initGrouponCache(params);
-			}catch (Throwable e) {
-				log.error("initGrouponCache fail:"+e);
+			} catch (Throwable e) {
+				log.error("initGrouponCache fail:" + e);
 			}
 		}
-		
+
 		response.writeResponse(loginResponseMessage);
 	}
 
