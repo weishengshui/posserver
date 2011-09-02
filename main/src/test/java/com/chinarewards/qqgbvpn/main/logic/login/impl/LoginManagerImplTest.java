@@ -103,6 +103,102 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		assertNotNull(record.getChallenge());
 	}
 
+	@Test
+	public void testLoginUninited() {
+
+		// prepared data
+		Pos pos = new Pos();
+		pos.setPosId("pos-0002");
+		pos.setSecret("000001");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.UNINITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);
+
+		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		pos.setChallenge(challenge);
+		getEm().persist(pos);
+		getEm().flush();
+
+		LoginRequestMessage req = new LoginRequestMessage();
+		req.setPosid("pos-0002");
+		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
+				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
+		req.setChallengeResponse(challengeResponse);
+
+		LoginResponseMessage resp = getManager().login(req);
+
+		assertNotNull(resp.getChallenge());
+		assertEquals(LoginResult.OTHERS.getPosCode(), resp.getResult());
+
+		Pos record = getEm().find(Pos.class, pos.getId());
+		assertNotNull(record);
+		assertNotNull(record.getChallenge());
+	}
+
+	@Test
+	public void testBind() {
+
+		// prepared data
+		Pos pos = new Pos();
+		pos.setPosId("pos-0002");
+		pos.setSecret("000001");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.UNINITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);
+
+		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		pos.setChallenge(challenge);
+		getEm().persist(pos);
+		getEm().flush();
+
+		LoginRequestMessage req = new LoginRequestMessage();
+		req.setPosid("pos-0002");
+		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
+				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
+		req.setChallengeResponse(challengeResponse);
+
+		LoginResponseMessage resp = getManager().bind(req);
+
+		assertNotNull(resp.getChallenge());
+		assertEquals(LoginResult.SUCCESS.getPosCode(), resp.getResult());
+
+		Pos record = getEm().find(Pos.class, pos.getId());
+		assertNotNull(record);
+		assertNotNull(record.getChallenge());
+	}
+
+	@Test
+	public void testBindInited() {
+
+		// prepared data
+		Pos pos = new Pos();
+		pos.setPosId("pos-0002");
+		pos.setSecret("000001");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);
+
+		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		pos.setChallenge(challenge);
+		getEm().persist(pos);
+		getEm().flush();
+
+		LoginRequestMessage req = new LoginRequestMessage();
+		req.setPosid("pos-0002");
+		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
+				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
+		req.setChallengeResponse(challengeResponse);
+
+		LoginResponseMessage resp = getManager().bind(req);
+
+		assertNotNull(resp.getChallenge());
+		assertEquals(LoginResult.OTHERS.getPosCode(), resp.getResult());
+
+		Pos record = getEm().find(Pos.class, pos.getId());
+		assertNotNull(record);
+		assertNotNull(record.getChallenge());
+	}
+
 	private LoginManager getManager() {
 		return getInjector().getInstance(LoginManager.class);
 	}
