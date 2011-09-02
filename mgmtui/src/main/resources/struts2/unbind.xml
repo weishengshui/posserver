@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+	<package name="unbind" extends="default" namespace="/unbind">
+		<!-- find all album -->
+		<action name="list" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction">
+			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+		</action>
+		<action name="unbind" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="unbind">
+			<result name="success">/WEB-INF/jsp/unbind/unbind.jsp</result>
+		</action>
+		<action name="sendURL" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="sendURL">
+			<result name="success">/WEB-INF/jsp/unbind/sendURL.jsp</result>
+		</action>
+	</package>
+</struts>
