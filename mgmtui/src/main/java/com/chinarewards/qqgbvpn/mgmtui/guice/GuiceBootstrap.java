@@ -3,13 +3,20 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
+import java.util.Properties;
+
+import javax.servlet.ServletContextEvent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.persist.PersistService;
+import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.google.inject.struts2.Struts2GuicePluginModule;
 
 /**
  * Entry point for all guice configurations. Register any Guice module here.
@@ -20,6 +27,25 @@ import com.google.inject.servlet.GuiceServletContextListener;
 public class GuiceBootstrap extends GuiceServletContextListener {
 
 	Logger log = LoggerFactory.getLogger(getClass());
+	
+	
+	
+	
+	@Override
+	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+
+		Injector injector = (Injector) servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
+		injector.getInstance(PersistService.class).stop();
+		super.contextDestroyed(servletContextEvent);
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent servletContextEvent) {
+		super.contextInitialized(servletContextEvent);
+		Injector injector = (Injector) servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
+		injector.getInstance(PersistService.class).start();
+		
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -44,11 +70,34 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 	protected Module[] getModules() {
 
-		Module[] modules = new Module[] { new QqgbvpnServletModule()
+		Module[] modules = new Module[] { 
+		new QqgbvpnServletModule(),
+		new Struts2GuicePluginModule(),
+		new QqgbvpnServiceModule(),
 		// JPA module
+		new JpaPersistModule("posnet").properties(getJPAProperties())
 		};
 
 		return modules;
+	}
+	
+	//TODO 需修改为配置文件中统一的数据库 
+	protected Properties getJPAProperties(){
+		Properties properties = new Properties();
+		properties.put("javax.persistence.transactionType", "RESOURCE_LOCAL");
+		
+		properties.put("hibernate.hbm2ddl.auto", "update");
+		properties.put("hibernate.connection.driver_class",
+				"org.hsqldb.jdbcDriver");
+		properties.put("hibernate.connection.username",
+				"sa");
+		properties.put("hibernate.connection.password", "");
+		properties.put("hibernate.connection.url", "jdbc:hsqldb:.");
+		properties.put("hibernate.dialect",
+				"org.hibernate.dialect.HSQLDialect");
+		properties.put("hibernate.show_sql",
+		"true");
+		return properties;
 	}
 	
 	

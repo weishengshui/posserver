@@ -8,8 +8,11 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -41,8 +44,35 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		return new Module[] {
 				new AppModule(),
 				new JpaPersistModule("posnet")
-						.properties(new DatabaseProperties().getProperties()) };
+						.properties(new DatabaseProperties().getProperties()), buildTestConfigModule() };
 	}
+	
+	protected Module buildTestConfigModule() {
+
+		Configuration conf = new BaseConfiguration();
+		// hard-coded config
+		conf.setProperty("server.port", 0);
+		// persistence
+		conf.setProperty("db.user", "sa");
+		conf.setProperty("db.password", "");
+		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
+		conf.setProperty("db.url", "jdbc:hsqldb:.");
+		// additional Hibernate properties
+		conf.setProperty("db.hibernate.dialect",
+				"org.hibernate.dialect.HSQLDialect");
+		conf.setProperty("db.hibernate.show_sql", true);
+		// URL for QQ
+		conf.setProperty("qq.groupbuy.url.groupBuyingSearchGroupon",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingValidationUrl",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingUnbindPosUrl",
+				"http://localhost:8086/qqapi");
+
+		TestConfigModule confModule = new TestConfigModule(conf);
+		return confModule;
+	}
+
 
 	@Test
 	public void testInit() throws IOException {

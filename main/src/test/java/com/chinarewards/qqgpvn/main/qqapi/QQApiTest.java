@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
@@ -52,10 +55,38 @@ public class QQApiTest extends JpaGuiceTest {
 	@Override
 	protected Module[] getModules() {
 		return new Module[] {
+				buildTestConfigModule(), 
 				new AppModule(),
 				new JpaPersistModule("posnet")
 						.properties(new DatabaseProperties().getProperties()) };
 	}
+	
+	protected Module buildTestConfigModule() {
+
+		Configuration conf = new BaseConfiguration();
+		// hard-coded config
+		conf.setProperty("server.port", 0);
+		// persistence
+		conf.setProperty("db.user", "sa");
+		conf.setProperty("db.password", "");
+		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
+		conf.setProperty("db.url", "jdbc:hsqldb:.");
+		// additional Hibernate properties
+		conf.setProperty("db.hibernate.dialect",
+				"org.hibernate.dialect.HSQLDialect");
+		conf.setProperty("db.hibernate.show_sql", true);
+		// URL for QQ
+		conf.setProperty("qq.groupbuy.url.groupBuyingSearchGroupon",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingValidationUrl",
+				"http://localhost:8086/qqapi");
+		conf.setProperty("qq.groupbuy.url.groupBuyingUnbindPosUrl",
+				"http://localhost:8086/qqapi");
+
+		TestConfigModule confModule = new TestConfigModule(conf);
+		return confModule;
+	}
+	
 	
 	@Override
 	public void setUp() throws Exception {
@@ -204,7 +235,7 @@ public class QQApiTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "rewards-0001";
 		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
@@ -371,7 +402,7 @@ public class QQApiTest extends JpaGuiceTest {
 		params.put("posId", "rewards-0001");
 		params.put("grouponId", "456789");
 		params.put("token", "4567890");
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -466,7 +497,7 @@ public class QQApiTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");

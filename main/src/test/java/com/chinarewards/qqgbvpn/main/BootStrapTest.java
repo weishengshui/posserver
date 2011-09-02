@@ -69,7 +69,7 @@ public class BootStrapTest extends BaseTest {
 	 * 
 	 * @throws Exception
 	 */
-	// @Test
+//	 @Test
 	public void testBatchInitLogin() throws Exception {
 
 		int threadNum = 30;
@@ -140,7 +140,7 @@ public class BootStrapTest extends BaseTest {
 		try {
 			byte[] challenge = new byte[8];
 			{
-				Socket socket = new Socket("localhost", 1234);
+				Socket socket = new Socket("localhost", 1235);
 
 				OutputStream os = socket.getOutputStream();
 
@@ -196,7 +196,7 @@ public class BootStrapTest extends BaseTest {
 			}
 			// Thread.sleep(5);
 			{
-				Socket socket = new Socket("localhost", 1234);
+				Socket socket = new Socket("localhost", 1235);
 
 				OutputStream os = socket.getOutputStream();
 

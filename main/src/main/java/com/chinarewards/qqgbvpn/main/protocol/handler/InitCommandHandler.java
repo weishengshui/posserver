@@ -31,13 +31,17 @@ public class InitCommandHandler implements ServiceHandler {
 		
 		InitRequestMessage bodyMessage = (InitRequestMessage)request.getParameter();
 		
+		log.debug("loginManager: {}", loginManager);
+		
 		log.debug("InitCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		InitResponseMessage  initResponseMessage  = null;
-		try{
+		try {
 			initResponseMessage = loginManager.init(bodyMessage);
-		}catch(Throwable e){
+		} catch (Throwable e) {
+			e.printStackTrace();
 			initResponseMessage = new InitResponseMessage();
-			initResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGE]);
+			initResponseMessage
+					.setChallenge(new byte[ProtocolLengths.CHALLEUGE]);
 			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
 		}
 		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);

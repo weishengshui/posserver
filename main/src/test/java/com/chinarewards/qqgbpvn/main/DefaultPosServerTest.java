@@ -15,8 +15,13 @@ import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.guice.ServiceHandlerGuiceModule;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
+import com.google.inject.util.Modules;
 
 /**
  * 
@@ -43,11 +48,16 @@ public class DefaultPosServerTest extends GuiceTest {
 	protected Module[] getModules() {
 
 		TestConfigModule confModule = (TestConfigModule) buildTestConfigModule();
+		
+		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
+		ServiceMapping mapping = mappingBuilder.buildMapping(confModule.getConfiguration());
 
 		// build the Guice modules.
 		Module[] modules = new Module[] { confModule,
 				buildPersistModule(confModule.getConfiguration()),
-				new ServerModule(), new AppModule() };
+				new ServerModule(), new AppModule(),
+				Modules.override(new ServiceHandlerModule(confModule.getConfiguration())).with(new ServiceHandlerGuiceModule(mapping))
+		};
 
 		return modules;
 	}
@@ -95,7 +105,7 @@ public class DefaultPosServerTest extends GuiceTest {
 		// force changing of configuration
 		Configuration conf = getInjector().getInstance(Configuration.class);
 		conf.setProperty("server.port", 0);
-		
+
 		// get an new instance of PosServer
 		PosServer server = getInjector().getInstance(PosServer.class);
 		// make sure it is started, and port is correct
@@ -107,14 +117,13 @@ public class DefaultPosServerTest extends GuiceTest {
 		// stop it.
 		server.stop();
 		assertTrue(server.isStopped());
-		
+
 		//
 		// Now we know which free port to use.
 		//
 		// XXX it is a bit risky since the port maybe in use by another
 		// process.
 		//
-
 
 		// get an new instance of PosServer
 		conf.setProperty("server.port", runningPort);
@@ -170,7 +179,5 @@ public class DefaultPosServerTest extends GuiceTest {
 		log.info("Server stopped");
 
 	}
-	
-	
-	
+
 }
