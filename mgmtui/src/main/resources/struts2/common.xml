@@ -7,4 +7,5 @@
 	<include file="struts2/helloworld.xml" />
 	<include file="struts2/pos.xml" />
 	<include file="struts2/util.xml" />
+	<include file="struts2/unbind.xml" />
 </struts>
