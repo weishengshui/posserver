@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.main.protocol.hander;
+package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

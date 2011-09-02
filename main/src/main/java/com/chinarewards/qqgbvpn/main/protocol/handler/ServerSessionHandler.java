@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.main.protocol.hander;
+package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
