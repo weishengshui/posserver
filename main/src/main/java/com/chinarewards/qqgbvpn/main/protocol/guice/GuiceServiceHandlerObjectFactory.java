@@ -46,7 +46,7 @@ public class GuiceServiceHandlerObjectFactory implements
 		Object o = mapping.getMapping(commandId);
 		if (o instanceof Class) {
 			Class clazz = (Class) o;
-			ServiceHandler handler = injector.getInstance(clazz);
+			ServiceHandler handler = (ServiceHandler)injector.getInstance(clazz);
 			log.trace("Handler class {} obtained for command ID {}", handler, commandId);
 			return handler;
 		} else {
