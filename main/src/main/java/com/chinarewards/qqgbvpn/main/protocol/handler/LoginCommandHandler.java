@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.main.protocol.hander;
+package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import java.util.HashMap;
 
@@ -19,7 +19,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class BindCommandHandler implements ServiceHandler {
+public class LoginCommandHandler implements ServiceHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -29,26 +29,27 @@ public class BindCommandHandler implements ServiceHandler {
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
 	
+	
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
 		LoginRequestMessage bodyMessage = (LoginRequestMessage)request.getParameter();
 		
-		log.debug("BindCommandHandler======execute==bodyMessage=:"+bodyMessage);
+		log.debug("LoginCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		LoginResponseMessage loginResponseMessage  = null;
 		try{
-			loginResponseMessage  = loginManager.bind(bodyMessage);
+			loginResponseMessage  = loginManager.login(bodyMessage);
 		}catch(Throwable e){
 			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}
-		loginResponseMessage.setCmdId(CmdConstant.BIND_CMD_ID_RESPONSE);
+		loginResponseMessage.setCmdId(CmdConstant.LOGIN_CMD_ID_RESPONSE);
 		if(loginResponseMessage.getResult() == LoginResult.SUCCESS.getPosCode()){
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("posId", ((LoginRequestMessage) bodyMessage).getPosId());
 			String serverKey = new PosNetworkProperties().getTxServerKey();
-			log.debug("BindCommandHandler======execute==serverKey=:"+serverKey);
+			log.debug("LoginCommandHandler======execute==serverKey=:"+serverKey);
 			params.put("key", serverKey);
 			try {
 				gbm.get().initGrouponCache(params);
