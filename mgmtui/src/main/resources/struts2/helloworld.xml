@@ -5,9 +5,10 @@
 
 <struts>
 	<package name="helloworld" extends="default" namespace="/helloworld">
+		<default-interceptor-ref name="secureStack" />
 		<!-- find all album -->
-		<action name="index" class="com.chinarewards.qqgbvpn.mgmtui.status.helloworld.HelloAction">
-			<result name="success">/WEB-INF/jsp/helloworld/index.jsp</result>
+		<action name="index" class="com.chinarewards.qqgbvpn.mgmtui.struts.helloworld.HelloAction">
+			<result name="success" type="tiles">helloworld</result>
 		</action>
 	</package>
 </struts>

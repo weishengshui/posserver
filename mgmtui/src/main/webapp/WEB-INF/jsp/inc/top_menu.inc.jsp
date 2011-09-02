@@ -37,7 +37,7 @@
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
 	<!-- Home ENDS  -->
-	<li><a href="#">退出</a></li>
+	<li><a href="<s:url action="logout" namespace="/" />">退出</a></li>
 
 </ul>
 </div>
