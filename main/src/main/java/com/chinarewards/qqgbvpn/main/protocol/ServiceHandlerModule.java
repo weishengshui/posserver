@@ -46,7 +46,6 @@ public class ServiceHandlerModule extends AbstractModule {
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
 		mapping = mappingBuilder.buildMapping(configuration);
 
-		// XX make this Guice friendly
 		bind(ServiceHandlerObjectFactory.class).to(
 				SimpleServiceHandlerObjectFactory.class).in(Singleton.class);
 

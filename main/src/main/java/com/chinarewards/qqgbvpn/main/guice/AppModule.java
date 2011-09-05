@@ -3,9 +3,9 @@
  */
 package com.chinarewards.qqgbvpn.main.guice;
 
+import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.main.ApplicationModule;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
-import com.chinarewards.qqgbvpn.main.logic.journal.DefaultJournalModule;
 import com.google.inject.AbstractModule;
 
 /**

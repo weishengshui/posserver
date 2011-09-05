@@ -50,6 +50,6 @@ public interface GroupBuyingManager {
 	 * @param params
 	 * @return
 	 */
-	public HashMap<String, Object> groupBuyingUnbind(
-			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException;
+	/*public HashMap<String, Object> groupBuyingUnbind(
+			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException;*/
 }

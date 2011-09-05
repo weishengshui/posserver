@@ -8,6 +8,9 @@
 <title>Insert title here</title>
 </head>
 <body>
+<s:if test="errorMsg!=null">
+<b>${errorMsg}</b>
+</s:if>
 <s:form action="search" namespace="/unbind" method="Post" id="listForm">
 <s:hidden name="agent.id" id="agent.id" />
 <s:hidden name="agent.name" id="agent.name" />

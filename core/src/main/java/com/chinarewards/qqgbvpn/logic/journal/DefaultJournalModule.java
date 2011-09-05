@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.logic.journal;
+package com.chinarewards.qqgbvpn.logic.journal;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;

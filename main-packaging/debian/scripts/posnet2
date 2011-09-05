@@ -1,0 +1,123 @@
+#!/bin/bash
+# /etc/init.d/posnet2
+# debian-compatible POSNet2 server startup script.
+# KM Tong <km.tong@china-rewards.com>
+#
+### BEGIN INIT INFO
+# Provides:          posnet2
+# Required-Start:    
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start POSNet 2 at boot time
+# Description:       Controls the start/stop of POSNetv2 service.
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+DESC="POSNetv2 server"
+NAME=posnet2
+JAVA=`which java`
+
+SCRIPTNAME=/etc/init.d/$NAME
+LOGBACKCONF=file:///etc/posnetv2/logback.xml
+
+DAEMONUSER=root
+POSNET2_HOME=/usr/share/$NAME
+POSNET2_START="-Dlogback.configurationFile=$LOGBACKCONF -jar $POSNET2_HOME/qqgbvpn.jar"
+LOGFILE=/var/log/posnet2.log
+PIDFILE=/var/run/posnet2.pid
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Make sure we run as root
+if [ `id -u` -ne 0 ]; then
+    echo "The $NAME init script can only be run as root"
+    exit 1
+fi
+
+
+#
+# start the application
+#
+do_start()
+{
+	# starting the service
+	start-stop-daemon --start --quiet --chuid $DAEMONUSER  \
+                --exec "$JAVA" --pidfile $PIDFILE --make-pidfile -- $POSNET2_START >> $LOGFILE 2>&1 &
+	return 0
+}
+
+force_stop() 
+{
+    # stopping the service
+    PID=`cat $PIDFILE`
+    if [[ -f /proc/$PID/cmdline && -n $PID ]] ; then
+    	kill $PID
+    else
+	    log_daemon_msg "Not Started: $DESC" "$NAME"
+    fi
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	force_stop
+	return 0
+}
+
+
+running() {
+        PID=`cat $PIDFILE`
+        if [[ -f /proc/$PID/cmdline && -n $PID ]] ; then
+                return 0
+        else
+                return 1
+        fi
+}
+
+
+case "$1" in
+  start)
+    log_daemon_msg "Starting $DESC" "$NAME"
+    do_start
+    case "$?" in
+        0|1) log_end_msg 0 ;;
+        2) log_end_msg 1 ;;
+    esac
+    ;;
+  stop)
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    do_stop
+    case "$?" in
+        0|1) log_end_msg 0 ;;
+        2) log_end_msg 1 ;;
+    esac
+    ;;
+  restart|force-reload)
+    log_daemon_msg "Restarting $DESC" "$NAME"
+    do_stop
+    do_start
+    log_end_msg 0
+    ;;
+  status)
+    running
+    case "$?" in
+        0) log_daemon_msg "Indexer Running" ;;
+        1) log_daemon_msg "Indexer not running" ;;
+    esac
+    ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+    exit 3
+    ;;
+esac
+
+exit 0

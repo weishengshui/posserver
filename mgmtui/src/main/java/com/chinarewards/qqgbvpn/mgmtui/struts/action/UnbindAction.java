@@ -1,10 +1,13 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.struts2.StrutsStatics;
 import org.codehaus.jackson.JsonGenerationException;
 
@@ -16,10 +19,13 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
+import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
+import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
+import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
+import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.opensymphony.xwork2.ActionContext;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 /**
  * pos unbind action
@@ -36,6 +42,9 @@ public class UnbindAction extends BaseAction {
 	
 	@Inject
 	private Provider<MailService> mailService;
+	
+	@Inject
+	protected Configuration configuration;
 
 	private Agent agent;
 	
@@ -53,6 +62,17 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Pos> posList;
 	
+	private String errorMsg;
+	
+	
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
 	public String getPosId() {
 		return posId;
 	}
@@ -132,11 +152,11 @@ public class UnbindAction extends BaseAction {
 			if (a != null) {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(10);
-				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, agent.getId());
+				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, a.getId());
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "第三方信息找不到!";
 			}
 		}
 		return SUCCESS;
@@ -153,7 +173,7 @@ public class UnbindAction extends BaseAction {
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "无可用回收单!";
 			}
 		}
 		return SUCCESS;
@@ -176,18 +196,17 @@ public class UnbindAction extends BaseAction {
 			return SUCCESS;
 		} else {
 			//这里应该报第三方不能为空的提示
-			System.out.println("!!!!!!!!!!!agent.getId(): 为空!!");
+			this.errorMsg = "第三方信息找不到!";
 		}
 		return SUCCESS;
 	}
 	
 	public String confirmRnNumber() throws JsonGenerationException, SaveDBException{
 		if (posIds != null && !"".equals(posIds.trim())) {
-			System.out.println("!!!!!!!!!!!posIds: " + posIds);
 			ReturnNote rn = groupBuyingUnbindMgr.get().confirmReturnNote(agent.getId(), rnId, posIds);
 		} else {
 			//这里应该报POS机不能为空的提示
-			System.out.println("!!!!!!!!!!!posIds: 为空!!");
+			this.errorMsg = "POS机信息找不到!";
 		}
 		return SUCCESS;
 	}
@@ -201,11 +220,52 @@ public class UnbindAction extends BaseAction {
 	
 	public String unbind(){
 		if (posId != null && !"".equals(posId.trim())) {
-			System.out.println("!!!!!!!!!!!!!posId: " + posId);
-			/*HashMap<String, Object> params = new HashMap<String, Object>();
+			HashMap<String, Object> params = new HashMap<String, Object>();
 			params.put("posId", new String[] { posId });
-			params.put("key", new PosNetworkProperties().getTxServerKey());
-			HashMap<String, Object> map = groupBuyingUnbindMgr.get().groupBuyingUnbind(params);*/
+			params.put("key", configuration.getString("txserver.key"));
+			try {
+				HashMap<String, Object> result = groupBuyingUnbindMgr.get().groupBuyingUnbind(params);
+				String resultCode = (String) result.get("resultCode");
+				System.out.println("resultCode->" + resultCode);
+				if ("0".equals(resultCode)) {
+					List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) result
+							.get("items");
+					for (GroupBuyingUnbindVO item : items) {
+						System.out.println(item.getPosId());
+						System.out.println(item.getResultStatus());
+					}
+				} else {
+					switch (Integer.valueOf(resultCode)) {
+					case -1:
+						this.errorMsg = "服务器繁忙!";
+						break;
+					case -2:
+						this.errorMsg = "md5校验失败!";
+						break;
+					case -3:
+						this.errorMsg = "没有权限!";
+						break;
+					default:
+						this.errorMsg = "未知错误!";
+						break;
+					}
+				}
+			} catch (JsonGenerationException e) {
+				this.errorMsg = "生成JSON对象出错!";
+				e.printStackTrace();
+			} catch (MD5Exception e) {
+				this.errorMsg = "生成MD5校验位出错!";
+				e.printStackTrace();
+			} catch (ParseXMLException e) {
+				this.errorMsg = "解析XML出错!";
+				e.printStackTrace();
+			} catch (SendPostTimeOutException e) {
+				this.errorMsg = "POST连接出错!";
+				e.printStackTrace();
+			} catch (SaveDBException e) {
+				this.errorMsg = "后台保存数据库出错!";
+				e.printStackTrace();
+			}
 		}
 		return SUCCESS;
 	}
@@ -217,7 +277,7 @@ public class UnbindAction extends BaseAction {
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "第三方机信息找不到!";
 			}
 		}
 		return SUCCESS;

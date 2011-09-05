@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.logic;
+package com.chinarewards.qqgbvpn.logic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

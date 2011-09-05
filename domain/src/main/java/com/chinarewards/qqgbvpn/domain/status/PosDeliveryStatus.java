@@ -1,5 +1,14 @@
 package com.chinarewards.qqgbvpn.domain.status;
 
 public enum PosDeliveryStatus {
-	DELIVERED, RETURNED
+	
+	/**
+	 * 已交付
+	 */
+	DELIVERED, 
+	
+	/**
+	 * 已回收
+	 */
+	 RETURNED
 }

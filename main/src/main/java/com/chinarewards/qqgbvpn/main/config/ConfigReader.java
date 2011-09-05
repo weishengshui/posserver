@@ -8,6 +8,7 @@ import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.ReloadingStrategy;
 
 import com.chinarewards.qqgbvpn.main.HomeDirLocator;
 import com.google.inject.Inject;
@@ -87,7 +88,8 @@ public class ConfigReader {
 
 		// TODO extract this code.
 		if ("ini".equals(ext)) {
-			return new PropertiesConfiguration(absFile.getAbsoluteFile());
+			PropertiesConfiguration p = new PropertiesConfiguration(absFile.getAbsoluteFile());
+			return p;
 		}
 
 		// not supported

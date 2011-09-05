@@ -101,6 +101,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>qqapi</artifactId>
 			<version>${project.version}</version>
 		</dependency>

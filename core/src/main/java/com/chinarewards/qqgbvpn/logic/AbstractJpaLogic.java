@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.logic;
+package com.chinarewards.qqgbvpn.logic;
 
 import javax.persistence.EntityManager;
 

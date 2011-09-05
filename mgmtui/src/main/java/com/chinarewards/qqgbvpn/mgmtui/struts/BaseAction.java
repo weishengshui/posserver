@@ -26,9 +26,9 @@ public abstract class BaseAction extends ActionSupport {
 
 	protected Logger log = LoggerFactory.getLogger(getClass());
 
-	public Injector getInjector() {
-		return (Injector) ServletActionContext.getServletContext()
-				.getAttribute(Injector.class.getName());
+	public <T> T getInstance(Class<T> type) {
+		return ((Injector) ServletActionContext.getServletContext()
+				.getAttribute(Injector.class.getName())).getInstance(type);
 	}
 	
 	/**

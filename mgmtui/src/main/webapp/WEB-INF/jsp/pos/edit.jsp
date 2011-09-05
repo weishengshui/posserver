@@ -60,7 +60,7 @@
 				secret:
 			</td>
 			<td >
-				<s:textfield name="posVO.secret" label="secret"/>
+				<s:textfield name="posVO.secret" label="secret" id="posVO.secret"/>
 			</td>
 		</tr>
 		<tr>
@@ -75,16 +75,22 @@
 	function checkPos(){
 	     var posId = document.getElementById('posVO.posId').value.trim();      
 	     if(posId.length==0){      
-	         alert('POSID不能为空或者为空格!');
+	         alert("POSID不能为空或者为空格!");
 	         return false; 
 	     }      
 	     var simPhoneNo = document.getElementById('posVO.simPhoneNo').value;  
 		 if(simPhoneNo != ""){
 			 if(!isphone(simPhoneNo)){
-			    	alert('请填写正确的手机号码！');
+			    	alert("请填写正确的手机号码！");
 			    	return false;
 			    } 
 		 }				
+		 var secret = document.getElementById('posVO.secret').value.trim();  
+		 var pr = /^([0-9]{6})$/;
+		 if(secret != "" && !pr.test(secret)){
+			 	alert("请输入六位数字secret！");
+		    	return false;
+		 } 
 		return true;
 	}
 	

@@ -452,7 +452,7 @@ public class QQApiTest extends JpaGuiceTest {
 			e.printStackTrace();
 		}
 	}
-
+/*
 	@Test
 	public void testGroupBuyingUnbind() {
 		
@@ -543,7 +543,7 @@ public class QQApiTest extends JpaGuiceTest {
 			e.printStackTrace();
 		}
 	}
-	
+	*/
 	@Test
 	public void testSendPostSuccess() throws Exception {
 		Server server = new Server(0);

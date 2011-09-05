@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.logic.journal;
+package com.chinarewards.qqgbvpn.logic.journal;
 
 import java.util.Date;
 
@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 
 import com.chinarewards.qqgbvpn.common.DateTimeProvider;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
-import com.chinarewards.qqgbvpn.main.logic.AbstractJpaLogic;
+import com.chinarewards.qqgbvpn.logic.AbstractJpaLogic;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;

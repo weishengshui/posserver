@@ -39,7 +39,7 @@ public abstract class ProtocolLengths {
 	
 	public static final int RESULT = 2;
 	
-	public static final int CHALLEUGE = 8;
+	public static final int CHALLENGE = 8;
 	
 	public static final int PAGE = 2;
 	

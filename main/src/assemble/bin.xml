@@ -22,6 +22,16 @@
 			<source>src/script/run.bat</source>
 			<fileMode>755</fileMode>
 		</file>
+		<file>
+			<source>src/etc/conf/posnet.ini</source>
+			<outputDirectory>conf</outputDirectory>
+			<fileMode>600</fileMode>
+		</file>
+		<file>
+			<source>src/etc/conf/dispatcher.ini</source>
+			<outputDirectory>conf</outputDirectory>
+			<fileMode>600</fileMode>
+		</file>
 	</files>
 	<dependencySets>
 		<dependencySet>
