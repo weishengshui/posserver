@@ -1,0 +1,30 @@
+#!/bin/sh
+# prerm script for posnet2
+#
+# see: dh_installdeb(1)
+
+set -e
+
+# summary of how this script can be called:
+#        * <prerm> `remove'
+#        * <prerm> `purge'
+#        * <old-prerm> `upgrade' <new-version>
+#        * <new-prerm> `failed-upgrade' <old-version>
+#        * <new-prerm> `abort-install'
+#        * <new-prerm> `abort-install' <old-version>
+#        * <new-prerm> `abort-upgrade' <old-version>
+#        * <disappearer's-prerm> `disappear' <overwriter>
+#          <overwriter-version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+# TODO: Remove cached/temp files
+
+if which invoke-rc.d >/dev/null 2>&1; then
+	invoke-rc.d posnet2 stop
+else
+	/etc/init.d/posnet2 stop
+fi
+
+exit 0
+
