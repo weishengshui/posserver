@@ -6,21 +6,29 @@ import java.util.Properties;
 
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.configuration.Configuration;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
+import com.google.inject.Inject;
 import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 public class MailServiceImpl implements MailService {
+	
+	@Inject
+	protected Configuration configuration;
 
 	public void sendMail(String[] toAdds, String[] cc, String subject,
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
 		JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
-		javaMail.setHost("smtp.163.com");
-		javaMail.setUsername("lin7hao");
-		javaMail.setPassword("1986115w");
+		System.out.println("!!!!!!!!!!!!!!!!smtp.server!" + configuration.getString("smtp.server"));
+		System.out.println("!!!!!!!!!!!!!!!!smtp.username!" + configuration.getString("smtp.username"));
+		System.out.println("!!!!!!!!!!!!!!!!smtp.password!" + configuration.getString("smtp.password"));
+		javaMail.setHost(configuration.getString("smtp.server"));
+		javaMail.setUsername(configuration.getString("smtp.username"));
+		javaMail.setPassword(configuration.getString("smtp.password"));
 		
 		Properties props = new Properties();
 		props.setProperty("mail.smtp.auth","true");
@@ -29,7 +37,7 @@ public class MailServiceImpl implements MailService {
 		
 		MimeMessage message = javaMail.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message,true,"GBK");
-		helper.setFrom("lin7hao@163.com");
+		helper.setFrom(configuration.getString("smtp.username"));
 		helper.setTo(toAdds);
 		if (cc != null && cc.length > 0) {
 			helper.setCc(cc);
