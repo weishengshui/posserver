@@ -46,7 +46,7 @@ public class LoginAction extends BaseAction {
 
 	public String login() {
 
-		LoginLogic loginLogic = getInjector().getInstance(LoginLogic.class);
+		LoginLogic loginLogic = super.getInstance(LoginLogic.class);
 
 		boolean validePass = loginLogic.checkLogin(username, password);
 
