@@ -214,6 +214,9 @@ public class UnbindAction extends BaseAction {
 	public String posSearch() {
 		if (posCondition != null && !"".equals(posCondition.trim())) {
 			posList = groupBuyingUnbindMgr.get().getPosByPosInfo(posCondition.trim());
+			if (posList == null || posList.size() == 0) {
+				this.errorMsg = "POS机信息找不到!";
+			}
 		}
 		return SUCCESS;
 	}
