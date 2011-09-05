@@ -3,6 +3,9 @@ package com.chinarewards.qqgbvpn.domain.status;
 public enum DeliveryNoteStatus {
 
 	/**
+	 * 
+	 * 
+	 * <p>
 	 * First state.
 	 */
 	DRAFT,

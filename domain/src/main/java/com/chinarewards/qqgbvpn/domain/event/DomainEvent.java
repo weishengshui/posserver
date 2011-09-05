@@ -12,6 +12,17 @@ public enum DomainEvent {
 
 	/**
 	 * User has logged in to the management UI.
+	 * <p>
+	 * 
+	 * Expected domain: SysUser
+	 * <p>
+	 * 
+	 * Detail
+	 * <ol>
+	 * <li>Username (SysUser.username)</li>
+	 * <li>IP address (ip)</li>
+	 * </ol>
+	 * 
 	 */
 	USER_LOGGED_IN,
 
@@ -56,6 +67,21 @@ public enum DomainEvent {
 	 * </ol>
 	 */
 	USER_ADDED_AGENT,
+
+	/**
+	 * User has updated the information of an agent.
+	 * <p>
+	 * 
+	 * Expected domain: Agent.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete Agent information (entity Agent)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_UPDATED_AGENT,
 
 	/**
 	 * User has removed an Agent.
@@ -106,8 +132,7 @@ public enum DomainEvent {
 
 	USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
 	USER_CONFIRMED_DNOTE, USER_PRINTED_DNOTE, //
-	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL,
-	USER_CONFIRMED_RNOTE,
+	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL, USER_CONFIRMED_RNOTE,
 
 	// ---------- POS Server Related -------------
 	/**
@@ -122,10 +147,10 @@ public enum DomainEvent {
 	 * <li>POS ID (pos.posId)</li>
 	 * </ol>
 	 */
-	POS_INIT_REQ, 
-	
+	POS_INIT_REQ,
+
 	/**
-	 * Event: 
+	 * Event:
 	 * <p>
 	 * 
 	 * Expected domain: POS.
@@ -133,8 +158,8 @@ public enum DomainEvent {
 	 * 
 	 */
 	POS_INIT_OK,
-	
-	POS_INIT_FAILED, POS_LOGGED_IN, POS_LOGGED_FAILED,//
+
+	POS_INIT_FAILED, POS_LOGGED_IN, POS_LOGGED_FAILED, //
 
 	/**
 	 * Event: A product search action has been performed.
@@ -178,20 +203,20 @@ public enum DomainEvent {
 	 * </ol>
 	 */
 	POS_ORDER_VALIDATED_FAILED,
-	
+
 	/**
 	 * Unbind pos assignment success
 	 */
 	POS_UNBIND_SUCCESS,
-	
+
 	/**
 	 * Unbind pos asssignment failed
 	 */
 	POS_UNBIND_FAILED,
-	
+
 	GROUPON_CACHE_INIT,
-	
+
 	GROUPON_CACHE_SEARCH,
-	
+
 	GROUPON_CACHE_DELETE
 }

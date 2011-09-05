@@ -1,1 +1,1 @@
-java -jar qqgbvpn.jar
+java -jar qqgbvpn.jar %*
