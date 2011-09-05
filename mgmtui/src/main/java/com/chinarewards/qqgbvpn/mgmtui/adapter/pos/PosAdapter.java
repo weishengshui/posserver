@@ -33,12 +33,12 @@ public class PosAdapter {
 		
 	}
 	
-	public Pos convertToPosVO(PosVO posVO){
+	public Pos convertToPos(PosVO posVO){
 		if (posVO == null) {
 			return null;
 		}
 		Pos pos = new Pos();
-		pos.setId(posVO.getId());
+		pos.setId(Tools.isEmptyString(posVO.getId())?null:posVO.getId());
 		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
 		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
 		pos.setModel(posVO.getModel());
