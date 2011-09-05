@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
+    <description>page</description>
+    <tlib-version>2.0</tlib-version>
+    <short-name>page</short-name>
+    <uri>/page</uri>
+    
+    <tag>
+        <name>page</name>
+        <tag-class>com.chinarewards.qqgbvpn.mgmtui.tag.PagerTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>pageInfo</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+</taglib>

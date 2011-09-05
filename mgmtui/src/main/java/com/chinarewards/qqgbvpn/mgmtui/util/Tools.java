@@ -1,6 +1,9 @@
 package com.chinarewards.qqgbvpn.mgmtui.util;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 public class Tools {
 	/**
@@ -62,5 +65,27 @@ public class Tools {
 	public static boolean isEmptyString(Object s) {
 		return s == null || s.toString().trim().length() == 0
 				|| s.toString().trim().equalsIgnoreCase("null");
+	}
+	
+	/**
+	 * 取唯一nubmer(用于生成回收单)
+	 * @return
+	 */
+	public static String getOnlyNumber() {
+		Random rd = new Random();
+		StringBuffer sb = new StringBuffer("JXT");
+		sb.append(getNow());
+		sb.append(rd.nextInt(999999999));
+		return sb.toString();
+	}
+	
+	/**
+	 * 当前时间（毫秒级）
+	 * @return
+	 */
+	public static String getNow() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmssSSS");
+		sdf.format(new Date());
+		return sdf.format(new Date());
 	}
 }
