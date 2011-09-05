@@ -10,12 +10,14 @@
 <body>
 <s:form action="search" namespace="/unbind" method="Post" id="listForm">
 <s:hidden name="agent.id" id="agent.id" />
+<s:hidden name="agent.name" id="agent.name" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
+<s:hidden name="rnId" id="rnId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td width="77%">第三方名称：<input type="text" name="agent.name" value="${agent.name}" /></td>
+		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>

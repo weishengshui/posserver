@@ -15,6 +15,11 @@
 			method="search">
 			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
 		</action>
+		<action name="searchByAgent"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="searchByAgent">
+			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+		</action>
 		<action name="createRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createRnNumber">
@@ -24,6 +29,11 @@
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
 			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+		</action>
+		<action name="posSearch"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="posSearch">
+			<result name="success">/WEB-INF/jsp/unbind/unbind.jsp</result>
 		</action>
 		<action name="unbind"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
