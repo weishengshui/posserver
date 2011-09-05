@@ -25,6 +25,8 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuyingUnbindDao {
 
@@ -47,10 +49,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
 						journal.setEntityId(pa.getId());
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
-						ObjectMapper mapper = new ObjectMapper();
 						if (items != null) {
 							try {
-								journal.setEventDetail(mapper.writeValueAsString(pa));
+								GsonBuilder builder = new GsonBuilder();
+								Gson gson = builder.create();
+								journal.setEventDetail(gson.toJson(pa));
 							} catch (Exception e) {
 								throw new JsonGenerationException(e);
 							}
@@ -280,9 +283,10 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
-				ObjectMapper mapper = new ObjectMapper();
 				try {
-					journal.setEventDetail(mapper.writeValueAsString(rn));
+					GsonBuilder builder = new GsonBuilder();
+					Gson gson = builder.create();
+					journal.setEventDetail(gson.toJson(rn));
 				} catch (Exception e) {
 					throw new JsonGenerationException(e);
 				}
@@ -340,9 +344,10 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				ObjectMapper mapper = new ObjectMapper();
 				try {
-					journal.setEventDetail(mapper.writeValueAsString(rn));
+					GsonBuilder builder = new GsonBuilder();
+					Gson gson = builder.create();
+					journal.setEventDetail(gson.toJson(rn));
 				} catch (Exception e) {
 					throw new JsonGenerationException(e);
 				}
