@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.configuration.Configuration;
@@ -12,7 +13,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.google.inject.Inject;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 public class MailServiceImpl implements MailService {
 	

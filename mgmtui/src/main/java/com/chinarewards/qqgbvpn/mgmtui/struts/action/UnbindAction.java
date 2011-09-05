@@ -3,6 +3,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.StrutsStatics;
@@ -19,7 +20,6 @@ import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.opensymphony.xwork2.ActionContext;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 /**
  * pos unbind action
