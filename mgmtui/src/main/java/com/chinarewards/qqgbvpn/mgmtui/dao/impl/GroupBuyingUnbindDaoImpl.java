@@ -23,7 +23,10 @@ import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuyingUnbindDao {
 
@@ -46,10 +49,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
 						journal.setEntityId(pa.getId());
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
-						ObjectMapper mapper = new ObjectMapper();
 						if (items != null) {
 							try {
-								journal.setEventDetail(mapper.writeValueAsString(pa));
+								GsonBuilder builder = new GsonBuilder();
+								Gson gson = builder.create();
+								journal.setEventDetail(gson.toJson(pa));
 							} catch (Exception e) {
 								throw new JsonGenerationException(e);
 							}
@@ -261,6 +265,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		if (a != null) {
 			Date date = new Date();
 			ReturnNote rn = new ReturnNote();
+			rn.setRnNumber(Tools.getOnlyNumber());
 			rn.setAgent(a);
 			rn.setAgentName(a.getName());
 			rn.setStatus(ReturnNoteStatus.DRAFT);
@@ -278,9 +283,10 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
-				ObjectMapper mapper = new ObjectMapper();
 				try {
-					journal.setEventDetail(mapper.writeValueAsString(rn));
+					GsonBuilder builder = new GsonBuilder();
+					Gson gson = builder.create();
+					journal.setEventDetail(gson.toJson(rn));
 				} catch (Exception e) {
 					throw new JsonGenerationException(e);
 				}
@@ -303,7 +309,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#confirmReturnNote(java.lang.String, java.lang.String, java.util.List)
 	 * 回收单页面调用
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<Pos> posList) throws JsonGenerationException,SaveDBException {
+	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException {
 		ReturnNote rn = null;
 		Date date = new Date();
 		Agent a = this.getAgentById(agentId);
@@ -316,6 +322,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			}
 			if (rn == null) {
 				rn = new ReturnNote();
+				rn.setRnNumber(Tools.getOnlyNumber());
 				rn.setAgent(a);
 				rn.setAgentName(a.getName());
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);
@@ -337,13 +344,16 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				ObjectMapper mapper = new ObjectMapper();
 				try {
-					journal.setEventDetail(mapper.writeValueAsString(rn));
+					GsonBuilder builder = new GsonBuilder();
+					Gson gson = builder.create();
+					journal.setEventDetail(gson.toJson(rn));
 				} catch (Exception e) {
 					throw new JsonGenerationException(e);
 				}
 				saveJournal(journal);
+				
+				List<Pos> posList = getPosListByIds(posIds);
 				
 				if (posList != null && posList.size() > 0) {
 					for (Pos p : posList) {
@@ -387,6 +397,32 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	private Agent getAgentById(String agentId) {
 		Agent a = em.get().find(Agent.class, agentId);
 		return a;
+	}
+	
+	private List<Pos> getPosListByIds(String posIds) {
+		try {
+			Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
+			jql.setParameter(1, posIds);
+			List<Pos> resultList = jql.getResultList();
+			return resultList;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Agent getAgentByRnId(String rnId) {
+		try {
+			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.id = ?1");
+			jql.setParameter(1, rnId);
+			List resultList = jql.getResultList();
+			Agent agent = null;
+			if (resultList != null) {
+				agent = (Agent) resultList.get(0);
+			}
+			return agent;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 }

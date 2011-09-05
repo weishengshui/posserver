@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.pos;
 
+import org.junit.Test;
+
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
@@ -20,7 +22,7 @@ public class PosLogicTest extends JPATestCase{
 	}
 	
 	
-	
+	@Test
 	public void testPosLogic() throws Exception{
 		PosLogic posLogic = injector.getInstance(PosLogic.class);
 		PosVO posVO = new PosVO();
@@ -39,7 +41,7 @@ public class PosLogicTest extends JPATestCase{
 		posVO2.setPosId("pos_002");
 		posLogic.updatePos(posVO2);
 		PosVO posVO3 = posLogic.getPosById(posVO2.getId());
-		assertEquals(posVO3.getPosId(), "pos_002");
+		assertEquals("pos_002", posVO3.getPosId());
 		
 		//delete
 		posLogic.deletePosById(posVO1.getId());

@@ -268,7 +268,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		}
 	}
 	
-	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
+/*	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
 		String[] posIds = (String[]) params.get("posId");
 		String resultCode = (String) params.get("resultCode");
 		List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) params.get("items");
@@ -410,7 +410,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			}
 		}
 	}
-	
+*/	
 	private void saveJournal(Journal journal) {
 		em.get().persist(journal);
 	}

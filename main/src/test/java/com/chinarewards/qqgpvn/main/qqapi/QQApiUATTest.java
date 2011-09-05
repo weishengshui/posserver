@@ -459,7 +459,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 			e.printStackTrace();
 		}
 	}
-
+/*
 	// @Test
 	public void testGroupBuyingUnbind() {
 
@@ -514,5 +514,5 @@ public class QQApiUATTest extends JpaGuiceTest {
 			e.printStackTrace();
 		}
 	}
-
+*/
 }

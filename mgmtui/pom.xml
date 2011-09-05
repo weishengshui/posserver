@@ -65,6 +65,11 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>
+		    <version>1.7.1</version>
+		</dependency>
 		
 		<!-- MYSQL -->
 		<dependency>
@@ -112,6 +117,32 @@
 			<groupId>com.google.code</groupId>
 			<artifactId>kaptcha</artifactId>
 			<version>2.3</version>
+		</dependency>
+		
+		<!-- Jsp Api -->
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+	  		<artifactId>jsp-api</artifactId>
+	  		<version>2.1</version>
+		</dependency>
+		
+		<!-- JavaMail -->
+	  	<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		<!-- Spring mail -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.0.4</version>
 		</dependency>
 
 		<!-- Configuration -->

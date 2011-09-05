@@ -5,9 +5,13 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.login;
 
 import java.util.Map;
 
+import org.apache.struts2.interceptor.validation.SkipValidation;
+
 import com.chinarewards.qqgbvpn.mgmtui.logic.login.LoginLogic;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.struts.SessionConstant;
+import com.chinarewards.qqgbvpn.mgmtui.struts.SimpleUserSession;
+import com.chinarewards.qqgbvpn.mgmtui.struts.formbean.UserForm;
 import com.chinarewards.utils.StringUtil;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -35,6 +39,7 @@ public class LoginAction extends BaseAction {
 	}
 
 	@Override
+	@SkipValidation
 	public String execute() throws Exception {
 		return SUCCESS;
 	}
@@ -48,7 +53,12 @@ public class LoginAction extends BaseAction {
 		if (validePass) {
 			Map<String, Object> session = ActionContext.getContext()
 					.getSession();
-			session.put(SessionConstant.USER_SESSION, true);
+			UserForm userForm = new UserForm();
+			userForm.setUserName(username);
+			SimpleUserSession userSession = new SimpleUserSession(userForm,
+					true);
+			session.put(SessionConstant.USER_SESSION, userSession);
+
 			log.debug("login success");
 			return SUCCESS;
 		} else {

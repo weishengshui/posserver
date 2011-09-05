@@ -19,5 +19,5 @@ public interface GroupBuyingDao {
 	
 	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException;
 	
-	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
+	/*public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;*/
 }
