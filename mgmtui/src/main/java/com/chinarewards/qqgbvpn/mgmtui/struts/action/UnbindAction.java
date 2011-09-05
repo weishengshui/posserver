@@ -62,6 +62,17 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Pos> posList;
 	
+	private String errorMsg;
+	
+	
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
 	public String getPosId() {
 		return posId;
 	}
@@ -141,11 +152,11 @@ public class UnbindAction extends BaseAction {
 			if (a != null) {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(10);
-				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, agent.getId());
+				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, a.getId());
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "第三方信息找不到!";
 			}
 		}
 		return SUCCESS;
@@ -162,7 +173,7 @@ public class UnbindAction extends BaseAction {
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "无可用回收单!";
 			}
 		}
 		return SUCCESS;
@@ -185,18 +196,17 @@ public class UnbindAction extends BaseAction {
 			return SUCCESS;
 		} else {
 			//这里应该报第三方不能为空的提示
-			System.out.println("!!!!!!!!!!!agent.getId(): 为空!!");
+			this.errorMsg = "第三方信息找不到!";
 		}
 		return SUCCESS;
 	}
 	
 	public String confirmRnNumber() throws JsonGenerationException, SaveDBException{
 		if (posIds != null && !"".equals(posIds.trim())) {
-			System.out.println("!!!!!!!!!!!posIds: " + posIds);
 			ReturnNote rn = groupBuyingUnbindMgr.get().confirmReturnNote(agent.getId(), rnId, posIds);
 		} else {
 			//这里应该报POS机不能为空的提示
-			System.out.println("!!!!!!!!!!!posIds: 为空!!");
+			this.errorMsg = "POS机信息找不到!";
 		}
 		return SUCCESS;
 	}
@@ -210,8 +220,6 @@ public class UnbindAction extends BaseAction {
 	
 	public String unbind(){
 		if (posId != null && !"".equals(posId.trim())) {
-			System.out.println("!!!!!!!!!!!!!posId: " + posId);
-			System.out.println("!!!!!!!!!!!!!txserver.key: " + configuration.getString("txserver.key"));
 			HashMap<String, Object> params = new HashMap<String, Object>();
 			params.put("posId", new String[] { posId });
 			params.put("key", configuration.getString("txserver.key"));
@@ -229,34 +237,33 @@ public class UnbindAction extends BaseAction {
 				} else {
 					switch (Integer.valueOf(resultCode)) {
 					case -1:
-						System.out.println("服务器繁忙");
+						this.errorMsg = "服务器繁忙!";
 						break;
 					case -2:
-						System.out.println("md5校验失败");
+						this.errorMsg = "md5校验失败!";
 						break;
 					case -3:
-						System.out.println("没有权限");
+						this.errorMsg = "没有权限!";
 						break;
 					default:
-						System.out.println("未知错误");
+						this.errorMsg = "未知错误!";
 						break;
 					}
 				}
 			} catch (JsonGenerationException e) {
-				System.err.println("生成JSON对象出错");
+				this.errorMsg = "生成JSON对象出错!";
 				e.printStackTrace();
 			} catch (MD5Exception e) {
-				System.err.println("生成MD5校验位出错");
+				this.errorMsg = "生成MD5校验位出错!";
 				e.printStackTrace();
 			} catch (ParseXMLException e) {
-				System.err.println("解析XML出错");
+				this.errorMsg = "解析XML出错!";
 				e.printStackTrace();
 			} catch (SendPostTimeOutException e) {
-				System.err.println("POST连接出错");
+				this.errorMsg = "POST连接出错!";
 				e.printStackTrace();
 			} catch (SaveDBException e) {
-				System.err.println("后台保存数据库出错");
-				System.out.println("具体异常信息：" + e.getMessage());
+				this.errorMsg = "后台保存数据库出错!";
 				e.printStackTrace();
 			}
 		}
@@ -270,7 +277,7 @@ public class UnbindAction extends BaseAction {
 				this.setAgent(a);
 			} else {
 				//这里应该报找不到的提示
-				System.out.println("!!!!!!!!!!!agent 为空!!");
+				this.errorMsg = "第三方机信息找不到!";
 			}
 		}
 		return SUCCESS;
