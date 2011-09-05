@@ -1,13 +1,9 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
@@ -15,12 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
-import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
-import com.chinarewards.qqgbvpn.mgmtui.logic.exception.LogicException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
@@ -121,15 +113,7 @@ public class PosDaoImpl implements PosDao {
 		if (posIdIsExits(posVO.getPosId())) {
 			throw new PosIdIsExitsException("posId is exits");
 		}
-		Pos pos = new Pos();
-		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
-		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
-		pos.setModel(posVO.getModel());
-		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
-		pos.setPosId(posVO.getPosId());
-		pos.setSecret(posVO.getSecret());
-		pos.setSimPhoneNo(posVO.getSimPhoneNo());
-		pos.setSn(posVO.getSn());
+		Pos pos = posAdapter.get().convertToPosVO(posVO);
 		getEm().persist(pos);
 		posVO.setId(pos.getId());
 		log.trace("calling savePos end and result is :({})", Tools
@@ -176,15 +160,8 @@ public class PosDaoImpl implements PosDao {
 		if (pos == null) {
 			throw new ParamsException("pos is not exits,id is:" + posVO.getId());
 		}
-		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
-		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
-		pos.setModel(posVO.getModel());
-		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
-		pos.setPosId(posVO.getPosId());
-		pos.setSecret(posVO.getSecret());
-		pos.setSimPhoneNo(posVO.getSimPhoneNo());
-		pos.setSn(posVO.getSn());
-		getEm().merge(pos);
+		Pos newPos = posAdapter.get().convertToPosVO(posVO);
+		getEm().merge(newPos);
 		log.trace("calling savePos end ");
 	}
 
