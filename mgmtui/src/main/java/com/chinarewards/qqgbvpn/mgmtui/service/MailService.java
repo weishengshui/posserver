@@ -3,7 +3,8 @@ package com.chinarewards.qqgbvpn.mgmtui.service;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
+import javax.mail.MessagingException;
+
 
 public interface MailService {
 

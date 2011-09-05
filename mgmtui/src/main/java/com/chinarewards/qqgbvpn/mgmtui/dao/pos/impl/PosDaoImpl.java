@@ -1,13 +1,12 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
-import com.chinarewards.qqgbvpn.mgmtui.logic.exception.LogicException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
@@ -78,10 +76,53 @@ public class PosDaoImpl implements PosDao {
 
 		StringBuffer hql = new StringBuffer();
 		hql.append("SELECT p FROM Pos p WHERE 1=1 ");
-
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		
+		log.debug("posSearchVO============:"+posSearchVO);
+		
+		if(!Tools.isEmptyString(posSearchVO)){
+			if(!Tools.isEmptyString(posSearchVO.getDstatus())){
+				hql.append(" AND p.dstatus = :dstatus ");
+				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO.getDstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getIstatus())){
+				hql.append(" AND p.istatus = :istatus ");
+				paramMap.put("istatus", PosInitializationStatus.valueOf(posSearchVO.getIstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getModel())){
+				hql.append(" AND lower(p.model) like :model ");
+				paramMap.put("model", "%"+posSearchVO.getModel().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getOstatus())){
+				hql.append(" AND p.ostatus = :ostatus ");
+				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO.getOstatus().trim()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getPosId())){
+				hql.append(" AND lower(p.posId) like :posid ");
+				paramMap.put("posid", "%"+posSearchVO.getPosId().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSecret())){
+				hql.append(" AND lower(p.secret) like :secret ");
+				paramMap.put("secret", "%"+posSearchVO.getSecret().toLowerCase().toLowerCase() + "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSimPhoneNo())){
+				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				paramMap.put("simPhoneNo", "%"+posSearchVO.getSimPhoneNo().toLowerCase()+ "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSn())){
+				hql.append(" AND lower(p.sn) like :sn ");
+				paramMap.put("sn", "%"+posSearchVO.getSn().toLowerCase()+"%");
+			}
+		}
+		
 		Query query = getEm().createQuery(hql.toString());
+		log.debug("hql========:"+hql.toString());
+		for(Entry<String,Object> entry:paramMap.entrySet()){
+			query = query.setParameter(entry.getKey(), entry.getValue());
+			log.debug("key===({})value===({})",new Object[]{entry.getKey(), entry.getValue()});
+		}
 		if (paginationTools != null) {
-			query = query.setFirstResult(paginationTools.getStartIndex())
+			query = query = query.setFirstResult(paginationTools.getStartIndex())
 					.setMaxResults(paginationTools.getCountOnEachPage());
 		}
 		List<Pos> posList = query.getResultList();
@@ -101,9 +142,51 @@ public class PosDaoImpl implements PosDao {
 				Tools.objToString(posSearchVO));
 		StringBuffer hql = new StringBuffer();
 		hql.append("SELECT count(p.id) FROM Pos p WHERE 1=1 ");
+		Map<String,Object> paramMap = new HashMap<String,Object>();
 
-		int count = ((Long) getEm().createQuery(hql.toString())
-				.getSingleResult()).intValue();
+		log.debug("posSearchVO======count======:"+posSearchVO);
+		if(!Tools.isEmptyString(posSearchVO)){
+			if(!Tools.isEmptyString(posSearchVO.getDstatus())){
+				hql.append(" AND p.dstatus = :dstatus ");
+				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO.getDstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getIstatus())){
+				hql.append(" AND p.istatus = :istatus ");
+				paramMap.put("istatus", PosInitializationStatus.valueOf(posSearchVO.getIstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getModel())){
+				hql.append(" AND lower(p.model) like :model ");
+				paramMap.put("model", "%"+posSearchVO.getModel().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getOstatus())){
+				hql.append(" AND p.ostatus = :ostatus ");
+				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO.getOstatus().trim()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getPosId())){
+				hql.append(" AND lower(p.posId) like :posId ");
+				paramMap.put("posId", "%"+posSearchVO.getPosId().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSecret())){
+				hql.append(" AND lower(p.secret) like :secret ");
+				paramMap.put("secret", "%"+posSearchVO.getSecret().toLowerCase().toLowerCase() + "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSimPhoneNo())){
+				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				paramMap.put("simPhoneNo", "%"+posSearchVO.getSimPhoneNo().toLowerCase()+ "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSn())){
+				hql.append(" AND lower(p.sn) like :sn ");
+				paramMap.put("sn", "%"+posSearchVO.getSn().toLowerCase()+"%");
+			}
+		}
+		log.debug("hql====count====:"+hql.toString());
+		log.debug("paramMap.keySet().size()==============:"+paramMap.keySet().size());
+		Query query = getEm().createQuery(hql.toString());
+		for(Entry<String,Object> entry:paramMap.entrySet()){
+			query = query.setParameter(entry.getKey(), entry.getValue());
+			log.debug("count   key===({})value===({})",new Object[]{entry.getKey(), entry.getValue()});
+		}
+		int count = ((Long)query.getSingleResult()).intValue();
 		log.trace("calling queryPos end and result is :({})", count);
 		return count;
 	}
@@ -121,15 +204,7 @@ public class PosDaoImpl implements PosDao {
 		if (posIdIsExits(posVO.getPosId())) {
 			throw new PosIdIsExitsException("posId is exits");
 		}
-		Pos pos = new Pos();
-		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
-		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
-		pos.setModel(posVO.getModel());
-		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
-		pos.setPosId(posVO.getPosId());
-		pos.setSecret(posVO.getSecret());
-		pos.setSimPhoneNo(posVO.getSimPhoneNo());
-		pos.setSn(posVO.getSn());
+		Pos pos = posAdapter.get().convertToPosVO(posVO);
 		getEm().persist(pos);
 		posVO.setId(pos.getId());
 		log.trace("calling savePos end and result is :({})", Tools
@@ -176,15 +251,8 @@ public class PosDaoImpl implements PosDao {
 		if (pos == null) {
 			throw new ParamsException("pos is not exits,id is:" + posVO.getId());
 		}
-		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
-		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
-		pos.setModel(posVO.getModel());
-		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
-		pos.setPosId(posVO.getPosId());
-		pos.setSecret(posVO.getSecret());
-		pos.setSimPhoneNo(posVO.getSimPhoneNo());
-		pos.setSn(posVO.getSn());
-		getEm().merge(pos);
+		Pos newPos = posAdapter.get().convertToPosVO(posVO);
+		getEm().merge(newPos);
 		log.trace("calling savePos end ");
 	}
 

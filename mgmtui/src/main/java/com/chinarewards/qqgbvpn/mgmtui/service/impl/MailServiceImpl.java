@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.configuration.Configuration;
@@ -12,7 +13,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.google.inject.Inject;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 
 public class MailServiceImpl implements MailService {
 	
@@ -23,9 +23,6 @@ public class MailServiceImpl implements MailService {
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
 		JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
-		System.out.println("!!!!!!!!!!!!!!!!smtp.server!" + configuration.getString("smtp.server"));
-		System.out.println("!!!!!!!!!!!!!!!!smtp.username!" + configuration.getString("smtp.username"));
-		System.out.println("!!!!!!!!!!!!!!!!smtp.password!" + configuration.getString("smtp.password"));
 		javaMail.setHost(configuration.getString("smtp.server"));
 		javaMail.setUsername(configuration.getString("smtp.username"));
 		javaMail.setPassword(configuration.getString("smtp.password"));
