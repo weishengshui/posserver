@@ -23,8 +23,8 @@ public interface GroupBuyingUnbindManager {
 	 * @param params
 	 * @return
 	 */
-	public HashMap<String, Object> groupBuyingUnbind(
-			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException;
+	/*public HashMap<String, Object> groupBuyingUnbind(
+			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException;*/
 	
 	/**
 	 * 根据第三方ID分页查询POS机列表
@@ -66,5 +66,5 @@ public interface GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<Pos> posList) throws JsonGenerationException,SaveDBException;
+	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException;
 }

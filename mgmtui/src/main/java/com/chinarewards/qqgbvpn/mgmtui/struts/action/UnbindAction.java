@@ -1,10 +1,15 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.codehaus.jackson.JsonGenerationException;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.ReturnNote;
+import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * pos unbind action
@@ -16,30 +21,92 @@ public class UnbindAction extends BaseAction {
 
 	private static final long serialVersionUID = -4872248136823406437L;
 	
-	//@Inject
-	//private Provider<GroupBuyingUnbindManager> groupBuyingUnbindMgr;
+	@Inject
+	private Provider<GroupBuyingUnbindManager> groupBuyingUnbindMgr;
 
-	String agentName;
-	List<Agent> agentList;
+	private Agent agent;
 	
-	public List<Agent> getAgentList() {
-		return agentList;
+	private PageInfo pageInfo;
+	
+	private String posIds;
+	
+	private String rnId;
+	
+	public String getRnId() {
+		return rnId;
 	}
 
-	public void setAgentList(List<Agent> agentList) {
-		this.agentList = agentList;
+	public void setRnId(String rnId) {
+		this.rnId = rnId;
 	}
 
-	public String getAgentName() {
-		return agentName;
+	public String getPosIds() {
+		return posIds;
 	}
 
-	public void setAgentName(String agentName) {
-		this.agentName = agentName;
+	public void setPosIds(String posIds) {
+		this.posIds = posIds;
 	}
 
+	public PageInfo getPageInfo() {
+		return pageInfo;
+	}
+
+	public void setPageInfo(PageInfo pageInfo) {
+		this.pageInfo = pageInfo;
+	}
+
+	public Agent getAgent() {
+		return agent;
+	}
+
+	public void setAgent(Agent agent) {
+		this.agent = agent;
+	}
+	
 	@Override
-	public String execute(){
+	public String execute() {
+		agent = new Agent();
+		pageInfo = new PageInfo();
+		pageInfo.setPageId(1);
+		pageInfo.setPageSize(10);
+		return SUCCESS;
+	}
+
+	public String search() {
+		if (agent.getName() != null && !"".equals(agent.getName().trim())) {
+			Agent a = groupBuyingUnbindMgr.get().getAgentByName(agent.getName().trim());
+			if (a != null) {
+				pageInfo.setPageId(1);
+				pageInfo.setPageSize(10);
+				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, agent.getId());
+				this.setAgent(a);
+			} else {
+				//这里应该报找不到的提示
+				System.out.println("!!!!!!!!!!!agent 为空!!");
+			}
+		}
+		return SUCCESS;
+	}
+	
+	public String createRnNumber() throws JsonGenerationException, SaveDBException{
+		if (agent.getId() != null && !"".equals(agent.getId().trim())) {
+			ReturnNote rn = groupBuyingUnbindMgr.get().createReturnNoteByAgentId(agent.getId());
+		} else {
+			//这里应该报第三方不能为空的提示
+			System.out.println("!!!!!!!!!!!agent.getId(): 为空!!");
+		}
+		return SUCCESS;
+	}
+	
+	public String confirmRnNumber() throws JsonGenerationException, SaveDBException{
+		if (posIds != null && !"".equals(posIds.trim())) {
+			System.out.println("!!!!!!!!!!!posIds: " + posIds);
+			ReturnNote rn = groupBuyingUnbindMgr.get().confirmReturnNote(agent.getId(), rnId, posIds);
+		} else {
+			//这里应该报POS机不能为空的提示
+			System.out.println("!!!!!!!!!!!posIds: 为空!!");
+		}
 		return SUCCESS;
 	}
 	
@@ -48,18 +115,6 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String sendURL() {
-		System.out.println(agentName);
-		if ("a1".equals(agentName)) {
-			agentList = new ArrayList<Agent>();
-			Agent a1 = new Agent();
-			a1.setId("id1");
-			a1.setName("a1");
-			Agent a2 = new Agent();
-			a2.setId("id2");
-			a2.setName("a2");
-			agentList.add(a1);
-			agentList.add(a2);
-		}
 		return SUCCESS;
 	}
 

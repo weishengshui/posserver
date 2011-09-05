@@ -113,6 +113,13 @@
 			<artifactId>kaptcha</artifactId>
 			<version>2.3</version>
 		</dependency>
+		
+		<!-- Jsp Api -->
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+	  		<artifactId>jsp-api</artifactId>
+	  		<version>2.1</version>
+		</dependency>
 
 		<!-- Configuration -->
 		<dependency>
