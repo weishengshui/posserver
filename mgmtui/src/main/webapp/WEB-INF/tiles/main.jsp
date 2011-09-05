@@ -13,6 +13,9 @@
 	<script type="text/javascript" src="<s:url value='/js/jquery/jquery-latest.min.js' />"></script>
 	<link href="<s:url value='/styles/main.css'/>" rel="stylesheet" type="text/css" media="all"/>
 	
+	<%-- pagingToolbar --%>
+	<link rel="stylesheet" href="<s:url value='/style/kernel/kernel.css'/>" type="text/css" />
+	<script type="text/javascript" src="<s:url value='/js/kernel/kernel.js'/>"></script>
 </head>
 
 <body>

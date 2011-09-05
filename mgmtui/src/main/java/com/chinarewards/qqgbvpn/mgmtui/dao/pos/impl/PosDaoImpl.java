@@ -204,7 +204,7 @@ public class PosDaoImpl implements PosDao {
 		if (posIdIsExits(posVO.getPosId())) {
 			throw new PosIdIsExitsException("posId is exits");
 		}
-		Pos pos = posAdapter.get().convertToPosVO(posVO);
+		Pos pos = posAdapter.get().convertToPos(posVO);
 		getEm().persist(pos);
 		posVO.setId(pos.getId());
 		log.trace("calling savePos end and result is :({})", Tools
@@ -251,7 +251,7 @@ public class PosDaoImpl implements PosDao {
 		if (pos == null) {
 			throw new ParamsException("pos is not exits,id is:" + posVO.getId());
 		}
-		Pos newPos = posAdapter.get().convertToPosVO(posVO);
+		Pos newPos = posAdapter.get().convertToPos(posVO);
 		getEm().merge(newPos);
 		log.trace("calling savePos end ");
 	}

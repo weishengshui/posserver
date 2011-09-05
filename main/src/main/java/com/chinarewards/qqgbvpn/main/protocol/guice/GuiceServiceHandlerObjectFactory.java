@@ -24,7 +24,7 @@ public class GuiceServiceHandlerObjectFactory implements
 	protected final ServiceMapping mapping;
 
 	protected final Injector injector;
-	
+
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Inject
@@ -32,6 +32,7 @@ public class GuiceServiceHandlerObjectFactory implements
 			ServiceMapping mapping) {
 		this.mapping = mapping;
 		this.injector = injector;
+
 	}
 
 	/*
@@ -45,9 +46,11 @@ public class GuiceServiceHandlerObjectFactory implements
 	public ServiceHandler getHandler(long commandId) {
 		Object o = mapping.getMapping(commandId);
 		if (o instanceof Class) {
-			Class clazz = (Class) o;
-			ServiceHandler handler = (ServiceHandler)injector.getInstance(clazz);
-			log.trace("Handler class {} obtained for command ID {}", handler, commandId);
+			Class<ServiceHandler> clazz = (Class<ServiceHandler>) o;
+			ServiceHandler handler = (ServiceHandler) injector
+					.getInstance(clazz);
+			log.trace("Handler class {} obtained for command ID {}", handler,
+					commandId);
 			return handler;
 		} else {
 			throw new UnsupportedOperationException("Handler object of type "

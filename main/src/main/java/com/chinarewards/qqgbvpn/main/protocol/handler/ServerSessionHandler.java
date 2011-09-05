@@ -6,12 +6,12 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.config.CmdProperties;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
+import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
@@ -32,15 +32,12 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	private Injector injector;
-
 	protected final ServiceDispatcher serviceDispatcher;
 
 	protected final ServiceMapping serviceMapping;
 
 	public ServerSessionHandler(Injector injector,
 			ServiceDispatcher serviceDispatcher, ServiceMapping serviceMapping) {
-		this.injector = injector;
 		this.serviceDispatcher = serviceDispatcher;
 		this.serviceMapping = serviceMapping;
 	}
@@ -66,23 +63,18 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 		// FIXME throw PackageException if no handler found for command ID
 		
-		String cmdName = injector.getInstance(CmdProperties.class)
-				.getCmdNameById(cmdId);
-		if (cmdName == null || cmdName.length() == 0) {
-			throw new PackageException("cmd id is not exits,cmdId is :" + cmdId);
-		}
-
-		// Dispatcher
-		// CommandHandler commandHandler = injector.getInstance(Key.get(
-		// CommandHandler.class, Names.named(cmdName)));
-
 		// build a request (for dispatcher)
 		MinaSession serviceSession = new MinaSession(session);
 		ServiceRequestImpl request = new ServiceRequestImpl(msg.getBodyMessage(), serviceSession);
 		// build a response (for dispatcher)
 		ServiceResponseImpl response = new ServiceResponseImpl();
 		
-		serviceDispatcher.dispatch(serviceMapping, request, response);
+		// dispatch the command to the corresponding service handler.
+		try {
+			serviceDispatcher.dispatch(serviceMapping, request, response);
+		} catch (ServiceDispatcherException e) {
+			throw new PackageException("No mapping found for command ID " + cmdId, e);
+		}
 
 		ICommand responseMsgBody = (ICommand) response.getResponse();
 

@@ -17,8 +17,10 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 
 /**
  * Represents a physical POS in the network.
+ * <p>
  * 
  * This entity should be created by management UI, used by POS server.
+ * <p>
  * 
  * @author kmtong
  * @since 0.1.0
@@ -54,7 +56,7 @@ public class Pos {
 
 	// POS 内置唯一标识。6位字符
 	String secret;
-
+	
 	// save the challenge code.
 	/**
 	 * FIXME should not use this. This is session specific.
@@ -71,6 +73,15 @@ public class Pos {
 		this.id = id;
 	}
 
+	/**
+	 * Returns the POS machine serial number. No more than one POS machines
+	 * should have the same POS ID.
+	 * <p>
+	 * 
+	 * Chinese: POS机编号
+	 * 
+	 * @return
+	 */
 	public String getPosId() {
 		return posId;
 	}
@@ -87,6 +98,11 @@ public class Pos {
 		this.model = model;
 	}
 
+	/**
+	 * Returns the manufacturer-assigned serial number
+	 * 
+	 * @return
+	 */
 	public String getSn() {
 		return sn;
 	}
