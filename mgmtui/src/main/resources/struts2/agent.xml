@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+	<package name="agent_package" extends="default" namespace="/agent">
+		
+		<action name="searchAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction">
+			<result name="success" type="tiles">agent.searchAgent</result>
+		</action>
+		
+		<action name="queryAgentList" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="agentList">
+			<result name="success">/WEB-INF/jsp/agent/list_agent.jsp</result>
+		</action>
+		
+		<action name="showEditAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="showEditAgent">
+			<result name="success" type="tiles">agent.showEditAgent</result>
+		</action>
+		
+		<action name="editAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="editAgent">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/agent</param>
+				<param name="actionName">searchAgent</param>
+			</result>
+		</action>
+		
+		<action name="deleteAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="deleteAgent">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/agent</param>
+				<param name="actionName">searchAgent</param>
+			</result>
+		</action>
+		
+	</package>
+</struts>

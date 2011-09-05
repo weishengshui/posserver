@@ -30,4 +30,20 @@ public abstract class BaseAction extends ActionSupport {
 		return ((Injector) ServletActionContext.getServletContext()
 				.getAttribute(Injector.class.getName())).getInstance(type);
 	}
+	
+	/**
+	 * description：获取当前URI
+	 * @time 2011-6-10   下午01:29:54
+	 * @author Seek
+	 */
+	protected String getCurrentPath() {
+		StringBuffer urlBuff = new StringBuffer(ServletActionContext.getRequest().getRequestURI());
+		if (ServletActionContext.getRequest().getQueryString() != null) {
+			urlBuff.append("?");
+			urlBuff.append(ServletActionContext.getRequest().getQueryString());
+		}
+		log.debug("getCurrentPath()   currentURL:"+urlBuff);
+		return urlBuff.toString();
+	} 
+	
 }
