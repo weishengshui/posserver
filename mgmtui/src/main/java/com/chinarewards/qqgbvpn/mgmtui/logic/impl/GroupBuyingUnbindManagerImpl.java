@@ -96,8 +96,12 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<Pos> posList) throws JsonGenerationException,SaveDBException {
-		return dao.get().confirmReturnNote(agentId, rnId, posList);
+	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException {
+		return dao.get().confirmReturnNote(agentId, rnId, posIds);
+	}
+	
+	public Agent getAgentByRnId(String rnId) {
+		return dao.get().getAgentByRnId(rnId);
 	}
     
 }

@@ -22,7 +22,7 @@ public class Agent {
 	String id;
 
 	String name;
-
+	
 	String email;
 
 	public String getId() {
