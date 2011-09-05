@@ -23,6 +23,8 @@ public class Agent {
 
 	String name;
 
+	String email;
+
 	public String getId() {
 		return id;
 	}
@@ -38,6 +40,24 @@ public class Agent {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
+	/**
+	 * Returns the email associated for contact.
+	 * 
+	 * @return the email
+	 */
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * Sets the email associated for contact.
+	 * 
+	 * @param email
+	 *            the email to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 }
