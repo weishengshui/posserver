@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -21,7 +22,7 @@ public class ReturnNoteDetail {
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	String id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	ReturnNote rn;
 
 	/**
