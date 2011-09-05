@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
+import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.SysUserDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.impl.SysUserDaoImpl;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
@@ -26,6 +27,7 @@ public class QqgbvpnServiceModule extends AbstractModule {
 
 		bind(PosDao.class).to(PosDaoImpl.class).in(Singleton.class);
 		bind(PosLogic.class).to(PosLogicImpl.class).in(Singleton.class);
+		bind(PosAdapter.class).in(Singleton.class);
 
 		bind(LoginLogic.class).to(LoginLogicImpl.class);
 		bind(SysUserDao.class).to(SysUserDaoImpl.class);

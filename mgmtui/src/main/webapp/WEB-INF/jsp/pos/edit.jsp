@@ -1,51 +1,70 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>edit</title>
-</head>
-<body>
-
-<s:form  namespace="/pos" action="edit" name="posForm" id="posForm" onsubmit="return checkPos();">
+<s:if test="msg != null">
+	<s:property value="msg"/>
+</s:if>
+<s:form  namespace="/pos" action="edit" name="posForm" theme="simple" id="posForm" onsubmit="return checkPos();">
 <s:hidden name="posVO.id"/>
-<table align="center" width="500px">
+<table align="center" width="600px">
 		<tr>
-			<td width="50%">
-				<s:textfield name="posVO.posId" label="posId"/>
+			<td width="20%">
+				posId:
 			</td>
-			<td width="50%">
+			<td width="30%">
+				<s:textfield name="posVO.posId" label="posId" id="posVO.posId"/>
+			</td>
+			<td width="20%">
+				Serial number:
+			</td>
+			<td width="30%">
 				<s:textfield name="posVO.sn" label="Serial number"/>
 			</td>
 		</tr>
 		<tr>
-			<td width="50%">
+			<td >
+				model:
+			</td>
+			<td >
 				<s:textfield name="posVO.model" label="model"/>
 			</td>
-			<td width="50%">
-				<s:textfield name="posVO.simPhoneNo" label="simPhoneNo"/>
+			<td >
+				simPhoneNo:
+			</td>
+			<td >
+				<s:textfield name="posVO.simPhoneNo" label="simPhoneNo" id="posVO.simPhoneNo"/>
 			</td>
 		</tr>
 		<tr>
-			<td width="50%">
-				<s:textfield name="posVO.dstatus" label="dstatus"/>
+			<td >
+				dstatus:
 			</td>
-			<td width="50%">
-				<s:textfield name="posVO.istatus" label="istatus"/>
+			<td >
+				<s:select name="posVO.dstatus" value="posVO.dstatus"  list="{'DELIVERED','RETURNED'}" theme="simple" headerKey="" headerValue="--------" />
+			</td>
+			<td >
+				istatus:
+			</td>
+			<td >
+				<s:select name="posVO.istatus" value="posVO.istatus"  list="{'UNINITED','INITED'}" theme="simple" headerKey="" headerValue="--------" />
 			</td>
 		</tr>
 		<tr>
-			<td width="50%">
-				<s:textfield name="posVO.ostatus" label="ostatus"/>
+			<td >
+				ostatus:
 			</td>
-			<td width="50%">
+			<td >
+				<s:select name="posVO.ostatus" value="posVO.ostatus"  list="{'ALLOWED','STOPPED'}" theme="simple" headerKey="" headerValue="--------" />
+			</td>
+			<td >
+				secret:
+			</td>
+			<td >
 				<s:textfield name="posVO.secret" label="secret"/>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center">
+			<td colspan="4" align="center">
 				<input type="submit" name="submit" value="submit" />
 			</td>
 		</tr>
@@ -54,8 +73,24 @@
 
 <script type="text/javascript">
 	function checkPos(){
+	     var posId = document.getElementById('posVO.posId').value.trim();      
+	     if(posId.length==0){      
+	         alert('POSID不能为空或者为空格!');
+	         return false; 
+	     }      
+	     var simPhoneNo = document.getElementById('posVO.simPhoneNo').value;  
+		 if(simPhoneNo != ""){
+			 if(!isphone(simPhoneNo)){
+			    	alert('请填写正确的手机号码！');
+			    	return false;
+			    } 
+		 }				
 		return true;
 	}
+	
+	function isphone(phone){
+		var pr = /^1[3|5|8]([0-9]{1})([0-9]{8})$/;
+		return pr.test(phone)
+	}
+		
 </script>
-</body>
-</html>

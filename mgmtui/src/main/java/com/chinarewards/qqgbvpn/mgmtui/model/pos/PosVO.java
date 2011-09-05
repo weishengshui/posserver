@@ -1,8 +1,5 @@
 package com.chinarewards.qqgbvpn.mgmtui.model.pos;
 
-import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 
 public class PosVO implements java.io.Serializable{
 	
@@ -24,11 +21,11 @@ public class PosVO implements java.io.Serializable{
 
 	String simPhoneNo;
 
-	PosDeliveryStatus dstatus;
+	String dstatus;
 
-	PosInitializationStatus istatus;
+	String istatus;
 
-	PosOperationStatus ostatus;
+	String ostatus;
 
 	// POS 内置唯一标识。6位字符
 	String secret;
@@ -75,27 +72,27 @@ public class PosVO implements java.io.Serializable{
 		this.simPhoneNo = simPhoneNo;
 	}
 
-	public PosDeliveryStatus getDstatus() {
+	public String getDstatus() {
 		return dstatus;
 	}
 
-	public void setDstatus(PosDeliveryStatus dstatus) {
+	public void setDstatus(String dstatus) {
 		this.dstatus = dstatus;
 	}
 
-	public PosInitializationStatus getIstatus() {
+	public String getIstatus() {
 		return istatus;
 	}
 
-	public void setIstatus(PosInitializationStatus istatus) {
+	public void setIstatus(String istatus) {
 		this.istatus = istatus;
 	}
 
-	public PosOperationStatus getOstatus() {
+	public String getOstatus() {
 		return ostatus;
 	}
 
-	public void setOstatus(PosOperationStatus ostatus) {
+	public void setOstatus(String ostatus) {
 		this.ostatus = ostatus;
 	}
 

@@ -8,7 +8,8 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
+import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
+import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 
 /**
@@ -17,7 +18,7 @@ import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
  * @author huangwei
  *
  */
-public class PosAction extends BaseAction{
+public class PosAction extends BasePagingAction{
 
 	/**
 	 * 
@@ -31,6 +32,8 @@ public class PosAction extends BaseAction{
 	private PosLogic posLogic;
 	
 	private List<PosVO> posVOList;
+	
+	private String msg;
 	
 	public String detail(){
 		log.debug("posAction call detail");
@@ -62,6 +65,7 @@ public class PosAction extends BaseAction{
 			log.error("editPos fail",e);
 			return INPUT;
 		}catch (PosIdIsExitsException e) {
+			msg = "PosId已存在";
 			log.error("editPos fail",e);
 			return INPUT;
 		}catch (Exception e) {
@@ -88,10 +92,18 @@ public class PosAction extends BaseAction{
 	@Override
 	public String execute(){
 		log.debug("posAction call list");
+		return SUCCESS;
+	}
+	
+	
+	public String listCenter(){
+		log.debug("posAction call listCenter");
 		PosSearchVO posSearchVO = new PosSearchVO();
+		PaginationTools paginationTools = new PaginationTools(page, countEachPage);
 		try{
-			PageInfo<PosVO> pageInfo =getPosLogic().queryPos(posSearchVO, null);
+			PageInfo<PosVO> pageInfo =getPosLogic().queryPos(posSearchVO, paginationTools);
 			posVOList = pageInfo.getItems();
+			this.insertPageList(pageInfo.getRecordCount(), page);
 		}catch(Exception e){
 			log.error("list fail",e);
 			return ERROR;
@@ -128,6 +140,14 @@ public class PosAction extends BaseAction{
 
 	public void setPosVOList(List<PosVO> posVOList) {
 		this.posVOList = posVOList;
+	}
+
+	public String getMsg() {
+		return msg;
+	}
+
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 	
 	

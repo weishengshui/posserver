@@ -27,8 +27,8 @@
 	<li><a href="#">POS管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
-		<li><a href="#">列表</a></li>
-		<li><a href="#">新増</a></li>
+		<li><a href="<s:url value="/pos/list"/>">列表</a></li>
+		<li><a href="<s:url value="/pos/detail"/>">新増</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
