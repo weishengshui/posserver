@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase;
@@ -62,6 +63,8 @@ public class PosLogicTest extends JPATestCase{
 			PaginationTools paginationTools = new PaginationTools();
 			paginationTools.setCountOnEachPage(6);
 			paginationTools.setStartIndex(0);
+			PosSearchVO posSearchVO = new PosSearchVO();
+			posSearchVO.setPosId("pos");
 			pageInfo = posLogic.queryPos(null, paginationTools);
 			assertEquals(pageInfo.getRecordCount(), 10);
 			assertEquals(pageInfo.getItems().size(), 6);

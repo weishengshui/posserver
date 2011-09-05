@@ -89,7 +89,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		properties.put("hibernate.connection.username", "root");
 		properties.put("hibernate.connection.password", "123456");
 		properties.put("hibernate.connection.url",
-				"jdbc:mysql://localhost:3306/qqapi");
+				"jdbc:mysql://192.168.1.33:3306/qqtest2");
 		properties.put("hibernate.dialect",
 				"org.hibernate.dialect.MySQL5Dialect");
 		properties.put("hibernate.show_sql", "true");

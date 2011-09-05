@@ -35,6 +35,28 @@ public class PosAction extends BasePagingAction{
 	
 	private String msg;
 	
+	private PosSearchVO posSearchVO;
+	
+	private String posId;
+
+	private String model;
+
+	/**
+	 * Serial number.
+	 */
+	private String sn;
+
+	private String simPhoneNo;
+
+	private String dstatus;
+
+	private String istatus;
+
+	private String ostatus;
+
+	// POS 内置唯一标识。6位字符
+	private String secret;
+	
 	public String detail(){
 		log.debug("posAction call detail");
 		if(!Tools.isEmptyString(id)){
@@ -91,14 +113,35 @@ public class PosAction extends BasePagingAction{
 	
 	@Override
 	public String execute(){
-		log.debug("posAction call list");
+		if(Tools.isEmptyString(posSearchVO)){
+			posSearchVO = new PosSearchVO();
+		}  
+		posSearchVO.setDstatus(dstatus);
+		posSearchVO.setIstatus(istatus);
+		posSearchVO.setModel(model);
+		posSearchVO.setOstatus(ostatus);
+		posSearchVO.setPosId(posId);
+		posSearchVO.setSecret(secret);
+		posSearchVO.setSimPhoneNo(simPhoneNo);
+		posSearchVO.setSn(sn);
+		log.debug("posAction call list=======:"+Tools.objToString(posSearchVO));
 		return SUCCESS;
 	}
 	
 	
 	public String listCenter(){
 		log.debug("posAction call listCenter");
-		PosSearchVO posSearchVO = new PosSearchVO();
+		if(Tools.isEmptyString(posSearchVO)){
+			posSearchVO = new PosSearchVO();
+		}  
+		posSearchVO.setDstatus(dstatus);
+		posSearchVO.setIstatus(istatus);
+		posSearchVO.setModel(model);
+		posSearchVO.setOstatus(ostatus);
+		posSearchVO.setPosId(posId);
+		posSearchVO.setSecret(secret);
+		posSearchVO.setSimPhoneNo(simPhoneNo);
+		posSearchVO.setSn(sn);
 		PaginationTools paginationTools = new PaginationTools(page, countEachPage);
 		try{
 			PageInfo<PosVO> pageInfo =getPosLogic().queryPos(posSearchVO, paginationTools);
@@ -106,6 +149,7 @@ public class PosAction extends BasePagingAction{
 			this.insertPageList(pageInfo.getRecordCount(), page);
 		}catch(Exception e){
 			log.error("list fail",e);
+			e.printStackTrace();
 			return ERROR;
 		}
 		return SUCCESS;
@@ -148,6 +192,78 @@ public class PosAction extends BasePagingAction{
 
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+
+	public PosSearchVO getPosSearchVO() {
+		return posSearchVO;
+	}
+
+	public void setPosSearchVO(PosSearchVO posSearchVO) {
+		this.posSearchVO = posSearchVO;
+	}
+
+	public String getPosId() {
+		return posId;
+	}
+
+	public void setPosId(String posId) {
+		this.posId = posId;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public String getSn() {
+		return sn;
+	}
+
+	public void setSn(String sn) {
+		this.sn = sn;
+	}
+
+	public String getSimPhoneNo() {
+		return simPhoneNo;
+	}
+
+	public void setSimPhoneNo(String simPhoneNo) {
+		this.simPhoneNo = simPhoneNo;
+	}
+
+	public String getDstatus() {
+		return dstatus;
+	}
+
+	public void setDstatus(String dstatus) {
+		this.dstatus = dstatus;
+	}
+
+	public String getIstatus() {
+		return istatus;
+	}
+
+	public void setIstatus(String istatus) {
+		this.istatus = istatus;
+	}
+
+	public String getOstatus() {
+		return ostatus;
+	}
+
+	public void setOstatus(String ostatus) {
+		this.ostatus = ostatus;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 	
 	
