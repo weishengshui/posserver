@@ -30,7 +30,7 @@
 		<file>
 			<source>src/etc/conf/dispatcher.ini</source>
 			<outputDirectory>conf</outputDirectory>
-			<fileMode>600</fileMode>
+			<fileMode>600</fileMode>R
 		</file>
 	</files>
 	<dependencySets>

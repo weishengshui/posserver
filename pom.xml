@@ -173,9 +173,11 @@
 	<modules>
 		<module>main</module>
 		<module>domain</module>
+		<module>core</module>
 		<module>qqapi</module>
-		<module>mgmtui</module>
+		<!-- <module>mgmtui</module>-->
 		<!-- <module>packaging</module> -->
 		<module>config</module>
+		<module>main-packaging</module>
 	</modules>
 </project>

@@ -1,0 +1,8 @@
+Package: posnet2-server
+Version: [[version]]
+Section: apps
+Priority: extra
+Distribution: chinarewards
+Architecture: all
+Description: POSNet2 Server
+Maintainer: China Rewards (info@china-rewards.com)
