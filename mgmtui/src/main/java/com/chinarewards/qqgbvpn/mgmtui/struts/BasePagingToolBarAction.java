@@ -19,7 +19,7 @@ public abstract class BasePagingToolBarAction extends BaseAction {
 	/**
 	 * 每页显示条数
 	 */
-	private int pageSize = 5;	//TODO  Struts2 孙子不让用size，  不知为何.		一旦用size属性值永远都是10
+	private int pageSize = 10;	//TODO  Struts2 孙子不让用size，  不知为何.		一旦用size属性值永远都是10
 	
 	/**
 	 * 总数据量
