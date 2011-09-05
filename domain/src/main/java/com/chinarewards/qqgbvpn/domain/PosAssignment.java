@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -24,10 +25,10 @@ public class PosAssignment {
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	String id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Pos pos;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Agent agent;
 
 	public String getId() {

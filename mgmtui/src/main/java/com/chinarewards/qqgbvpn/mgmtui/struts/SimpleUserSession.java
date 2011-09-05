@@ -17,8 +17,9 @@ public class SimpleUserSession implements UserSession {
 
 	private boolean isLoggedIn = false;
 
-	public SimpleUserSession(UserForm user) {
+	public SimpleUserSession(UserForm user, boolean isLoggedIn) {
 		this.user = user;
+		this.isLoggedIn = isLoggedIn;
 	}
 
 	@Override

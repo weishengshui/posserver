@@ -33,7 +33,12 @@ public interface ServiceMapping {
 	 * @return the command handler class, or <code>null</code> if none is found.
 	 */
 	public Object getMapping(long commandId);
-	
+
+	/**
+	 * Returns all command IDs found in this mapping.
+	 * 
+	 * @return an iterator over all command IDs.
+	 */
 	public Iterator<Long> getCommandIds();
 
 }

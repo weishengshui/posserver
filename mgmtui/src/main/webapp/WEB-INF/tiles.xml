@@ -18,4 +18,12 @@
 	<definition name="login" extends="main">
 		<put-attribute name="body" value="/login.jsp" />
 	</definition>
+	
+	<definition name="pos.list" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/pos/posList.jsp" />
+	</definition>
+	<definition name="pos.edit" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/pos/edit.jsp" />
+	</definition>
+	
 </tiles-definitions>

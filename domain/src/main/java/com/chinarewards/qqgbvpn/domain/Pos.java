@@ -56,8 +56,13 @@ public class Pos {
 	String secret;
 
 	// save the challenge code.
+	/**
+	 * FIXME should not use this. This is session specific.
+	 * 
+	 * @deprecated
+	 */
 	byte[] challenge;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -130,10 +135,20 @@ public class Pos {
 		this.secret = secret;
 	}
 
+	/**
+	 * FIXME should not use this. This is session specific.
+	 * 
+	 * @deprecated
+	 */
 	public byte[] getChallenge() {
 		return challenge;
 	}
 
+	/**
+	 * FIXME should not use this. This is session specific.
+	 * 
+	 * @deprecated
+	 */
 	public void setChallenge(byte[] challenge) {
 		this.challenge = challenge;
 	}

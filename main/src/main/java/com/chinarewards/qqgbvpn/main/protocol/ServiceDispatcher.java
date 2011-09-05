@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
+import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
+
 /**
  * 
  * 
@@ -19,6 +21,6 @@ public interface ServiceDispatcher {
 	 * @param response
 	 */
 	public void dispatch(ServiceMapping mapping, ServiceRequest request,
-			ServiceResponse response);
+			ServiceResponse response) throws ServiceDispatcherException;
 
 }

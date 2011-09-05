@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Query;
 
 import org.slf4j.Logger;
@@ -13,6 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
+import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.LogicException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
@@ -36,6 +42,9 @@ public class PosDaoImpl implements PosDao {
 
 	@Inject
 	Provider<EntityManager> em;
+	
+	@Inject
+	Provider<PosAdapter> posAdapter;
 
 	public EntityManager getEm() {
 		return em.get();
@@ -78,16 +87,7 @@ public class PosDaoImpl implements PosDao {
 		List<Pos> posList = query.getResultList();
 		List<PosVO> posVOList = new ArrayList<PosVO>();
 		for (Pos pos : posList) {
-			PosVO posVO = new PosVO();
-			posVO.setDstatus(pos.getDstatus());
-			posVO.setId(pos.getId());
-			posVO.setIstatus(pos.getIstatus());
-			posVO.setModel(pos.getModel());
-			posVO.setOstatus(pos.getOstatus());
-			posVO.setPosId(pos.getPosId());
-			posVO.setSecret(pos.getSecret());
-			posVO.setSimPhoneNo(pos.getSimPhoneNo());
-			posVO.setSn(pos.getSn());
+			PosVO posVO = posAdapter.get().convertToPosVO(pos);
 			posVOList.add(posVO);
 		}
 		pageinfo.setItems(posVOList);
@@ -122,10 +122,10 @@ public class PosDaoImpl implements PosDao {
 			throw new PosIdIsExitsException("posId is exits");
 		}
 		Pos pos = new Pos();
-		pos.setDstatus(posVO.getDstatus());
-		pos.setIstatus(posVO.getIstatus());
+		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
+		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
 		pos.setModel(posVO.getModel());
-		pos.setOstatus(posVO.getOstatus());
+		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
 		pos.setPosId(posVO.getPosId());
 		pos.setSecret(posVO.getSecret());
 		pos.setSimPhoneNo(posVO.getSimPhoneNo());
@@ -176,10 +176,10 @@ public class PosDaoImpl implements PosDao {
 		if (pos == null) {
 			throw new ParamsException("pos is not exits,id is:" + posVO.getId());
 		}
-		pos.setDstatus(posVO.getDstatus());
-		pos.setIstatus(posVO.getIstatus());
+		pos.setDstatus(Tools.isEmptyString(posVO.getDstatus())?null:PosDeliveryStatus.valueOf(posVO.getDstatus()));
+		pos.setIstatus(Tools.isEmptyString(posVO.getIstatus())?null:PosInitializationStatus.valueOf(posVO.getIstatus()));
 		pos.setModel(posVO.getModel());
-		pos.setOstatus(posVO.getOstatus());
+		pos.setOstatus(Tools.isEmptyString(posVO.getOstatus())?null:PosOperationStatus.valueOf(posVO.getOstatus()));
 		pos.setPosId(posVO.getPosId());
 		pos.setSecret(posVO.getSecret());
 		pos.setSimPhoneNo(posVO.getSimPhoneNo());
@@ -196,16 +196,7 @@ public class PosDaoImpl implements PosDao {
 		}
 		Pos pos = getEm().find(Pos.class, id);
 		if (pos != null) {
-			PosVO posVO = new PosVO();
-			posVO.setDstatus(pos.getDstatus());
-			posVO.setId(pos.getId());
-			posVO.setIstatus(pos.getIstatus());
-			posVO.setModel(pos.getModel());
-			posVO.setOstatus(pos.getOstatus());
-			posVO.setPosId(pos.getPosId());
-			posVO.setSecret(pos.getSecret());
-			posVO.setSimPhoneNo(pos.getSimPhoneNo());
-			posVO.setSn(pos.getSn());
+			PosVO posVO = posAdapter.get().convertToPosVO(pos);
 			return posVO;
 		} else {
 			return null;

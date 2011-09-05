@@ -21,8 +21,8 @@ import com.google.inject.Provider;
 
 public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	
-	/*@Inject   
-	private Provider<GroupBuyingService> service;*/
+	@Inject   
+	private Provider<GroupBuyingService> service;
 	
 	@Inject
 	private Provider<GroupBuyingUnbindDao> dao;
@@ -40,13 +40,13 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws SaveDBException 
 	 * @throws JsonGenerationException 
 	 */
-	/*public HashMap<String, Object> groupBuyingUnbind(
+	public HashMap<String, Object> groupBuyingUnbind(
 			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException {
 		HashMap<String, Object> map = service.get().groupBuyingUnbind(params);
 		map.putAll(params);
 		dao.get().handleGroupBuyingUnbind(map);
 		return map;
-	}*/
+	}
 	
 	/**
 	 * 根据第三方ID分页查询POS机列表

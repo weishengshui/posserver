@@ -27,14 +27,12 @@ import com.google.inject.struts2.Struts2GuicePluginModule;
 public class GuiceBootstrap extends GuiceServletContextListener {
 
 	Logger log = LoggerFactory.getLogger(getClass());
-	
-	
-	
-	
+
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
-		Injector injector = (Injector) servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
+		Injector injector = (Injector) servletContextEvent.getServletContext()
+				.getAttribute(Injector.class.getName());
 		injector.getInstance(PersistService.class).stop();
 		super.contextDestroyed(servletContextEvent);
 	}
@@ -42,9 +40,10 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		super.contextInitialized(servletContextEvent);
-		Injector injector = (Injector) servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
+		Injector injector = (Injector) servletContextEvent.getServletContext()
+				.getAttribute(Injector.class.getName());
 		injector.getInstance(PersistService.class).start();
-		
+
 	}
 
 	/*
@@ -56,7 +55,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 		System.out.println("Guice bootstrapping");
 		log.info("Guice bootstrapping");
-		
+
 		testLogVerboseLevel();
 
 		Injector injector = null;
@@ -70,37 +69,39 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 	protected Module[] getModules() {
 
-		Module[] modules = new Module[] { 
-		new QqgbvpnServletModule(),
-		new Struts2GuicePluginModule(),
-		new QqgbvpnServiceModule(),
-		// JPA module
-		new JpaPersistModule("posnet").properties(getJPAProperties())
-		};
+		Module[] modules = new Module[] { new QqgbvpnServletModule(),
+				new Struts2GuicePluginModule(), new QqgbvpnServiceModule(),
+				// JPA module
+				new JpaPersistModule("posnet").properties(getJPAProperties()), getConfigModule() };
 
 		return modules;
 	}
-	
-	//TODO 需修改为配置文件中统一的数据库 
-	protected Properties getJPAProperties(){
+
+	// TODO 需修改为配置文件中统一的数据库
+	protected Properties getJPAProperties() {
 		Properties properties = new Properties();
 		properties.put("javax.persistence.transactionType", "RESOURCE_LOCAL");
-		
+
 		properties.put("hibernate.hbm2ddl.auto", "update");
 		properties.put("hibernate.connection.driver_class",
-				"org.hsqldb.jdbcDriver");
-		properties.put("hibernate.connection.username",
-				"sa");
-		properties.put("hibernate.connection.password", "");
-		properties.put("hibernate.connection.url", "jdbc:hsqldb:.");
+				"com.mysql.jdbc.Driver");
+		properties.put("hibernate.connection.username", "root");
+		properties.put("hibernate.connection.password", "123456");
+		properties.put("hibernate.connection.url",
+				"jdbc:mysql://192.168.1.33:3306/qqtest2");
 		properties.put("hibernate.dialect",
-				"org.hibernate.dialect.HSQLDialect");
-		properties.put("hibernate.show_sql",
-		"true");
+				"org.hibernate.dialect.MySQL5Dialect");
+		properties.put("hibernate.show_sql", "true");
 		return properties;
 	}
-	
-	
+
+	protected Module getConfigModule() {
+
+		// FIXME this will be deprecated.
+		return new HardCodedConfigModule();
+
+	}
+
 	protected void testLogVerboseLevel() {
 		System.out.println("Testing java logging verbose level");
 		log.error("ERROR message (testing)");
@@ -109,5 +110,5 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		log.debug("DEBUG message (testing)");
 		log.trace("TRACE message (testing)");
 	}
-	
+
 }
