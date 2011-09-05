@@ -174,7 +174,7 @@ public class PosAction extends BasePagingAction{
 	}
 
 	private PosLogic getPosLogic() {
-		posLogic = getInjector().getInstance(PosLogic.class);
+		posLogic = super.getInstance(PosLogic.class);
 		return posLogic;
 	}
 
