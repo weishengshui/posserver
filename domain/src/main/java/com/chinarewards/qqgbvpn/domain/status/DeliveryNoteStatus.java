@@ -9,7 +9,7 @@ public enum DeliveryNoteStatus {
 	 * First state.
 	 */
 	DRAFT,
-
+	
 	/**
 	 * Second state.
 	 */

@@ -50,7 +50,7 @@ public class InitMessageCodec implements ICommandCodec {
 		int result = responseMessage.getResult();
 		byte[] challeuge = responseMessage.getChallenge();
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLEUGE];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLENGE];
 		
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);

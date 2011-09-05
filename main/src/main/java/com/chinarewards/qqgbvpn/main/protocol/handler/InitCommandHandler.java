@@ -22,7 +22,6 @@ public class InitCommandHandler implements ServiceHandler {
 	public LoginManager loginManager;
 	
 	
-	
 	/* (non-Javadoc)
 	 * @see com.chinarewards.qqgbvpn.main.protocol.ServiceHandler#execute(com.chinarewards.qqgbvpn.main.protocol.ServiceRequest, com.chinarewards.qqgbvpn.main.protocol.ServiceResponse)
 	 */
@@ -32,8 +31,8 @@ public class InitCommandHandler implements ServiceHandler {
 		InitRequestMessage bodyMessage = (InitRequestMessage)request.getParameter();
 		
 		log.debug("loginManager: {}", loginManager);
-		
 		log.debug("InitCommandHandler======execute==bodyMessage=:"+bodyMessage);
+		
 		InitResponseMessage  initResponseMessage  = null;
 		try {
 			initResponseMessage = loginManager.init(bodyMessage);
@@ -41,7 +40,7 @@ public class InitCommandHandler implements ServiceHandler {
 			e.printStackTrace();
 			initResponseMessage = new InitResponseMessage();
 			initResponseMessage
-					.setChallenge(new byte[ProtocolLengths.CHALLEUGE]);
+					.setChallenge(new byte[ProtocolLengths.CHALLENGE]);
 			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
 		}
 		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);

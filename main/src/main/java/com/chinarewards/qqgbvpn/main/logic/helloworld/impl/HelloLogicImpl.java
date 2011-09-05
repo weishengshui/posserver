@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.logic.helloworld.impl;
 
-import com.chinarewards.qqgbvpn.main.logic.BaseLogic;
+import com.chinarewards.qqgbvpn.logic.BaseLogic;
 import com.chinarewards.qqgbvpn.main.logic.HelloLogic;
 
 /**

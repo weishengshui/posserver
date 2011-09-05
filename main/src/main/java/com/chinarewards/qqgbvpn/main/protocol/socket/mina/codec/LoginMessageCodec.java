@@ -55,7 +55,7 @@ public class LoginMessageCodec implements ICommandCodec {
 		byte[] challeuge = responseMessage.getChallenge();
 
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT
-				+ ProtocolLengths.CHALLEUGE];
+				+ ProtocolLengths.CHALLENGE];
 
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
