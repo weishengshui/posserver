@@ -1,9 +1,12 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
@@ -78,10 +81,53 @@ public class PosDaoImpl implements PosDao {
 
 		StringBuffer hql = new StringBuffer();
 		hql.append("SELECT p FROM Pos p WHERE 1=1 ");
-
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		
+		log.debug("posSearchVO============:"+posSearchVO);
+		
+		if(!Tools.isEmptyString(posSearchVO)){
+			if(!Tools.isEmptyString(posSearchVO.getDstatus())){
+				hql.append(" AND p.dstatus = :dstatus ");
+				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO.getDstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getIstatus())){
+				hql.append(" AND p.istatus = :istatus ");
+				paramMap.put("istatus", PosInitializationStatus.valueOf(posSearchVO.getIstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getModel())){
+				hql.append(" AND lower(p.model) like :model ");
+				paramMap.put("model", "%"+posSearchVO.getModel().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getOstatus())){
+				hql.append(" AND p.ostatus = :ostatus ");
+				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO.getOstatus().trim()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getPosId())){
+				hql.append(" AND lower(p.posId) like :posid ");
+				paramMap.put("posid", "%"+posSearchVO.getPosId().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSecret())){
+				hql.append(" AND lower(p.secret) like :secret ");
+				paramMap.put("secret", "%"+posSearchVO.getSecret().toLowerCase().toLowerCase() + "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSimPhoneNo())){
+				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				paramMap.put("simPhoneNo", "%"+posSearchVO.getSimPhoneNo().toLowerCase()+ "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSn())){
+				hql.append(" AND lower(p.sn) like :sn ");
+				paramMap.put("sn", "%"+posSearchVO.getSn().toLowerCase()+"%");
+			}
+		}
+		
 		Query query = getEm().createQuery(hql.toString());
+		log.debug("hql========:"+hql.toString());
+		for(Entry<String,Object> entry:paramMap.entrySet()){
+			query = query.setParameter(entry.getKey(), entry.getValue());
+			log.debug("key===({})value===({})",new Object[]{entry.getKey(), entry.getValue()});
+		}
 		if (paginationTools != null) {
-			query = query.setFirstResult(paginationTools.getStartIndex())
+			query = query = query.setFirstResult(paginationTools.getStartIndex())
 					.setMaxResults(paginationTools.getCountOnEachPage());
 		}
 		List<Pos> posList = query.getResultList();
@@ -101,9 +147,51 @@ public class PosDaoImpl implements PosDao {
 				Tools.objToString(posSearchVO));
 		StringBuffer hql = new StringBuffer();
 		hql.append("SELECT count(p.id) FROM Pos p WHERE 1=1 ");
+		Map<String,Object> paramMap = new HashMap<String,Object>();
 
-		int count = ((Long) getEm().createQuery(hql.toString())
-				.getSingleResult()).intValue();
+		log.debug("posSearchVO======count======:"+posSearchVO);
+		if(!Tools.isEmptyString(posSearchVO)){
+			if(!Tools.isEmptyString(posSearchVO.getDstatus())){
+				hql.append(" AND p.dstatus = :dstatus ");
+				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO.getDstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getIstatus())){
+				hql.append(" AND p.istatus = :istatus ");
+				paramMap.put("istatus", PosInitializationStatus.valueOf(posSearchVO.getIstatus()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getModel())){
+				hql.append(" AND lower(p.model) like :model ");
+				paramMap.put("model", "%"+posSearchVO.getModel().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getOstatus())){
+				hql.append(" AND p.ostatus = :ostatus ");
+				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO.getOstatus().trim()));
+			}
+			if(!Tools.isEmptyString(posSearchVO.getPosId())){
+				hql.append(" AND lower(p.posId) like :posId ");
+				paramMap.put("posId", "%"+posSearchVO.getPosId().toLowerCase().trim()+"%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSecret())){
+				hql.append(" AND lower(p.secret) like :secret ");
+				paramMap.put("secret", "%"+posSearchVO.getSecret().toLowerCase().toLowerCase() + "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSimPhoneNo())){
+				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				paramMap.put("simPhoneNo", "%"+posSearchVO.getSimPhoneNo().toLowerCase()+ "%");
+			}
+			if(!Tools.isEmptyString(posSearchVO.getSn())){
+				hql.append(" AND lower(p.sn) like :sn ");
+				paramMap.put("sn", "%"+posSearchVO.getSn().toLowerCase()+"%");
+			}
+		}
+		log.debug("hql====count====:"+hql.toString());
+		log.debug("paramMap.keySet().size()==============:"+paramMap.keySet().size());
+		Query query = getEm().createQuery(hql.toString());
+		for(Entry<String,Object> entry:paramMap.entrySet()){
+			query = query.setParameter(entry.getKey(), entry.getValue());
+			log.debug("count   key===({})value===({})",new Object[]{entry.getKey(), entry.getValue()});
+		}
+		int count = ((Long)query.getSingleResult()).intValue();
 		log.trace("calling queryPos end and result is :({})", count);
 		return count;
 	}

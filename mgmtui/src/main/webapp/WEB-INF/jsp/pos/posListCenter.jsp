@@ -19,7 +19,7 @@
 	  <s:iterator  value="#request.posVOList" id="posTmp" status="stat">
 	  <tr>
 			<td>
-				<s:property value="#stat.index"/>
+				<s:property value="#stat.index + 1"/>
 			</td>
 			<td><s:property value="#posTmp.posId" /></td>
 			<td><s:property value="#posTmp.model" /></td>
