@@ -2,8 +2,6 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.util.List;
 
-import org.apache.struts2.ServletActionContext;
-
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
@@ -13,7 +11,6 @@ import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
-import com.google.inject.Injector;
 
 /**
  * pos manager action
@@ -133,8 +130,7 @@ public class PosAction extends BasePagingAction{
 	}
 
 	private PosLogic getPosLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		posLogic = injector.getInstance(PosLogic.class);
+		posLogic = getInjector().getInstance(PosLogic.class);
 		return posLogic;
 	}
 

@@ -6,6 +6,9 @@
 <struts>
 	<package name="home" extends="default" namespace="/">
 		<!-- find all album -->
+		<action name="show_login" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction" method="execute">
+			<result name="success" type="tiles">login</result>
+		</action>
 		<action name="login" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction" method="login">
 			<result name="success" type="redirectAction">home</result>
 			<result name="input" type="tiles">login</result>
@@ -14,7 +17,10 @@
 			<result name="success" type="redirectAction">home</result>
 		</action>
 		<action name="home" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction">
-			<result name="success" type="redirectAction">login</result>
+			<result name="success" type="redirectAction">
+				<param name="namespace">/helloworld</param>
+				<param name="actionName">index</param>
+			</result>
 		</action>
 	</package>
 </struts>

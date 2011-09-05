@@ -5,6 +5,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.login;
 
 import java.util.Map;
 
+import com.chinarewards.qqgbvpn.mgmtui.logic.login.LoginLogic;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.struts.SessionConstant;
 import com.chinarewards.utils.StringUtil;
@@ -24,15 +25,25 @@ public class LoginAction extends BaseAction {
 	private String password;
 	private String backUrl;
 
-	public String login() {
+	@Override
+	public void validate() {
 		if (StringUtil.isEmptyString(username)
 				|| StringUtil.isEmptyString(password)) {
+			addFieldError("loginError", "用户名或密码为空");
 			log.debug("username or password is empty");
-			return INPUT;
 		}
+	}
 
-		boolean validePass = username.equals("cream")
-				&& password.equals("cream");
+	@Override
+	public String execute() throws Exception {
+		return SUCCESS;
+	}
+
+	public String login() {
+
+		LoginLogic loginLogic = getInjector().getInstance(LoginLogic.class);
+
+		boolean validePass = loginLogic.checkLogin(username, password);
 
 		if (validePass) {
 			Map<String, Object> session = ActionContext.getContext()
@@ -41,6 +52,7 @@ public class LoginAction extends BaseAction {
 			log.debug("login success");
 			return SUCCESS;
 		} else {
+			addFieldError("loginError", "用户名或密码错误");
 			log.debug("login failed");
 			return INPUT;
 		}
