@@ -9,4 +9,5 @@
 	<include file="struts2/index.xml" />
 	<include file="struts2/util.xml" />
 	<include file="struts2/unbind.xml" />
+	<include file="struts2/agent.xml" />
 </struts>
