@@ -84,7 +84,7 @@
 			<result name="error">/error.jsp</result>
 			<result name="login" type="redirectAction">
 				<param name="namespace">/</param>
-				<param name="actionName">login</param>
+				<param name="actionName">show_login</param>
 				<param name="backUrl">${backUrl}</param>
 			</result>
 			

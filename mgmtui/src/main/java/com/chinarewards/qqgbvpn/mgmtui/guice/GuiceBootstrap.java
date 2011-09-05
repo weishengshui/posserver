@@ -88,13 +88,13 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		
 		properties.put("hibernate.hbm2ddl.auto", "update");
 		properties.put("hibernate.connection.driver_class",
-				"org.hsqldb.jdbcDriver");
+				"com.mysql.jdbc.Driver");
 		properties.put("hibernate.connection.username",
-				"sa");
-		properties.put("hibernate.connection.password", "");
-		properties.put("hibernate.connection.url", "jdbc:hsqldb:.");
+				"root");
+		properties.put("hibernate.connection.password", "123456");
+		properties.put("hibernate.connection.url", "jdbc:mysql://192.168.1.33:3306/qqtest2");
 		properties.put("hibernate.dialect",
-				"org.hibernate.dialect.HSQLDialect");
+				"org.hibernate.dialect.MySQL5Dialect");
 		properties.put("hibernate.show_sql",
 		"true");
 		return properties;
