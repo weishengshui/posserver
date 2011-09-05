@@ -23,9 +23,6 @@ public class MailServiceImpl implements MailService {
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
 		JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
-		System.out.println("!!!!!!!!!!!!!!!!smtp.server!" + configuration.getString("smtp.server"));
-		System.out.println("!!!!!!!!!!!!!!!!smtp.username!" + configuration.getString("smtp.username"));
-		System.out.println("!!!!!!!!!!!!!!!!smtp.password!" + configuration.getString("smtp.password"));
 		javaMail.setHost(configuration.getString("smtp.server"));
 		javaMail.setUsername(configuration.getString("smtp.username"));
 		javaMail.setPassword(configuration.getString("smtp.password"));
