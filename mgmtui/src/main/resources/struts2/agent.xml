@@ -5,6 +5,7 @@
 
 <struts>
 	<package name="agent_package" extends="default" namespace="/agent">
+		<default-interceptor-ref name="secureStack" />
 		
 		<action name="searchAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction">
 			<result name="success" type="tiles">agent.searchAgent</result>

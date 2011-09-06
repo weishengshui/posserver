@@ -66,7 +66,7 @@ public interface GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException;
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException;
 	
 	/**
 	 * 根据回收单ID查询第三方

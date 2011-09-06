@@ -12,9 +12,7 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="sendURL" namespace="/unbind" method="Post" id="sendURLForm">
-<s:hidden name="agent.id" id="agent.id" />
-<s:hidden name="agent.name" id="agent.name" />
-<s:hidden name="agent.email" id="agent.email" />
+<s:hidden name="agentId" id="agentId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>

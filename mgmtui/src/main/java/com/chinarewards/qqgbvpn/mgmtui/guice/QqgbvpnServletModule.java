@@ -24,11 +24,10 @@ public class QqgbvpnServletModule extends ServletModule {
 		// Struts 2 setup
 		bind(StrutsPrepareAndExecuteFilter.class).in(Singleton.class);
 
-		// sitemesh
-		// 没有起作用，修改成struts tiles或者页面采用iframe框架
-		bind(SiteMeshFilter.class).in(Singleton.class);
+		// 没有起作用，已改成struts tiles
+//		bind(SiteMeshFilter.class).in(Singleton.class);
 
-//		filter("/*").through(DisableUrlSessionFilter.class);
+		filter("/*").through(DisableUrlSessionFilter.class);
 //		filter("/*").through(SiteMeshFilter.class);
 		filter("/*").through(StrutsPrepareAndExecuteFilter.class);
 	}

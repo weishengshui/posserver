@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -369,12 +370,38 @@ public class PosDaoImpl implements PosDao {
 			if(pos.getDstatus() == PosDeliveryStatus.DELIVERED){
 				posVO.setDeliveryAgent(getDeliveryAgentByPos(pos.getId()));
 			}
+			posVO.setCreateAt(this.getPosCreateAtById(pos.getId()));
+			posVO.setLastModifyAt(this.getPosLastModifyAtById(pos.getId()));
 			return posVO;
 		} else {
 			return null;
 		}
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	private Date getPosCreateAtById(String entityId){
+		String hql = "select j.ts from Journal j where j.entityId = :entityId and j.event = :event";
+		List<Date> list = this.getEm().createQuery(hql).setParameter("entityId", entityId).setParameter("event", DomainEvent.USER_ADDED_POS.toString()).getResultList();
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Date getPosLastModifyAtById(String entityId){
+		String hql = "select j.ts from Journal j where j.entityId = :entityId and j.event = :event order by j.ts desc";
+		List<Date> list = this.getEm().createQuery(hql).setParameter("entityId", entityId).setParameter("event", DomainEvent.USER_EDITED_POS.toString()).getResultList();
+		if(list != null && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+
 	
 	@SuppressWarnings("unchecked")
 	private String getDeliveryAgentByPos(String id){

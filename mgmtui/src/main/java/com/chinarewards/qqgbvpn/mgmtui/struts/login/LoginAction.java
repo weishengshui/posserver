@@ -3,8 +3,12 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.struts.login;
 
+import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.chinarewards.qqgbvpn.mgmtui.logic.login.LoginLogic;
@@ -12,6 +16,7 @@ import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.struts.SessionConstant;
 import com.chinarewards.qqgbvpn.mgmtui.struts.SimpleUserSession;
 import com.chinarewards.qqgbvpn.mgmtui.struts.formbean.UserForm;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.utils.StringUtil;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -60,6 +65,21 @@ public class LoginAction extends BaseAction {
 			session.put(SessionConstant.USER_SESSION, userSession);
 
 			log.debug("login success");
+			if(!Tools.isEmptyString(backUrl)){
+				HttpServletRequest request =  ServletActionContext.getRequest();
+				StringBuffer callBack = new StringBuffer();
+				callBack.append(request.getScheme()).append("://").append(request.getServerName()).append((request.getServerPort() == 80 ? "" : ":"
+					+ request.getServerPort())).append(request.getContextPath());
+				callBack.append(backUrl);
+				try {
+					ServletActionContext.getResponse().sendRedirect(callBack.toString());
+				}catch (IOException e) {
+					log.error(e.getMessage(),e);
+					return SUCCESS;
+				}
+				return null;
+			}
+			
 			return SUCCESS;
 		} else {
 			addFieldError("loginError", "用户名或密码错误");
@@ -68,7 +88,11 @@ public class LoginAction extends BaseAction {
 		}
 	}
 
+	@SkipValidation
 	public String logout() {
+		Map<String, Object> session = ActionContext.getContext()
+		.getSession();
+		session.remove(SessionConstant.USER_SESSION);
 		return SUCCESS;
 	}
 

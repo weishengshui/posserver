@@ -77,6 +77,29 @@
 				<s:textfield name="posVO.secret" label="secret" id="posVO.secret" readonly="true"/>
 			</td>
 		</tr>
+		<s:if test="posVO.id != null ">
+			<s:if test="posVO.createAt != null">
+				<tr>
+					<td>
+						输入时间:
+					</td>
+					<td charoff="3" align="left">
+						<s:date name="posVO.createAt" format="%{getText('dateformat.ymdhm')}" />
+					</td>
+				</tr>
+			</s:if>
+			<s:if test="posVO.lastModifyAt != null">
+				<tr>
+					<td>
+						最近修改时间:
+					</td>
+					<td charoff="3" align="left">
+						<s:date name="posVO.lastModifyAt" format="%{getText('dateformat.ymdhm')}" />
+					</td>
+				</tr>
+			</s:if>
+		</s:if>
+		
 		<tr>
 			<td colspan="4" align="center">
 				<input type="submit" name="submit" value="确定" />

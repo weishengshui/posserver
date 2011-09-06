@@ -24,7 +24,7 @@ public interface GroupBuyingUnbindDao {
 	
 	public ReturnNote createReturnNoteByAgentId(String agentId) throws JsonGenerationException,SaveDBException;
 	
-	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException;
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException;
 	
 	public Agent getAgentByRnId(String rnId);
 }
