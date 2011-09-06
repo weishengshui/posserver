@@ -1,7 +1,5 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.pos;
 
-import java.util.List;
-
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
@@ -18,6 +16,12 @@ import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
  */
 public interface PosLogic {
 
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws ParamsException
+	 */
 	public PosVO getPosById(String id)throws ParamsException;
 	
 	/**
