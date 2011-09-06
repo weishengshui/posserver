@@ -180,6 +180,11 @@
 			<artifactId>config</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>core</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
 
 		<!-- Test Scope STARTS -->
 		<dependency>
