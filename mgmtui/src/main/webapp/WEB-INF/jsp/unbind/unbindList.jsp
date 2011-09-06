@@ -13,7 +13,6 @@
 </s:if>
 <s:form action="search" namespace="/unbind" method="Post" id="listForm">
 <s:hidden name="agentId" id="agentId" />
-<s:hidden name="aname" id="aname" />
 <s:hidden name="agentEmail" id="agentEmail" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
