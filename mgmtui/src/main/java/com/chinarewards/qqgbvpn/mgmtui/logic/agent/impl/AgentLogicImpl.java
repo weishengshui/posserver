@@ -73,5 +73,14 @@ public class AgentLogicImpl implements AgentLogic {
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public boolean agentIsExist(String id, String name) throws ServiceException {
+		try{
+			return agentDao.get().agentIsExist(id, name);
+		}catch(Throwable e){
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
 	
 }

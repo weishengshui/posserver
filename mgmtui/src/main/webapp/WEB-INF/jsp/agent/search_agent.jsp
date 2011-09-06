@@ -5,16 +5,16 @@
 <!DOCTYPE table PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
+
 <head>
 </head>
-
 <body>
 
 <table align="center" width="800px">
 	<tr>
 		<td>
 			<s:form  namespace="/agent" action="searchAgent">
-				名称：<input type="text" name="agentSearchVO.agentName"  value="<s:property value='#request.agentSearchVO.agentName'/>"/>&nbsp;&nbsp;&nbsp;
+				名称：<input type="text" name="agentSearchVO.agentName" value="<s:property value='#request.agentSearchVO.agentName'/>"/>&nbsp;&nbsp;&nbsp;
 				<input type="submit" name="submit" value="查询" />
 			</s:form>
 		</td>

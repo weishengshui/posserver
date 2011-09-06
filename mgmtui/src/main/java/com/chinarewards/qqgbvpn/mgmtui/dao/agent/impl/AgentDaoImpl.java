@@ -72,7 +72,7 @@ public class AgentDaoImpl implements AgentDao {
 			param.put("agentName", "%"+agentSearchVO.getAgentName().toUpperCase()+"%");
 		}
 		
-		log.debug(" queryShop SQL : " + hql);
+		log.debug(" queryAgent SQL : " + hql);
 		
 		Query query = getEm().createQuery(hql.toString());
 		
@@ -177,6 +177,48 @@ public class AgentDaoImpl implements AgentDao {
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}	
+	}
+
+	@Override
+	public boolean agentIsExist(String id, String name) throws ServiceException {
+		log.trace("calling agentIsExist() agentId={0} agentName={1} ", id, name);
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		StringBuffer hql = new StringBuffer();
+		try {
+			hql.append(" SELECT COUNT(ag.id) FROM Agent ag WHERE 1=1 ");
+			
+			if (!Tools.isEmptyString(id)) {
+				hql.append(" AND ag.id != :agentId");
+				param.put("agentId", id);
+			}
+			
+			if (!Tools.isEmptyString(name)) {
+				hql.append(" AND ag.name = :agentName");
+				param.put("agentName", name);
+			}
+			
+			log.debug(" agentIsExist SQL : " + hql);
+			
+			Query query = getEm().createQuery(hql.toString());
+			
+			if (param.size() > 0) {
+				Set<String> key = param.keySet();
+				for (String s : key) {
+					query.setParameter(s, param.get(s));
+				}
+			}
+			
+			Long count = (Long) query.getSingleResult();
+			
+			if(count > 0){
+				return true;
+			}else {
+				return false;
+			}
+		}catch(Throwable e){
+			throw new ServiceException(e);
+		}
 	}
 	
 }

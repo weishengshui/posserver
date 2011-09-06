@@ -33,7 +33,7 @@
 		Our default package. All packages should extends this instead of
 		struts-defaults.
 	 -->
-	<package name="default" extends="struts-default" abstract="true">
+	<package name="default" extends="json-default" abstract="true">
 	
 		<result-types>
 			<result-type name="tiles" class="org.apache.struts2.views.tiles.TilesResult" />
