@@ -7,10 +7,16 @@ import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
+import com.chinarewards.qqgbvpn.config.ConfigReader;
+import com.chinarewards.qqgbvpn.config.HardCodedConfigModule;
+import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -29,6 +35,10 @@ import com.google.inject.struts2.Struts2GuicePluginModule;
 public class GuiceBootstrap extends GuiceServletContextListener {
 
 	Logger log = LoggerFactory.getLogger(getClass());
+	
+	protected String rootConfigFilename = "posnet.ini";
+	
+	Configuration configuration;
 
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
@@ -54,10 +64,15 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	 */
 	protected Injector getInjector() {
 
-		System.out.println("Guice bootstrapping");
 		log.info("Guice bootstrapping");
 
 		testLogVerboseLevel();
+		
+		try {
+			this.buildConfiguration();
+		} catch (ConfigurationException e) {
+			throw new RuntimeException("Failed to build configuration", e);
+		}
 
 		Injector injector = null;
 
@@ -72,9 +87,11 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 		Module[] modules = new Module[] { new QqgbvpnServletModule(),
 				new Struts2GuicePluginModule(), new QqgbvpnServiceModule(),
-				new QQApiModule(), new DefaultJournalModule(),new SimpleDateTimeModule(),
+				new QQApiModule(), new DefaultJournalModule(),
+				new SimpleDateTimeModule(),
 				// JPA module
-				new JpaPersistModule("posnet").properties(getJPAProperties()), getConfigModule() };
+				getConfigModule(),
+				buildJpaPersistModule() };
 
 		return modules;
 	}
@@ -100,8 +117,50 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	protected Module getConfigModule() {
 
 		// FIXME this will be deprecated.
-		return new HardCodedConfigModule();
+		return new HardCodedConfigModule(configuration);
 
+	}
+
+	protected void buildConfiguration() throws ConfigurationException {
+
+		// check if the directory is given via command line.
+		String homedir = null;	// we don't have default directory
+		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
+		ConfigReader cr = new ConfigReader(homeDirLocator);
+
+		log.info("Home directory: {}", homeDirLocator.getHomeDir());
+
+		// read the configuration
+		Configuration conf = cr.read(this.getRootConfigFilename());
+		configuration = conf;
+
+		if (this.configuration == null) {
+			// no configuration is found, throw exception
+			throw new RuntimeException(
+					"No configuration is found. Please specify "
+							+ "POSNET_HOME environment variable for the home directory.");
+		}
+
+	}
+
+	/**
+	 * @return the rootConfigFilename
+	 */
+	public String getRootConfigFilename() {
+		return rootConfigFilename;
+	}
+
+
+	
+	protected JpaPersistModule buildJpaPersistModule() {
+
+		// TODO make it not a builder.
+		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
+
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
+		builder.configModule(jpaModule, configuration, "db");
+
+		return jpaModule;
 	}
 
 	protected void testLogVerboseLevel() {
