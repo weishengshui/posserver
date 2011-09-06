@@ -9,8 +9,8 @@
 </head>
 <body>
 
-<s:form  namespace="/agent" action="editAgent" onsubmit="return checkForm();">
-	<s:hidden name="agentVO.id"/>
+<s:form id="editAgent_FormID" namespace="/agent" action="editAgent" onsubmit="return checkForm();">
+	<s:hidden id="agentVO.id_ID" name="agentVO.id"/>
 	<table align="center" width="500px">
 		<tr>
 			<td>
@@ -24,7 +24,8 @@
 		</tr>
 		<tr>
 			<td colspan="2" align="center">
-				<input type="submit" name="submit" value="提交" />
+				<input id="submit_Button_ID" type="button" value="确认" onclick="checkForm();" />
+				<input type="button" value="返回" onclick="history.back();" />
 			</td>
 		</tr>
 	</table>
@@ -40,21 +41,41 @@
 		var nameVal = document.getElementById('agentVO.name_ID').value;
 		if(nameVal == ''){
 			alert('名称不能为空!');
-			return false;
+			return;
 		}
-
+		
 		var emailVal = document.getElementById('agentVO.email_ID').value;
 		if(emailVal == ''){
 			alert('邮箱不能为空!');
-			return false;
+			return;
 		}
 
 		if(!isEmail(emailVal)){
 			alert('邮箱格式有误!');
-			return false;
+			return;
 		}
-		return true;
+
+		var url = '<s:url value="/agent/agentIsExist"/>?a=1';
+
+		url += '&agentVO.id=' + document.getElementById('agentVO.id_ID').value;
+		url += '&agentVO.name=' + encodeURIComponent(encodeURIComponent(document.getElementById('agentVO.name_ID').value));
+		
+		Kernel.Ajax.ajaxRequest(url, Kernel.Ajax.POST, "checkFormCellback");
 	}
+	
+	function checkFormCellback(data){
+		if(data.agentIsExist == true){
+			alert('名称已存在!');
+		}else {
+			document.getElementById('editAgent_FormID').submit();
+		}
+	}
+
+	function but_Listener(){
+		Kernel.EventUtil.activeOnclickEventById('submit_Button_ID');
+	}
+
+	Kernel.EventUtil.listenKeyUpByTarget(document.getElementById('editAgent_FormID'), Kernel.KeyCode.getKeyCode('Key_Enter'), 'but_Listener');
 </script>
 </body>
 </html>
