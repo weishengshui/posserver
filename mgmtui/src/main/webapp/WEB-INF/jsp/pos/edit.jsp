@@ -40,13 +40,13 @@
 				dstatus:
 			</td>
 			<td >
-				<s:select name="posVO.dstatus" value="posVO.dstatus"  list="{'DELIVERED','RETURNED'}" theme="simple" headerKey="" headerValue="--------" />
+				<s:select name="posVO.dstatus" value="posVO.dstatus"  list="#{'DELIVERED':'已交付','RETURNED':'已回收'}" listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 			</td>
 			<td >
 				istatus:
 			</td>
 			<td >
-				<s:select name="posVO.istatus" value="posVO.istatus"  list="{'UNINITED','INITED'}" theme="simple" headerKey="" headerValue="--------" />
+				<s:select name="posVO.istatus" value="posVO.istatus"  list="#{'UNINITED':'未初始化','INITED':'已初始化'}"  listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 			</td>
 		</tr>
 		<tr>
@@ -54,7 +54,7 @@
 				ostatus:
 			</td>
 			<td >
-				<s:select name="posVO.ostatus" value="posVO.ostatus"  list="{'ALLOWED','STOPPED'}" theme="simple" headerKey="" headerValue="--------" />
+				<s:select name="posVO.ostatus" value="posVO.ostatus"  list="#{'ALLOWED':'开机','STOPPED':'停机'}" listKey="key" listValue="value"  theme="simple" headerKey="" headerValue="--------" />
 			</td>
 			<td >
 				secret:
@@ -65,7 +65,9 @@
 		</tr>
 		<tr>
 			<td colspan="4" align="center">
-				<input type="submit" name="submit" value="submit" />
+				<input type="submit" name="submit" value="确定" />
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="button" name="button" value="取消" onclick='window.location.href="<s:url value='/pos/list'/>"'/>
 			</td>
 		</tr>
 	</table>

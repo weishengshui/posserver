@@ -45,13 +45,13 @@
 					dstatus:
 				</td>
 				<td >
-					<s:select name="dstatus" id="dstatus" value="dstatus"  list="{'DELIVERED','RETURNED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="dstatus" id="dstatus" value="dstatus"  list="#{'DELIVERED':'已交付','RETURNED':'已回收'}" listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 				</td>
 				<td >
 					istatus:
 				</td>
 				<td >
-					<s:select name="istatus" value="istatus" id="istatus" list="{'UNINITED','INITED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="istatus" value="istatus" id="istatus" list="#{'UNINITED':'未初始化','INITED':'已初始化'}"  listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 				</td>
 			</tr>
 			<tr>
@@ -59,7 +59,7 @@
 					ostatus:
 				</td>
 				<td >
-					<s:select name="ostatus" value="ostatus" id="ostatus"  list="{'ALLOWED','STOPPED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="ostatus" value="ostatus" id="ostatus"  list="#{'ALLOWED':'开机','STOPPED':'停机'}" listKey="key" listValue="value"  theme="simple" headerKey="" headerValue="--------" />
 				</td>
 				<td >
 					secret:
