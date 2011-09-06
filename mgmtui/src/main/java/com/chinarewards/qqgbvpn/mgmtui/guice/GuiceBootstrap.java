@@ -35,9 +35,9 @@ import com.google.inject.struts2.Struts2GuicePluginModule;
 public class GuiceBootstrap extends GuiceServletContextListener {
 
 	Logger log = LoggerFactory.getLogger(getClass());
-	
+
 	protected String rootConfigFilename = "posnet.ini";
-	
+
 	Configuration configuration;
 
 	@Override
@@ -67,17 +67,18 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		log.info("Guice bootstrapping");
 
 		testLogVerboseLevel();
-		
+
 		try {
 			this.buildConfiguration();
 		} catch (ConfigurationException e) {
 			throw new RuntimeException("Failed to build configuration", e);
 		}
 
+		// create injector now!
 		Injector injector = null;
-
 		Module[] modules = getModules();
 		injector = Guice.createInjector(modules);
+		
 		log.info("Guice injector created");
 
 		return injector;
@@ -89,34 +90,16 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 				new Struts2GuicePluginModule(), new QqgbvpnServiceModule(),
 				new QQApiModule(), new DefaultJournalModule(),
 				new SimpleDateTimeModule(),
-				// JPA module
+				// configuration
 				getConfigModule(),
+				// JPA
 				buildJpaPersistModule() };
 
 		return modules;
 	}
 
-	// TODO 需修改为配置文件中统一的数据库
-	protected Properties getJPAProperties() {
-		Properties properties = new Properties();
-		properties.put("javax.persistence.transactionType", "RESOURCE_LOCAL");
-
-		properties.put("hibernate.hbm2ddl.auto", "update");
-		properties.put("hibernate.connection.driver_class",
-				"com.mysql.jdbc.Driver");
-		properties.put("hibernate.connection.username", "root");
-		properties.put("hibernate.connection.password", "123456");
-		properties.put("hibernate.connection.url",
-				"jdbc:mysql://192.168.1.33:3306/qqapi");
-		properties.put("hibernate.dialect",
-				"org.hibernate.dialect.MySQL5Dialect");
-		properties.put("hibernate.show_sql", "true");
-		return properties;
-	}
-
 	protected Module getConfigModule() {
 
-		// FIXME this will be deprecated.
 		return new HardCodedConfigModule(configuration);
 
 	}
@@ -124,7 +107,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	protected void buildConfiguration() throws ConfigurationException {
 
 		// check if the directory is given via command line.
-		String homedir = null;	// we don't have default directory
+		String homedir = null; // we don't have default directory
 		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
 		ConfigReader cr = new ConfigReader(homeDirLocator);
 
@@ -150,8 +133,6 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		return rootConfigFilename;
 	}
 
-
-	
 	protected JpaPersistModule buildJpaPersistModule() {
 
 		// TODO make it not a builder.
