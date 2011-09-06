@@ -20,6 +20,9 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+	<properties>
+		<pkgname>posnet2-server</pkgname>
+	</properties>
 	<build>
 		<extensions>
 			<extension>
@@ -60,10 +63,10 @@
 						</goals>
 						<configuration>
 							<!-- must use this pattern -->
-							<deb>${project.build.directory}/${project.artifactId}_${project.version}_all.deb</deb>
+							<deb>${project.build.directory}/${pkgname}_${project.version}_all.deb</deb>
 							<!-- points to an empty file -->
 							<changesIn>${basedir}/CHANGES.txt</changesIn>
-							<changesOut>${project.build.directory}/${project.artifactId}_${project.version}.changes</changesOut>
+							<changesOut>${project.build.directory}/${pkgname}_${project.version}.changes</changesOut>
 							<changesSave>${project.build.directory}/CHANGES.save</changesSave>
 							<attach>false</attach>
 							<dataSet>
@@ -73,6 +76,7 @@
 									<mapper>
 										<type>prefix</type>
 										<prefix>/usr/share/posnet2</prefix>
+										<filemode>0644</filemode>
 									</mapper>
 								</data>
 								<data>
@@ -81,6 +85,7 @@
 									<mapper>
 										<type>prefix</type>
 										<prefix>/etc/posnet2</prefix>
+										<filemode>0644</filemode>
 									</mapper>
 								</data>
 								<data>
