@@ -7,6 +7,7 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.google.inject.Injector;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -30,6 +31,11 @@ public abstract class BaseAction extends ActionSupport {
 		return ((Injector) ServletActionContext.getServletContext()
 				.getAttribute(Injector.class.getName())).getInstance(type);
 	}
+	
+	protected void logEvent(String event, String entity, String entityId,String eventDetail){
+		this.getInstance(JournalLogic.class).logEvent(event, entity, entityId, eventDetail);
+	}
+	
 	
 	/**
 	 * description：获取当前URI
