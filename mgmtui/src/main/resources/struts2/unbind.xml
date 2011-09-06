@@ -9,12 +9,12 @@
 		<!-- find all album -->
 		<action name="list"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction">
-			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+			<result name="success" type="tiles">unbind.list</result>
 		</action>
 		<action name="search"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="search">
-			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+			<result name="success" type="tiles">unbind.list</result>
 		</action>
 		<action name="searchByAgent"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
@@ -29,7 +29,7 @@
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
-			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+			<result name="success" type="tiles">unbind.list</result>
 		</action>
 		<action name="posSearch"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
