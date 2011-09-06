@@ -11,7 +11,6 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-
 <s:form action="posSearch" namespace="/unbind" method="Post" id="unbindForm">
 <s:hidden name="posId" id="posId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

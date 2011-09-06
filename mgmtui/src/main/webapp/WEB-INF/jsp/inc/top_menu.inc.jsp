@@ -46,6 +46,17 @@
 	</li>
 	<!-- Shop ENDS -->
 	
+	<!-- Shop STARTS -->
+	<li><a href="#">第三方管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td><![endif]-->
+		<ul>
+		<li><a href="<s:url action="searchAgent" namespace="/agent" />">列表</a></li>
+		<li><a href="<s:url action="showEditAgent" namespace="/agent" />">新増</a></li>
+		</ul>
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+	<!-- Shop ENDS -->
+	
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
 	<!-- Home ENDS  -->

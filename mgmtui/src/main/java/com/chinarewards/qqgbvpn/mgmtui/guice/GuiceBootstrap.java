@@ -10,6 +10,7 @@ import javax.servlet.ServletContextEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -71,7 +72,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 		Module[] modules = new Module[] { new QqgbvpnServletModule(),
 				new Struts2GuicePluginModule(), new QqgbvpnServiceModule(),
-				new QQApiModule(),
+				new QQApiModule(), new DefaultJournalModule(),
 				// JPA module
 				new JpaPersistModule("posnet").properties(getJPAProperties()), getConfigModule() };
 
