@@ -22,6 +22,8 @@ public class PosVO implements java.io.Serializable{
 	String simPhoneNo;
 
 	String dstatus;
+	
+	String deliveryAgent;
 
 	String istatus;
 
@@ -102,6 +104,14 @@ public class PosVO implements java.io.Serializable{
 
 	public void setSecret(String secret) {
 		this.secret = secret;
+	}
+
+	public String getDeliveryAgent() {
+		return deliveryAgent;
+	}
+
+	public void setDeliveryAgent(String deliveryAgent) {
+		this.deliveryAgent = deliveryAgent;
 	}
 	
 	
