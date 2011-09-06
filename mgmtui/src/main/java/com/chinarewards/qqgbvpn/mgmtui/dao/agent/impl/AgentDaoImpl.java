@@ -1,6 +1,8 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.agent.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,7 +22,6 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -68,7 +69,18 @@ public class AgentDaoImpl implements AgentDao {
 			//获取总数 以及 列表
 			Integer countTotal = Integer.parseInt(queryAgent(COUNT, agentSearchVO).getSingleResult().toString());
 			agentStore.setCountTotal(countTotal);
-			agentStore.setAgentVOList(queryAgent(LIST, agentSearchVO).getResultList());
+			
+			List<Agent> agentList = queryAgent(LIST, agentSearchVO).getResultList();
+			
+			List<AgentVO> agentVOList = new ArrayList<AgentVO>();
+			for(Agent agent:agentList){
+				AgentVO agentVO = new AgentVO();
+				agentVO.setId(agent.getId());
+				agentVO.setName(agent.getName());
+				agentVO.setEmail(agent.getEmail());
+				agentVOList.add(agentVO);
+			}
+			agentStore.setAgentVOList(agentVOList);
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}
