@@ -9,6 +9,7 @@
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>mgmtui</artifactId>
+	<packaging>war</packaging>
 	<name>Main Server for QQ Group Buy Validation POS Network Management UI</name>
 	<description>Main Server for QQ Group Buy Validation POS Network Management UI</description>
 
@@ -75,7 +76,6 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.17</version>
 		</dependency>
 
 		<!-- Struts 2 -->

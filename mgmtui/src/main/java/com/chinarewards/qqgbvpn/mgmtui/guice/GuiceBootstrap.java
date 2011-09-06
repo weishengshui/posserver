@@ -71,6 +71,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 		testLogVerboseLevel();
 
+		// build configuration.
 		try {
 			this.buildConfiguration();
 		} catch (ConfigurationException e) {
@@ -81,8 +82,9 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		Injector injector = null;
 		Module[] modules = getModules();
 		injector = Guice.createInjector(modules);
-		
 		log.info("Guice injector created");
+		
+		// done
 
 		return injector;
 	}
