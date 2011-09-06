@@ -13,13 +13,13 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.struts2.StrutsStatics;
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
-import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;

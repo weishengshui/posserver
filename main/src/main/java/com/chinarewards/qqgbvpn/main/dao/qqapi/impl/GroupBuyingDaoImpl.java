@@ -8,10 +8,10 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -30,7 +30,7 @@ import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
-public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
+public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
 
 	public void initGrouponCache(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException, CopyPropertiesException {
 		String posId = (String)params.get("posId");
@@ -77,8 +77,8 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 		oldCacheJournal.setEntityId(posId);
 		oldCacheJournal.setEvent(DomainEvent.GROUPON_CACHE_DELETE.toString());
 		
-		if (!em.get().getTransaction().isActive()) {
-			em.get().getTransaction().begin();
+		if (!getEm().getTransaction().isActive()) {
+			getEm().getTransaction().begin();
 		}
 		try {
 			//删除缓存
@@ -104,12 +104,12 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			}
 			//保存商品日志
 			saveJournal(journal);
-			if (em.get().getTransaction().isActive()) {
-				em.get().getTransaction().commit();
+			if (getEm().getTransaction().isActive()) {
+				getEm().getTransaction().commit();
 			}
 		} catch (Exception e) {
-			if (em.get().getTransaction().isActive()) {
-				em.get().getTransaction().rollback();
+			if (getEm().getTransaction().isActive()) {
+				getEm().getTransaction().rollback();
 			}
 			//记日志
 			log.error("groupon cache init error");
@@ -156,16 +156,16 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			}
 		}
 		try {
-			if (!em.get().getTransaction().isActive()) {
-				em.get().getTransaction().begin();
+			if (!getEm().getTransaction().isActive()) {
+				getEm().getTransaction().begin();
 			}
 			saveJournal(journal);
-			if (em.get().getTransaction().isActive()) {
-				em.get().getTransaction().commit();
+			if (getEm().getTransaction().isActive()) {
+				getEm().getTransaction().commit();
 			}
 		} catch (Exception e) {
-			if (em.get().getTransaction().isActive()) {
-				em.get().getTransaction().rollback();
+			if (getEm().getTransaction().isActive()) {
+				getEm().getTransaction().rollback();
 			}
 			log.error("group buying search save journal error");
 			log.error("ts: " + journal.getTs());
@@ -210,8 +210,8 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			Journal journal = new Journal();
 			Date date = new Date();
 			try {
-				if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
+				if (!getEm().getTransaction().isActive()) {
+					getEm().getTransaction().begin();
 				}
 				validation.setTs(date);
 				validation.setVcode(token);
@@ -243,12 +243,12 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 					journal.setEventDetail(resultCode);
 				}
 				saveJournal(journal);
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().commit();
+				if (getEm().getTransaction().isActive()) {
+					getEm().getTransaction().commit();
 				}
 			} catch (Exception e) {
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().rollback();
+				if (getEm().getTransaction().isActive()) {
+					getEm().getTransaction().rollback();
 				}
 				log.error("group buying validate save error");
 				log.error("posId: " + posId);
@@ -296,19 +296,19 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 							}
 						}
 						try {
-							if (!em.get().getTransaction().isActive()) {
-								em.get().getTransaction().begin();
+							if (!getEm().getTransaction().isActive()) {
+								getEm().getTransaction().begin();
 							}
 							if ("0".equals(resultCode)) {
-								em.get().remove(pa);
+								getEm().remove(pa);
 							}
 							saveJournal(journal);
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().commit();
+							if (getEm().getTransaction().isActive()) {
+								getEm().getTransaction().commit();
 							}
 						} catch (Exception e) {
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().rollback();
+							if (getEm().getTransaction().isActive()) {
+								getEm().getTransaction().rollback();
 							}
 							log.error("group buying unbind save error");
 							log.error("posId: " + posId);
@@ -327,16 +327,16 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 						journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 						journal.setEventDetail("group buying unbind error,pos assignment not found by posId : " + posId);
 						try {
-							if (!em.get().getTransaction().isActive()) {
-								em.get().getTransaction().begin();
+							if (!getEm().getTransaction().isActive()) {
+								getEm().getTransaction().begin();
 							}
 							saveJournal(journal);
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().commit();
+							if (getEm().getTransaction().isActive()) {
+								getEm().getTransaction().commit();
 							}
 						} catch (Exception e) {
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().rollback();
+							if (getEm().getTransaction().isActive()) {
+								getEm().getTransaction().rollback();
 							}
 							log.error("group buying unbind save journal error");
 							log.error("posId: " + posId);
@@ -357,16 +357,16 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 					journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 					journal.setEventDetail(resultStatus);
 					try {
-						if (!em.get().getTransaction().isActive()) {
-							em.get().getTransaction().begin();
+						if (!getEm().getTransaction().isActive()) {
+							getEm().getTransaction().begin();
 						}
 						saveJournal(journal);
-						if (em.get().getTransaction().isActive()) {
-							em.get().getTransaction().commit();
+						if (getEm().getTransaction().isActive()) {
+							getEm().getTransaction().commit();
 						}
 					} catch (Exception e) {
-						if (em.get().getTransaction().isActive()) {
-							em.get().getTransaction().rollback();
+						if (getEm().getTransaction().isActive()) {
+							getEm().getTransaction().rollback();
 						}
 						log.error("group buying unbind save journal error");
 						log.error("posId: " + posId);
@@ -388,16 +388,16 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 			journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 			journal.setEventDetail(resultCode);
 			try {
-				if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
+				if (!getEm().getTransaction().isActive()) {
+					getEm().getTransaction().begin();
 				}
 				saveJournal(journal);
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().commit();
+				if (getEm().getTransaction().isActive()) {
+					getEm().getTransaction().commit();
 				}
 			} catch (Exception e) {
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().rollback();
+				if (getEm().getTransaction().isActive()) {
+					getEm().getTransaction().rollback();
 				}
 				log.error("group buying unbind save journal error");
 				log.error("posIds: " + StringUtils.join(posIds, ","));
@@ -412,17 +412,17 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	}
 */	
 	private void saveJournal(Journal journal) {
-		em.get().persist(journal);
+		getEm().persist(journal);
 	}
 	
 	private void saveGrouponCache(GrouponCache grouponCache) {
-		em.get().persist(grouponCache);
+		getEm().persist(grouponCache);
 	}
 	
 	private List<GrouponCache> deleteGrouponCache(String posId) {
 		List<GrouponCache> list = getGrouponCacheByPosId(posId);
 		if (list != null && list.size() > 0) {
-			Query query = em.get().createQuery("delete from GrouponCache gc where gc.posId = ?1");
+			Query query = getEm().createQuery("delete from GrouponCache gc where gc.posId = ?1");
 			query.setParameter(1, posId);
 			query.executeUpdate();
 		}
@@ -437,18 +437,18 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	}
 	
 	private List<GrouponCache> getGrouponCacheByPosId(String posId) {
-		Query query = em.get().createQuery("select gc from GrouponCache gc where gc.posId = ?1");
+		Query query = getEm().createQuery("select gc from GrouponCache gc where gc.posId = ?1");
 		query.setParameter(1, posId);
 		return query.getResultList() != null ? (List<GrouponCache>) query.getResultList() : null;
 	}
 	
 	private void saveValidation(Validation validation) {
-		em.get().persist(validation);
+		getEm().persist(validation);
 	}
 	
 	private Pos getPosByPosId(String posId) {
 		try {
-			Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1");
+			Query jql = getEm().createQuery("select p from Pos p where p.posId = ?1");
 			jql.setParameter(1, posId);
 			Pos p = (Pos) jql.getSingleResult();
 			return p;
@@ -459,7 +459,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	
 	private Agent getAgentByPosId(String posId) {
 		try {
-			Query jql = em.get().createQuery("select a from PosAssignment pa,Pos p,Agent a " +
+			Query jql = getEm().createQuery("select a from PosAssignment pa,Pos p,Agent a " +
 					"where pa.pos.id = p.id and pa.agent.id = a.id and p.posId = ?1");
 			jql.setParameter(1, posId);
 			Agent a = (Agent) jql.getSingleResult();
@@ -471,7 +471,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	
 	private PosAssignment getPosAssignmentByIdPosId(String posId) {
 		try {
-			Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
+			Query jql = getEm().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
 			jql.setParameter(1, posId);
 			List resultList = jql.getResultList();
 			PosAssignment pa = null;
@@ -486,7 +486,7 @@ public class GroupBuyingDaoImpl extends BaseDaoImpl implements GroupBuyingDao {
 	
 	private String getResultCode(String posId) {
 		String resultCode = "0";
-		Query jql = em.get().createQuery(
+		Query jql = getEm().createQuery(
 				"select j.eventDetail from Journal j where j.event = '"
 						+ DomainEvent.GROUPON_CACHE_INIT.toString()
 						+ "' and j.entityId = ?1 order by j.ts desc");

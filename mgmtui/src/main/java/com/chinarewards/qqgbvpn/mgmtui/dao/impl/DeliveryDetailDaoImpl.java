@@ -5,13 +5,13 @@ package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.DeliveryNote;
 import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -33,10 +33,7 @@ import com.google.inject.Provider;
  * @author cream
  * @since 1.0.0 2011-09-05
  */
-public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
-
-	@Inject
-	Provider<EntityManager> emp;
+public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao {
 
 	@Inject
 	Provider<DeliveryNoteDetailAdapter> deliveryNoteDetailAdapter;
@@ -48,10 +45,6 @@ public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
 	Provider<JournalLogic> journalLogic;
 
 	Logger log = LoggerFactory.getLogger(getClass());
-
-	public EntityManager getEm() {
-		return emp.get();
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
