@@ -97,6 +97,9 @@ public class AgentAction extends BasePagingToolBarAction {
 	public String editAgent(){
 		log.debug("posAction call editPos");
 		try {
+			agentVO.setName(agentVO.getName().trim());
+			agentVO.setEmail(agentVO.getEmail().trim());
+			
 			if(Tools.isEmptyString(agentVO.getId())){
 				getAgentLogic().save(agentVO);
 			}else{

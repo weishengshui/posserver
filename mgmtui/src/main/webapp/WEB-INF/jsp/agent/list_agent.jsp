@@ -16,9 +16,11 @@
 <div id="queryAgentList_DIV_ID" align="center">
 	<table align="center" width="800px">
 		<tr>
-			<td>名称</td>
-			<td>Email</td>
+			<td width="50%">名称</td>
+			<td width="50%">Email</td>
+			<%-- 
 			<td>操作</td>
+			 --%>
 		</tr>
 		<s:if test="#request.agentVOList != null && #request.agentVOList.size()>0">
 		  <s:iterator id="agentVO" value="#request.agentVOList" status="i">
@@ -27,9 +29,11 @@
 					<a href='<s:url value="/agent/showEditAgent"/>?agentId=<s:property value="#agentVO.id"/>'><s:property value="#agentVO.name" /></a>
 				</td>
 				<td><s:property value="#agentVO.email" /></td>
+				<%-- 
 				<td>
 					<a href='<s:url value="/agent/deleteAgent"/>?agentId=<s:property value="#agentVO.id"/>'>删除</a>
 				</td>
+				 --%>
 			</tr>
 		  </s:iterator>
 	   </s:if>
