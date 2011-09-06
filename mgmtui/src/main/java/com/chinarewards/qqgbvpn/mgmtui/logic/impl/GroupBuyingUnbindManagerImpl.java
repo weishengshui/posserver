@@ -64,6 +64,7 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @param agentName
 	 * @return
 	 */
+	@Transactional
 	public Agent getAgentByName(String agentName) {
 		return dao.get().getAgentByName(agentName);
 	}
@@ -98,7 +99,8 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException {
+	@Transactional
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException {
 		return dao.get().confirmReturnNote(agentId, rnId, posIds);
 	}
 	

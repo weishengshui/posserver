@@ -95,6 +95,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		properties.put("hibernate.dialect",
 				"org.hibernate.dialect.MySQL5Dialect");
 		properties.put("hibernate.show_sql", "true");
+		//properties.put("hibernate.jdbc.batch_size", "1");	// for DEBUG
 		return properties;
 	}
 

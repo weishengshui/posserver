@@ -47,6 +47,9 @@ public class AgentDaoImpl implements AgentDao {
 			Integer countTotal = Integer.parseInt(queryAgent(COUNT, agentSearchVO).getSingleResult().toString());
 			agentStore.setCountTotal(countTotal);
 			agentStore.setAgentVOList(queryAgent(LIST, agentSearchVO).getResultList());
+			
+			log.debug("queryAgent(): count={}, VO list size={}", countTotal, agentStore.getAgentVOList().size());
+			
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}
