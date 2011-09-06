@@ -46,24 +46,24 @@ public class ValidateCommandHandler implements ServiceHandler {
 		ValidateRequestMessage bodyMessage = (ValidateRequestMessage) request.getParameter();
 		ServiceSession session = request.getSession();
 
-		log.debug("ValidateCommandHandler======execute==bodyMessage=:"+bodyMessage);
+		log.debug("ValidateCommandHandler======execute==bodyMessage=: {}"+bodyMessage);
 		ValidateRequestMessage validateRequestMessage = (ValidateRequestMessage) bodyMessage;
 		ValidateResponseMessage validateResponseMessage = new ValidateResponseMessage();
 
-		log.debug("ValidateCommandHandler======execute==posId=:"+String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
+		log.debug("ValidateCommandHandler======execute==posId=: {}"+String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		
 		HashMap<String, String> postParams = new HashMap<String, String>();
 		postParams.put("posId", String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
 		postParams.put("grouponId", validateRequestMessage.getGrouponId());
 		postParams.put("token", validateRequestMessage.getGrouponVCode());
 		postParams.put("key", configuration.getString("txserver.key"));
-		log.debug("ValidateCommandHandler======execute==key=:"+configuration.getString("txserver.key"));
+		log.debug("ValidateCommandHandler======execute==key=: {}"+configuration.getString("txserver.key"));
 
 		
 		try {
 			HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
 			int resultCode = Integer.valueOf((String) result.get("resultCode"));
-			log.debug("resultCode=========:"+resultCode);
+			log.debug("resultCode=========: {}"+resultCode);
 			if (resultCode == SUCCESS_CODE ) {
 				List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
 						.get("items");
