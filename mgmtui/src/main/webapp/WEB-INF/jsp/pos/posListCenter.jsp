@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 	<table align="center" width="800px">
-		<tr>
+		<tr align="center">
 			<td>&nbsp;&nbsp;</td>
 			<td>PosId</td>
 			<td>model</td>
@@ -17,7 +17,7 @@
 		</tr>
 	<s:if test="#request.posVOList != null && #request.posVOList.size()>0">
 	  <s:iterator  value="#request.posVOList" id="posTmp" status="stat">
-	  <tr>
+	  <tr align="center">
 			<td>
 				<s:property value="#stat.index + 1"/>
 			</td>
@@ -25,9 +25,39 @@
 			<td><s:property value="#posTmp.model" /></td>
 			<td><s:property value="#posTmp.sn" /></td>
 			<td><s:property value="#posTmp.simPhoneNo" /></td>
-			<td><s:property value="#posTmp.dstatus" /></td>
-			<td><s:property value="#posTmp.istatus" /></td>
-			<td><s:property value="#posTmp.ostatus" /></td>
+			<td>
+				<s:if test="#posTmp.dstatus == 'DELIVERED'">
+					已交付
+				</s:if>
+				<s:elseif test="#posTmp.dstatus == 'RETURNED'">
+					已回收
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td>
+				<s:if test="#posTmp.istatus == 'UNINITED'">
+					未初始化
+				</s:if>
+				<s:elseif test="#posTmp.istatus == 'INITED'">
+					已初始化
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td>
+				<s:if test="#posTmp.ostatus == 'ALLOWED'">
+					开机
+				</s:if>
+				<s:elseif test="#posTmp.ostatus == 'STOPPED'">
+					停机
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
 			<td><s:property value="#posTmp.secret" /></td>
 			<td>
 				<a href='<s:url value="/pos/detail"/>/<s:property value="#posTmp.id"/>'>修改</a>

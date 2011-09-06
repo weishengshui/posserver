@@ -7,10 +7,14 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
@@ -32,9 +36,27 @@ public class AgentDaoImpl implements AgentDao {
 
 	@Inject
 	Provider<EntityManager> em;
+	
+	@Inject
+	Provider<JournalLogic> journalLogic;
 
 	public EntityManager getEm() {
 		return em.get();
+	}
+	
+	private void addLog(Agent agent, String processType){
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(agent);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			eventDetail = e.toString();
+		}
+
+		journalLogic.get().logEvent(processType,
+				DomainEntity.AGENT.toString(), agent.getId(), eventDetail);
 	}
 
 	@Override
@@ -107,6 +129,11 @@ public class AgentDaoImpl implements AgentDao {
 			getEm().persist(agent);
 			
 			agentVO.setId(agent.getId());
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_ADDED_AGENT.toString());
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -133,6 +160,11 @@ public class AgentDaoImpl implements AgentDao {
 			getEm().merge(agent);
 			
 			agentVO.setId(agent.getId());
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_UPDATED_AGENT.toString());
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -149,6 +181,11 @@ public class AgentDaoImpl implements AgentDao {
 			}
 			Agent agent = getEm().find(Agent.class, agentId);
 			getEm().remove(agent);
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_REMOVED_AGENT.toString());
+			
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}

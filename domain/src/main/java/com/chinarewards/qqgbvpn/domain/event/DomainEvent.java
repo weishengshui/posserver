@@ -37,6 +37,18 @@ public enum DomainEvent {
 	 * </ol>
 	 */
 	USER_ADDED_POS,
+	/**
+	 * User has edited a POS machine.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * <li>Complete POS information (entity POS)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_EDITED_POS,
+	
 
 	/**
 	 * User has added a POS machine.
