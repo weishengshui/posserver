@@ -5,10 +5,12 @@ package com.chinarewards.qqgbvpn.mgmtui.guice;
 
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
+import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.SysUserDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.impl.AgentDaoImpl;
 import com.chinarewards.qqgbvpn.mgmtui.dao.impl.DeliveryDaoImpl;
+import com.chinarewards.qqgbvpn.mgmtui.dao.impl.DeliveryDetailDaoImpl;
 import com.chinarewards.qqgbvpn.mgmtui.dao.impl.SysUserDaoImpl;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl.PosDaoImpl;
@@ -45,6 +47,9 @@ public class QqgbvpnServiceModule extends AbstractModule {
 
 		bind(DeliveryLogic.class).to(DeliveryLogicImpl.class);
 		bind(DeliveryDao.class).to(DeliveryDaoImpl.class);
+		bind(DeliveryDetailDao.class).to(DeliveryDetailDaoImpl.class);
+		
+		
 	}
 
 }
