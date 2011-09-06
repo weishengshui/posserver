@@ -23,7 +23,7 @@
 		</td>
 	</tr>
 </table>
-<s:if test="agent!=null">
+<s:if test="agent!=null && !''.equals(agent.id)">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>Agent Id</td>

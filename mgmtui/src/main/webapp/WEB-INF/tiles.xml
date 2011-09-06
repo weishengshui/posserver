@@ -26,6 +26,18 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/pos/edit.jsp" />
 	</definition>
 	
+	<definition name="unbind.list" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/unbindList.jsp" />
+	</definition>
+	
+	<definition name="unbind.unbind" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/unbind.jsp" />
+	</definition>
+	
+	<definition name="unbind.sendURL" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURL.jsp" />
+	</definition>
+	
 	<definition name="agent.searchAgent" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/agent/search_agent.jsp" />
 	</definition>

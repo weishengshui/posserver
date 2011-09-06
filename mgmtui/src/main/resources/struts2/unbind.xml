@@ -23,7 +23,7 @@
 		<action name="createRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createRnNumber">
-			<result name="success">/WEB-INF/jsp/unbind/unbindList.jsp</result>
+			<result name="success">/WEB-INF/jsp/unbind/sendURL.jsp</result>
 		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"

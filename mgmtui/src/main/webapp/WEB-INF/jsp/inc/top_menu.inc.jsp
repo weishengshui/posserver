@@ -35,6 +35,18 @@
 	<!-- Shop ENDS -->
 	
 	<!-- Shop STARTS -->
+	<li><a href="#">POS回收<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td><![endif]-->
+		<ul>
+		<li><a href="<s:url value="/unbind/sendURL"/>">发送URL</a></li>
+		<li><a href="<s:url value="/unbind/list"/>">生成回收单</a></li>
+		<li><a href="<s:url value="/unbind/posSearch"/>">解绑</a></li>
+		</ul>
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+	<!-- Shop ENDS -->
+	
+	<!-- Shop STARTS -->
 	<li><a href="#">第三方管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>

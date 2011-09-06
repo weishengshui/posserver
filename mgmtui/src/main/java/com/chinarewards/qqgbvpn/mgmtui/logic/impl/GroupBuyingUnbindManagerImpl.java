@@ -18,6 +18,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 
 public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	
@@ -83,6 +84,7 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
+	@Transactional
 	public ReturnNote createReturnNoteByAgentId(String agentId) throws JsonGenerationException,SaveDBException {
 		return dao.get().createReturnNoteByAgentId(agentId);
 	}

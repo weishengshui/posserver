@@ -272,9 +272,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			rn.setCreateDate(date);
 			
 			try {
-				if (!em.get().getTransaction().isActive()) {
+			/*	if (!em.get().getTransaction().isActive()) {
 					em.get().getTransaction().begin();
-				}
+				}*/
 				
 				saveReturnNote(rn);
 				
@@ -291,13 +291,13 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					throw new JsonGenerationException(e);
 				}
 				saveJournal(journal);
-				if (em.get().getTransaction().isActive()) {
+				/*if (em.get().getTransaction().isActive()) {
 					em.get().getTransaction().commit();
-				}
+				}*/
 			} catch (Exception e) {
-				if (em.get().getTransaction().isActive()) {
+				/*if (em.get().getTransaction().isActive()) {
 					em.get().getTransaction().rollback();
-				}
+				}*/
 				throw new SaveDBException(e);
 			}
 			return rn;
