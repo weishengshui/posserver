@@ -17,7 +17,7 @@ public enum DomainEvent {
 	 * Expected domain: SysUser
 	 * <p>
 	 * 
-	 * Detail
+	 * The following information should he logged:
 	 * <ol>
 	 * <li>Username (SysUser.username)</li>
 	 * <li>IP address (ip)</li>
@@ -35,13 +35,14 @@ public enum DomainEvent {
 	 * Expected entity ID: Pos.getId()
 	 * <p>
 	 * 
-	 * The following should he logged:
+	 * The following information should he logged:
 	 * <ol>
 	 * <li>Complete POS information (entity POS)</li>
 	 * <li>Username of the SysUser who performed this action.</li>
 	 * </ol>
 	 */
 	USER_ADDED_POS,
+
 	/**
 	 * User has edited a POS machine.
 	 * <p>
@@ -53,10 +54,9 @@ public enum DomainEvent {
 	 * </ol>
 	 */
 	USER_EDITED_POS,
-	
 
 	/**
-	 * User has added a POS machine.
+	 * User has removed a POS machine.
 	 * <p>
 	 * 
 	 * Expected domain: POS.
@@ -64,7 +64,6 @@ public enum DomainEvent {
 	 * 
 	 * The following should he logged:
 	 * <ol>
-	 * <li>Complete POS information (entity POS)</li>
 	 * <li>Username of the SysUser who performed this action.</li>
 	 * </ol>
 	 */
@@ -188,7 +187,7 @@ public enum DomainEvent {
 	 * Expected entity ID: Pos.getId()
 	 * <p>
 	 */
-	POS_INIT_FAILED, 
+	POS_INIT_FAILED,
 
 	/**
 	 * Event: POS initialization failed.
@@ -200,8 +199,8 @@ public enum DomainEvent {
 	 * Expected entity ID: Pos.getId()
 	 * <p>
 	 */
-	POS_LOGGED_IN, 
-	
+	POS_LOGGED_IN,
+
 	/**
 	 * Event: POS initialization failed.
 	 * <p>
@@ -263,7 +262,18 @@ public enum DomainEvent {
 	POS_UNBIND_SUCCESS,
 
 	/**
-	 * Unbind pos asssignment failed
+	 * Unbind pos asssignment failed.
+	 * <p>
+	 * 
+	 * Expected domain: POS
+	 * <p>
+	 * 
+	 * Expected domain: POS
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * </ol>
 	 */
 	POS_UNBIND_FAILED,
 

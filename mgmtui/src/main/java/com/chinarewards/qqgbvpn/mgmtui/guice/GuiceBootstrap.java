@@ -3,8 +3,6 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
-import java.util.Properties;
-
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.configuration.Configuration;
@@ -45,7 +43,10 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 
 		Injector injector = (Injector) servletContextEvent.getServletContext()
 				.getAttribute(Injector.class.getName());
+		log.info("Shutting down persistence service");
 		injector.getInstance(PersistService.class).stop();
+		
+		// continue super class call.
 		super.contextDestroyed(servletContextEvent);
 	}
 
@@ -54,6 +55,8 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		super.contextInitialized(servletContextEvent);
 		Injector injector = (Injector) servletContextEvent.getServletContext()
 				.getAttribute(Injector.class.getName());
+		
+		log.info("Starting persistence service");
 		injector.getInstance(PersistService.class).start();
 	}
 

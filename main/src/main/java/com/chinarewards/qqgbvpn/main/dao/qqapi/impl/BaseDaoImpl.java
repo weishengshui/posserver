@@ -71,9 +71,14 @@ public class BaseDaoImpl {
 	
 	/**
 	 * 取记录总数
+	 * <p>
+	 * 
+	 * XXX don't use this way to count records!
+	 * 
 	 * @author iori
 	 * @param query
 	 * @return
+	 * @deprecated
 	 */
 	private int getCount(Query query) {
 		int count = 0;
