@@ -6,7 +6,7 @@
 	</appender>
 	
 	<logger name="com.chinarewards" level="TRACE" />
-	<logger name="org.hibernate" level="DEBUG" />
+	<logger name="org.hibernate" level="WARN" />
 	
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
