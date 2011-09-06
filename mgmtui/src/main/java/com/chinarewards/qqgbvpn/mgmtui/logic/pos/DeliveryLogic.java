@@ -5,11 +5,10 @@ package com.chinarewards.qqgbvpn.mgmtui.logic.pos;
 
 import java.util.List;
 
-import com.chinarewards.qqgbvpn.domain.DeliveryNote;
-import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 
 /**
@@ -23,7 +22,7 @@ public interface DeliveryLogic {
 	 * 
 	 * @return
 	 */
-	public List<DeliveryNote> fetchAllDelivery();
+	public List<DeliveryNoteVO> fetchAllDelivery();
 
 	/**
 	 * Get delivery note list.
@@ -31,16 +30,58 @@ public interface DeliveryLogic {
 	 * @param pageInfo
 	 * @return
 	 */
-	public PageInfo<DeliveryNote> fetchDeliveryList(PaginationTools pagination);
+	public PageInfo<DeliveryNoteVO> fetchDeliveryList(PaginationTools pagination);
 
 	/**
 	 * Fetch delivery note detail list.
 	 * 
-	 * @param note
+	 * @param deliveryId
 	 * @return
 	 */
-	public List<DeliveryNoteDetail> fetchDeliveryNoteDetailList(
-			DeliveryNote note);
+	public List<DeliveryNoteDetailVO> fetchDetailListByNoteId(String deliveryId);
+
+	/**
+	 * Create an empty delivery note. Generate a serial number for it.
+	 * 
+	 * @return
+	 */
+	public DeliveryNoteVO createDeliveryNote();
+
+	/**
+	 * Add or modify agent. Agent could be null.
+	 * <p>
+	 * <strong>CAREFUL:</strong>Delivery note status must be
+	 * {@code DeliveryNoteStatus#DRAFT}
+	 * 
+	 * @param deliveryNoteId
+	 * @param agentId
+	 * @return
+	 */
+	public DeliveryNoteVO addAgent(String deliveryNoteId, String agentId);
+
+	/**
+	 * Append POS to delivery. It will create delivery note detail.
+	 * <p>
+	 * <strong>CAREFUL:</strong>Delivery note status must be
+	 * {@code DeliveryNoteStatus#DRAFT}
+	 * 
+	 * @param deliveryNoteId
+	 * @param posId
+	 * @return
+	 */
+	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
+			String posId);
+
+	/**
+	 * Delete delivery note detail from note.
+	 * <p>
+	 * <strong>CAREFUL:</strong>Delivery note status must be
+	 * {@code DeliveryNoteStatus#DRAFT}
+	 * 
+	 * @param deliveryNoteId
+	 * @param detailId
+	 */
+	public void deletePosFromNote(String deliveryNoteId, String detailId);
 
 	/**
 	 * 派送 POS 机给第三方。<br/>
@@ -50,18 +91,15 @@ public interface DeliveryLogic {
 	 * <li>POS status : {@code PosInitializationStatus#INITED}</li>
 	 * </ol>
 	 * 
-	 * @param note
-	 *            {@code null} means new delivery note. Generate new serial
-	 *            number for it.
-	 * @param agent
-	 *            第三方
-	 * @param posList
-	 *            POS 机列表
+	 * @param deliveryNoteId
+	 *            should not be empty.
 	 * @return returns the POS with wrong status. NOT initialized, with
 	 *         PosAssignment, delivered
+	 * @throws DeliveryNoteWithNoDetailException
+	 *             when delivery not with no details.
 	 */
-	public List<PosVO> delivery(DeliveryNote note, AgentVO agent,
-			List<PosVO> posList);
+	public List<String> delivery(String deliveryNoteId)
+			throws DeliveryNoteWithNoDetailException;
 
 	/**
 	 * Delivery note status must be {@code DeliveryNoteStatus#DRAFT}. And this
@@ -69,15 +107,15 @@ public interface DeliveryLogic {
 	 * <p>
 	 * Generate confirmed serial number for this delivery note.
 	 * 
-	 * @param note
+	 * @param deliveryNoteId
 	 */
-	public void confirmDelivery(DeliveryNote note);
+	public void confirmDelivery(String deliveryNoteId);
 
 	/**
 	 * Delivery note status should not be {@code DeliveryNoteStatus#DRAFT}. And
 	 * this method will change it to {@code DeliveryNoteStatus#PRINTED}.
 	 * 
-	 * @param note
+	 * @param deliveryNoteId
 	 */
-	public void printDelivery(DeliveryNote note);
+	public void printDelivery(String deliveryNoteId);
 }

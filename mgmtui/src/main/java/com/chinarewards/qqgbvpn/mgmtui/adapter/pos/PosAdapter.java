@@ -1,5 +1,8 @@
 package com.chinarewards.qqgbvpn.mgmtui.adapter.pos;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
@@ -31,6 +34,19 @@ public class PosAdapter {
 		posVO.setSn(pos.getSn());
 		return posVO;
 		
+	}
+	
+	public List<PosVO> convertToPosVO(List<Pos> pos) {
+		if (pos == null) {
+			return null;
+		}
+
+		List<PosVO> resultList = new LinkedList<PosVO>();
+		for (Pos p : pos) {
+			resultList.add(this.convertToPosVO(p));
+		}
+
+		return resultList;
 	}
 	
 	public Pos convertToPos(PosVO posVO){
