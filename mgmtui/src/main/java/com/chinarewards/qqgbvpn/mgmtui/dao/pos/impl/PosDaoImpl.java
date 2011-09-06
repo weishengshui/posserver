@@ -9,14 +9,18 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
+import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
@@ -43,6 +47,11 @@ public class PosDaoImpl implements PosDao {
 	
 	@Inject
 	Provider<PosAdapter> posAdapter;
+	
+	@Inject
+	Provider<JournalLogic> journalLogic;
+	
+	
 
 	public EntityManager getEm() {
 		return em.get();
@@ -57,6 +66,20 @@ public class PosDaoImpl implements PosDao {
 		Pos pos = getEm().find(Pos.class, id);
 		if(pos != null){
 			getEm().remove(pos);
+			
+			// Add journal.
+			ObjectMapper mapper = new ObjectMapper();
+			String eventDetail = null;
+			try {
+				eventDetail = mapper.writeValueAsString(pos);
+			} catch (Exception e) {
+				log.error("mapping Pos error.", e);
+				eventDetail = e.toString();
+			}
+
+			journalLogic.get().logEvent(DomainEvent.USER_REMOVED_POS.toString(),
+					DomainEntity.POS.toString(), pos.getId(), eventDetail);
+			
 		}
 		log.trace("calling deletePosById end ");
 	}
@@ -122,7 +145,7 @@ public class PosDaoImpl implements PosDao {
 			log.debug("key===({})value===({})",new Object[]{entry.getKey(), entry.getValue()});
 		}
 		if (paginationTools != null) {
-			query = query = query.setFirstResult(paginationTools.getStartIndex())
+			query = query.setFirstResult(paginationTools.getStartIndex())
 					.setMaxResults(paginationTools.getCountOnEachPage());
 		}
 		List<Pos> posList = query.getResultList();
@@ -207,6 +230,20 @@ public class PosDaoImpl implements PosDao {
 		Pos pos = posAdapter.get().convertToPos(posVO);
 		getEm().persist(pos);
 		posVO.setId(pos.getId());
+		
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(pos);
+		} catch (Exception e) {
+			log.error("mapping Pos error.", e);
+			eventDetail = e.toString();
+		}
+
+		journalLogic.get().logEvent(DomainEvent.USER_ADDED_POS.toString(),
+				DomainEntity.POS.toString(), pos.getId(), eventDetail);
+		
 		log.trace("calling savePos end and result is :({})", Tools
 				.objToString(posVO));
 		return posVO;
@@ -253,6 +290,22 @@ public class PosDaoImpl implements PosDao {
 		}
 		Pos newPos = posAdapter.get().convertToPos(posVO);
 		getEm().merge(newPos);
+		
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(pos);
+		} catch (Exception e) {
+			log.error("mapping Pos error.", e);
+			eventDetail = e.toString();
+		}
+		
+		log.debug("here========:"+eventDetail);
+		
+		journalLogic.get().logEvent(DomainEvent.USER_EDITED_POS.toString(),
+				DomainEntity.POS.toString(), pos.getId(), eventDetail);
+		
 		log.trace("calling savePos end ");
 	}
 
