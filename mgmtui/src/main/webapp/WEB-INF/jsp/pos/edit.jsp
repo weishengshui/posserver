@@ -47,7 +47,13 @@
 			</td>
 			<td >
 				<input type="hidden" name="dstatus" value='<s:property value="posVO.dstatus"/>'/>
-				<s:radio name="posVO.dstatus"  disabled="true" value="posVO.dstatus"  list="#{'DELIVERED':'已交付','RETURNED':'已回收'}" listKey="key" listValue="value" theme="simple" />
+				
+				<s:if test="posVO.id != null && posVO.dstatus == 'DELIVERED'">
+					已交付到<s:property value="posVO.deliveryAgent"/>
+				</s:if>
+				<s:else>
+					已回收
+				</s:else>
 			</td>
 			<td >
 				初始化:

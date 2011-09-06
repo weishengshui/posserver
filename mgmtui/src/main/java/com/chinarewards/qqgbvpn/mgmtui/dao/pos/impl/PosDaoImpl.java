@@ -366,11 +366,25 @@ public class PosDaoImpl implements PosDao {
 		Pos pos = getEm().find(Pos.class, id);
 		if (pos != null) {
 			PosVO posVO = posAdapter.get().convertToPosVO(pos);
+			if(pos.getDstatus() == PosDeliveryStatus.DELIVERED){
+				posVO.setDeliveryAgent(getDeliveryAgentByPos(pos.getId()));
+			}
 			return posVO;
 		} else {
 			return null;
 		}
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getDeliveryAgentByPos(String id){
+		String hql = "select pa.agent.name from PosAssignment pa where pa.pos.id = :pid";
+		List<String> list = this.getEm().createQuery(hql).setParameter("pid", id).getResultList();
+		if(list!= null && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
 	}
 
 }
