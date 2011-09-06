@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
 import javax.servlet.ServletContextEvent;
