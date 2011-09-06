@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.main.test.GuiceTest;
+import com.chinarewards.qqgbpvn.core.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.google.inject.persist.jpa.JpaPersistModule;
 

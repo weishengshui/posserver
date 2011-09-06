@@ -19,9 +19,10 @@ import org.apache.mina.core.service.IoAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.common.HomeDirLocator;
+import com.chinarewards.qqgbvpn.config.ConfigReader;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
-import com.chinarewards.qqgbvpn.main.config.ConfigReader;
-import com.chinarewards.qqgbvpn.main.config.HardCodedConfigModule;
+import com.chinarewards.qqgbvpn.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;

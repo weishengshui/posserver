@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.config;
+package com.chinarewards.qqgbvpn.config;
 
 import org.apache.commons.configuration.Configuration;
 

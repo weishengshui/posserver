@@ -1,11 +1,9 @@
 /**
  * 
  */
-package com.chinarewards.qqgbpvn.main.test;
+package com.chinarewards.qqgbpvn.core.test;
 
 import org.junit.Test;
-
-import com.chinarewards.qqgbpvn.core.test.BaseTest;
 
 /**
  * Simple test to make sure the Java logging does work.

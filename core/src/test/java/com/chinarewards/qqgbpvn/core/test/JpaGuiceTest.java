@@ -1,14 +1,13 @@
 /**
  * 
  */
-package com.chinarewards.qqgbpvn.main.test;
+package com.chinarewards.qqgbpvn.core.test;
 
 import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
 
-import com.chinarewards.qqgbpvn.core.test.GuiceTest;
 import com.google.inject.Provider;
 import com.google.inject.persist.PersistService;
 

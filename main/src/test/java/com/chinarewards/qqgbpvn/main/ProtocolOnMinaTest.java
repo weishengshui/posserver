@@ -21,7 +21,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.main.test.BaseTest;
+import com.chinarewards.qqgbpvn.core.test.BaseTest;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;

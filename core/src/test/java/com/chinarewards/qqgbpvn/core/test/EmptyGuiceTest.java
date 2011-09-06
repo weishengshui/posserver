@@ -1,11 +1,10 @@
 /**
  * 
  */
-package com.chinarewards.qqgbpvn.main.test;
+package com.chinarewards.qqgbpvn.core.test;
 
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.core.test.GuiceTest;
 import com.google.inject.Module;
 
 /**

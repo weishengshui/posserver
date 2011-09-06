@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.config;
+package com.chinarewards.qqgbvpn.config;
 
 import java.io.File;
 
@@ -10,7 +10,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.reloading.ReloadingStrategy;
 
-import com.chinarewards.qqgbvpn.main.HomeDirLocator;
+import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.google.inject.Inject;
 
 /**
