@@ -27,6 +27,7 @@ public class PosLogicTest extends JPATestCase{
 		PosLogic posLogic = injector.getInstance(PosLogic.class);
 		PosVO posVO = new PosVO();
 		posVO.setPosId("pos_001");
+		posVO.setSimPhoneNo("13480009000");
 		//save
 		PosVO posVO1 = posLogic.savePos(posVO);
 		assertNotNull(posVO1);
@@ -53,6 +54,7 @@ public class PosLogicTest extends JPATestCase{
 			for(int i=0;i<10;i++){
 				PosVO posVOTmp = new PosVO();
 				posVOTmp.setPosId("pos_"+i);
+				posVOTmp.setSimPhoneNo("1348000910"+i);
 				posLogic.savePos(posVOTmp);
 			}
 			PageInfo<PosVO>  pageInfo = posLogic.queryPos(null, null);
