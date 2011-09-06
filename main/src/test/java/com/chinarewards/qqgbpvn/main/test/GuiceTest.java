@@ -5,7 +5,6 @@ package com.chinarewards.qqgbpvn.main.test;
 
 import org.junit.Before;
 
-import com.chinarewards.qqgbpvn.core.test.BaseTest;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;

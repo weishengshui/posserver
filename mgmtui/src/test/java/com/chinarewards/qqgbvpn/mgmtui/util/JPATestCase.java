@@ -22,7 +22,7 @@ import com.google.inject.persist.jpa.JpaPersistModule;
  * @author huangwei
  *
  */
-public class JPATestCase extends TestCase{
+public abstract class JPATestCase extends TestCase{
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	protected Injector injector;

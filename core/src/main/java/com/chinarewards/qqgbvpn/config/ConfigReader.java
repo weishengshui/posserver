@@ -8,7 +8,6 @@ import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.reloading.ReloadingStrategy;
 
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.google.inject.Inject;
@@ -108,7 +107,7 @@ public class ConfigReader {
 
 		String filename = absFile.getName();
 
-		// extract the extension part (.xxx)
+		// extract the extension part (.zzz)
 
 		int index = filename.indexOf(".");
 		if (index == -1) {

@@ -5,7 +5,6 @@ package com.chinarewards.qqgbpvn.main.test;
 
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.core.test.GuiceTest;
 import com.google.inject.Module;
 
 /**

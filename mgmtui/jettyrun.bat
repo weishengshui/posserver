@@ -1,3 +1,5 @@
+set MAVEN_OPTS=
+
 set REBEL_HOME=misc
 set MAVEN_OPTS=-noverify -javaagent:%REBEL_HOME%/jrebel.jar -Drebel.guice_plugin=true %MAVEN_OPTS%
 
