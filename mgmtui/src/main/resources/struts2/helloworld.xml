@@ -4,10 +4,13 @@
 	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
 
 <struts>
-	<package name="helloworld" extends="default" namespace="/helloworld">
+	<package name="helloworld" extends="default" namespace="/">
 		<default-interceptor-ref name="secureStack" />
-		<!-- find all album -->
+		
 		<action name="index" class="com.chinarewards.qqgbvpn.mgmtui.struts.helloworld.HelloAction">
+			<result name="success" type="tiles">helloworld</result>
+		</action>
+		<action name="" class="com.chinarewards.qqgbvpn.mgmtui.struts.helloworld.HelloAction">
 			<result name="success" type="tiles">helloworld</result>
 		</action>
 	</package>

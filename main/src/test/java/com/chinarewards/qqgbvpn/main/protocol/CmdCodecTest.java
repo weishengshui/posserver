@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.protocol;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.nio.charset.Charset;
 

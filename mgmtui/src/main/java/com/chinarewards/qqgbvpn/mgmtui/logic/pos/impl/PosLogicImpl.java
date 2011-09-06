@@ -7,6 +7,7 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
@@ -36,13 +37,13 @@ public class PosLogicImpl implements PosLogic {
 
 	@Transactional
 	@Override
-	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException{
+	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException{
 		return posDao.get().savePos(posVO);
 	}
 
 	@Transactional
 	@Override
-	public void updatePos(PosVO posVO) throws PosIdIsExitsException,ParamsException{
+	public void updatePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException{
 		posDao.get().updatePos(posVO);
 	}
 

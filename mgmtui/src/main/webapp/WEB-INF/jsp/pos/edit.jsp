@@ -2,20 +2,26 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 <s:if test="msg != null">
-	<s:property value="msg"/>
+	<span style="color:red"><s:property value="msg"/></span>
+	
 </s:if>
 <s:form  namespace="/pos" action="edit" name="posForm" theme="simple" id="posForm" onsubmit="return checkPos();">
 <s:hidden name="posVO.id"/>
 <table align="center" width="600px">
 		<tr>
 			<td width="20%">
-				posId:
+				POS机编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="posVO.posId" label="posId" id="posVO.posId"/>
+				<s:if test="posVO.id == null">
+					<s:textfield name="posVO.posId" label="posId" id="posVO.posId" />
+				</s:if>
+				<s:else>
+					<s:textfield name="posVO.posId" label="posId" id="posVO.posId" readonly="true"/>
+				</s:else>
 			</td>
 			<td width="20%">
-				Serial number:
+				厂商编号:
 			</td>
 			<td width="30%">
 				<s:textfield name="posVO.sn" label="Serial number"/>
@@ -23,13 +29,13 @@
 		</tr>
 		<tr>
 			<td >
-				model:
+				型号:
 			</td>
 			<td >
 				<s:textfield name="posVO.model" label="model"/>
 			</td>
 			<td >
-				simPhoneNo:
+				电机号码:
 			</td>
 			<td >
 				<s:textfield name="posVO.simPhoneNo" label="simPhoneNo" id="posVO.simPhoneNo"/>
@@ -37,35 +43,68 @@
 		</tr>
 		<tr>
 			<td >
-				dstatus:
+				交付状态:
 			</td>
 			<td >
-				<s:select name="posVO.dstatus" value="posVO.dstatus"  list="{'DELIVERED','RETURNED'}" theme="simple" headerKey="" headerValue="--------" />
+				<input type="hidden" name="dstatus" value='<s:property value="posVO.dstatus"/>'/>
+				
+				<s:if test="posVO.id != null && posVO.dstatus == 'DELIVERED'">
+					已交付到<s:property value="posVO.deliveryAgent"/>
+				</s:if>
+				<s:else>
+					已回收
+				</s:else>
 			</td>
 			<td >
-				istatus:
+				初始化:
 			</td>
 			<td >
-				<s:select name="posVO.istatus" value="posVO.istatus"  list="{'UNINITED','INITED'}" theme="simple" headerKey="" headerValue="--------" />
+				<input type="hidden" name="istatus" value='<s:property value="posVO.istatus"/>'/>
+				<s:radio name="posVO.istatus" disabled="true" value="posVO.istatus"  list="#{'INITED':'是','UNINITED':'否'}"  listKey="key" listValue="value" theme="simple" />
 			</td>
 		</tr>
 		<tr>
 			<td >
-				ostatus:
+				运营状态:
 			</td>
 			<td >
-				<s:select name="posVO.ostatus" value="posVO.ostatus"  list="{'ALLOWED','STOPPED'}" theme="simple" headerKey="" headerValue="--------" />
+				<s:radio name="posVO.ostatus" value="posVO.ostatus"  list="#{'ALLOWED':'允许','STOPPED':'禁止'}" listKey="key" listValue="value"  theme="simple" />
 			</td>
 			<td >
-				secret:
+				密钥:
 			</td>
 			<td >
-				<s:textfield name="posVO.secret" label="secret" id="posVO.secret"/>
+				<s:textfield name="posVO.secret" label="secret" id="posVO.secret" readonly="true"/>
 			</td>
 		</tr>
+		<s:if test="posVO.id != null ">
+			<s:if test="posVO.createAt != null">
+				<tr>
+					<td>
+						输入时间:
+					</td>
+					<td charoff="3" align="left">
+						<s:date name="posVO.createAt" format="%{getText('dateformat.ymdhm')}" />
+					</td>
+				</tr>
+			</s:if>
+			<s:if test="posVO.lastModifyAt != null">
+				<tr>
+					<td>
+						最近修改时间:
+					</td>
+					<td charoff="3" align="left">
+						<s:date name="posVO.lastModifyAt" format="%{getText('dateformat.ymdhm')}" />
+					</td>
+				</tr>
+			</s:if>
+		</s:if>
+		
 		<tr>
 			<td colspan="4" align="center">
-				<input type="submit" name="submit" value="submit" />
+				<input type="submit" name="submit" value="确定" />
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="button" name="button" value="取消" onclick='window.location.href="<s:url value='/pos/list'/>"'/>
 			</td>
 		</tr>
 	</table>
@@ -75,16 +114,18 @@
 	function checkPos(){
 	     var posId = document.getElementById('posVO.posId').value.trim();      
 	     if(posId.length==0){      
-	         alert("POSID不能为空或者为空格!");
+	         alert("POSID不能为空!");
 	         return false; 
 	     }      
-	     var simPhoneNo = document.getElementById('posVO.simPhoneNo').value;  
-		 if(simPhoneNo != ""){
-			 if(!isphone(simPhoneNo)){
-			    	alert("请填写正确的手机号码！");
-			    	return false;
-			    } 
-		 }				
+	     var simPhoneNo = document.getElementById('posVO.simPhoneNo').value.trim();  
+	     if(simPhoneNo.length == 0){  
+	         alert("电机号码不能为空!");
+	         return false; 
+		 }
+		 if(!isphone(simPhoneNo)){
+		    	alert("请填写正确的电机号码！");
+		    	return false;
+		 } 
 		 var secret = document.getElementById('posVO.secret').value.trim();  
 		 var pr = /^([0-9]{6})$/;
 		 if(secret != "" && !pr.test(secret)){

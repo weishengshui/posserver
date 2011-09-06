@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.config;
+package com.chinarewards.qqgbvpn.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,8 +17,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.main.test.GuiceTest;
-import com.chinarewards.qqgbvpn.main.HomeDirLocator;
+import com.chinarewards.qqgbpvn.core.test.GuiceTest;
+import com.chinarewards.qqgbvpn.common.HomeDirLocator;
+import com.chinarewards.qqgbvpn.config.ConfigReader;
 
 /**
  * 

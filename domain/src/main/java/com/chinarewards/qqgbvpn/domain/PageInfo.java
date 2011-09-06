@@ -7,6 +7,9 @@ public class PageInfo<T> implements Serializable {
 
 	private static final long serialVersionUID = 4959472402595748283L;
 
+	/**
+	 * XXX why hard code this in a value object!?!?!?
+	 */
 	private int pageSize = 4; // 每页显示4行
 
 	private int recordCount; // 总行数

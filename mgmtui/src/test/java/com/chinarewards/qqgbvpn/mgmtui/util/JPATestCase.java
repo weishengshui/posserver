@@ -9,6 +9,8 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
+import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.guice.QqgbvpnServiceModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -22,7 +24,7 @@ import com.google.inject.persist.jpa.JpaPersistModule;
  * @author huangwei
  *
  */
-public class JPATestCase extends TestCase{
+public abstract class JPATestCase extends TestCase{
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	protected Injector injector;
@@ -40,6 +42,7 @@ public class JPATestCase extends TestCase{
 	protected Module[] getModules() {
 
 		Module[] modules = new Module[] { new QqgbvpnServiceModule(),
+				 new DefaultJournalModule(),new SimpleDateTimeModule(),
 		// JPA module
 		new JpaPersistModule("posnet").properties(getJPAProperties())
 		};

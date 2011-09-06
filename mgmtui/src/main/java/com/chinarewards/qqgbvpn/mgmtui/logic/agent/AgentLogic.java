@@ -59,5 +59,16 @@ public interface AgentLogic {
 	 * @author Seek
 	 */
 	AgentVO findById(String id) throws ServiceException;
+
+	/**
+	 * description：agent是否存在
+	 * @param id 	agentId
+	 * @param name 	agentName
+	 * @return {true存在    false不存在}
+	 * @throws ServiceException
+	 * @time 2011-9-6   上午09:52:26
+	 * @author Seek
+	 */
+	boolean agentIsExist(String id, String name) throws ServiceException;
 	
 }

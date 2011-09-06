@@ -32,6 +32,8 @@ public class AgentAction extends BasePagingToolBarAction {
 
 	private AgentSearchVO agentSearchVO = new AgentSearchVO();
 	
+	private boolean agentIsExist;
+
 	@Override
 	public String execute(){
 		agentSearchVO.setSize(getPageSize());
@@ -89,6 +91,22 @@ public class AgentAction extends BasePagingToolBarAction {
 	}
 	
 	/**
+	 * description：agent是否存在
+	 * @return
+	 * @time 2011-9-6   上午10:37:24
+	 * @author Seek
+	 */
+	public String agentIsExist(){
+		try{
+			agentIsExist = getAgentLogic().agentIsExist(agentVO.getId(), agentVO.getName());
+			return SUCCESS;
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+	}
+	
+	/**
 	 * description：编辑或修改
 	 * @return
 	 * @time 2011-9-5   下午07:12:46
@@ -99,7 +117,7 @@ public class AgentAction extends BasePagingToolBarAction {
 		try {
 			agentVO.setName(agentVO.getName().trim());
 			agentVO.setEmail(agentVO.getEmail().trim());
-			
+					
 			if(Tools.isEmptyString(agentVO.getId())){
 				getAgentLogic().save(agentVO);
 			}else{
@@ -167,6 +185,14 @@ public class AgentAction extends BasePagingToolBarAction {
 
 	public void setAgentSearchVO(AgentSearchVO agentSearchVO) {
 		this.agentSearchVO = agentSearchVO;
+	}
+	
+	public boolean isAgentIsExist() {
+		return agentIsExist;
+	}
+
+	public void setAgentIsExist(boolean agentIsExist) {
+		this.agentIsExist = agentIsExist;
 	}
 
 }

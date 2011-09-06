@@ -3,7 +3,7 @@
  */
 package com.chinarewards.qqgbpvn.main;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Properties;
 
@@ -13,9 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.main.test.GuiceTest;
-import com.chinarewards.qqgbvpn.main.jpa.JpaPersistModuleBuilder;
-import com.google.inject.persist.jpa.JpaPersistModule;
+import com.chinarewards.qqgbpvn.core.test.GuiceTest;
+import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 
 /**
  * @author Cyril

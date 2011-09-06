@@ -14,13 +14,13 @@
 	<table align="center" width="600px">
 			<tr>
 				<td width="20%">
-					posId:
+					POS机编号:
 				</td>
 				<td width="30%">
 					<s:textfield name="posId" label="posId" id="posId"/>
 				</td>
 				<td width="20%">
-					Serial number:
+					厂商编号:
 				</td>
 				<td width="30%">
 					<s:textfield name="sn" label="Serial number" id="sn"/>
@@ -28,13 +28,13 @@
 			</tr>
 			<tr>
 				<td >
-					model:
+					型号:
 				</td>
 				<td >
 					<s:textfield name="model" label="model" id="model"/>
 				</td>
 				<td >
-					simPhoneNo:
+					电机号码:
 				</td>
 				<td >
 					<s:textfield name="simPhoneNo" label="simPhoneNo" id="simPhoneNo"/>
@@ -42,27 +42,27 @@
 			</tr>
 			<tr>
 				<td >
-					dstatus:
+					交付状态:
 				</td>
 				<td >
-					<s:select name="dstatus" id="dstatus" value="dstatus"  list="{'DELIVERED','RETURNED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="dstatus" id="dstatus" value="dstatus"   list="#{'DELIVERED':'已交付','RETURNED':'已回收'}" listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 				</td>
 				<td >
-					istatus:
+					初始化:
 				</td>
 				<td >
-					<s:select name="istatus" value="istatus" id="istatus" list="{'UNINITED','INITED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="istatus" value="istatus" id="istatus" list="#{'INITED':'是','UNINITED':'否'}"  listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" />
 				</td>
 			</tr>
 			<tr>
 				<td >
-					ostatus:
+					运营状态:
 				</td>
 				<td >
-					<s:select name="ostatus" value="ostatus" id="ostatus"  list="{'ALLOWED','STOPPED'}" theme="simple" headerKey="" headerValue="--------" />
+					<s:select name="ostatus" value="ostatus" id="ostatus"   list="#{'ALLOWED':'允许','STOPPED':'禁止'}"  listKey="key" listValue="value"  theme="simple" headerKey="" headerValue="--------" />
 				</td>
 				<td >
-					secret:
+					密钥:
 				</td>
 				<td >
 					<s:textfield name="secret" id="secret" label="secret"/>

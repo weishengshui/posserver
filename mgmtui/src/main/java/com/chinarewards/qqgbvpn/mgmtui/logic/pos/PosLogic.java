@@ -1,10 +1,9 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.pos;
 
-import java.util.List;
-
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -17,6 +16,12 @@ import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
  */
 public interface PosLogic {
 
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws ParamsException
+	 */
 	public PosVO getPosById(String id)throws ParamsException;
 	
 	/**
@@ -25,7 +30,7 @@ public interface PosLogic {
 	 * @param name
 	 * @return
 	 */
-	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException;
+	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException;
 	
 	/**
 	 * 删除Pos
@@ -39,7 +44,7 @@ public interface PosLogic {
 	 * 
 	 * @param posVO
 	 */
-	public void updatePos(PosVO posVO)throws PosIdIsExitsException,ParamsException; 
+	public void updatePos(PosVO posVO)throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException; 
 	
 	/**
 	 * 查询Pos

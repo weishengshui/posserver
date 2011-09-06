@@ -1,22 +1,27 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.agent.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -32,9 +37,27 @@ public class AgentDaoImpl implements AgentDao {
 
 	@Inject
 	Provider<EntityManager> em;
+	
+	@Inject
+	Provider<JournalLogic> journalLogic;
 
 	public EntityManager getEm() {
 		return em.get();
+	}
+	
+	private void addLog(Agent agent, String processType){
+		// Add journal.
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(agent);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			eventDetail = e.toString();
+		}
+
+		journalLogic.get().logEvent(processType,
+				DomainEntity.AGENT.toString(), agent.getId(), eventDetail);
 	}
 
 	@Override
@@ -46,10 +69,18 @@ public class AgentDaoImpl implements AgentDao {
 			//获取总数 以及 列表
 			Integer countTotal = Integer.parseInt(queryAgent(COUNT, agentSearchVO).getSingleResult().toString());
 			agentStore.setCountTotal(countTotal);
-			agentStore.setAgentVOList(queryAgent(LIST, agentSearchVO).getResultList());
 			
-			log.debug("queryAgent(): count={}, VO list size={}", countTotal, agentStore.getAgentVOList().size());
+			List<Agent> agentList = queryAgent(LIST, agentSearchVO).getResultList();
 			
+			List<AgentVO> agentVOList = new ArrayList<AgentVO>();
+			for(Agent agent:agentList){
+				AgentVO agentVO = new AgentVO();
+				agentVO.setId(agent.getId());
+				agentVO.setName(agent.getName());
+				agentVO.setEmail(agent.getEmail());
+				agentVOList.add(agentVO);
+			}
+			agentStore.setAgentVOList(agentVOList);
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}
@@ -75,7 +106,7 @@ public class AgentDaoImpl implements AgentDao {
 			param.put("agentName", "%"+agentSearchVO.getAgentName().toUpperCase()+"%");
 		}
 		
-		log.debug(" queryShop SQL : " + hql);
+		log.debug(" queryAgent SQL : " + hql);
 		
 		Query query = getEm().createQuery(hql.toString());
 		
@@ -110,6 +141,11 @@ public class AgentDaoImpl implements AgentDao {
 			getEm().persist(agent);
 			
 			agentVO.setId(agent.getId());
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_ADDED_AGENT.toString());
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -136,6 +172,11 @@ public class AgentDaoImpl implements AgentDao {
 			getEm().merge(agent);
 			
 			agentVO.setId(agent.getId());
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_UPDATED_AGENT.toString());
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -152,6 +193,11 @@ public class AgentDaoImpl implements AgentDao {
 			}
 			Agent agent = getEm().find(Agent.class, agentId);
 			getEm().remove(agent);
+			
+			
+			//加入日志
+			addLog(agent, DomainEvent.USER_REMOVED_AGENT.toString());
+			
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}
@@ -180,6 +226,48 @@ public class AgentDaoImpl implements AgentDao {
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}	
+	}
+
+	@Override
+	public boolean agentIsExist(String id, String name) throws ServiceException {
+		log.trace("calling agentIsExist() agentId={0} agentName={1} ", id, name);
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		StringBuffer hql = new StringBuffer();
+		try {
+			hql.append(" SELECT COUNT(ag.id) FROM Agent ag WHERE 1=1 ");
+			
+			if (!Tools.isEmptyString(id)) {
+				hql.append(" AND ag.id != :agentId");
+				param.put("agentId", id);
+			}
+			
+			if (!Tools.isEmptyString(name)) {
+				hql.append(" AND ag.name = :agentName");
+				param.put("agentName", name);
+			}
+			
+			log.debug(" agentIsExist SQL : " + hql);
+			
+			Query query = getEm().createQuery(hql.toString());
+			
+			if (param.size() > 0) {
+				Set<String> key = param.keySet();
+				for (String s : key) {
+					query.setParameter(s, param.get(s));
+				}
+			}
+			
+			Long count = (Long) query.getSingleResult();
+			
+			if(count > 0){
+				return true;
+			}else {
+				return false;
+			}
+		}catch(Throwable e){
+			throw new ServiceException(e);
+		}
 	}
 	
 }

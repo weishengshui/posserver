@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.jpa;
+package com.chinarewards.qqgbvpn.core.jpa;
 
 import java.util.Iterator;
 import java.util.Properties;

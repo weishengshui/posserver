@@ -5,6 +5,7 @@
 
 <struts>
 	<package name="agent_package" extends="default" namespace="/agent">
+		<default-interceptor-ref name="secureStack" />
 		
 		<action name="searchAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction">
 			<result name="success" type="tiles">agent.searchAgent</result>
@@ -16,6 +17,13 @@
 		
 		<action name="showEditAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="showEditAgent">
 			<result name="success" type="tiles">agent.showEditAgent</result>
+		</action>
+		
+		<action name="agentIsExist" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="agentIsExist">
+			<result name="success" type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
 		</action>
 		
 		<action name="editAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="editAgent">

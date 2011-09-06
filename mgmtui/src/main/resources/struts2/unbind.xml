@@ -5,6 +5,7 @@
 
 <struts>
 	<package name="unbind" extends="default" namespace="/unbind">
+		<default-interceptor-ref name="secureStack" />
 		<!-- find all album -->
 		<action name="list"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction">

@@ -1,10 +1,17 @@
 package com.chinarewards.qqgbvpn.mgmtui.agent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
+import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase;
+import com.google.inject.Module;
 
 /**
  * agent logic test
@@ -18,8 +25,22 @@ public class AgentLogicTest extends JPATestCase{
 		super();
 	}
 	
-	
-	
+
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase#getModules()
+	 */
+	protected Module[] getModules() {
+		Module[] modules = super.getModules();
+		
+		List<Module> m = new ArrayList<Module>(Arrays.asList(modules));
+		m.add(new DefaultJournalModule());
+		m.add(new SimpleDateTimeModule());
+		return m.toArray(new Module[0]);
+	}
+
+
+
+
 	public void testPosLogic() throws Exception{
 		AgentLogic agentLogic = injector.getInstance(AgentLogic.class);
 		AgentVO agentVO = new AgentVO();

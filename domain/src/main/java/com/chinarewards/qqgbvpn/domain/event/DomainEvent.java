@@ -17,26 +17,13 @@ public enum DomainEvent {
 	 * Expected domain: SysUser
 	 * <p>
 	 * 
-	 * Detail
+	 * The following information should he logged:
 	 * <ol>
 	 * <li>Username (SysUser.username)</li>
 	 * <li>IP address (ip)</li>
 	 * </ol>
-	 * 
 	 */
 	USER_LOGGED_IN,
-
-	/**
-	 * User has added a POS machine.
-	 * <p>
-	 * 
-	 * The following should he logged:
-	 * <ol>
-	 * <li>Complete POS information (entity POS)</li>
-	 * <li>Username of the SysUser who performed this action.</li>
-	 * </ol>
-	 */
-	USER_ADDED_POS,
 
 	/**
 	 * User has added a POS machine.
@@ -45,9 +32,38 @@ public enum DomainEvent {
 	 * Expected domain: POS.
 	 * <p>
 	 * 
+	 * Expected entity ID: Pos.getId()
+	 * <p>
+	 * 
+	 * The following information should he logged:
+	 * <ol>
+	 * <li>Complete POS information (entity POS)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_ADDED_POS,
+
+	/**
+	 * User has edited a POS machine.
+	 * <p>
+	 * 
 	 * The following should he logged:
 	 * <ol>
 	 * <li>Complete POS information (entity POS)</li>
+	 * <li>Username of the SysUser who performed this action.</li>
+	 * </ol>
+	 */
+	USER_EDITED_POS,
+
+	/**
+	 * User has removed a POS machine.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
 	 * <li>Username of the SysUser who performed this action.</li>
 	 * </ol>
 	 */
@@ -150,16 +166,52 @@ public enum DomainEvent {
 	POS_INIT_REQ,
 
 	/**
-	 * Event:
+	 * Event: POS initialization successful.
 	 * <p>
 	 * 
 	 * Expected domain: POS.
 	 * <p>
 	 * 
+	 * Expected entity ID: Pos.getId()
+	 * <p>
 	 */
 	POS_INIT_OK,
 
-	POS_INIT_FAILED, POS_LOGGED_IN, POS_LOGGED_FAILED, //
+	/**
+	 * Event: POS initialization failed.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * Expected entity ID: Pos.getId()
+	 * <p>
+	 */
+	POS_INIT_FAILED,
+
+	/**
+	 * Event: POS initialization failed.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * Expected entity ID: Pos.getId()
+	 * <p>
+	 */
+	POS_LOGGED_IN,
+
+	/**
+	 * Event: POS initialization failed.
+	 * <p>
+	 * 
+	 * Expected domain: POS.
+	 * <p>
+	 * 
+	 * Expected entity ID: Pos.getId()
+	 * <p>
+	 */
+	POS_LOGGED_FAILED, //
 
 	/**
 	 * Event: A product search action has been performed.
@@ -210,7 +262,18 @@ public enum DomainEvent {
 	POS_UNBIND_SUCCESS,
 
 	/**
-	 * Unbind pos asssignment failed
+	 * Unbind pos asssignment failed.
+	 * <p>
+	 * 
+	 * Expected domain: POS
+	 * <p>
+	 * 
+	 * Expected domain: POS
+	 * <p>
+	 * 
+	 * The following should he logged:
+	 * <ol>
+	 * </ol>
 	 */
 	POS_UNBIND_FAILED,
 

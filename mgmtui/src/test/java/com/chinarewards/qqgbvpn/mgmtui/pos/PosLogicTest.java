@@ -1,65 +1,86 @@
 package com.chinarewards.qqgbvpn.mgmtui.pos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
+import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase;
+import com.google.inject.Module;
 
 /**
  * pos logice test
  * 
  * @author huangwei
- *
+ * 
  */
-public class PosLogicTest extends JPATestCase{
+public class PosLogicTest extends JPATestCase {
 
-	public PosLogicTest(){
+	public PosLogicTest() {
 		super();
 	}
-	
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase#getModules()
+	 */
+	protected Module[] getModules() {
+		Module[] modules = super.getModules();
+
+		List<Module> m = new ArrayList<Module>(Arrays.asList(modules));
+		m.add(new DefaultJournalModule());
+		m.add(new SimpleDateTimeModule());
+		return m.toArray(new Module[0]);
+	}
+
 	@Test
-	public void testPosLogic() throws Exception{
+	public void testPosLogic() throws Exception {
 		PosLogic posLogic = injector.getInstance(PosLogic.class);
 		PosVO posVO = new PosVO();
 		posVO.setPosId("pos_001");
-		//save
+		posVO.setSimPhoneNo("13480009000");
 		PosVO posVO1 = posLogic.savePos(posVO);
 		assertNotNull(posVO1);
 		assertNotNull(posVO1.getId());
-		
-		//get Pos by Id
+
+		// get Pos by Id
 		PosVO posVO2 = posLogic.getPosById(posVO1.getId());
 		assertNotNull(posVO2);
 		assertEquals(posVO2.getPosId(), posVO.getPosId());
-		
-		//update
+
+		// update
 		posVO2.setPosId("pos_002");
 		posLogic.updatePos(posVO2);
 		PosVO posVO3 = posLogic.getPosById(posVO2.getId());
 		assertEquals("pos_002", posVO3.getPosId());
-		
-		//delete
+
+		// delete
 		posLogic.deletePosById(posVO1.getId());
 		posVO2 = posLogic.getPosById(posVO1.getId());
 		assertNull(posVO2);
-		
-		//search
+
+		// search
 		{
-			for(int i=0;i<10;i++){
+			for (int i = 0; i < 10; i++) {
 				PosVO posVOTmp = new PosVO();
-				posVOTmp.setPosId("pos_"+i);
+				posVOTmp.setPosId("pos_" + i);
+				posVOTmp.setSimPhoneNo("1348000910"+i);
 				posLogic.savePos(posVOTmp);
 			}
-			PageInfo<PosVO>  pageInfo = posLogic.queryPos(null, null);
+			PageInfo<PosVO> pageInfo = posLogic.queryPos(null, null);
 			assertNotNull(pageInfo);
 			assertEquals(pageInfo.getRecordCount(), 10);
 			assertEquals(pageInfo.getItems().size(), 10);
-			
+
 			PaginationTools paginationTools = new PaginationTools();
 			paginationTools.setCountOnEachPage(6);
 			paginationTools.setStartIndex(0);
@@ -76,7 +97,5 @@ public class PosLogicTest extends JPATestCase{
 			assertEquals(pageInfo.getItems().size(), 2);
 		}
 	}
-	
-	
-	
+
 }

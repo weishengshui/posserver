@@ -2,36 +2,67 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags"%>
 	<table align="center" width="800px">
-		<tr>
+		<tr align="center">
 			<td>&nbsp;&nbsp;</td>
-			<td>PosId</td>
-			<td>model</td>
-			<td>sn</td>
-			<td>simPhoneNo</td>
-			<td>dstatus</td>
-			<td>istatus</td>
-			<td>ostatus</td>
-			<td>secret</td>
-			<td>修改</td>
-			<td>删除</td>
+			<td>POS机编号</td>
+			<td>厂商编号</td>
+			<td>型号</td>
+			<td>电机号码</td>
+			<td>交付状态</td>
+			<td>初始化</td>
+			<td>运营状态</td>
+			<td>密钥</td>
+			<td>操作</td>
 		</tr>
 	<s:if test="#request.posVOList != null && #request.posVOList.size()>0">
 	  <s:iterator  value="#request.posVOList" id="posTmp" status="stat">
-	  <tr>
+	  <tr align="center">
 			<td>
 				<s:property value="#stat.index + 1"/>
 			</td>
-			<td><s:property value="#posTmp.posId" /></td>
+			<td>
+				<a href='<s:url value="/pos/detail"/>/<s:property value="#posTmp.id"/>'>
+					<s:property value="#posTmp.posId" />
+				</a>
+				
+			</td>
 			<td><s:property value="#posTmp.model" /></td>
 			<td><s:property value="#posTmp.sn" /></td>
 			<td><s:property value="#posTmp.simPhoneNo" /></td>
-			<td><s:property value="#posTmp.dstatus" /></td>
-			<td><s:property value="#posTmp.istatus" /></td>
-			<td><s:property value="#posTmp.ostatus" /></td>
-			<td><s:property value="#posTmp.secret" /></td>
 			<td>
-				<a href='<s:url value="/pos/detail"/>/<s:property value="#posTmp.id"/>'>修改</a>
+				<s:if test="#posTmp.dstatus == 'DELIVERED'">
+					已交付
+				</s:if>
+				<s:elseif test="#posTmp.dstatus == 'RETURNED'">
+					已回收
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
 			</td>
+			<td>
+				<s:if test="#posTmp.istatus == 'UNINITED'">
+					否
+				</s:if>
+				<s:elseif test="#posTmp.istatus == 'INITED'">
+					是
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td>
+				<s:if test="#posTmp.ostatus == 'ALLOWED'">
+					允许
+				</s:if>
+				<s:elseif test="#posTmp.ostatus == 'STOPPED'">
+					禁止
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td><s:property value="#posTmp.secret" /></td>
 			<td>
 				<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>
 			</td>

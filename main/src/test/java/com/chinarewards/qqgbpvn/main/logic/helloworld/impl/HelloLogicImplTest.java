@@ -3,8 +3,6 @@
  */
 package com.chinarewards.qqgbpvn.main.logic.helloworld.impl;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.model.pos;
 
+import java.util.Date;
+
 
 public class PosVO implements java.io.Serializable{
 	
@@ -22,6 +24,8 @@ public class PosVO implements java.io.Serializable{
 	String simPhoneNo;
 
 	String dstatus;
+	
+	String deliveryAgent;
 
 	String istatus;
 
@@ -29,6 +33,10 @@ public class PosVO implements java.io.Serializable{
 
 	// POS 内置唯一标识。6位字符
 	String secret;
+	
+	Date createAt;
+	
+	Date lastModifyAt;
 
 	//-------------------------------------------//
 
@@ -103,7 +111,29 @@ public class PosVO implements java.io.Serializable{
 	public void setSecret(String secret) {
 		this.secret = secret;
 	}
-	
-	
+
+	public String getDeliveryAgent() {
+		return deliveryAgent;
+	}
+
+	public void setDeliveryAgent(String deliveryAgent) {
+		this.deliveryAgent = deliveryAgent;
+	}
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
+
+	public Date getLastModifyAt() {
+		return lastModifyAt;
+	}
+
+	public void setLastModifyAt(Date lastModifyAt) {
+		this.lastModifyAt = lastModifyAt;
+	}
 
 }

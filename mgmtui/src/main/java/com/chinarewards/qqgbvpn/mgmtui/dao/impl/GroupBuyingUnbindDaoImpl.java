@@ -188,6 +188,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			}
 			return pa;
 		} catch (Exception e) {
+			// XXX why mute the exception!?
 			return null;
 		}
 	}
@@ -217,6 +218,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
 			return resultList;
 		} catch (Exception e) {
+			// XXX why mute the exception!?!?!
 			return pageInfo;
 		}
 	}
@@ -419,6 +421,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			}
 			return agent;
 		} catch (Exception e) {
+			// XXX why mute the exception!?
 			return null;
 		}
 	}

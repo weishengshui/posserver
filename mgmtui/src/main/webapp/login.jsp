@@ -3,6 +3,7 @@
 <%@ taglib prefix="s" uri="/struts-tags"%>
 
 <s:form action="login" method="POST">
+	<s:hidden name="backUrl"/>
 	<font style="color:red;"><s:fielderror fieldName="loginError" /></font>
 
 	<s:textfield id="username" name="username" label="用户名" tabindex="1"/>

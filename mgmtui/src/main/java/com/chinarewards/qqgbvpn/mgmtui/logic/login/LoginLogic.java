@@ -4,8 +4,10 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.login;
 
 /**
- * @author cream
  * 
+ * 
+ * @author cream
+ * @since 0.1.0
  */
 public interface LoginLogic {
 

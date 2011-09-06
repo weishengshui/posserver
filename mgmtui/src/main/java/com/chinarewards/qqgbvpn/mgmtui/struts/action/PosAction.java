@@ -3,8 +3,12 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
@@ -71,6 +75,12 @@ public class PosAction extends BasePagingAction{
 			}
 		}else{
 			posVO = new PosVO();
+			//默认可运营
+			posVO.setOstatus(PosOperationStatus.ALLOWED.toString());
+			//默认没有初始化
+			posVO.setIstatus(PosInitializationStatus.UNINITED.toString());
+			//默认已回收
+			posVO.setDstatus(PosDeliveryStatus.RETURNED.toString());
 		}
 		return SUCCESS;
 	}
@@ -78,6 +88,8 @@ public class PosAction extends BasePagingAction{
 	public String editPos(){
 		log.debug("posAction call editPos");
 		try {
+			posVO.setDstatus(dstatus);
+			posVO.setIstatus(istatus);
 			if(Tools.isEmptyString(posVO.getId())){
 				getPosLogic().savePos(posVO);
 			}else{
@@ -87,7 +99,11 @@ public class PosAction extends BasePagingAction{
 			log.error("editPos fail",e);
 			return INPUT;
 		}catch (PosIdIsExitsException e) {
-			msg = "PosId已存在";
+			msg = "POS机编号已存在";
+			log.error("editPos fail",e);
+			return INPUT;
+		}catch (SimPhoneNoIsExitsException e) {
+			msg = "电机号码已存在";
 			log.error("editPos fail",e);
 			return INPUT;
 		}catch (Exception e) {
