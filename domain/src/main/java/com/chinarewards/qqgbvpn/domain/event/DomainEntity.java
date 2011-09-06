@@ -30,6 +30,12 @@ public enum DomainEntity {
 	DELIVERY_NOTE,
 
 	/**
+	 * Delivery note detail. The entity ID should be
+	 * <code>DeliveryNoteDetail.getId()</code>.
+	 */
+	DELIVERY_NOTE_DETAIL,
+
+	/**
 	 * Return note. The entity ID should be <code>ReturnNote.getId()</code>.
 	 */
 	RETURN_NOTE,
