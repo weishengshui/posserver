@@ -102,7 +102,7 @@
 				<version>10.2.0.4</version>
 				<scope>runtime</scope>
 			</dependency>
-			<!-- MySQL JDBC driver -->
+			<!-- MySQL JDBC driver - Use for running, not for programming -->
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
