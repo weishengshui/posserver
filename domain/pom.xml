@@ -10,8 +10,8 @@
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>domain</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<name>QQ Group Buy Validation POS Network Domain Model</name>
-	<description>QQ Group Buy Validation POS Network Domain Model</description>
+	<name>POS Network Server 2 Domain Model</name>
+	<description>POS Network Server 2 Domain Model</description>
 	<dependencies>
 		<!-- JPA Support -->
 		<dependency>

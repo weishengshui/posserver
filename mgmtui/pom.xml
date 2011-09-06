@@ -10,8 +10,8 @@
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>mgmtui</artifactId>
 	<packaging>war</packaging>
-	<name>Main Server for QQ Group Buy Validation POS Network Management UI</name>
-	<description>Main Server for QQ Group Buy Validation POS Network Management UI</description>
+	<name>POS Network Server 2 Management UI</name>
+	<description>Management user interface for POS Network server version 2</description>
 
 	<properties>
 		<struts.version>2.2.3</struts.version>

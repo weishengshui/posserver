@@ -19,7 +19,7 @@ public class InitCommandHandler implements ServiceHandler {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Inject
-	public LoginManager loginManager;
+	protected LoginManager loginManager;
 	
 	
 	/* (non-Javadoc)

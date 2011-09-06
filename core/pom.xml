@@ -8,8 +8,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>core</artifactId>
-	<name>Core logic</name>
-	<description>Core logic</description>
+	<name>POS Network Server 2 core logic</name>
+	<description>Contains core logic.</description>
 	<dependencies>
 
 		<!-- Self-related projects -->
