@@ -21,7 +21,7 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.struts2.Struts2GuicePluginModule;
 
 /**
- * Entry point for all guice configurations. Register any Guice module here.
+ * Entry point for all guice configurations. Register any Guice modules here.
  * 
  * @author cyril
  * @since 0.1.0
@@ -45,7 +45,6 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		Injector injector = (Injector) servletContextEvent.getServletContext()
 				.getAttribute(Injector.class.getName());
 		injector.getInstance(PersistService.class).start();
-
 	}
 
 	/*
