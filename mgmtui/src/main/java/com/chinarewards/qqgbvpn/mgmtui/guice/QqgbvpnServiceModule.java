@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
+import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteAdapter;
+import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteDetailAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
@@ -48,8 +50,9 @@ public class QqgbvpnServiceModule extends AbstractModule {
 		bind(DeliveryLogic.class).to(DeliveryLogicImpl.class);
 		bind(DeliveryDao.class).to(DeliveryDaoImpl.class);
 		bind(DeliveryDetailDao.class).to(DeliveryDetailDaoImpl.class);
-		
-		
+		bind(DeliveryNoteAdapter.class);
+		bind(DeliveryNoteDetailAdapter.class);
+
 	}
 
 }
