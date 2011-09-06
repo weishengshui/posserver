@@ -20,7 +20,7 @@
 <ul>
 
 	<!-- Home STARTS-->
-	<li><a href="#">首页</a></li>
+	<li><a href="<s:url value="/"/>">首页</a></li>
 	<!-- Home ENDS  -->
 	
 	<!-- Shop STARTS -->
