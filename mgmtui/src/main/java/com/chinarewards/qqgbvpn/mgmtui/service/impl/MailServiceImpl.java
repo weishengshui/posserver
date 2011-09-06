@@ -8,6 +8,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -16,6 +18,8 @@ import com.google.inject.Inject;
 
 public class MailServiceImpl implements MailService {
 	
+	protected Logger log = LoggerFactory.getLogger(getClass());
+	
 	@Inject
 	protected Configuration configuration;
 
@@ -23,6 +27,11 @@ public class MailServiceImpl implements MailService {
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
 		JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
+		
+		log.debug("smtp.server={}", configuration.getString("smtp.server"));
+		log.debug("smtp.username={}", configuration.getString("smtp.username"));
+		log.debug("smtp.password={}", configuration.getString("smtp.password"));
+		
 		javaMail.setHost(configuration.getString("smtp.server"));
 		javaMail.setUsername(configuration.getString("smtp.username"));
 		javaMail.setPassword(configuration.getString("smtp.password"));

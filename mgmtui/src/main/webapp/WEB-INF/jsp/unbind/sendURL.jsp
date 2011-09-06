@@ -13,6 +13,7 @@
 </s:if>
 <s:form action="sendURL" namespace="/unbind" method="Post" id="sendURLForm">
 <s:hidden name="agentId" id="agentId" />
+<s:hidden name="agentEmail" id="agentEmail" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>

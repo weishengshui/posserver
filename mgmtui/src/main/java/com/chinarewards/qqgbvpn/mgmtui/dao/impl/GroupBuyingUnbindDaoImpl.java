@@ -412,8 +412,8 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	
 	public Agent getAgentByRnId(String rnId) {
 		try {
-			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = "
-						+ ReturnNoteStatus.CONFIRMED + " and rn.id = ?1");
+			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
+						+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
 			jql.setParameter(1, rnId);
 			List resultList = jql.getResultList();
 			Agent agent = null;

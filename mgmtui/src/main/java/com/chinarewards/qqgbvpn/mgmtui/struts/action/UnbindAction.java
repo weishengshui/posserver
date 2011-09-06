@@ -210,6 +210,8 @@ public class UnbindAction extends BaseAction {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(10);
 				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, a.getId());
+				this.setAgentId(a.getId());
+				this.setAgentName(a.getName());
 				this.setAgent(a);
 				/*this.setAgentId(a.getId());
 				this.setAname(a.getName());
@@ -327,6 +329,7 @@ public class UnbindAction extends BaseAction {
 			Agent a = groupBuyingUnbindMgr.get().getAgentByName(agentName.trim());
 			if (a != null) {
 				this.setAgentId(a.getId());
+				this.setAgentEmail(a.getEmail());
 				this.setAgent(a);
 				/*this.setAgentId(a.getId());
 				this.setAname(a.getName());
