@@ -55,9 +55,16 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 	}
 
 	@Override
-	public DeliveryNoteVO save(DeliveryNoteVO vo) {
+	public DeliveryNoteVO create(DeliveryNoteVO vo) {
 		DeliveryNote dn = deliveryNoteAdapter.get().convertToEntity(vo);
 		getEm().persist(dn);
+		return deliveryNoteAdapter.get().convertToVO(dn);
+	}
+
+	@Override
+	public DeliveryNoteVO merge(DeliveryNoteVO vo) {
+		DeliveryNote dn = deliveryNoteAdapter.get().convertToEntity(vo);
+		getEm().merge(dn);
 		return deliveryNoteAdapter.get().convertToVO(dn);
 	}
 
