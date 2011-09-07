@@ -51,10 +51,13 @@
 	<definition name="delivery.searchDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/search_delivery.jsp" />
 	</definition>
+	
+	<definition name="delivery.showAddPosForDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_addPosForDelivery.jsp" />
+	</definition>
 	<definition name="delivery.printDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/print_delivery.jsp" />
 	</definition>
-	
 	<!-- delivery end -->
 	
 </tiles-definitions>

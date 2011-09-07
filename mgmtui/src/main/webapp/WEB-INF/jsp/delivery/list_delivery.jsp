@@ -27,10 +27,10 @@
 					<s:property value="#deliveryNoteVO.dnNumber" />
 				</td>
 				<td>
-					<s:if test="#deliveryNoteVO.status == 'PRINTED'">
+					<s:if test="'PRINTED' == #deliveryNoteVO.status">
 						已打印
 					</s:if>
-					<s:elseif test="#deliveryNoteVO.status == 'CONFIRMED'">
+					<s:elseif test="'CONFIRMED' == #deliveryNoteVO.status">
 						已确认
 					</s:elseif>
 					<s:else>
