@@ -49,5 +49,13 @@ public interface DeliveryDao {
 	 * @param vo
 	 * @return
 	 */
-	public DeliveryNoteVO save(DeliveryNoteVO vo);
+	public DeliveryNoteVO create(DeliveryNoteVO vo);
+
+	/**
+	 * Call em.merge() to save it.
+	 * 
+	 * @param vo
+	 * @return
+	 */
+	public DeliveryNoteVO merge(DeliveryNoteVO vo);
 }
