@@ -18,7 +18,7 @@
 	  <s:iterator  value="#request.posVOList" id="posTmp" status="stat">
 	  <tr align="center">
 			<td>
-				<s:property value="#stat.index + 1"/>
+				<s:property value="%{(page - 1) * 15 + #stat.index + 1}"/>
 			</td>
 			<td>
 				<a href='<s:url value="/pos/detail"/>/<s:property value="#posTmp.id"/>'>
