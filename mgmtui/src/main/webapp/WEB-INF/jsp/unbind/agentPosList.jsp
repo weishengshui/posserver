@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>填写申请单</title>
 </head>
 <body>
 <s:if test="errorMsg!=null">
