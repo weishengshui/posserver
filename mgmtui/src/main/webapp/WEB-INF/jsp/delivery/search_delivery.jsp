@@ -20,7 +20,7 @@
 	</tr>
 	<tr>
 		<td align="left">
-			<a href='<s:url value="/agent/showEditAgent"/>'>+新增</a>
+			<a href='<s:url value="/delivery/createDeliveryNote"/>'>+新增</a>
 		</td>
 	</tr>
 </table>

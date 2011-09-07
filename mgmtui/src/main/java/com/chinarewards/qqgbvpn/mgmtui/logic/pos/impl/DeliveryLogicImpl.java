@@ -149,7 +149,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 			throw new IllegalArgumentException("delivery note ID is missing.");
 		}
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(noteId);
-		if (DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
+		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
 			throw new IllegalArgumentException(
 					"delivery should be DRAFT, but now is " + dn.getStatus());
 		}
