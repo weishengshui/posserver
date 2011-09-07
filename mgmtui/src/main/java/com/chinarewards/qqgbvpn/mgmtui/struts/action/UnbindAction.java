@@ -18,6 +18,7 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
@@ -242,7 +243,7 @@ public class UnbindAction extends BaseAction {
 			//发送邮件
 			HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
 			String path = request.getRequestURL().toString();
-			path = path.substring(0, path.lastIndexOf("/")) + "/searchByAgent?rnId=" + rn.getId();
+			path = path.substring(0, path.lastIndexOf("/")) + "/portal/searchByAgent?rnId=" + rn.getId();
 			String[] toAdds = {this.getAgentEmail()};
 			String subject = "测试邮件";
 			String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
@@ -255,18 +256,17 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String confirmRnNumber() throws JsonGenerationException, SaveDBException{
-		try {
-			log.debug("splitPosIds(posIds) = {}", splitPosIds(posIds));
-			if (posIds != null && !"".equals(posIds.trim())) {
+	public String confirmRnNumber() throws SaveDBException {
+		if (posIds != null && !"".equals(posIds.trim())) {
+			try {
 				ReturnNote rn = getGroupBuyingUnbindManager().confirmReturnNote(
 						this.getAgentId(), rnId, splitPosIds(posIds));
-			} else {
-				// 这里应该报POS机不能为空的提示
-				this.errorMsg = "POS机信息找不到!";
+			} catch (UnUseableRNException e) {
+				this.errorMsg = "回收单已使用!";
 			}
-		} catch (Throwable e) {
-			log.error("=======catch some exception", e);
+		} else {
+			// 这里应该报POS机不能为空的提示
+			this.errorMsg = "POS机信息找不到!";
 		}
 		return SUCCESS;
 	}

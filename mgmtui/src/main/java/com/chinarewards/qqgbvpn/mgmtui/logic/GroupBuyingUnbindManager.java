@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -66,7 +67,7 @@ public interface GroupBuyingUnbindManager {
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException;
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws SaveDBException,UnUseableRNException;
 	
 	/**
 	 * 根据回收单ID查询第三方
