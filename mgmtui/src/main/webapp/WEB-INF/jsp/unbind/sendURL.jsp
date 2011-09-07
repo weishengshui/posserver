@@ -5,24 +5,24 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>邀请第三方填写申请表</title>
 </head>
 <body>
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="sendURL" namespace="/unbind" method="Post" id="sendURLForm">
-<s:hidden name="agentId" id="agentId" />
-<s:hidden name="agentEmail" id="agentEmail" />
+<input type="hidden" id="agentId" name="agentId"/>
+<input type="hidden" id="agentEmail" name="agentEmail"/>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>
+		<td width="77%">第三方名称：<input type="text" id="agentName" name="agentName" value="${agentName}" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>
 	</tr>
 </table>
-<s:if test="agent!=null && !''.equals(agent.id)">
+<s:if test="agentList!=null && agentList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td>Agent Id</td>
@@ -30,18 +30,23 @@
 		<td>Agent Email</td>
 		<td>操作</td>
 	</tr>
+	<s:iterator value="agentList" id="list">
 	<tr>
-		<td><s:property value="agent.id" /></td>
-		<td><s:property value="agent.name" /></td>
-		<td><s:property value="agent.email" /></td>
-		<td><button type="button" onclick="sendURL()">发送</button></td>
+		<td><s:property value="#list.id" /></td>
+		<td><s:property value="#list.name" /></td>
+		<td><s:property value="#list.email" /></td>
+		<td><button type="button" onclick="sendURL('${list.id}', '${list.name}','${list.email}')">发送</button></td>
 	</tr>
+	</s:iterator>
 </table>
 </s:if>
 </s:form>
 
 <script type="text/javascript">
-	function sendURL() {
+	function sendURL(agentId, agentName, email) {
+		document.getElementById("agentId").value = agentId;
+		document.getElementById("agentName").value = agentName;
+		document.getElementById("agentEmail").value = email;
 		var formObj = document.getElementById("sendURLForm");
 		formObj.action = "${ctx}/unbind/createInvite";
 		formObj.submit();

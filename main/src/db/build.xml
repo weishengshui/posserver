@@ -9,12 +9,15 @@
 		db.user
 		db.password
 		db.driver
+		db.type
 	-->
 	<property file="../conf/posnet.ini" />
+	
+	<property name="db.type">mysql</property>
 
     <path id="jdbc.classpath">
         <fileset dir="../lib">
-            <include name="hsqldb*.jar"/>
+            <include name="*.jar"/>
         </fileset>
     </path>
 
@@ -66,7 +69,7 @@
                   dir="patches"
                   outputfile="output.sql"
                   undoOutputfile="undo.sql"
-                  dbms="hsql"
+                  dbms="${db.type}"
                 />
 
         <!-- now apply the changescript to the database -->
@@ -81,7 +84,6 @@
         <sql driver="${db.driver}" url="${db.url}"
              userid="${db.user}" password="${db.password}" print="true" classpathref="jdbc.classpath">
             select * from changelog;
-            select * from test;
         </sql>
     </target>
 
