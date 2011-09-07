@@ -13,6 +13,7 @@
 </s:if>
 <s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
+<s:hidden name="agentName" id="agentName" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
