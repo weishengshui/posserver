@@ -394,7 +394,7 @@ public class PosDaoImpl implements PosDao {
 	@SuppressWarnings("unchecked")
 	private Date getPosLastModifyAtById(String entityId){
 		String hql = "select j.ts from Journal j where j.entityId = :entityId and j.event = :event order by j.ts desc";
-		List<Date> list = this.getEm().createQuery(hql).setParameter("entityId", entityId).setParameter("event", DomainEvent.USER_EDITED_POS.toString()).getResultList();
+		List<Date> list = this.getEm().createQuery(hql).setParameter("entityId", entityId).setParameter("event", DomainEvent.USER_EDITED_POS.toString()).setFirstResult(0).setMaxResults(1).getResultList();
 		if(list != null && list.size() > 0){
 			return list.get(0);
 		}else{
