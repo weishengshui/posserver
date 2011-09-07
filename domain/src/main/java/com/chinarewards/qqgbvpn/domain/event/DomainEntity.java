@@ -39,6 +39,11 @@ public enum DomainEntity {
 	 * Return note. The entity ID should be <code>ReturnNote.getId()</code>.
 	 */
 	RETURN_NOTE,
+	
+	/**
+	 * Return note invitation. The entity ID should be <code>ReturnNoteInvitation.getId()</code>.
+	 */
+	RETURN_NOTE_INVITATION,
 
 	/**
 	 * Validation. The entity ID should be <code>Validation.getId</code>
