@@ -58,6 +58,8 @@ public interface DeliveryLogic {
 
 	/**
 	 * Delete delivery note. It will delete delivery detail first.
+	 * <p>
+	 * Only DeliveryNoteStatus#DRAFT could be delete.
 	 * 
 	 * @param noteId
 	 */
@@ -78,8 +80,12 @@ public interface DeliveryLogic {
 	/**
 	 * Append POS to delivery. It will create delivery note detail.
 	 * <p>
-	 * <strong>CAREFUL:</strong>Delivery note status must be
-	 * {@code DeliveryNoteStatus#DRAFT}
+	 * <strong>CAREFUL:</strong>
+	 * <ul>
+	 * <li>Delivery note status must be {@code DeliveryNoteStatus#DRAFT}</li>
+	 * <li>Pos.dstatus must be {@code PosDeliveryStatus#DELIVERED}</li>
+	 * <li>There is no record for PosAssignment.</li>
+	 * <ul>
 	 * 
 	 * @param deliveryNoteId
 	 * @param posId
@@ -124,6 +130,8 @@ public interface DeliveryLogic {
 	 * method will change it to {@code DeliveryNoteStatus#CONFIRMED}.
 	 * <p>
 	 * Generate confirmed serial number for this delivery note.
+	 * <p>
+	 * All the POS will be set as DELIVERED and ALLOWED.
 	 * 
 	 * @param deliveryNoteId
 	 */

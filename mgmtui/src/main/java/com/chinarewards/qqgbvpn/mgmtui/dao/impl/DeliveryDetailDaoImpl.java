@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -17,6 +18,7 @@ import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteDetailAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
@@ -49,10 +51,25 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DeliveryNoteDetailVO> fetchDetailListByNoteId(String noteId) {
-		return deliveryNoteDetailAdapter.get().convertToVO(
-				getEm().createQuery(
-						"FROM DeliveryNoteDetail dnd WHERE dnd.dn.id=:dnId")
-						.setParameter("dnId", noteId).getResultList());
+		List<Object[]> list = getEm()
+				.createQuery(
+						"SELECT dnd, p.istatus FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.dn.id=:dnId")
+				.setParameter("dnId", noteId).getResultList();
+
+		List<DeliveryNoteDetailVO> resultList = new LinkedList<DeliveryNoteDetailVO>();
+
+		for (Object[] obj : list) {
+			DeliveryNoteDetail detail = (DeliveryNoteDetail) obj[0];
+			PosInitializationStatus istatus = (PosInitializationStatus) obj[1];
+
+			DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get()
+					.convertToVO(detail);
+			vo.setIstatus(istatus.toString());
+
+			resultList.add(vo);
+		}
+
+		return resultList;
 	}
 
 	@Override
@@ -93,16 +110,22 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 	@SuppressWarnings("unchecked")
 	@Override
 	public DeliveryNoteDetailVO fetchByPosId(String posId) {
-		List<DeliveryNoteDetail> dnList = getEm()
+		List<Object[]> list = getEm()
 				.createQuery(
-						"FROM DeliveryNoteDetail dnd WHERE dnd.posId=:posId")
+						"SELECT dnd, p.istatus FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.posId=:posId")
 				.setParameter("posId", posId).getResultList();
 
-		if (dnList == null || dnList.isEmpty()) {
+		if (list == null || list.isEmpty()) {
 			return null;
 		}
 
-		return deliveryNoteDetailAdapter.get().convertToVO(dnList.get(0));
+		Object[] o = list.get(0);
+		DeliveryNoteDetail detail = (DeliveryNoteDetail) o[0];
+		PosInitializationStatus istatus = (PosInitializationStatus) o[1];
+		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
+				detail);
+		vo.setIstatus(istatus.toString());
+		return vo;
 	}
 
 	@Override
@@ -139,7 +162,10 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 			log.error("Error in parse to JSON", e);
 		}
 
-		return deliveryNoteDetailAdapter.get().convertToVO(detail);
+		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
+				detail);
+		vo.setIstatus(p.getIstatus().toString());
+		return vo;
 	}
 
 	@Override
