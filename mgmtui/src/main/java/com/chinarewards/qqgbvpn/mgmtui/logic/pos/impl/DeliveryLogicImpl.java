@@ -218,6 +218,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Transactional
 	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException {
+		log.debug("Process in delivery(), noteId:{}", deliveryNoteId);
 		// Check arguments.
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");

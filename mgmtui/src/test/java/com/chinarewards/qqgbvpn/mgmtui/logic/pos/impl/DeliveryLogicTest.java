@@ -155,7 +155,7 @@ public class DeliveryLogicTest extends JPATestCase {
 
 	}
 
-//	@Test
+	@Test
 	public void testDelivery() throws Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
@@ -165,7 +165,7 @@ public class DeliveryLogicTest extends JPATestCase {
 
 		Pos pos = new Pos();
 		pos.setDstatus(PosDeliveryStatus.RETURNED);
-		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setIstatus(PosInitializationStatus.UNINITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
