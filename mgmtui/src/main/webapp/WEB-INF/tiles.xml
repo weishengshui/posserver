@@ -49,7 +49,11 @@
 	
 	<!-- delivery begin -->
 	<definition name="delivery.searchDelivery" extends="main">
-		<put-attribute name="body" value="/WEB-INF/jsp/agent/search_agent.jsp" />
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/search_delivery.jsp" />
+	</definition>
+	
+	<definition name="delivery.showAddPosForDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_addPosForDelivery.jsp" />
 	</definition>
 	<!-- delivery end -->
 	
