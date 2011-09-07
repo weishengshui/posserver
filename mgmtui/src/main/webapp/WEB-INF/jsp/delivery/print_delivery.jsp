@@ -25,11 +25,11 @@
 		<td colspan="2">
 		</td>
 	</tr>
-	<tr>
+	<tr >
 		<td>
 			交付单编号:
 		</td>
-		<td>
+		<td align="left">
 			<s:property value="#request.deliveryNoteVO.dnNumber"/>
 		</td>
 	</tr>
@@ -37,15 +37,15 @@
 		<td>
 			确定日期:
 		</td>
-		<td>
-			<s:property value="#request.deliveryNoteVO.confirmDate"/>
+		<td align="left">
+			<s:date name="#request.deliveryNoteVO.confirmDate" format="%{getText('dateformat.ymdhm')}" />
 		</td>
 	</tr>
 	<tr>
 		<td>
 			交予:
 		</td>
-		<td>
+		<td align="left">
 			<s:property value="#request.deliveryNoteVO.agent.name"/>
 		</td>
 	</tr>

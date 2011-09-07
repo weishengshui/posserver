@@ -81,6 +81,17 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		}
 		return SUCCESS;
 	}
+
+	public String deleteDelivery(){
+		try{
+			getDeliveryLogic().deleteDeliveryNote(id);
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
 	
 	//---------------------------------------------------//
 	
