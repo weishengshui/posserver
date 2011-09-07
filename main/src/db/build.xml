@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="dbdeploy_example" default="default">
+	
+	<!--
+		expected the following properties
+		
+		db.url
+		db.user
+		db.password
+		db.driver
+		db.type
+	-->
+	<property file="../conf/posnet.ini" />
+	
+	<property name="db.type">mysql</property>
+
+    <path id="jdbc.classpath">
+        <fileset dir="../lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="dbdeploy.classpath">
+        <!-- include the dbdeploy-ant jar -->
+        <fileset dir="../bin">
+            <include name="dbdeploy-ant-*.jar"/>
+        </fileset>
+
+        <!-- the dbdeploy task also needs the database driver jar on the classpath -->
+        <path refid="jdbc.classpath" />
+
+    </path>
+
+    <taskdef name="dbdeploy" classname="com.dbdeploy.AntTarget" classpathref="dbdeploy.classpath" />
+
+    <target name="default" depends="clean, update-database"/>
+
+    <target name="clean" depends="drop-and-create-database, create-changelog-table"/>
+
+    <target name="create-changelog-table">
+        <sql driver="${db.driver}" url="${db.url}"
+             userid="sa" password="" classpathref="jdbc.classpath" >
+            <fileset file="./dbdeploy/createSchemaVersionTable.mysql.sql"/>
+        </sql>
+    </target>
+
+    <target name="update-database" description="generate a sql upgrade script">
+
+        <!-- if you don't specify an output file, dbdeploy will apply the changes for you
+
+        you may need to specify delimiter and delimitertype for your scripts to be split properly - these
+         work the same as in the ant sql task, see http://ant.apache.org/manual/CoreTasks/sql.html
+        -->
+        <dbdeploy driver="${db.driver}" url="${db.url}"
+                  userid="${db.user}"
+                  password="${db.password}"
+                  dir="patches"
+                />
+
+    </target>
+
+    <target name="update-database-and-apply-as-separate-step" description="generate a sql upgrade script">
+
+        <!-- use dbdeploy to generate the change script -->
+        <dbdeploy driver="${db.driver}" url="${db.url}"
+                  userid="${db.user}"
+                  password="${db.password}"
+                  dir="patches"
+                  outputfile="output.sql"
+                  undoOutputfile="undo.sql"
+                  dbms="${db.type}"
+                />
+
+        <!-- now apply the changescript to the database -->
+        <sql driver="${db.driver}" url="${db.url}"
+             userid="${db.user}" password="${db.password}" classpathref="jdbc.classpath">
+            <fileset file="output.sql"/>
+        </sql>
+
+    </target>
+
+    <target name="dump-tables">
+        <sql driver="${db.driver}" url="${db.url}"
+             userid="${db.user}" password="${db.password}" print="true" classpathref="jdbc.classpath">
+            select * from changelog;
+        </sql>
+    </target>
+
+    <target name="drop-and-create-database">
+        <delete dir="db"/>
+        <mkdir dir="db"/>
+    </target>
+
+</project>

@@ -15,6 +15,30 @@
 			<result name="success">/WEB-INF/jsp/delivery/list_delivery.jsp</result>
 		</action>
 		
+		<action name="showAddPosForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showAddPosForDelivery">
+			<result name="success" type="tiles">delivery.showAddPosForDelivery</result>
+		</action>
+		
+		<action name="addAgentForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="addAgentForDelivery">
+			<result name="success" type="json">
+				<param name="noCache">true</param>
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		
+		<action name="addPosForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="addPosForDelivery">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/delivery</param>
+				<param name="actionName">showAddPosForDelivery</param>
+			</result>
+		</action>
+		
+		<action name="removePosForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="removePosForDelivery">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/delivery</param>
+				<param name="actionName">showAddPosForDelivery</param>
+			</result>
+		</action>
 		
 		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
 			<param name="id">{1}</param>
