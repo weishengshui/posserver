@@ -252,14 +252,18 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 							+ dn.getStatus());
 		}
 
+		Date now = dtProvider.getTime();
+
 		// modify delivery note status - DeliveryNoteStatus#CONFIRMED
 		dn.setStatus(DeliveryNoteStatus.CONFIRMED.toString());
+		dn.setConfirmDate(now);
 		dn.setDnNumber(Tools.getOnlyNumber("POSDN"));
 		getDeliveryDao().merge(dn);
 
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
 		try {
 			for (PosVO pos : posList) {
+				// check POS status.
 				if (!PosDeliveryStatus.DELIVERED.toString().equals(
 						pos.getDstatus())) {
 					throw new IllegalArgumentException(
@@ -298,8 +302,12 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 					"Delivery note status should not be DRAFT, it is "
 							+ dn.getStatus() + " now");
 		}
+
+		Date now = dtProvider.getTime();
+
 		// modify delivery note status - DeliveryNoteStatus#PRINTED
 		dn.setStatus(DeliveryNoteStatus.PRINTED.toString());
+		dn.setPrintDate(now);
 		getDeliveryDao().merge(dn);
 
 		// add journalLogic
