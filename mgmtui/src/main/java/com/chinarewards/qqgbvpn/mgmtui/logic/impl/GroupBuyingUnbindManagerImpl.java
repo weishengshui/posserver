@@ -66,9 +66,12 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @param agentName
 	 * @return
 	 */
-	@Transactional
 	public Agent getAgentByName(String agentName) {
 		return dao.get().getAgentByName(agentName);
+	}
+	
+	public List<Agent> getAgentLikeName(String agentName) {
+		return dao.get().getAgentLikeName(agentName);
 	}
 	
 	/**

@@ -43,6 +43,13 @@ public interface GroupBuyingUnbindManager {
 	public Agent getAgentByName(String agentName);
 	
 	/**
+	 * 根据第三方名称查询第三方(模糊)
+	 * @param agentName
+	 * @return
+	 */
+	public List<Agent> getAgentLikeName(String agentName);
+	
+	/**
 	 * 根据posId、sn、simPhoneNo查询相应POS机
 	 * @param info
 	 * @return

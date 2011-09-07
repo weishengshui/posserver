@@ -49,8 +49,6 @@ public class UnbindAction extends BaseAction {
 	
 	private String agentId;
 	
-	//private String aname;
-	
 	private String agentEmail;
 	
 	private PageInfo pageInfo;
@@ -68,6 +66,8 @@ public class UnbindAction extends BaseAction {
 	private String posCondition;
 	
 	private List<Pos> posList;
+	
+	private List<Agent> agentList;
 	
 	private String errorMsg;
 	
@@ -102,13 +102,13 @@ public class UnbindAction extends BaseAction {
 		this.agentId = agentId;
 	}
 
-	/*public String getAname() {
-		return aname;
+	public List<Agent> getAgentList() {
+		return agentList;
 	}
 
-	public void setAname(String aname) {
-		this.aname = aname;
-	}*/
+	public void setAgentList(List<Agent> agentList) {
+		this.agentList = agentList;
+	}
 
 	public String getAgentEmail() {
 		return agentEmail;
@@ -195,18 +195,13 @@ public class UnbindAction extends BaseAction {
 		agent = new Agent();
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
-		pageInfo.setPageSize(10);
+		pageInfo.setPageSize(initPageSize);
 		return SUCCESS;
 	}
 
 	public String search() {
 		posIds = "";
 		if (agentName != null && !"".equals(agentName.trim())) {
-			
-			//EntityManager em = this.getInstance(EntityManager.class);
-			//log.debug("em.xtaction.isActive: {}", em.getTransaction().isActive());
-			//log.debug("em.xtaction.getRollbackOnly: {}", em.getTransaction().getRollbackOnly());
-			
 			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
 				pageInfo = new PageInfo();
@@ -215,9 +210,6 @@ public class UnbindAction extends BaseAction {
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
 				this.setAgentId(a.getId());
 				this.setAgent(a);
-				/*this.setAgentId(a.getId());
-				this.setAname(a.getName());
-				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "第三方信息找不到!";
@@ -238,9 +230,6 @@ public class UnbindAction extends BaseAction {
 				this.setAgentId(a.getId());
 				this.setAgentName(a.getName());
 				this.setAgent(a);
-				/*this.setAgentId(a.getId());
-				this.setAname(a.getName());
-				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "无可用邀请!";
@@ -357,14 +346,9 @@ public class UnbindAction extends BaseAction {
 	
 	public String sendURL() {
 		if (agentName != null && !"".equals(agentName.trim())) {
-			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
-			if (a != null) {
-				this.setAgentId(a.getId());
-				this.setAgentEmail(a.getEmail());
-				this.setAgent(a);
-				/*this.setAgentId(a.getId());
-				this.setAname(a.getName());
-				this.setAgentEmail(a.getEmail());*/
+			List<Agent> list = getGroupBuyingUnbindManager().getAgentLikeName(agentName.trim());
+			if (list != null && list.size() > 0) {
+				this.setAgentList(list);
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "第三方机信息找不到!";
