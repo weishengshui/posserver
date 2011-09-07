@@ -38,6 +38,14 @@
 			<fileMode>0644</fileMode>
 		</file>
 	</files>
+	<fileSets>
+		<fileSet>
+			<directory>src/db</directory>
+			<includes />
+			<fileMode>0644</fileMode>
+			<outputDirectory>db</outputDirectory>
+		</fileSet>
+	</fileSets>
 	<dependencySets>
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>

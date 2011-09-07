@@ -16,7 +16,9 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
@@ -77,6 +79,14 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	public DeliveryNoteVO fetchById(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery id is missing");
+		}
+		return getDeliveryDao().fetchDeliveryById(noteId);
+	}
+
+	@Override
 	@Transactional
 	public PageInfo<DeliveryNoteVO> fetchDeliveryList(PaginationTools pagination) {
 		log.debug(
@@ -134,12 +144,22 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	public void deleteDeliveryNote(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery note ID is missing.");
+		}
+		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(noteId);
+		if (DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
+			throw new IllegalArgumentException(
+					"delivery should be DRAFT, but now is " + dn.getStatus());
+		}
+		getDeliveryDao().deleteById(noteId);
+	}
+
+	@Override
 	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId) {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
-		}
-		if (Tools.isEmptyString(agentId)) {
-			throw new IllegalArgumentException("Agent ID is missing.");
 		}
 
 		DeliveryNoteVO dn = null;
@@ -148,7 +168,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 					deliveryNoteId);
 			AgentVO agent = agentDao.get().findById(agentId);
 			note.setAgent(agent);
-			note.setAgentName(agent.getName());
+			note.setAgentName(agent == null ? null : agent.getName());
 			dn = getDeliveryDao().merge(note);
 		} catch (ServiceException e) {
 			log.error("unknow exception catched!", e);
@@ -236,6 +256,23 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		dn.setStatus(DeliveryNoteStatus.CONFIRMED.toString());
 		dn.setDnNumber(Tools.getOnlyNumber("POSDN"));
 		getDeliveryDao().merge(dn);
+
+		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
+		try {
+			for (PosVO pos : posList) {
+				if (!PosDeliveryStatus.DELIVERED.toString().equals(
+						pos.getDstatus())) {
+					throw new IllegalArgumentException(
+							"Pos dstatus should be PosDeliveryStatus.DELIVERED, but now is:"
+									+ pos.getDstatus());
+				}
+				pos.setDstatus(PosDeliveryStatus.DELIVERED.toString());
+				pos.setOstatus(PosOperationStatus.ALLOWED.toString());
+				posDao.get().updatePos(pos);
+			}
+		} catch (Exception e) {
+			log.error("Unknow Exception catched!", e);
+		}
 
 		// add journalLogic
 		try {

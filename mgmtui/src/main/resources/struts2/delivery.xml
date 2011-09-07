@@ -5,6 +5,7 @@
 
 <struts>
 	<package name="delivery_package" extends="default" namespace="/delivery">
+		<default-interceptor-ref name="secureStack" />
 		
 		<action name="searchDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction">
 			<result name="success" type="tiles">delivery.searchDelivery</result>
@@ -12,6 +13,18 @@
 		
 		<action name="queryDeliveryList" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="deliveryList">
 			<result name="success">/WEB-INF/jsp/delivery/list_delivery.jsp</result>
+		</action>
+		
+		
+		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
+			<param name="id">{1}</param>
+			<result name="success" type="tiles">delivery.printDelivery</result>
+		</action>
+		<action name="deleteDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="deleteDelivery">
+			<param name="id">{1}</param>
+			<result name="success" type="redirectAction">
+				<param name="actionName">searchDelivery</param>
+			</result>
 		</action>
 		
 		<!-- 

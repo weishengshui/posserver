@@ -8,6 +8,7 @@ import com.chinarewards.qqgbvpn.domain.DeliveryNote;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 
 /**
  * Delivery note Adapter
@@ -39,7 +40,8 @@ public class DeliveryNoteAdapter {
 		vo.setDnNumber(entity.getDnNumber());
 		vo.setId(entity.getId());
 		vo.setPrintDate(entity.getPrintDate());
-		vo.setStatus(entity.getStatus().toString());
+		vo.setStatus(entity.getStatus() == null ? "" : entity.getStatus()
+				.toString());
 
 		return vo;
 
@@ -81,7 +83,8 @@ public class DeliveryNoteAdapter {
 		entity.setDnNumber(vo.getDnNumber());
 		entity.setId(vo.getId());
 		entity.setPrintDate(vo.getPrintDate());
-		entity.setStatus(DeliveryNoteStatus.valueOf(vo.getStatus()));
+		entity.setStatus(Tools.isEmptyString(vo.getStatus()) ? null
+				: DeliveryNoteStatus.valueOf(vo.getStatus()));
 
 		return entity;
 	}

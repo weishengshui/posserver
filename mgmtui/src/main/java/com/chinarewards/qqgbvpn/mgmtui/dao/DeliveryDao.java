@@ -58,4 +58,12 @@ public interface DeliveryDao {
 	 * @return
 	 */
 	public DeliveryNoteVO merge(DeliveryNoteVO vo);
+
+	/**
+	 * Delete delivery note by ID. It will delete delivery note detail which
+	 * belongs to this note.
+	 * 
+	 * @param id
+	 */
+	public void deleteById(String id);
 }
