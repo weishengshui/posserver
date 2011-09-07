@@ -6,6 +6,7 @@ import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
@@ -24,6 +25,12 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	private DeliveryLogic deliveryLogic;
 	
 	private List<DeliveryNoteVO> deliveryNoteVOList;
+	
+	private String id;
+	
+	private DeliveryNoteVO deliveryNoteVO;
+	
+	private List<DeliveryNoteDetailVO> deliveryNoteDetailVOList;
 	
 	@Override
 	public String execute(){
@@ -62,6 +69,19 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		return SUCCESS;
 	}
 	
+	public String printDelivery(){
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(id);
+			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(id);
+			//print
+			getDeliveryLogic().printDelivery(id);
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
 	//---------------------------------------------------//
 	
 	private DeliveryLogic getDeliveryLogic() {
@@ -76,6 +96,31 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	public void setDeliveryNoteVOList(List<DeliveryNoteVO> deliveryNoteVOList) {
 		this.deliveryNoteVOList = deliveryNoteVOList;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public DeliveryNoteVO getDeliveryNoteVO() {
+		return deliveryNoteVO;
+	}
+
+	public void setDeliveryNoteVO(DeliveryNoteVO deliveryNoteVO) {
+		this.deliveryNoteVO = deliveryNoteVO;
+	}
+
+	public List<DeliveryNoteDetailVO> getDeliveryNoteDetailVOList() {
+		return deliveryNoteDetailVOList;
+	}
+
+	public void setDeliveryNoteDetailVOList(
+			List<DeliveryNoteDetailVO> deliveryNoteDetailVOList) {
+		this.deliveryNoteDetailVOList = deliveryNoteDetailVOList;
 	}
 	
 }

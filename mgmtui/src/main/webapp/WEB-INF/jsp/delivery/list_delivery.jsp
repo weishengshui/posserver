@@ -27,10 +27,10 @@
 					<s:property value="#deliveryNoteVO.dnNumber" />
 				</td>
 				<td>
-					<s:if test="deliveryNoteVO.status == 'PRINTED'">
+					<s:if test="#deliveryNoteVO.status == 'PRINTED'">
 						已打印
 					</s:if>
-					<s:elseif test="deliveryNoteVO.status == 'CONFIRMED'">
+					<s:elseif test="#deliveryNoteVO.status == 'CONFIRMED'">
 						已确认
 					</s:elseif>
 					<s:else>
@@ -38,8 +38,8 @@
 					</s:else>
 				</td>
 				<td>
-					<a href='<s:url value="/delivery/deleteAgent"/>?agentId=<s:property value="#deliveryNoteVO.id"/>'>打印</a>
-					<a href='<s:url value="/delivery/deleteAgent"/>?agentId=<s:property value="#deliveryNoteVO.id"/>'>删除</a>
+					<a target="_blank" href='<s:url value="/delivery/printDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>打印</a>
+					<a href='<s:url value="/delivery/deleteDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>删除</a>
 				</td>
 			</tr>
 		  </s:iterator>

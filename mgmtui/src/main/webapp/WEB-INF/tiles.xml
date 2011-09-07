@@ -49,8 +49,12 @@
 	
 	<!-- delivery begin -->
 	<definition name="delivery.searchDelivery" extends="main">
-		<put-attribute name="body" value="/WEB-INF/jsp/agent/search_agent.jsp" />
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/search_delivery.jsp" />
 	</definition>
+	<definition name="delivery.printDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/print_delivery.jsp" />
+	</definition>
+	
 	<!-- delivery end -->
 	
 </tiles-definitions>
