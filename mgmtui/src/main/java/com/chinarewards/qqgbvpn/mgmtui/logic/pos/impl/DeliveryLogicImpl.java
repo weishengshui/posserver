@@ -216,31 +216,32 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional
-	public List<String> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException {
 		// Check arguments.
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
 
-		List<String> uninitPosIds = new LinkedList<String>();
+		List<DeliveryNoteDetailVO> uninitList = new LinkedList<DeliveryNoteDetailVO>();
 
-		// fetch POS list.
-		List<PosVO> posList = getDetailDao().fetchPosByNoteId(deliveryNoteId);
+		// fetch DeliveryNoteDetail list.
+		List<DeliveryNoteDetailVO> detailList = getDetailDao()
+				.fetchDetailListByNoteId(deliveryNoteId);
 
-		if (posList == null || posList.isEmpty()) {
+		if (detailList == null || detailList.isEmpty()) {
 			throw new DeliveryNoteWithNoDetailException();
 		}
 
 		// check POS initialized status.
-		for (PosVO pos : posList) {
-			if (!pos.getIstatus().equals(
+		for (DeliveryNoteDetailVO detail : detailList) {
+			if (!detail.getIstatus().equals(
 					PosInitializationStatus.INITED.toString())) {
-				uninitPosIds.add(pos.getId());
+				uninitList.add(detail);
 			}
 		}
 
-		return uninitPosIds;
+		return uninitList;
 	}
 
 	@Override
