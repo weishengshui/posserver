@@ -1,4 +1,4 @@
-CREATE TABLE changelog (
+CREATE TABLE IF NOT EXISTS changelog (
   change_number BIGINT NOT NULL,
   complete_dt TIMESTAMP NOT NULL,
   applied_by VARCHAR(100) NOT NULL,
