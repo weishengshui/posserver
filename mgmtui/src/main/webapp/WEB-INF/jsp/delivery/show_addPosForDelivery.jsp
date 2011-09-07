@@ -56,12 +56,12 @@
 
 
 
-<table align="center" width="100%">
+<table align="center" width="100%" border="0">
 	<tr>
 		<td width="20%">
 			选择第三方：
 		</td>
-		<td>
+		<td colspan="4">
 			<select id="agentList_ID" onchange="associateAgent('<s:property value="#request.deliveryNoteVO.id"/>', this.options[this.selectedIndex].value);">
 				<option value="null"></option>
 				<s:iterator id="agentVO" value="#request.agentVOList" status="i">
@@ -76,7 +76,7 @@
 		<td>
 			编号：
 		</td>
-		<td>
+		<td colspan="4">
 			<s:property value="#request.deliveryNoteVO.dnNumber"/>
 		</td>
 	</tr>
@@ -84,7 +84,7 @@
 		<td>
 			状态：
 		</td>
-		<td>
+		<td colspan="4">
 			<s:if test="'PRINTED' == #deliveryNoteVO.status">
 				已打印
 			</s:if>
@@ -98,14 +98,15 @@
 	</tr>
 	<s:if test="#request.deliveryNoteDetailVOList != null && #request.deliveryNoteDetailVOList.size() > 0">
 		<tr>
-			<td colspan="2">
-				<table>
+			<td colspan="5">
+				<table width="100%">
 					<tr>
 						<td>POS机编号</td>
 						<td>电话号码</td>
 						<td>制造厂商</td>
 						<td>机身编号</td>
 						<td>初始化状态</td>
+						<td>操作</td>
 					</tr>
 					<s:iterator id="deliveryNoteDetailVO" value="#request.deliveryNoteDetailVOList" status="i">
 						<tr>
@@ -129,6 +130,13 @@
 									是
 								</s:else>
 							</td>
+							<td>
+								<s:a namespace="/delivery" action="removePosForDelivery">
+									<s:param name="deliveryId" value="#request.deliveryNoteVO.id"/>
+									<s:param name="deliveryNoteDetailId" value="#deliveryNoteDetailVO.id"/>
+									移除
+								</s:a>
+							</td>
 						</tr>		
 					</s:iterator>
 				</table>
@@ -136,7 +144,7 @@
 		</tr>
 	</s:if>
 	<tr>
-		<td>
+		<td colspan="5">
 			共
 			<s:if test="#request.deliveryNoteDetailVOList != null">
 				<s:property value="#request.deliveryNoteDetailVOList.size()"/>
@@ -147,16 +155,16 @@
 	</tr>
 	<tr>
 		<td>加入POS机：</td>
-		<td>
+		<td colspan="4">
 			<form action="<s:url value='/delivery/addPosForDelivery'/>" method="post" onsubmit="return checkFormContent();">
 				<input type="hidden" name="deliveryId" value="<s:property value='#request.deliveryNoteVO.id'/>"/>
-				<input type="text" id="posNum_ID" name="posNum"/>
+				<input type="text" id="posNum_ID" name="posNum" value="<s:property value='#reqeust.posNum'/>"/>
 				<input type="submit" value="添加"/>
 			</form>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2" align="center">
+		<td colspan="5" align="center">
 			<s:if test="#deliveryNoteVO.status == 'CONFIRMED' || #deliveryNoteVO.status == 'PRINTED'">
 				<input type="button" value="打印" onclick="printDelivery();" />&nbsp;&nbsp;&nbsp;
 			</s:if>
@@ -170,7 +178,19 @@
 </table>
 
 <script type="text/javascript">
+	function showErrorCode(addPosStatus){
+		if(addPosStatus != null && !isNaN(addPosStatus)){
+			//{1 不存在, 2已被使用}
+			if(addPosStatus == 1){
+				alert('POS不存在');
+			}else if(addPosStatus == 2){
+				alert('POS机已被使用');
+			}
+		}
+	}
+	
 	initAgentSelect('<s:property value="#request.deliveryNoteVO.agent.id"/>');
+	showErrorCode('<s:property value="#request.addPosStatus"/>');
 </script>
 </body>
 </html>

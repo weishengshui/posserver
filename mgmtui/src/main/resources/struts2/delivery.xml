@@ -39,6 +39,8 @@
 				<param name="namespace">/delivery</param>
 				<param name="actionName">showAddPosForDelivery</param>
 				<param name="deliveryId">${deliveryId}</param>
+				<param name="addPosStatus">${addPosStatus}</param>
+				<param name="posNum">${posNum}</param>
 			</result>
 		</action>
 		

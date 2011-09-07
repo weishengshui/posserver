@@ -73,7 +73,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		try {
 			getLogic().appendPosToNote(note.getId(), "MiaoLeGeMi");
 			fail("should not reach here.");
-		} catch (PosNotExistException e) {
+		} catch (Exception e) {
 		}
 
 	}
@@ -100,14 +100,14 @@ public class DeliveryLogicTest extends JPATestCase {
 			assertEquals("MiaoLeGeMi", detail.getPosId());
 			assertEquals("simSimSim", detail.getSimPhoneNo());
 			assertEquals("SnSnSnSn", detail.getSn());
-		} catch (PosNotExistException e) {
+		} catch (Exception e) {
 			fail("should not reach here.");
 		}
 
 	}
 
 	@Test
-	public void testDeletePosFromNote() throws PosNotExistException {
+	public void testDeletePosFromNote() throws Exception {
 		Pos pos = new Pos();
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
@@ -150,8 +150,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	}
 
 	@Test
-	public void testDelivery() throws PosNotExistException,
-			DeliveryNoteWithNoDetailException {
+	public void testDelivery() throws Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
 		agent.setName("MLGM");
@@ -176,7 +175,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	}
 
 	@Test
-	public void testConfirmDelivery() throws PosNotExistException {
+	public void testConfirmDelivery() throws Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
 		agent.setName("MLGM");
@@ -210,7 +209,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	}
 
 	@Test
-	public void testPrintDelivery() throws PosNotExistException {
+	public void testPrintDelivery() throws Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
 		agent.setName("MLGM");

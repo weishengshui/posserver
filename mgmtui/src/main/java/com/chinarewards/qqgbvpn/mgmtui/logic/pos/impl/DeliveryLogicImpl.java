@@ -26,6 +26,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
@@ -178,7 +179,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId) throws PosNotExistException {
+			String posId) throws PosNotExistException,
+			PosWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}

@@ -8,6 +8,7 @@ import java.util.List;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -94,7 +95,8 @@ public interface DeliveryLogic {
 	 *             POS not existed.
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId) throws PosNotExistException;
+			String posId) throws PosNotExistException,
+			PosWithWrongStatusException;
 
 	/**
 	 * Delete delivery note detail from note.
