@@ -13,7 +13,6 @@
 </s:if>
 <s:form action="search" namespace="/unbind" method="Post" id="listForm">
 <s:hidden name="agentId" id="agentId" />
-<s:hidden name="agentEmail" id="agentEmail" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
@@ -36,7 +35,7 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" id="posId" onclick="ckPosId(this)"/></td>
+		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
 		<td><s:property value="#list.posId" /></td>
 		<td><s:property value="#list.simPhoneNo" /></td>
 		<td><s:property value="#list.sn" /></td>
@@ -59,6 +58,21 @@
 </s:form>
 
 <script type="text/javascript">
+
+	$().ready(function() {
+		autoCheckPos();
+	});
+	
+	function autoCheckPos() {
+		var posIds = document.getElementById("posIds").value;
+		if ($.trim(posIds) != "") {
+			$(":checkbox[name='posId']").each(function() {
+				if (posIds.indexOf(this.value) != -1) {
+					this.checked = true; 
+				}
+			});
+		}
+	}
 	
 	function confirmRnNumber() {
 		var posIds = document.getElementById("posIds").value;
@@ -82,6 +96,14 @@
 		document.getElementById("posIds").value = posIds;
 		alert(document.getElementById("posIds").value);
 	}
+	
+	function goPage(pageId) {
+		var formObj = document.getElementById("listForm");
+		document.getElementById("pageInfo.pageId").value = pageId;
+		formObj.action = "${ctx}/unbind/goPage";
+		formObj.submit();
+	}
+	
 </script>
 </body>
 </html>

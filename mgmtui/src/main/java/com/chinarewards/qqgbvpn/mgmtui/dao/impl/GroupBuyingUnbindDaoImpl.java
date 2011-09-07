@@ -20,6 +20,7 @@ import com.chinarewards.qqgbvpn.domain.ReturnNoteInvitation;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
@@ -31,7 +32,7 @@ import com.google.gson.GsonBuilder;
 
 public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuyingUnbindDao {
 
-	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException {
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException {
 		String[] posIds = (String[]) params.get("posId");
 		String resultCode = (String) params.get("resultCode");
 		List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) params.get("items");
@@ -51,30 +52,23 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEntityId(pa.getId());
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
 						if (items != null) {
-							try {
-								// FIXME use Jackson JSON processor
-								GsonBuilder builder = new GsonBuilder();
-								Gson gson = builder.create();
-								journal.setEventDetail(gson.toJson(pa));
-							} catch (Exception e) {
-								throw new JsonGenerationException(e);
-							}
+							// FIXME use Jackson JSON processor 这里用那个转换延迟加载的对象会出错
+							GsonBuilder builder = new GsonBuilder();
+							Gson gson = builder.create();
+							journal.setEventDetail(gson.toJson(pa));
 						}
 						try {
-							if (!em.get().getTransaction().isActive()) {
-								em.get().getTransaction().begin();
-							}
+							
 							if ("0".equals(resultCode)) {
+								//删除绑定关系
 								em.get().remove(pa);
+								//更新POS机交付状态
+								Pos p = pa.getPos();
+								p.setDstatus(PosDeliveryStatus.RETURNED);
+								savePos(p);
 							}
 							saveJournal(journal);
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().commit();
-							}
 						} catch (Exception e) {
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().rollback();
-							}
 							log.error("group buying unbind save error");
 							log.error("posId: " + posId);
 							log.error("ts: " + journal.getTs());
@@ -92,17 +86,8 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 						journal.setEventDetail("group buying unbind error,pos assignment not found by posId : " + posId);
 						try {
-							if (!em.get().getTransaction().isActive()) {
-								em.get().getTransaction().begin();
-							}
 							saveJournal(journal);
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().commit();
-							}
 						} catch (Exception e) {
-							if (em.get().getTransaction().isActive()) {
-								em.get().getTransaction().rollback();
-							}
 							log.error("group buying unbind save journal error");
 							log.error("posId: " + posId);
 							log.error("ts: " + journal.getTs());
@@ -122,17 +107,8 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 					journal.setEventDetail(resultStatus);
 					try {
-						if (!em.get().getTransaction().isActive()) {
-							em.get().getTransaction().begin();
-						}
 						saveJournal(journal);
-						if (em.get().getTransaction().isActive()) {
-							em.get().getTransaction().commit();
-						}
 					} catch (Exception e) {
-						if (em.get().getTransaction().isActive()) {
-							em.get().getTransaction().rollback();
-						}
 						log.error("group buying unbind save journal error");
 						log.error("posId: " + posId);
 						log.error("ts: " + journal.getTs());
@@ -153,17 +129,8 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 			journal.setEventDetail(resultCode);
 			try {
-				if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
-				}
 				saveJournal(journal);
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().commit();
-				}
 			} catch (Exception e) {
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().rollback();
-				}
 				log.error("group buying unbind save journal error");
 				log.error("posIds: " + StringUtils.join(posIds, ","));
 				log.error("ts: " + journal.getTs());
@@ -178,6 +145,10 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	
 	private void saveJournal(Journal journal) {
 		em.get().persist(journal);
+	}
+	
+	private void savePos(Pos p) {
+		em.get().persist(p);
 	}
 	
 	private PosAssignment getPosAssignmentByIdPosId(String posId) {
@@ -316,11 +287,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		Date date = new Date();
 		Agent a = this.getAgentById(agentId);
 		if (a != null) {
-			log.debug("Agent({}): id={}, name={}", new Object[] { agentId, a.getId(), a.getName()} );
-		} else {
-			log.debug("Agent({}) not found", new Object[] { agentId } );
-		}
-		if (a != null) {
 			if (inviteCode != null && !"".equals(inviteCode.trim())) {
 				rn = this.getReturnNoteByToken(inviteCode);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
@@ -331,8 +297,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			if (rn == null) {
 				rn = new ReturnNote();
 				rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
-//				Agent tmpAgent = new Agent(agentId);
-//				rn.setAgent(tmpAgent);
 				rn.setAgent(a);
 				rn.setAgentName(a.getName());
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);

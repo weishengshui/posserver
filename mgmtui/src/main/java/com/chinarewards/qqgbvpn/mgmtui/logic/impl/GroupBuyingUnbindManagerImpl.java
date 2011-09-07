@@ -42,8 +42,9 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws SaveDBException 
 	 * @throws JsonGenerationException 
 	 */
+	@Transactional
 	public HashMap<String, Object> groupBuyingUnbind(
-			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, JsonGenerationException, SaveDBException {
+			HashMap<String, Object> params) throws MD5Exception, ParseXMLException, SendPostTimeOutException, SaveDBException {
 		HashMap<String, Object> map = service.get().groupBuyingUnbind(params);
 		map.putAll(params);
 		dao.get().handleGroupBuyingUnbind(map);
