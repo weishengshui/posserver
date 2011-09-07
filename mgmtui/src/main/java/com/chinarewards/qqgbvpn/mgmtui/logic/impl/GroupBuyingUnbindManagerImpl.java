@@ -94,15 +94,15 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	/**
 	 * 确认回收单
 	 * @param agentId
-	 * @param rnId
+	 * @param inviteCode
 	 * @param posList
 	 * @return
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
 	@Transactional
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws SaveDBException,UnUseableRNException {
-		return dao.get().confirmReturnNote(agentId, rnId, posIds);
+	public ReturnNote confirmReturnNote(String agentId,String inviteCode,List<String> posIds) throws SaveDBException,UnUseableRNException {
+		return dao.get().confirmReturnNote(agentId, inviteCode, posIds);
 	}
 	
 	public Agent getAgentByRnId(String rnId) {
@@ -110,8 +110,11 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	}
 	
 	@Transactional
-	public String createInviteCode() {
-		return dao.get().createInviteCode();
+	public String createInviteCode(String agentId) {
+		return dao.get().createInviteCode(agentId);
 	}
     
+	public Agent getAgentByInviteCode(String inviteCode) {
+		return dao.get().getAgentByInviteCode(inviteCode);
+	}
 }

@@ -17,7 +17,7 @@
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-<s:hidden name="rnId" id="rnId" />
+<s:hidden name="inviteCode" id="inviteCode" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>

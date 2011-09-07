@@ -22,6 +22,10 @@ ETC_DIR=/etc/posnet2
 
 case "$1" in
     configure)
+	# Create a link such that /usr/share/posnet2/conf points to
+	# the actual location /etc/posnet2.
+	rm -rf /usr/share/posnet2/conf
+	ln -s $ETC_DIR /usr/share/posnet2/conf
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

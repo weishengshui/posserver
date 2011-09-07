@@ -11,12 +11,12 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="confirmRnNumber" namespace="/unbind/portal" method="Post" id="confirmForm">
+<s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-<s:hidden name="rnId" id="rnId" />
+<s:hidden name="inviteCode" id="inviteCode" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="77%">第三方名称：<s:property value="agentName" /></td>
@@ -65,7 +65,7 @@
 		}
 		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
 		var formObj = document.getElementById("confirmForm");
-		formObj.action = "${ctx}/unbind/portal/confirmRnNumber";
+		formObj.action = "${ctx}/returnnote/confirmRnNumber";
 		formObj.submit();
 	}
 	
