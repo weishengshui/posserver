@@ -80,6 +80,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public DeliveryNoteVO fetchById(String noteId) {
 		if (Tools.isEmptyString(noteId)) {
 			throw new IllegalArgumentException("delivery id is missing");
@@ -133,6 +134,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public DeliveryNoteVO createDeliveryNote() {
 		Date now = dtProvider.getTime();
 		// create new delivery note with status DeliveryNoteStatus#DRAFT
@@ -145,6 +147,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public void deleteDeliveryNote(String noteId) {
 		if (Tools.isEmptyString(noteId)) {
 			throw new IllegalArgumentException("delivery note ID is missing.");
@@ -158,6 +161,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId) {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
@@ -178,6 +182,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
 			PosWithWrongStatusException {
@@ -201,6 +206,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	@Transactional
 	public void deletePosFromNote(String deliveryNoteId, String detailId) {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
