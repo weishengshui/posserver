@@ -108,5 +108,10 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	public Agent getAgentByRnId(String rnId) {
 		return dao.get().getAgentByRnId(rnId);
 	}
+	
+	@Transactional
+	public String createInviteCode() {
+		return dao.get().createInviteCode();
+	}
     
 }

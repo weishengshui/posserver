@@ -43,7 +43,7 @@
 <script type="text/javascript">
 	function sendURL() {
 		var formObj = document.getElementById("sendURLForm");
-		formObj.action = "${ctx}/unbind/createRnNumber";
+		formObj.action = "${ctx}/unbind/createInvite";
 		formObj.submit();
 	}
 </script>

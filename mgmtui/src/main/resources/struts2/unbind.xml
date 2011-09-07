@@ -16,9 +16,9 @@
 			method="search">
 			<result name="success" type="tiles">unbind.list</result>
 		</action>
-		<action name="createRnNumber"
+		<action name="createInvite"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
-			method="createRnNumber">
+			method="createInvite">
 			<result name="success" type="tiles">unbind.sendURL</result>
 		</action>
 		<action name="confirmRnNumber"
@@ -43,10 +43,10 @@
 		</action>
 	</package>
 	
-	<package name="unbindportal" extends="default" namespace="/unbind/portal">
-		<action name="searchByAgent"
+	<package name="unbindportal" extends="default" namespace="/returnnote">
+		<action name="request"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
-			method="searchByAgent">
+			method="request">
 			<result name="success">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
 		<action name="confirmRnNumber"

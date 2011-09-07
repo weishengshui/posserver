@@ -75,4 +75,10 @@ public interface GroupBuyingUnbindManager {
 	 * @return
 	 */
 	public Agent getAgentByRnId(String rnId);
+	
+	/**
+	 * 生成邀请号
+	 * @return
+	 */
+	public String createInviteCode();
 }

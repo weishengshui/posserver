@@ -269,7 +269,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		if (a != null) {
 			Date date = new Date();
 			ReturnNote rn = new ReturnNote();
-			rn.setRnNumber(Tools.getOnlyNumber());
+			rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
 			rn.setAgent(a);
 			rn.setAgentName(a.getName());
 			rn.setStatus(ReturnNoteStatus.DRAFT);
@@ -329,7 +329,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			}
 			if (rn == null) {
 				rn = new ReturnNote();
-				rn.setRnNumber(Tools.getOnlyNumber());
+				rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
 //				Agent tmpAgent = new Agent(agentId);
 //				rn.setAgent(tmpAgent);
 				rn.setAgent(a);
@@ -423,6 +423,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			// XXX why mute the exception!?
 			return null;
 		}
+	}
+	
+	public String createInviteCode() {
+		//TODO
+		return null;
 	}
 	
 }

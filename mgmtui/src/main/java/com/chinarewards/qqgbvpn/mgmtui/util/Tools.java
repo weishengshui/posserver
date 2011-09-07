@@ -71,11 +71,13 @@ public class Tools {
 	 * 取唯一nubmer(用于生成回收单)
 	 * @return
 	 */
-	public static String getOnlyNumber() {
+	public static String getOnlyNumber(String prefix) {
 		Random rd = new Random();
-		StringBuffer sb = new StringBuffer("JXT");
+		StringBuffer sb = new StringBuffer(prefix);
+		sb.append("-");
 		sb.append(getNow());
-		sb.append(rd.nextInt(999999999));
+		sb.append("-");
+		sb.append(rd.nextInt(999999));
 		return sb.toString();
 	}
 	
@@ -84,7 +86,7 @@ public class Tools {
 	 * @return
 	 */
 	public static String getNow() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmssSSS");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		sdf.format(new Date());
 		return sdf.format(new Date());
 	}

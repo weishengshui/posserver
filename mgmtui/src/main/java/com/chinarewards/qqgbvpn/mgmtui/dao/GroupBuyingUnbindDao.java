@@ -28,4 +28,6 @@ public interface GroupBuyingUnbindDao {
 	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws SaveDBException,UnUseableRNException;
 	
 	public Agent getAgentByRnId(String rnId);
+	
+	public String createInviteCode();
 }

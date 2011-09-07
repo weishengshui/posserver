@@ -212,7 +212,7 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String searchByAgent() {
+	public String request() {
 		if (rnId != null && !"".equals(rnId.trim())) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByRnId(rnId);
 			if (a != null) {
@@ -234,16 +234,16 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String createRnNumber() throws JsonGenerationException
+	public String createInvite() throws JsonGenerationException
 		, SaveDBException, UnsupportedEncodingException
 		, MessagingException, javax.mail.MessagingException{
 		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
-			//生成回收单
-			ReturnNote rn = getGroupBuyingUnbindManager().createReturnNoteByAgentId(this.getAgentId());
+			//生成邀请单
+			String inviteCode = getGroupBuyingUnbindManager().createInviteCode();
 			//发送邮件
 			HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
 			String path = request.getRequestURL().toString();
-			path = path.substring(0, path.lastIndexOf("/")) + "/portal/searchByAgent?rnId=" + rn.getId();
+			path = path.substring(0, path.lastIndexOf("/")) + "/returnnote/request?inviteCode=" + inviteCode;
 			String[] toAdds = {this.getAgentEmail()};
 			String subject = "测试邮件";
 			String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
