@@ -77,6 +77,14 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	public DeliveryNoteVO fetchById(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery id is missing");
+		}
+		return getDeliveryDao().fetchDeliveryById(noteId);
+	}
+
+	@Override
 	@Transactional
 	public PageInfo<DeliveryNoteVO> fetchDeliveryList(PaginationTools pagination) {
 		log.debug(
@@ -131,6 +139,15 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		dn.setStatus(DeliveryNoteStatus.DRAFT.toString());
 
 		return getDeliveryDao().create(dn);
+	}
+
+	@Override
+	public void deleteDeliveryNote(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery note ID is missing.");
+		}
+		// getDeliveryDao().
+		// FIXME implements me.
 	}
 
 	@Override
