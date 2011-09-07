@@ -20,7 +20,7 @@
 
     <path id="dbdeploy.classpath">
         <!-- include the dbdeploy-ant jar -->
-        <fileset dir="..">
+        <fileset dir="../bin">
             <include name="dbdeploy-ant-*.jar"/>
         </fileset>
 
