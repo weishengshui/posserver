@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -60,13 +61,13 @@ public interface GroupBuyingUnbindManager {
 	/**
 	 * 确认回收单
 	 * @param agentId
-	 * @param rnId
+	 * @param inviteCode
 	 * @param posList
 	 * @return
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException;
+	public ReturnNote confirmReturnNote(String agentId,String inviteCode,List<String> posIds) throws SaveDBException,UnUseableRNException;
 	
 	/**
 	 * 根据回收单ID查询第三方
@@ -74,4 +75,18 @@ public interface GroupBuyingUnbindManager {
 	 * @return
 	 */
 	public Agent getAgentByRnId(String rnId);
+	
+	/**
+	 * 生成邀请号
+	 * @return
+	 */
+	public String createInviteCode(String agentId);
+	
+	/**
+	 * 根据邀请号查询第三方
+	 * @param rnId
+	 * @return
+	 */
+	public Agent getAgentByInviteCode(String inviteCode);
+	
 }

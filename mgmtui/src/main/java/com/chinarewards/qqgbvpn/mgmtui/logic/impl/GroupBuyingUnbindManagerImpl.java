@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -93,19 +94,27 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	/**
 	 * 确认回收单
 	 * @param agentId
-	 * @param rnId
+	 * @param inviteCode
 	 * @param posList
 	 * @return
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
 	@Transactional
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException {
-		return dao.get().confirmReturnNote(agentId, rnId, posIds);
+	public ReturnNote confirmReturnNote(String agentId,String inviteCode,List<String> posIds) throws SaveDBException,UnUseableRNException {
+		return dao.get().confirmReturnNote(agentId, inviteCode, posIds);
 	}
 	
 	public Agent getAgentByRnId(String rnId) {
 		return dao.get().getAgentByRnId(rnId);
 	}
+	
+	@Transactional
+	public String createInviteCode(String agentId) {
+		return dao.get().createInviteCode(agentId);
+	}
     
+	public Agent getAgentByInviteCode(String inviteCode) {
+		return dao.get().getAgentByInviteCode(inviteCode);
+	}
 }

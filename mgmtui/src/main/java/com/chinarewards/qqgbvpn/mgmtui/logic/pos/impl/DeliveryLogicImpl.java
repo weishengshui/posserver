@@ -77,6 +77,14 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
+	public DeliveryNoteVO fetchById(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery id is missing");
+		}
+		return getDeliveryDao().fetchDeliveryById(noteId);
+	}
+
+	@Override
 	@Transactional
 	public PageInfo<DeliveryNoteVO> fetchDeliveryList(PaginationTools pagination) {
 		log.debug(
@@ -127,10 +135,19 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		// create new delivery note with status DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = new DeliveryNoteVO();
 		dn.setCreateDate(now);
-		dn.setDnNumber(null); // FIXME Generate DN number.
+		dn.setDnNumber(Tools.getOnlyNumber("POSDN-DRAFT"));
 		dn.setStatus(DeliveryNoteStatus.DRAFT.toString());
 
-		return getDeliveryDao().save(dn);
+		return getDeliveryDao().create(dn);
+	}
+
+	@Override
+	public void deleteDeliveryNote(String noteId) {
+		if (Tools.isEmptyString(noteId)) {
+			throw new IllegalArgumentException("delivery note ID is missing.");
+		}
+		// getDeliveryDao().
+		// FIXME implements me.
 	}
 
 	@Override
@@ -148,7 +165,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 					deliveryNoteId);
 			AgentVO agent = agentDao.get().findById(agentId);
 			note.setAgent(agent);
-			dn = getDeliveryDao().save(note);
+			note.setAgentName(agent.getName());
+			dn = getDeliveryDao().merge(note);
 		} catch (ServiceException e) {
 			log.error("unknow exception catched!", e);
 		}
@@ -205,6 +223,10 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		// fetch POS list.
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(deliveryNoteId);
 
+		if (posList == null || posList.isEmpty()) {
+			throw new DeliveryNoteWithNoDetailException();
+		}
+
 		// check POS initialized status.
 		for (PosVO pos : posList) {
 			if (!pos.getIstatus().equals(
@@ -229,8 +251,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 		// modify delivery note status - DeliveryNoteStatus#CONFIRMED
 		dn.setStatus(DeliveryNoteStatus.CONFIRMED.toString());
-		// dn.setDnNumber(dnNumber); // FIXME generate dn number
-		getDeliveryDao().save(dn);
+		dn.setDnNumber(Tools.getOnlyNumber("POSDN"));
+		getDeliveryDao().merge(dn);
 
 		// add journalLogic
 		try {
@@ -258,7 +280,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		}
 		// modify delivery note status - DeliveryNoteStatus#PRINTED
 		dn.setStatus(DeliveryNoteStatus.PRINTED.toString());
-		getDeliveryDao().save(dn);
+		getDeliveryDao().merge(dn);
 
 		// add journalLogic
 		try {

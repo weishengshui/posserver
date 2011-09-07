@@ -26,6 +26,14 @@ public interface DeliveryLogic {
 	public List<DeliveryNoteVO> fetchAllDelivery();
 
 	/**
+	 * Returns delivery note.
+	 * 
+	 * @param noteId
+	 * @return
+	 */
+	public DeliveryNoteVO fetchById(String noteId);
+
+	/**
 	 * Get delivery note list.
 	 * 
 	 * @param pageInfo
@@ -47,6 +55,13 @@ public interface DeliveryLogic {
 	 * @return
 	 */
 	public DeliveryNoteVO createDeliveryNote();
+
+	/**
+	 * Delete delivery note.
+	 * 
+	 * @param noteId
+	 */
+	public void deleteDeliveryNote(String noteId);
 
 	/**
 	 * Add or modify agent. Agent could be null.

@@ -20,11 +20,14 @@ NAME=posnet2
 JAVA=`which java`
 
 SCRIPTNAME=/etc/init.d/$NAME
-LOGBACKCONF=file:///etc/posnetv2/logback.xml
+LOGBACKCONF=file:///etc/posnet2/logback.xml
 
 DAEMONUSER=root
 POSNET2_HOME=/usr/share/$NAME
-POSNET2_START="-Dlogback.configurationFile=$LOGBACKCONF -jar $POSNET2_HOME/qqgbvpn.jar"
+POSNET2_START="-jar $POSNET2_HOME/qqgbvpn.jar -d $POSNET2_HOME"
+if [ "x$LOGBACKCONF" != "x" ]; then
+	POSNET2_START="-Dlogback.configurationFile=$LOGBACKCONF $POSNET2_START"
+fi
 LOGFILE=/var/log/posnet2/posnet2.log
 PIDFILE=/var/run/posnet2.pid
 
@@ -47,13 +50,12 @@ fi
 #
 do_start()
 {
-
-	# create log dit if not exists
+	# create log dir if not exists
 	if [ ! -d "/var/log/${NAME}" ]; then
 		mkdir -p /var/log/${NAME}
 	fi
 
-	# starting the service
+	# start the service
 	start-stop-daemon --start --quiet --chuid $DAEMONUSER  \
                 --exec "$JAVA" --pidfile $PIDFILE --make-pidfile -- $POSNET2_START >> $LOGFILE 2>&1 &
 	return 0

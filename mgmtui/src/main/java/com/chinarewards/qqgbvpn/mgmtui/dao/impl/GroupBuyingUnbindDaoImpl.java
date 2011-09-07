@@ -16,12 +16,14 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.domain.ReturnNoteDetail;
+import com.chinarewards.qqgbvpn.domain.ReturnNoteInvitation;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
@@ -268,7 +270,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		if (a != null) {
 			Date date = new Date();
 			ReturnNote rn = new ReturnNote();
-			rn.setRnNumber(Tools.getOnlyNumber());
+			rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
 			rn.setAgent(a);
 			rn.setAgentName(a.getName());
 			rn.setStatus(ReturnNoteStatus.DRAFT);
@@ -309,7 +311,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#confirmReturnNote(java.lang.String, java.lang.String, java.util.List)
 	 * 回收单页面调用
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId, List<String> posIds) throws JsonGenerationException,SaveDBException {
+	public ReturnNote confirmReturnNote(String agentId,String inviteCode, List<String> posIds) throws SaveDBException,UnUseableRNException {
 		ReturnNote rn = null;
 		Date date = new Date();
 		Agent a = this.getAgentById(agentId);
@@ -319,16 +321,16 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			log.debug("Agent({}) not found", new Object[] { agentId } );
 		}
 		if (a != null) {
-			if (rnId != null && !"".equals(rnId.trim())) {
-				rn = this.getReturnNote(rnId);
+			if (inviteCode != null && !"".equals(inviteCode.trim())) {
+				rn = this.getReturnNoteByToken(inviteCode);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
 					log.warn("Return Note already confirmed!");
-					throw new SaveDBException("Return Note already confirmed!");
+					throw new UnUseableRNException("Return Note already confirmed!");
 				}
 			}
 			if (rn == null) {
 				rn = new ReturnNote();
-				rn.setRnNumber(Tools.getOnlyNumber());
+				rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
 //				Agent tmpAgent = new Agent(agentId);
 //				rn.setAgent(tmpAgent);
 				rn.setAgent(a);
@@ -336,6 +338,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);
 				rn.setCreateDate(date);
 				rn.setConfirmDate(date);
+				rn.setToken(inviteCode);
 			} else {
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);
 				rn.setConfirmDate(date);
@@ -384,8 +387,25 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		em.get().persist(rnd);
 	}
 	
+	private void saveReturnNoteInvitation(ReturnNoteInvitation rni) {
+		em.get().persist(rni);
+	}
+	
 	private ReturnNote getReturnNote(String rnId) {
 		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		return rn;
+	}
+	
+	private ReturnNote getReturnNoteByToken(String token) {
+		log.debug("token: {}", token);
+		Query jql = em.get().createQuery("select rn from ReturnNote rn where rn.token = ?1");
+		jql.setParameter(1, token);
+		List resultList = jql.getResultList();
+		ReturnNote rn = null;
+		log.debug("resultList size {}", resultList.size());
+		if (resultList != null && resultList.size() > 0) {
+			rn = (ReturnNote) resultList.get(0);
+		}
 		return rn;
 	}
 	
@@ -407,21 +427,64 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		}
 	}
 	
+	/**
+	 * 判断邀请号是否可用
+	 * @param inviteCode
+	 * @return
+	 */
+	private boolean getIsEnableByInviteCode(String inviteCode) {
+		//TODO
+		return false;
+	}
+	
 	public Agent getAgentByRnId(String rnId) {
-		try {
-			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
-						+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
-			jql.setParameter(1, rnId);
-			List resultList = jql.getResultList();
-			Agent agent = null;
-			if (resultList != null) {
-				agent = (Agent) resultList.get(0);
-			}
-			return agent;
-		} catch (Exception e) {
-			// XXX why mute the exception!?
-			return null;
+		Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
+				+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
+		jql.setParameter(1, rnId);
+		List resultList = jql.getResultList();
+		Agent agent = null;
+		if (resultList != null && resultList.size() > 0) {
+			agent = (Agent) resultList.get(0);
 		}
+		return agent;
+	}
+	
+	public Agent getAgentByInviteCode(String inviteCode) {
+		Query jql = em.get().createQuery("select a from Agent a,ReturnNoteInvitation rni where a.id = rni.agent.id and rni.token = ?1" +
+				" and not EXISTS (select 1 from ReturnNote rn where rni.token = rn.token)");
+		jql.setParameter(1, inviteCode);
+		List resultList = jql.getResultList();
+		Agent agent = null;
+		if (resultList != null && resultList.size() > 0) {
+			agent = (Agent) resultList.get(0);
+		}
+		return agent;
+	}
+	
+	public String createInviteCode(String agentId) {
+		Date date = new Date();
+		Agent a = this.getAgentById(agentId);
+		if (a != null) {
+			ReturnNoteInvitation rni = new ReturnNoteInvitation();
+			rni.setAgent(a);
+			rni.setRequestDate(date);
+			rni.setToken(Tools.getOnlyNumber("POSRN-DRAFT"));
+			
+			saveReturnNoteInvitation(rni);
+			
+			Journal journal = new Journal();
+			journal.setTs(date);
+			journal.setEntity(DomainEntity.RETURN_NOTE_INVITATION.toString());
+			journal.setEntityId(rni.getId());
+			journal.setEvent(DomainEvent.USER_ADDED_RNOTE_INVITATION.toString());
+			GsonBuilder builder = new GsonBuilder();
+			Gson gson = builder.create();
+			journal.setEventDetail(gson.toJson(rni));
+			saveJournal(journal);
+			
+			return rni.getToken();
+		}
+		return null;
 	}
 	
 }
