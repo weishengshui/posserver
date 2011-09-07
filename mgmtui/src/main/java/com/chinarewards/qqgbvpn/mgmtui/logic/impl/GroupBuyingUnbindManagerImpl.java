@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -100,7 +101,7 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 * @throws SaveDBException
 	 */
 	@Transactional
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws JsonGenerationException,SaveDBException {
+	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws SaveDBException,UnUseableRNException {
 		return dao.get().confirmReturnNote(agentId, rnId, posIds);
 	}
 	

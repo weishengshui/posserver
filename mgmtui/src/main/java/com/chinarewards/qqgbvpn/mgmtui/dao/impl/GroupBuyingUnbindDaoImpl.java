@@ -22,6 +22,7 @@ import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
@@ -309,7 +310,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#confirmReturnNote(java.lang.String, java.lang.String, java.util.List)
 	 * 回收单页面调用
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId, List<String> posIds) throws JsonGenerationException,SaveDBException {
+	public ReturnNote confirmReturnNote(String agentId,String rnId, List<String> posIds) throws SaveDBException,UnUseableRNException {
 		ReturnNote rn = null;
 		Date date = new Date();
 		Agent a = this.getAgentById(agentId);
@@ -323,7 +324,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn = this.getReturnNote(rnId);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
 					log.warn("Return Note already confirmed!");
-					throw new SaveDBException("Return Note already confirmed!");
+					throw new UnUseableRNException("Return Note already confirmed!");
 				}
 			}
 			if (rn == null) {
