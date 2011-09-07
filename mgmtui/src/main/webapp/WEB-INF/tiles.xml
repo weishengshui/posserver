@@ -38,11 +38,19 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURL.jsp" />
 	</definition>
 	
+	<!-- agent begin -->
 	<definition name="agent.searchAgent" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/agent/search_agent.jsp" />
 	</definition>
 	<definition name="agent.showEditAgent" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/agent/edit_agent.jsp" />
 	</definition>
+	<!-- agent end -->
+	
+	<!-- delivery begin -->
+	<definition name="delivery.searchDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/agent/search_agent.jsp" />
+	</definition>
+	<!-- delivery end -->
 	
 </tiles-definitions>
