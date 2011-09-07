@@ -11,6 +11,8 @@ import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
@@ -81,6 +83,8 @@ public class DeliveryLogicTest extends JPATestCase {
 	@Test
 	public void testAppendPosToNote_Success() {
 		Pos pos = new Pos();
+		pos.setDstatus(PosDeliveryStatus.RETURNED);
+		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
@@ -101,6 +105,7 @@ public class DeliveryLogicTest extends JPATestCase {
 			assertEquals("simSimSim", detail.getSimPhoneNo());
 			assertEquals("SnSnSnSn", detail.getSn());
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail("should not reach here.");
 		}
 
@@ -109,6 +114,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	@Test
 	public void testDeletePosFromNote() throws Exception {
 		Pos pos = new Pos();
+		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
@@ -158,6 +164,8 @@ public class DeliveryLogicTest extends JPATestCase {
 		em.flush();
 
 		Pos pos = new Pos();
+		pos.setDstatus(PosDeliveryStatus.RETURNED);
+		pos.setIstatus(PosInitializationStatus.UNINITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
@@ -169,9 +177,10 @@ public class DeliveryLogicTest extends JPATestCase {
 		getLogic().associateAgent(note.getId(), agent.getId());
 		getLogic().appendPosToNote(note.getId(), "MiaoLeGeMi");
 
-		List<String> posIds = getLogic().delivery(note.getId());
-		assertNotNull(posIds);
-		assertFalse(posIds.isEmpty());
+		List<DeliveryNoteDetailVO> detailList = getLogic().delivery(
+				note.getId());
+		assertNotNull(detailList);
+		assertFalse(detailList.isEmpty());
 	}
 
 	@Test
@@ -183,6 +192,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		em.flush();
 
 		Pos pos = new Pos();
+		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
@@ -217,6 +227,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		em.flush();
 
 		Pos pos = new Pos();
+		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");

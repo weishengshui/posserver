@@ -124,7 +124,7 @@ public interface DeliveryLogic {
 	 * @throws DeliveryNoteWithNoDetailException
 	 *             when delivery not with no details.
 	 */
-	public List<String> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException;
 
 	/**
