@@ -24,7 +24,8 @@
 		<action name="createInvite"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createInvite">
-			<result name="success" type="tiles">unbind.sendURL</result>
+			<result name="success" type="tiles">unbind.sendURLSuccess</result>
+			<result name="error" type="tiles">unbind.sendURL</result>
 		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
