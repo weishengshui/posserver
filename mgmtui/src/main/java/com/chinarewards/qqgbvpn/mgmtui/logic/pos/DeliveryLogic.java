@@ -57,7 +57,7 @@ public interface DeliveryLogic {
 	public DeliveryNoteVO createDeliveryNote();
 
 	/**
-	 * Delete delivery note.
+	 * Delete delivery note. It will delete delivery detail first.
 	 * 
 	 * @param noteId
 	 */

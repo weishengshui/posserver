@@ -155,7 +155,7 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 				eventDetail = map.writeValueAsString(dnd);
 				journalLogic.get().logEvent(
 						DomainEvent.USER_ADDED_DNOTE_DTL.toString(),
-						DomainEntity.DELIVERY_NOTE.toString(), detailId,
+						DomainEntity.DELIVERY_NOTE_DETAIL.toString(), detailId,
 						eventDetail);
 			} catch (Exception e) {
 				log.error("Error in parse to JSON", e);

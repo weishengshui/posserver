@@ -146,8 +146,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		if (Tools.isEmptyString(noteId)) {
 			throw new IllegalArgumentException("delivery note ID is missing.");
 		}
-		// getDeliveryDao().
-		// FIXME implements me.
+		getDeliveryDao().deleteById(noteId);
 	}
 
 	@Override
