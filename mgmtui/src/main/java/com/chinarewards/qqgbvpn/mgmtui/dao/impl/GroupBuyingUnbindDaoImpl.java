@@ -9,7 +9,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -23,6 +22,7 @@ import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
@@ -51,6 +51,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
 						if (items != null) {
 							try {
+								// FIXME use Jackson JSON processor
 								GsonBuilder builder = new GsonBuilder();
 								Gson gson = builder.create();
 								journal.setEventDetail(gson.toJson(pa));
@@ -233,6 +234,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
 			jql.setParameter(1, agentName);
 			List resultList = jql.getResultList();
+			log.debug("Number of agent matched name '{}': {}", agentName, resultList.size());
 			Agent agent = null;
 			if (resultList != null) {
 				agent = (Agent) resultList.get(0);
@@ -267,16 +269,13 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		if (a != null) {
 			Date date = new Date();
 			ReturnNote rn = new ReturnNote();
-			rn.setRnNumber(Tools.getOnlyNumber());
+			rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
 			rn.setAgent(a);
 			rn.setAgentName(a.getName());
 			rn.setStatus(ReturnNoteStatus.DRAFT);
 			rn.setCreateDate(date);
 			
 			try {
-			/*	if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
-				}*/
 				
 				saveReturnNote(rn);
 				
@@ -311,20 +310,28 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#confirmReturnNote(java.lang.String, java.lang.String, java.util.List)
 	 * 回收单页面调用
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,String posIds) throws JsonGenerationException,SaveDBException {
+	public ReturnNote confirmReturnNote(String agentId,String rnId, List<String> posIds) throws SaveDBException,UnUseableRNException {
 		ReturnNote rn = null;
 		Date date = new Date();
 		Agent a = this.getAgentById(agentId);
 		if (a != null) {
+			log.debug("Agent({}): id={}, name={}", new Object[] { agentId, a.getId(), a.getName()} );
+		} else {
+			log.debug("Agent({}) not found", new Object[] { agentId } );
+		}
+		if (a != null) {
 			if (rnId != null && !"".equals(rnId.trim())) {
 				rn = this.getReturnNote(rnId);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
-					throw new SaveDBException("Return Note already confirmed!");
+					log.warn("Return Note already confirmed!");
+					throw new UnUseableRNException("Return Note already confirmed!");
 				}
 			}
 			if (rn == null) {
 				rn = new ReturnNote();
-				rn.setRnNumber(Tools.getOnlyNumber());
+				rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
+//				Agent tmpAgent = new Agent(agentId);
+//				rn.setAgent(tmpAgent);
 				rn.setAgent(a);
 				rn.setAgentName(a.getName());
 				rn.setStatus(ReturnNoteStatus.CONFIRMED);
@@ -335,9 +342,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn.setConfirmDate(date);
 			}
 			try {
-				if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
-				}
 				
 				saveReturnNote(rn);
 				
@@ -346,13 +350,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				try {
-					GsonBuilder builder = new GsonBuilder();
-					Gson gson = builder.create();
-					journal.setEventDetail(gson.toJson(rn));
-				} catch (Exception e) {
-					throw new JsonGenerationException(e);
-				}
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				journal.setEventDetail(gson.toJson(rn));
 				saveJournal(journal);
 				
 				List<Pos> posList = getPosListByIds(posIds);
@@ -369,13 +369,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					}
 				}
 				
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().commit();
-				}
 			} catch (Exception e) {
-				if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().rollback();
-				}
 				throw new SaveDBException(e);
 			}
 			return rn;
@@ -401,21 +395,23 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		return a;
 	}
 	
-	private List<Pos> getPosListByIds(String posIds) {
+	private List<Pos> getPosListByIds(List<String> posIds) {
 		try {
+			log.debug("posIds:{}", posIds);
 			Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
 			jql.setParameter(1, posIds);
 			List<Pos> resultList = jql.getResultList();
 			return resultList;
 		} catch (Exception e) {
+			log.error("Transaction Exception catch!", e);
 			return null;
 		}
 	}
 	
 	public Agent getAgentByRnId(String rnId) {
 		try {
-			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = "
-						+ ReturnNoteStatus.CONFIRMED + " and rn.id = ?1");
+			Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
+						+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
 			jql.setParameter(1, rnId);
 			List resultList = jql.getResultList();
 			Agent agent = null;
@@ -427,6 +423,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			// XXX why mute the exception!?
 			return null;
 		}
+	}
+	
+	public String createInviteCode() {
+		//TODO
+		return null;
 	}
 	
 }

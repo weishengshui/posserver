@@ -8,13 +8,17 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
+import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.google.inject.Inject;
 
 public class MailServiceImpl implements MailService {
+	
+	protected Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Inject
 	protected Configuration configuration;
@@ -22,7 +26,14 @@ public class MailServiceImpl implements MailService {
 	public void sendMail(String[] toAdds, String[] cc, String subject,
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
+		
+		// FIXME use JavaMail instead. http://www.rgagnon.com/javadetails/java-0538.html
+		
 		JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
+		
+		log.debug("smtp.server={}", configuration.getString("smtp.server"));
+		log.debug("smtp.username={}", configuration.getString("smtp.username"));
+		
 		javaMail.setHost(configuration.getString("smtp.server"));
 		javaMail.setUsername(configuration.getString("smtp.username"));
 		javaMail.setPassword(configuration.getString("smtp.password"));
@@ -31,6 +42,8 @@ public class MailServiceImpl implements MailService {
 		props.setProperty("mail.smtp.auth","true");
 		
 		javaMail.setJavaMailProperties(props);
+		
+		// FIXME use UTF-8, it is 2011
 		
 		MimeMessage message = javaMail.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message,true,"GBK");

@@ -24,6 +24,13 @@ public class Agent {
 	String name;
 	
 	String email;
+	
+	public Agent() {
+	}
+	
+	public Agent(String id) {
+		this.id = id;
+	}
 
 	public String getId() {
 		return id;

@@ -7,11 +7,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.DateTimeProvider;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
@@ -20,6 +23,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
@@ -130,7 +134,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	public DeliveryNoteVO addAgent(String deliveryNoteId, String agentId) {
+	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId) {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
@@ -153,7 +157,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId) {
+			String posId) throws PosNotExistException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
@@ -209,7 +213,6 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 			}
 		}
 
-		// TODO add journalLogic
 		return uninitPosIds;
 	}
 
@@ -217,21 +220,58 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Transactional
 	public void confirmDelivery(String deliveryNoteId) {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
+		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
+		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
+			throw new IllegalArgumentException(
+					"Delivery note status should be DRAFT, not "
+							+ dn.getStatus());
+		}
 
 		// modify delivery note status - DeliveryNoteStatus#CONFIRMED
+		dn.setStatus(DeliveryNoteStatus.CONFIRMED.toString());
+		// dn.setDnNumber(dnNumber); // FIXME generate dn number
+		getDeliveryDao().save(dn);
 
 		// add journalLogic
+		try {
+			ObjectMapper map = new ObjectMapper();
+			String eventDetail;
+			eventDetail = map.writeValueAsString(dn);
+			journalLogic.get().logEvent(
+					DomainEvent.USER_CONFIRMED_DNOTE.toString(),
+					DomainEntity.DELIVERY_NOTE.toString(), deliveryNoteId,
+					eventDetail);
+		} catch (Exception e) {
+			log.error("Error in parse to JSON", e);
+		}
 	}
 
 	@Override
 	@Transactional
 	public void printDelivery(String deliveryNoteId) {
 		// check delivery note status - not be DeliveryNoteStatus#DRAFT
-
+		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
+		if (DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
+			throw new IllegalArgumentException(
+					"Delivery note status should not be DRAFT, it is "
+							+ dn.getStatus() + " now");
+		}
 		// modify delivery note status - DeliveryNoteStatus#PRINTED
+		dn.setStatus(DeliveryNoteStatus.PRINTED.toString());
+		getDeliveryDao().save(dn);
 
 		// add journalLogic
-
+		try {
+			ObjectMapper map = new ObjectMapper();
+			String eventDetail;
+			eventDetail = map.writeValueAsString(dn);
+			journalLogic.get().logEvent(
+					DomainEvent.USER_PRINTED_DNOTE.toString(),
+					DomainEntity.DELIVERY_NOTE.toString(), deliveryNoteId,
+					eventDetail);
+		} catch (Exception e) {
+			log.error("Error in parse to JSON", e);
+		}
 	}
 
 }

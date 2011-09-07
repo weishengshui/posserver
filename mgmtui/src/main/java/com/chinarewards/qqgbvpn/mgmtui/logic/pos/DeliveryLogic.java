@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -57,7 +58,7 @@ public interface DeliveryLogic {
 	 * @param agentId
 	 * @return
 	 */
-	public DeliveryNoteVO addAgent(String deliveryNoteId, String agentId);
+	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId);
 
 	/**
 	 * Append POS to delivery. It will create delivery note detail.
@@ -68,9 +69,11 @@ public interface DeliveryLogic {
 	 * @param deliveryNoteId
 	 * @param posId
 	 * @return
+	 * @throws PosNotExistException
+	 *             POS not existed.
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId);
+			String posId) throws PosNotExistException;
 
 	/**
 	 * Delete delivery note detail from note.

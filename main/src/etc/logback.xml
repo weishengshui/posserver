@@ -4,10 +4,10 @@
 			<Pattern>[%-5p] %-27.27c{1} - %m%n</Pattern>
 		</layout>
 	</appender>
-	
-	<logger name="com.chinarewards" level="TRACE" />
-	<logger name="org.hibernate" level="DEBUG" />
-	
+
+	<logger name="com.chinarewards" level="INFO" />
+	<logger name="org.hibernate" level="WARN" />
+
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>

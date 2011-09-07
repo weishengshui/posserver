@@ -44,7 +44,7 @@
             <!-- Top Menu Bar ENDS -->
         </div>
         <div id="footer" class="clearfix">
-            China Rewards 积享通 (c) 2010
+            China Rewards 积享通 (c) 2011
         </div>
     </div>
 </body>

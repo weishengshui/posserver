@@ -5,14 +5,23 @@ package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.DeliveryNote;
 import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteDetailAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.google.inject.Inject;
@@ -24,10 +33,7 @@ import com.google.inject.Provider;
  * @author cream
  * @since 1.0.0 2011-09-05
  */
-public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
-
-	@Inject
-	Provider<EntityManager> emp;
+public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao {
 
 	@Inject
 	Provider<DeliveryNoteDetailAdapter> deliveryNoteDetailAdapter;
@@ -35,9 +41,10 @@ public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
 	@Inject
 	Provider<PosAdapter> posAdapter;
 
-	public EntityManager getEm() {
-		return emp.get();
-	}
+	@Inject
+	Provider<JournalLogic> journalLogic;
+
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -99,10 +106,16 @@ public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
 	}
 
 	@Override
-	public DeliveryNoteDetailVO create(String noteId, String posId) {
+	public DeliveryNoteDetailVO create(String noteId, String posId)
+			throws PosNotExistException {
 		DeliveryNote dn = getEm().find(DeliveryNote.class, noteId);
-		Pos p = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posId")
-				.setParameter("posId", posId).getSingleResult();
+		Pos p = null;
+		try {
+			p = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posId")
+					.setParameter("posId", posId).getSingleResult();
+		} catch (NoResultException e) {
+			throw new PosNotExistException("POS(id=" + posId + ") not existed!");
+		}
 
 		DeliveryNoteDetail detail = new DeliveryNoteDetail();
 
@@ -113,6 +126,19 @@ public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
 		detail.setSn(p.getSn());
 		getEm().persist(detail);
 
+		// add journalLogic
+		try {
+			ObjectMapper map = new ObjectMapper();
+			String eventDetail;
+			eventDetail = map.writeValueAsString(detail);
+			journalLogic.get().logEvent(
+					DomainEvent.USER_ADDED_DNOTE_DTL.toString(),
+					DomainEntity.DELIVERY_NOTE_DETAIL.toString(),
+					detail.getId(), eventDetail);
+		} catch (Exception e) {
+			log.error("Error in parse to JSON", e);
+		}
+
 		return deliveryNoteDetailAdapter.get().convertToVO(detail);
 	}
 
@@ -120,7 +146,21 @@ public class DeliveryDetailDaoImpl implements DeliveryDetailDao {
 	public void delete(String detailId) {
 		DeliveryNoteDetail dnd = getEm().find(DeliveryNoteDetail.class,
 				detailId);
+
 		if (dnd != null) {
+			// add journalLogic
+			try {
+				ObjectMapper map = new ObjectMapper();
+				String eventDetail;
+				eventDetail = map.writeValueAsString(dnd);
+				journalLogic.get().logEvent(
+						DomainEvent.USER_ADDED_DNOTE_DTL.toString(),
+						DomainEntity.DELIVERY_NOTE.toString(), detailId,
+						eventDetail);
+			} catch (Exception e) {
+				log.error("Error in parse to JSON", e);
+			}
+
 			getEm().remove(dnd);
 		}
 	}

@@ -29,13 +29,13 @@ public class LoginMessageCodec implements ICommandCodec {
 		log.debug("login/bind message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
 		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
-				+ ProtocolLengths.CHALLEUGERESPONSE) {
+				+ ProtocolLengths.CHALLENGE_RESPONSE) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
-		byte[] challeugeresponse = new byte[ProtocolLengths.CHALLEUGERESPONSE];
+		byte[] challeugeresponse = new byte[ProtocolLengths.CHALLENGE_RESPONSE];
 		in.get(posid);
 		in.get(challeugeresponse);
 		message.setCmdId(cmdId);

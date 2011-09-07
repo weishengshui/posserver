@@ -8,6 +8,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.DeliveryNote;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
@@ -19,17 +20,10 @@ import com.google.inject.Provider;
  * @author cream
  * 
  */
-public class DeliveryDaoImpl implements DeliveryDao {
-
-	@Inject
-	Provider<EntityManager> emp;
+public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 
 	@Inject
 	Provider<DeliveryNoteAdapter> deliveryNoteAdapter;
-
-	protected EntityManager getEm() {
-		return emp.get();
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -26,6 +26,9 @@ public class PosLogicImpl implements PosLogic {
 	@Transactional
 	@Override
 	public void deletePosById(String id) throws ParamsException{
+		
+		// TODO
+		
 		posDao.get().deletePosById(id);
 	}
 

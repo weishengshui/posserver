@@ -2,7 +2,6 @@ package com.chinarewards.qqgbvpn.main;
 
 import javax.inject.Singleton;
 
-import com.chinarewards.qqgbvpn.config.URLProperties;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.GroupBuyingDaoImpl;
@@ -14,7 +13,6 @@ import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.GroupBuyingManagerImpl;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.chinarewards.qqgbvpn.qqapi.service.impl.GroupBuyingServiceImpl;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
 
 public class QQApiModule extends AbstractModule {
 

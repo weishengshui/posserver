@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
@@ -31,20 +31,13 @@ import com.google.inject.Provider;
  * 
  * @author Seek
  */
-public class AgentDaoImpl implements AgentDao {
+public class AgentDaoImpl extends BaseDao implements AgentDao {
 
 	Logger log = LoggerFactory.getLogger(AgentDaoImpl.class);
 
 	@Inject
-	Provider<EntityManager> em;
-	
-	@Inject
 	Provider<JournalLogic> journalLogic;
 
-	public EntityManager getEm() {
-		return em.get();
-	}
-	
 	private void addLog(Agent agent, String processType){
 		// Add journal.
 		ObjectMapper mapper = new ObjectMapper();

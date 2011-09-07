@@ -29,6 +29,7 @@ public class PasswordUtil {
 
 			messageDigest.update(password.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
+			// FIXME make the system die!?
 			System.out.println("NoSuchAlgorithmException caught!");
 			System.exit(-1);
 		} catch (UnsupportedEncodingException e) {

@@ -16,21 +16,26 @@
 		</file>
 		<file>
 			<source>src/script/run.sh</source>
-			<fileMode>755</fileMode>
+			<fileMode>0755</fileMode>
 		</file>
 		<file>
 			<source>src/script/run.bat</source>
-			<fileMode>755</fileMode>
+			<fileMode>0755</fileMode>
 		</file>
 		<file>
-			<source>src/etc/conf/posnet.ini</source>
+			<source>src/etc/posnet.ini</source>
 			<outputDirectory>conf</outputDirectory>
-			<fileMode>600</fileMode>
+			<fileMode>0600</fileMode>
 		</file>
 		<file>
-			<source>src/etc/conf/dispatcher.ini</source>
+			<source>src/etc/dispatcher.ini</source>
 			<outputDirectory>conf</outputDirectory>
-			<fileMode>600</fileMode>
+			<fileMode>0600</fileMode>
+		</file>
+		<file>
+			<source>src/etc/logback.xml</source>
+			<outputDirectory>conf</outputDirectory>
+			<fileMode>0644</fileMode>
 		</file>
 	</files>
 	<dependencySets>

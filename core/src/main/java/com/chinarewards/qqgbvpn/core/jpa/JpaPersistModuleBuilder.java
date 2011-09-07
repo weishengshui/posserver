@@ -55,6 +55,7 @@ public class JpaPersistModuleBuilder {
 
 		// set the hibernate properties first
 		Configuration hibernateConfig = dbConfig.subset("hibernate");
+		@SuppressWarnings("rawtypes")
 		Iterator iter = hibernateConfig.getKeys();
 		while (iter.hasNext()) {
 			String key = (String) iter.next();

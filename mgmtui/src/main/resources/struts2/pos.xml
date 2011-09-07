@@ -5,6 +5,7 @@
 
 <struts>
 	<package name="pos" extends="default" namespace="/pos">
+		<default-interceptor-ref name="secureStack" />
 		<!-- find all album -->
 		<action name="list" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction">
 			<result name="success" type="tiles">pos.list</result>

@@ -17,6 +17,7 @@ import com.google.inject.AbstractModule;
  * 
  * @author cyril
  * @since 0.1.0
+ * @deprecated
  */
 public class HardCodedConfigModule extends AbstractModule {
 

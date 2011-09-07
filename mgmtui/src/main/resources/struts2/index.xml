@@ -18,7 +18,7 @@
 		</action>
 		<action name="home" class="com.chinarewards.qqgbvpn.mgmtui.struts.login.LoginAction">
 			<result name="success" type="redirectAction">
-				<param name="namespace">/helloworld</param>
+				<param name="namespace">/</param>
 				<param name="actionName">index</param>
 			</result>
 		</action>

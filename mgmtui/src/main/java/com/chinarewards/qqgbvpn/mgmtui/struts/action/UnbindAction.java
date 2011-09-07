@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,20 +12,19 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.struts2.StrutsStatics;
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
-import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
@@ -37,16 +37,19 @@ public class UnbindAction extends BaseAction {
 
 	private static final long serialVersionUID = -4872248136823406437L;
 	
-	@Inject
-	private Provider<GroupBuyingUnbindManager> groupBuyingUnbindMgr;
+	private GroupBuyingUnbindManager groupBuyingUnbindMgr;
 	
-	@Inject
-	private Provider<MailService> mailService;
+	private MailService mailService;
 	
-	@Inject
 	protected Configuration configuration;
 
 	private Agent agent;
+	
+	private String agentId;
+	
+	//private String aname;
+	
+	private String agentEmail;
 	
 	private PageInfo pageInfo;
 	
@@ -64,7 +67,45 @@ public class UnbindAction extends BaseAction {
 	
 	private String errorMsg;
 	
+	private GroupBuyingUnbindManager getGroupBuyingUnbindManager() {
+		groupBuyingUnbindMgr = super.getInstance(GroupBuyingUnbindManager.class);
+		return groupBuyingUnbindMgr;
+	}
 	
+	private MailService getMailService() {
+		mailService = super.getInstance(MailService.class);
+		return mailService;
+	}
+	
+	private Configuration getConfiguration() {
+		configuration = super.getInstance(Configuration.class);
+		return configuration;
+	}
+	
+	public String getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(String agentId) {
+		this.agentId = agentId;
+	}
+
+	/*public String getAname() {
+		return aname;
+	}
+
+	public void setAname(String aname) {
+		this.aname = aname;
+	}*/
+
+	public String getAgentEmail() {
+		return agentEmail;
+	}
+
+	public void setAgentEmail(String agentEmail) {
+		this.agentEmail = agentEmail;
+	}
+
 	public String getErrorMsg() {
 		return errorMsg;
 	}
@@ -148,12 +189,21 @@ public class UnbindAction extends BaseAction {
 
 	public String search() {
 		if (agentName != null && !"".equals(agentName.trim())) {
-			Agent a = groupBuyingUnbindMgr.get().getAgentByName(agentName.trim());
+			
+			//EntityManager em = this.getInstance(EntityManager.class);
+			//log.debug("em.xtaction.isActive: {}", em.getTransaction().isActive());
+			//log.debug("em.xtaction.getRollbackOnly: {}", em.getTransaction().getRollbackOnly());
+			
+			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(10);
-				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, a.getId());
+				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				this.setAgentId(a.getId());
 				this.setAgent(a);
+				/*this.setAgentId(a.getId());
+				this.setAname(a.getName());
+				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "第三方信息找不到!";
@@ -162,15 +212,20 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String searchByAgent() {
+	public String request() {
 		if (rnId != null && !"".equals(rnId.trim())) {
-			Agent a = groupBuyingUnbindMgr.get().getAgentByRnId(rnId);
+			Agent a = getGroupBuyingUnbindManager().getAgentByRnId(rnId);
 			if (a != null) {
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(10);
-				pageInfo = groupBuyingUnbindMgr.get().getPosByAgentId(pageInfo, a.getId());
+				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				this.setAgentId(a.getId());
+				this.setAgentName(a.getName());
 				this.setAgent(a);
+				/*this.setAgentId(a.getId());
+				this.setAname(a.getName());
+				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "无可用回收单!";
@@ -179,20 +234,20 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String createRnNumber() throws JsonGenerationException
+	public String createInvite() throws JsonGenerationException
 		, SaveDBException, UnsupportedEncodingException
 		, MessagingException, javax.mail.MessagingException{
-		if (agent.getId() != null && !"".equals(agent.getId().trim())) {
-			//生成回收单
-			ReturnNote rn = groupBuyingUnbindMgr.get().createReturnNoteByAgentId(agent.getId());
+		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
+			//生成邀请单
+			String inviteCode = getGroupBuyingUnbindManager().createInviteCode();
 			//发送邮件
 			HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
 			String path = request.getRequestURL().toString();
-			path = path.substring(0, path.lastIndexOf("/")) + "/searchByAgent?rnId=" + rn.getId();
-			String[] toAdds = {agent.getEmail()};
+			path = path.substring(0, path.lastIndexOf("/")) + "/returnnote/request?inviteCode=" + inviteCode;
+			String[] toAdds = {this.getAgentEmail()};
 			String subject = "测试邮件";
 			String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
-			mailService.get().sendMail(toAdds, null, subject, content, null);
+			getMailService().sendMail(toAdds, null, subject, content, null);
 			return SUCCESS;
 		} else {
 			//这里应该报第三方不能为空的提示
@@ -201,11 +256,16 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String confirmRnNumber() throws JsonGenerationException, SaveDBException{
+	public String confirmRnNumber() throws SaveDBException {
 		if (posIds != null && !"".equals(posIds.trim())) {
-			ReturnNote rn = groupBuyingUnbindMgr.get().confirmReturnNote(agent.getId(), rnId, posIds);
+			try {
+				ReturnNote rn = getGroupBuyingUnbindManager().confirmReturnNote(
+						this.getAgentId(), rnId, splitPosIds(posIds));
+			} catch (UnUseableRNException e) {
+				this.errorMsg = "回收单已使用!";
+			}
 		} else {
-			//这里应该报POS机不能为空的提示
+			// 这里应该报POS机不能为空的提示
 			this.errorMsg = "POS机信息找不到!";
 		}
 		return SUCCESS;
@@ -213,7 +273,7 @@ public class UnbindAction extends BaseAction {
 	
 	public String posSearch() {
 		if (posCondition != null && !"".equals(posCondition.trim())) {
-			posList = groupBuyingUnbindMgr.get().getPosByPosInfo(posCondition.trim());
+			posList = getGroupBuyingUnbindManager().getPosByPosInfo(posCondition.trim());
 			if (posList == null || posList.size() == 0) {
 				this.errorMsg = "POS机信息找不到!";
 			}
@@ -225,9 +285,9 @@ public class UnbindAction extends BaseAction {
 		if (posId != null && !"".equals(posId.trim())) {
 			HashMap<String, Object> params = new HashMap<String, Object>();
 			params.put("posId", new String[] { posId });
-			params.put("key", configuration.getString("txserver.key"));
+			params.put("key", getConfiguration().getString("txserver.key"));
 			try {
-				HashMap<String, Object> result = groupBuyingUnbindMgr.get().groupBuyingUnbind(params);
+				HashMap<String, Object> result = getGroupBuyingUnbindManager().groupBuyingUnbind(params);
 				String resultCode = (String) result.get("resultCode");
 				System.out.println("resultCode->" + resultCode);
 				if ("0".equals(resultCode)) {
@@ -275,15 +335,24 @@ public class UnbindAction extends BaseAction {
 	
 	public String sendURL() {
 		if (agentName != null && !"".equals(agentName.trim())) {
-			Agent a = groupBuyingUnbindMgr.get().getAgentByName(agentName.trim());
+			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
+				this.setAgentId(a.getId());
+				this.setAgentEmail(a.getEmail());
 				this.setAgent(a);
+				/*this.setAgentId(a.getId());
+				this.setAname(a.getName());
+				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
 				this.errorMsg = "第三方机信息找不到!";
 			}
 		}
 		return SUCCESS;
+	}
+	
+	protected List<String> splitPosIds(String ids) {
+		return Arrays.asList(ids.split(","));
 	}
 
 }
