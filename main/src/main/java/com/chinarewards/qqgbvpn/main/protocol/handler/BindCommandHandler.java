@@ -42,7 +42,7 @@ public class BindCommandHandler implements ServiceHandler {
 		try{
 			loginResponseMessage  = loginManager.bind(bodyMessage);
 		}catch(Throwable e){
-			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
+			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLENGE_RESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}

@@ -9,8 +9,9 @@
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>mgmtui</artifactId>
-	<name>Main Server for QQ Group Buy Validation POS Network Management UI</name>
-	<description>Main Server for QQ Group Buy Validation POS Network Management UI</description>
+	<packaging>war</packaging>
+	<name>POS Network Server 2 Management UI</name>
+	<description>Management user interface for POS Network server version 2</description>
 
 	<properties>
 		<struts.version>2.2.3</struts.version>
@@ -71,13 +72,6 @@
 		    <version>1.7.1</version>
 		</dependency>
 		
-		<!-- MYSQL -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.17</version>
-		</dependency>
-
 		<!-- Struts 2 -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>
@@ -101,6 +95,12 @@
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-spring-plugin</artifactId>
 			<version>${struts.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -110,14 +110,23 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-struts2-plugin</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-tiles-plugin</artifactId>
 			<version>${struts.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-struts2-plugin</artifactId>
+		</dependency>
+		
+		
 		<!-- Web UI related -->
 		<dependency>
 			<groupId>com.google.code</groupId>
@@ -125,30 +134,17 @@
 			<version>2.3</version>
 		</dependency>
 		
-		<!-- Jsp Api -->
+		<!-- JSP Api -->
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 	  		<artifactId>jsp-api</artifactId>
 	  		<version>2.1</version>
 		</dependency>
 		
-		<!-- JavaMail -->
-	  	<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1</version>
-		</dependency>
+		<!-- MYSQL -->
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4</version>
-		</dependency>
-		
-		<!-- Spring mail -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.0.4</version>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 
 		<!-- Configuration -->
@@ -180,6 +176,12 @@
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>qqapi</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
@@ -190,6 +192,12 @@
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>core</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Test Scope STARTS -->
@@ -212,16 +220,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<!-- Test Scope ENDS -->
 	</dependencies>
@@ -325,14 +323,7 @@
 				</executions>
 			</plugin>
 
-
-			<!-- Uncomment this to allow quick development. <plugin> <groupId>org.zeroturnaround</groupId> 
-				<artifactId>javarebel-maven-plugin</artifactId> <executions> <execution> 
-				<id>generate-rebel-xml</id> <phase>process-resources</phase> <goals> <goal>generate</goal> 
-				</goals> </execution> </executions> <configuration> <downloadJavadocs>true</downloadJavadocs> 
-				</configuration> <version>1.0.5</version> </plugin> -->
 		</plugins>
-
 	</build>
 	<inceptionYear>2011</inceptionYear>
 	<organization>

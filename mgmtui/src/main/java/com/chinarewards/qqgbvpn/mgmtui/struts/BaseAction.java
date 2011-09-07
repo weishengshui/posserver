@@ -32,10 +32,11 @@ public abstract class BaseAction extends ActionSupport {
 				.getAttribute(Injector.class.getName())).getInstance(type);
 	}
 	
-	protected void logEvent(String event, String entity, String entityId,String eventDetail){
-		this.getInstance(JournalLogic.class).logEvent(event, entity, entityId, eventDetail);
-	}
-	
+	protected void logEvent(String event, String entity, String entityId,
+			String eventDetail) {
+		this.getInstance(JournalLogic.class).logEvent(event, entity, entityId,
+				eventDetail);
+	}	
 	
 	/**
 	 * description：获取当前URI

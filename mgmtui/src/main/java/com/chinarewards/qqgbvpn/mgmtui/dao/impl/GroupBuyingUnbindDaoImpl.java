@@ -50,6 +50,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
 						if (items != null) {
 							try {
+								// FIXME use Jackson JSON processor
 								GsonBuilder builder = new GsonBuilder();
 								Gson gson = builder.create();
 								journal.setEventDetail(gson.toJson(pa));
@@ -274,9 +275,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			rn.setCreateDate(date);
 			
 			try {
-			/*	if (!em.get().getTransaction().isActive()) {
-					em.get().getTransaction().begin();
-				}*/
 				
 				saveReturnNote(rn);
 				

@@ -55,6 +55,26 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 			throws Exception {
 
 		log.debug("messageReceived() start");
+		
+		doDispatch(session, message);
+
+		log.debug("messageReceived() end");
+	}
+
+	/**
+	 * Do the actual dispatch job, including reading the request, prepare the
+	 * request and response environment, send the request to
+	 * <code>ServiceHandler</code>, and write back the response.
+	 * <p>
+	 * 
+	 * The request and response
+	 * 
+	 * @param session
+	 * @param message
+	 * @throws Exception
+	 */
+	protected void doDispatch(IoSession session, Object message)
+			throws Exception {
 
 		// get the message
 		Message msg = (Message) message;
@@ -76,39 +96,18 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 			throw new PackageException("No mapping found for command ID " + cmdId, e);
 		}
 
+		// grep the response, and write back to the channel.
 		ICommand responseMsgBody = (ICommand) response.getResponse();
-
-		// ICommand responseMsgBody = commandHandler.execute(session,
-		// msg.getBodyMessage());
-
 		msg.setBodyMessage(responseMsgBody);
 		session.write(msg);
 
-		log.debug("messageReceived end");
 		log.debug("Server written to client...");
-	}
-
-	/**
-	 * Do the actual dispatch job, including reading the request, prepare the
-	 * request and response environment, send the request to
-	 * <code>ServiceHandler</code>, and write back the response.
-	 * <p>
-	 * 
-	 * The request and response
-	 * 
-	 * @param session
-	 * @param message
-	 * @throws Exception
-	 */
-	protected void doDispatch(IoSession session, Object message)
-			throws Exception {
-
 	}
 
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status)
 			throws Exception {
-		log.debug("Socket client idle (} count: {})", status,
+		log.debug("Socket client idle ({} count: {})", status,
 				session.getIdleCount(status));
 	}
 

@@ -15,7 +15,7 @@
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 
-DESC="POSNetv2 server"
+DESC="POSNet server version 2"
 NAME=posnet2
 JAVA=`which java`
 
@@ -25,7 +25,7 @@ LOGBACKCONF=file:///etc/posnetv2/logback.xml
 DAEMONUSER=root
 POSNET2_HOME=/usr/share/$NAME
 POSNET2_START="-Dlogback.configurationFile=$LOGBACKCONF -jar $POSNET2_HOME/qqgbvpn.jar"
-LOGFILE=/var/log/posnet2.log
+LOGFILE=/var/log/posnet2/posnet2.log
 PIDFILE=/var/run/posnet2.pid
 
 # Define LSB log_* functions.
@@ -47,6 +47,12 @@ fi
 #
 do_start()
 {
+
+	# create log dit if not exists
+	if [ ! -d "/var/log/${NAME}" ]; then
+		mkdir -p /var/log/${NAME}
+	fi
+
 	# starting the service
 	start-stop-daemon --start --quiet --chuid $DAEMONUSER  \
                 --exec "$JAVA" --pidfile $PIDFILE --make-pidfile -- $POSNET2_START >> $LOGFILE 2>&1 &

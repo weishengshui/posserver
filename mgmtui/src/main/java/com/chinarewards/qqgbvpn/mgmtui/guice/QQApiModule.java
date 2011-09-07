@@ -2,11 +2,11 @@ package com.chinarewards.qqgbvpn.mgmtui.guice;
 
 import javax.inject.Singleton;
 
+import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.impl.GroupBuyingUnbindDaoImpl;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.logic.impl.GroupBuyingUnbindManagerImpl;
-import com.chinarewards.qqgbvpn.mgmtui.service.MailService;
 import com.chinarewards.qqgbvpn.mgmtui.service.impl.MailServiceImpl;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.chinarewards.qqgbvpn.qqapi.service.impl.GroupBuyingServiceImpl;

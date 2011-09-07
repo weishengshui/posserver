@@ -47,7 +47,7 @@ public class LoginCommandHandler implements ServiceHandler {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			loginResponseMessage
-					.setChallenge(new byte[ProtocolLengths.CHALLEUGERESPONSE]);
+					.setChallenge(new byte[ProtocolLengths.CHALLENGE_RESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}

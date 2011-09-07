@@ -35,7 +35,7 @@ public abstract class ProtocolLengths {
 	
 	public static final int HEAD = 16;//add by tommy 
 	
-	public static final int CHALLEUGERESPONSE = 16;
+	public static final int CHALLENGE_RESPONSE = 16;
 	
 	public static final int RESULT = 2;
 	
