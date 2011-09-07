@@ -33,7 +33,7 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" id="posId" onclick="ckPosId(this)"/></td>
+		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
 		<td><s:property value="#list.posId" /></td>
 		<td><s:property value="#list.simPhoneNo" /></td>
 		<td><s:property value="#list.sn" /></td>
@@ -57,6 +57,21 @@
 
 <script type="text/javascript">
 	
+	$().ready(function() {
+		autoCheckPos();
+	});
+	
+	function autoCheckPos() {
+		var posIds = document.getElementById("posIds").value;
+		if ($.trim(posIds) != "") {
+			$(":checkbox[name='posId']").each(function() {
+				if (posIds.indexOf(this.value) != -1) {
+					this.checked = true; 
+				}
+			});
+		}
+	}
+	
 	function confirmRnNumber() {
 		var posIds = document.getElementById("posIds").value;
 		if ($.trim(posIds) == "") {
@@ -79,6 +94,14 @@
 		document.getElementById("posIds").value = posIds;
 		alert(document.getElementById("posIds").value);
 	}
+	
+	function goPage(pageId) {
+		var formObj = document.getElementById("confirmForm");
+		document.getElementById("pageInfo.pageId").value = pageId;
+		formObj.action = "${ctx}/returnnote/goPage";
+		formObj.submit();
+	}
+	
 </script>
 </body>
 </html>

@@ -37,6 +37,8 @@ public class UnbindAction extends BaseAction {
 
 	private static final long serialVersionUID = -4872248136823406437L;
 	
+	private static final int initPageSize = 1;
+	
 	private GroupBuyingUnbindManager groupBuyingUnbindMgr;
 	
 	private MailService mailService;
@@ -198,6 +200,7 @@ public class UnbindAction extends BaseAction {
 	}
 
 	public String search() {
+		posIds = "";
 		if (agentName != null && !"".equals(agentName.trim())) {
 			
 			//EntityManager em = this.getInstance(EntityManager.class);
@@ -206,8 +209,9 @@ public class UnbindAction extends BaseAction {
 			
 			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
+				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
-				pageInfo.setPageSize(10);
+				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
 				this.setAgentId(a.getId());
 				this.setAgent(a);
@@ -223,12 +227,13 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String request() {
+		posIds = "";
 		if (inviteCode != null && !"".equals(inviteCode.trim())) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode);
 			if (a != null) {
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
-				pageInfo.setPageSize(10);
+				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
 				this.setAgentId(a.getId());
 				this.setAgentName(a.getName());
@@ -241,6 +246,16 @@ public class UnbindAction extends BaseAction {
 				this.errorMsg = "无可用邀请!";
 			}
 		}
+		return SUCCESS;
+	}
+	
+	public String goPage() {
+		if (pageInfo == null) {
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(initPageSize);
+		}
+		pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, this.getAgentId());
 		return SUCCESS;
 	}
 	
@@ -323,9 +338,6 @@ public class UnbindAction extends BaseAction {
 						break;
 					}
 				}
-			} catch (JsonGenerationException e) {
-				this.errorMsg = "生成JSON对象出错!";
-				e.printStackTrace();
 			} catch (MD5Exception e) {
 				this.errorMsg = "生成MD5校验位出错!";
 				e.printStackTrace();

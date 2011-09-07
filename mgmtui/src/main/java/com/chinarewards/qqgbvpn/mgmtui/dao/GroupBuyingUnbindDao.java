@@ -15,7 +15,7 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 
 public interface GroupBuyingUnbindDao {
 	
-	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;
+	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException;
 	
 	public PageInfo getPosByAgentId(PageInfo pageInfo, String agentId);
 	

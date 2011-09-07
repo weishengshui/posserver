@@ -16,6 +16,11 @@
 			method="search">
 			<result name="success" type="tiles">unbind.list</result>
 		</action>
+		<action name="goPage"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="goPage">
+			<result name="success" type="tiles">unbind.list</result>
+		</action>
 		<action name="createInvite"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createInvite">
@@ -52,6 +57,11 @@
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
+			<result name="success">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
+		</action>
+		<action name="goPage"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="goPage">
 			<result name="success">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
 	</package>

@@ -101,9 +101,6 @@ public class GroupBuyingUnbindTest {
 					break;
 				}
 			}
-		} catch (JsonGenerationException e) {
-			System.err.println("生成JSON对象出错");
-			e.printStackTrace();
 		} catch (MD5Exception e) {
 			System.err.println("生成MD5校验位出错");
 			e.printStackTrace();
