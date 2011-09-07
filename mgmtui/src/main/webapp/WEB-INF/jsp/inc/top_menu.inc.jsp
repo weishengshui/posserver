@@ -23,30 +23,40 @@
 	<li><a href="<s:url value="/"/>">首页</a></li>
 	<!-- Home ENDS  -->
 	
-	<!-- Shop STARTS -->
+	<!-- POS manager STARTS -->
 	<li><a href="#">POS管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
-		<li><a href="<s:url value="/pos/list"/>">列表</a></li>
-		<li><a href="<s:url value="/pos/detail"/>">新増</a></li>
+		<li><a href="<s:url action="list" namespace="/pos" />">列表</a></li>
+		<li><a href="<s:url action="detail" namespace="/pos" />">新増</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
-	<!-- Shop ENDS -->
+	<!-- POS manager ENDS -->
 	
-	<!-- Shop STARTS -->
+	<!-- POS回收 STARTS -->
 	<li><a href="#">POS回收<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
-		<li><a href="<s:url value="/unbind/sendURL"/>">发送URL</a></li>
-		<li><a href="<s:url value="/unbind/list"/>">生成回收单</a></li>
-		<li><a href="<s:url value="/unbind/posSearch"/>">解绑</a></li>
+		<li><a href="<s:url action="sendURL" namespace="/unbind" />">发送URL</a></li>
+		<li><a href="<s:url action="list" namespace="/unbind" />">生成回收单</a></li>
+		<li><a href="<s:url action="posSearch" namespace="/unbind" />">解绑</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
-	<!-- Shop ENDS -->
+	<!-- POS回收 ENDS -->
 	
-	<!-- Shop STARTS -->
+	<!-- 交付单管理 STARTS -->
+	<li><a href="#">交付单管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td><![endif]-->
+		<ul>
+		<li><a href="<s:url action="searchDelivery" namespace="/delivery" />">列表</a></li>
+		</ul>
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+	<!-- 交付单管理 ENDS -->
+	
+	<!-- 第三方管理 STARTS -->
 	<li><a href="#">第三方管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
@@ -55,7 +65,7 @@
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
-	<!-- Shop ENDS -->
+	<!-- 第三方管理 ENDS -->
 	
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
