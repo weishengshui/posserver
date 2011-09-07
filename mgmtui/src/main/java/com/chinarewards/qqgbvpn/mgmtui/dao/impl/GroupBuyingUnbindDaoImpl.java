@@ -152,19 +152,14 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private PosAssignment getPosAssignmentByIdPosId(String posId) {
-		try {
-			Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
-			jql.setParameter(1, posId);
-			List resultList = jql.getResultList();
-			PosAssignment pa = null;
-			if (resultList != null) {
-				pa = (PosAssignment) resultList.get(0);
-			}
-			return pa;
-		} catch (Exception e) {
-			// XXX why mute the exception!?
-			return null;
+		Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
+		jql.setParameter(1, posId);
+		List resultList = jql.getResultList();
+		PosAssignment pa = null;
+		if (resultList != null && resultList.size() > 0) {
+			pa = (PosAssignment) resultList.get(0);
 		}
+		return pa;
 	}
 	
 	private String getResultStatusByPosIdForUnbind(List<GroupBuyingUnbindVO> items, String posId) {
@@ -185,16 +180,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 回收单页面查询调用
 	 */
 	public PageInfo getPosByAgentId(PageInfo pageInfo, String agentId) {
-		try {
-			String sql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1";
-			List params = new ArrayList();
-			params.add(agentId);
-			PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
-			return resultList;
-		} catch (Exception e) {
-			// XXX why mute the exception!?!?!
-			return pageInfo;
-		}
+		String sql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1";
+		List params = new ArrayList();
+		params.add(agentId);
+		PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
+		return resultList;
 	}
 	
 	/* (non-Javadoc)
@@ -202,19 +192,21 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 发送URL页面查询调用
 	 */
 	public Agent getAgentByName(String agentName) {
-		try {
-			Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
-			jql.setParameter(1, agentName);
-			List resultList = jql.getResultList();
-			log.debug("Number of agent matched name '{}': {}", agentName, resultList.size());
-			Agent agent = null;
-			if (resultList != null) {
-				agent = (Agent) resultList.get(0);
-			}
-			return agent;
-		} catch (Exception e) {
-			return null;
+		Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
+		jql.setParameter(1, agentName);
+		List resultList = jql.getResultList();
+		Agent agent = null;
+		if (resultList != null && resultList.size() > 0) {
+			agent = (Agent) resultList.get(0);
 		}
+		return agent;
+	}
+	
+	public List<Agent> getAgentLikeName(String agentName) {
+		Query jql = em.get().createQuery("select a from Agent a where upper(a.name) like ?1");
+		jql.setParameter(1, "%" + agentName.toUpperCase() + "%");
+		List resultList = jql.getResultList();
+		return resultList;
 	}
 	
 	/* (non-Javadoc)
@@ -222,14 +214,10 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 解绑页面查询调用
 	 */
 	public List<Pos> getPosByPosInfo(String info) {
-		try {
-			Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
-			jql.setParameter(1, info);
-			List<Pos> resultList = jql.getResultList();
-			return resultList;
-		} catch (Exception e) {
-			return null;
-		}
+		Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
+		jql.setParameter(1, info);
+		List<Pos> resultList = jql.getResultList();
+		return resultList;
 	}
 	
 	/* (non-Javadoc)
@@ -264,13 +252,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					throw new JsonGenerationException(e);
 				}
 				saveJournal(journal);
-				/*if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().commit();
-				}*/
 			} catch (Exception e) {
-				/*if (em.get().getTransaction().isActive()) {
-					em.get().getTransaction().rollback();
-				}*/
 				throw new SaveDBException(e);
 			}
 			return rn;
@@ -379,26 +361,11 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private List<Pos> getPosListByIds(List<String> posIds) {
-		try {
-			log.debug("posIds:{}", posIds);
-			Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
-			jql.setParameter(1, posIds);
-			List<Pos> resultList = jql.getResultList();
-			return resultList;
-		} catch (Exception e) {
-			log.error("Transaction Exception catch!", e);
-			return null;
-		}
-	}
-	
-	/**
-	 * 判断邀请号是否可用
-	 * @param inviteCode
-	 * @return
-	 */
-	private boolean getIsEnableByInviteCode(String inviteCode) {
-		//TODO
-		return false;
+		log.debug("posIds:{}", posIds);
+		Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
+		jql.setParameter(1, posIds);
+		List<Pos> resultList = jql.getResultList();
+		return resultList;
 	}
 	
 	public Agent getAgentByRnId(String rnId) {

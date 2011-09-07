@@ -21,6 +21,8 @@ public interface GroupBuyingUnbindDao {
 	
 	public Agent getAgentByName(String agentName);
 	
+	public List<Agent> getAgentLikeName(String agentName);
+	
 	public List<Pos> getPosByPosInfo(String info);
 	
 	public ReturnNote createReturnNoteByAgentId(String agentId) throws JsonGenerationException,SaveDBException;
