@@ -70,7 +70,7 @@
 			</tr>
 			<tr>
 				<td colspan="4" align="center">
-					<input type="submit" name="submit" value="search" />
+					<input type="submit" name="submit" value="查询" />
 				</td>
 			</tr>
 		</table>
