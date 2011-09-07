@@ -38,8 +38,8 @@
 	<li><a href="#">POS回收<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
-		<li><a href="<s:url value="/unbind/sendURL"/>">发送URL</a></li>
-		<li><a href="<s:url value="/unbind/list"/>">生成回收单</a></li>
+		<li><a href="<s:url value="/unbind/sendURL"/>">邀请第三方填写申请表</a></li>
+		<li><a href="<s:url value="/unbind/list"/>">我方生成回收单</a></li>
 		<li><a href="<s:url value="/unbind/posSearch"/>">解绑</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
