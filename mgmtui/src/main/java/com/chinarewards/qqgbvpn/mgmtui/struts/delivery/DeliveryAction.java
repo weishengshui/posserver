@@ -201,6 +201,17 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		return SUCCESS;
 	}
 	
+	/**
+	 * description：显示是否允许update操作
+	 * @return
+	 * @time 2011-9-7   下午08:02:00
+	 * @author Seek
+	 */
+	public String showIsAllowUpdateDelivery(){
+		//...
+		return SUCCESS;
+	}
+	
 	public String printDelivery(){
 		try{
 			deliveryNoteVO  = getDeliveryLogic().fetchById(id);

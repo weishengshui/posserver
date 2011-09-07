@@ -52,6 +52,12 @@
 			</result>
 		</action>
 		
+		<action name="showIsAllowUpdateDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showIsAllowUpdateDelivery">
+			<result name="success" type="tiles">delivery.showIsAllowUpdateDelivery</result>
+		</action>
+		
+		
+		
 		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
 			<param name="id">{1}</param>
 			<result name="success" type="tiles">delivery.printDelivery</result>
