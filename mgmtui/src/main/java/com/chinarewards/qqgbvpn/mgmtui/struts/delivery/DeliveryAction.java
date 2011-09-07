@@ -1,9 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.delivery;
 
 import java.util.List;
-
 import org.apache.struts2.ServletActionContext;
-
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
@@ -50,6 +48,8 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private String deliveryNoteDetailId;
 	
+	private String id;
+	
 	@Override
 	public String execute(){
 		if(super.getCurrentPage()==0){
@@ -80,21 +80,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			
 			setUrlTemplate(urlTemplate);
 			setUrlMark(urlMark);
-		}catch(Throwable e){
-			log.error(e.getMessage(), e);
-			return ERROR;
-		}
-		return SUCCESS;
-	}
-	
-	/**
-	 * description：删除交付单
-	 * @time 2011-9-7   下午02:46:24
-	 * @author Seek
-	 */
-	public String deleteDelivery(){
-		try{
-//			getDeliveryLogic().(paginationTools);
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -175,6 +160,29 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		return SUCCESS;
 	}
 	
+	public String printDelivery(){
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(id);
+			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(id);
+			//print
+			getDeliveryLogic().printDelivery(id);
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+
+	public String deleteDelivery(){
+		try{
+			getDeliveryLogic().deleteDeliveryNote(id);
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
@@ -195,6 +203,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	public void setDeliveryNoteVOList(List<DeliveryNoteVO> deliveryNoteVOList) {
 		this.deliveryNoteVOList = deliveryNoteVOList;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	public String getDeliveryId() {

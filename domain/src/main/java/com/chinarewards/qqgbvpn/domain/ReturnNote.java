@@ -43,6 +43,19 @@ public class ReturnNote {
 	 * Copy of the agent name (for redundancy)
 	 */
 	String agentName;
+	
+	/**
+	 * Copy of the ReturnNoteInvitation token
+	 */
+	String token;
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
 
 	public String getId() {
 		return id;

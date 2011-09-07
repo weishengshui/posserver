@@ -59,6 +59,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnId;
 	
+	private String inviteCode;
+	
 	private String agentName;
 	
 	private String posCondition;
@@ -82,6 +84,14 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public String getInviteCode() {
+		return inviteCode;
+	}
+
+	public void setInviteCode(String inviteCode) {
+		this.inviteCode = inviteCode;
+	}
+
 	public String getAgentId() {
 		return agentId;
 	}
@@ -213,8 +223,8 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String request() {
-		if (rnId != null && !"".equals(rnId.trim())) {
-			Agent a = getGroupBuyingUnbindManager().getAgentByRnId(rnId);
+		if (inviteCode != null && !"".equals(inviteCode.trim())) {
+			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode);
 			if (a != null) {
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
@@ -228,7 +238,7 @@ public class UnbindAction extends BaseAction {
 				this.setAgentEmail(a.getEmail());*/
 			} else {
 				//这里应该报找不到的提示
-				this.errorMsg = "无可用回收单!";
+				this.errorMsg = "无可用邀请!";
 			}
 		}
 		return SUCCESS;
@@ -239,20 +249,19 @@ public class UnbindAction extends BaseAction {
 		, MessagingException, javax.mail.MessagingException{
 		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
 			//生成邀请单
-			String inviteCode = getGroupBuyingUnbindManager().createInviteCode();
-			//发送邮件
-			HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
-			String path = request.getRequestURL().toString();
-			path = path.substring(0, path.lastIndexOf("/")) + "/returnnote/request?inviteCode=" + inviteCode;
-			String[] toAdds = {this.getAgentEmail()};
-			String subject = "测试邮件";
-			String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
-			getMailService().sendMail(toAdds, null, subject, content, null);
-			return SUCCESS;
-		} else {
-			//这里应该报第三方不能为空的提示
-			this.errorMsg = "第三方信息找不到!";
+			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
+			if (inviteCode != null) {
+				//发送邮件
+				String path = getEmailPath(inviteCode);
+				String[] toAdds = {this.getAgentEmail()};
+				String subject = "测试邮件";
+				String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
+				getMailService().sendMail(toAdds, null, subject, content, null);
+				return SUCCESS;
+			}
 		}
+		//这里应该报第三方不能为空的提示
+		this.errorMsg = "第三方信息找不到!";
 		return SUCCESS;
 	}
 	
@@ -260,8 +269,9 @@ public class UnbindAction extends BaseAction {
 		if (posIds != null && !"".equals(posIds.trim())) {
 			try {
 				ReturnNote rn = getGroupBuyingUnbindManager().confirmReturnNote(
-						this.getAgentId(), rnId, splitPosIds(posIds));
+						this.getAgentId(), inviteCode, splitPosIds(posIds));
 			} catch (UnUseableRNException e) {
+				//TODO 这里到时改为不提示错误
 				this.errorMsg = "回收单已使用!";
 			}
 		} else {
@@ -353,6 +363,14 @@ public class UnbindAction extends BaseAction {
 	
 	protected List<String> splitPosIds(String ids) {
 		return Arrays.asList(ids.split(","));
+	}
+	
+	private String getEmailPath(String inviteCode) {
+		HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
+		String path = request.getRequestURL().toString();
+		String ctx = request.getContextPath();
+		path = path.substring(0, path.indexOf(ctx)) + ctx + "/returnnote/request?inviteCode=" + inviteCode;
+		return path;
 	}
 
 }

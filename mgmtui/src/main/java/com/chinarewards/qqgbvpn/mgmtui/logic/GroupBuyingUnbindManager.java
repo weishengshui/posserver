@@ -61,13 +61,13 @@ public interface GroupBuyingUnbindManager {
 	/**
 	 * 确认回收单
 	 * @param agentId
-	 * @param rnId
+	 * @param inviteCode
 	 * @param posList
 	 * @return
 	 * @throws JsonGenerationException
 	 * @throws SaveDBException
 	 */
-	public ReturnNote confirmReturnNote(String agentId,String rnId,List<String> posIds) throws SaveDBException,UnUseableRNException;
+	public ReturnNote confirmReturnNote(String agentId,String inviteCode,List<String> posIds) throws SaveDBException,UnUseableRNException;
 	
 	/**
 	 * 根据回收单ID查询第三方
@@ -80,5 +80,13 @@ public interface GroupBuyingUnbindManager {
 	 * 生成邀请号
 	 * @return
 	 */
-	public String createInviteCode();
+	public String createInviteCode(String agentId);
+	
+	/**
+	 * 根据邀请号查询第三方
+	 * @param rnId
+	 * @return
+	 */
+	public Agent getAgentByInviteCode(String inviteCode);
+	
 }

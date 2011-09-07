@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.mgmtui.model.delivery;
 
-
 public class DeliveryNoteDetailVO {
 
 	String id;
@@ -27,11 +26,16 @@ public class DeliveryNoteDetailVO {
 	 */
 	String simPhoneNo;
 
+	/**
+	 * POS initialization status.
+	 */
+	String istatus;
+
 	@Override
 	public String toString() {
 		return "DeliveryNoteDetailVO [id=" + id + ", dn=" + dn + ", posId="
 				+ posId + ", model=" + model + ", sn=" + sn + ", simPhoneNo="
-				+ simPhoneNo + "]";
+				+ simPhoneNo + ", istatus=" + istatus + "]";
 	}
 
 	public String getId() {
@@ -80,6 +84,14 @@ public class DeliveryNoteDetailVO {
 
 	public void setSimPhoneNo(String simPhoneNo) {
 		this.simPhoneNo = simPhoneNo;
+	}
+
+	public String getIstatus() {
+		return istatus;
+	}
+
+	public void setIstatus(String istatus) {
+		this.istatus = istatus;
 	}
 
 }

@@ -49,5 +49,21 @@ public interface DeliveryDao {
 	 * @param vo
 	 * @return
 	 */
-	public DeliveryNoteVO save(DeliveryNoteVO vo);
+	public DeliveryNoteVO create(DeliveryNoteVO vo);
+
+	/**
+	 * Call em.merge() to save it.
+	 * 
+	 * @param vo
+	 * @return
+	 */
+	public DeliveryNoteVO merge(DeliveryNoteVO vo);
+
+	/**
+	 * Delete delivery note by ID. It will delete delivery note detail which
+	 * belongs to this note.
+	 * 
+	 * @param id
+	 */
+	public void deleteById(String id);
 }

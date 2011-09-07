@@ -22,6 +22,7 @@
 	</dependencies>
 	<properties>
 		<pkgname>posnet2-server</pkgname>
+		<dbdeploy.version>3.0M3</dbdeploy.version>
 	</properties>
 	<build>
 		<extensions>
@@ -37,6 +38,33 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.2</version>
 				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.dbdeploy</groupId>
+									<artifactId>dbdeploy-cli</artifactId>
+									<version>${dbdeploy.version}</version>
+									<type>jar</type>
+									<outputDirectory>${project.build.directory}/bin</outputDirectory>
+									<destFileName>dbdeploy-cli.jar</destFileName>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.dbdeploy</groupId>
+									<artifactId>dbdeploy-core</artifactId>
+									<version>${dbdeploy.version}</version>
+									<type>jar</type>
+									<outputDirectory>${project.build.directory}/bin</outputDirectory>
+									<destFileName>dbdeploy-core.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
 					<execution>
 						<id>copy-dependencies</id>
 						<phase>package</phase>
@@ -70,22 +98,33 @@
 							<changesSave>${project.build.directory}/CHANGES.save</changesSave>
 							<attach>false</attach>
 							<dataSet>
+								<!-- Just the main .jar and lib/ jars -->
 								<data>
-									<src>${project.build.directory}/main-${project.version}</src>
-									<type>directory</type>
+									<src>${project.build.directory}/main-${project.version}/qqgbvpn.jar</src>
+									<type>file</type>
 									<mapper>
 										<type>prefix</type>
 										<prefix>/usr/share/posnet2</prefix>
-										<filemode>0644</filemode>
+										<filemode>0600</filemode>
+									</mapper>
+								</data>
+								<!-- Just the main .jar and lib/ jars -->
+								<data>
+									<src>${project.build.directory}/main-${project.version}/lib</src>
+									<type>directory</type>
+									<mapper>
+										<type>prefix</type>
+										<prefix>/usr/share/posnet2/lib</prefix>
+										<filemode>0600</filemode>
 									</mapper>
 								</data>
 								<data>
-									<src>${basedir}/etc</src>
+									<src>${project.build.directory}/main-${project.version}/conf</src>
 									<type>directory</type>
 									<mapper>
 										<type>prefix</type>
 										<prefix>/etc/posnet2</prefix>
-										<filemode>0644</filemode>
+										<filemode>0600</filemode>
 									</mapper>
 								</data>
 								<data>

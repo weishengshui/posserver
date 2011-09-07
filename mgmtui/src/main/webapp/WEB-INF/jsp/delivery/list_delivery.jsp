@@ -38,8 +38,12 @@
 					</s:else>
 				</td>
 				<td>
-					<a href='<s:url value="/delivery/deleteAgent"/>?agentId=<s:property value="#deliveryNoteVO.id"/>'>打印</a>
-					<a href='<s:url value="/delivery/deleteAgent"/>?agentId=<s:property value="#deliveryNoteVO.id"/>'>删除</a>
+					<s:if test="#deliveryNoteVO.status == 'PRINTED' || #deliveryNoteVO.status == 'CONFIRMED'">
+						<a target="_blank" href='<s:url value="/delivery/printDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>打印</a>
+					</s:if>
+					<s:if test="#deliveryNoteVO.status != 'PRINTED' && #deliveryNoteVO.status != 'CONFIRMED'">
+						<a href='<s:url value="/delivery/deleteDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>删除</a>
+					</s:if>
 				</td>
 			</tr>
 		  </s:iterator>

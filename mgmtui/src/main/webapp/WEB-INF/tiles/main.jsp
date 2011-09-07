@@ -16,11 +16,14 @@
 	<%-- pagingToolbar --%>
 	<link rel="stylesheet" href="<s:url value='/style/kernel/kernel.css'/>" type="text/css" />
 	<script type="text/javascript" src="<s:url value='/js/kernel/kernel.js'/>"></script>
+	<style media="print">
+		.noprint {display:none;}
+	</style>
 </head>
 
 <body>
     <div id="page">
-        <div id="header" class="clearfix">
+        <div id="header" class="clearfix noprint">
         	QQ Group Buying Validation POS Network
             <hr />
         </div>
@@ -30,7 +33,7 @@
                 <hr />
             </div>
             <!-- Top Menu Bar BEGINS -->
-            <div id="nav">
+            <div id="nav" class="noprint">
                 <div class="wrapper">
                 <!-- <h3>Nav. bar</h3> -->
                 <!-- Menu Items BEGINS -->
@@ -43,7 +46,7 @@
             </div>
             <!-- Top Menu Bar ENDS -->
         </div>
-        <div id="footer" class="clearfix">
+        <div id="footer" class="clearfix noprint">
             China Rewards 积享通 (c) 2011
         </div>
     </div>
