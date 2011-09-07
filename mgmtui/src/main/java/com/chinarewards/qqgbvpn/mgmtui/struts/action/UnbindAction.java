@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,6 +70,8 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Agent> agentList;
 	
+	private Date sendTime;
+	
 	private String errorMsg;
 	
 	private GroupBuyingUnbindManager getGroupBuyingUnbindManager() {
@@ -92,6 +95,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setInviteCode(String inviteCode) {
 		this.inviteCode = inviteCode;
+	}
+
+	public Date getSendTime() {
+		return sendTime;
+	}
+
+	public void setSendTime(Date sendTime) {
+		this.sendTime = sendTime;
 	}
 
 	public String getAgentId() {
@@ -258,15 +269,17 @@ public class UnbindAction extends BaseAction {
 				//发送邮件
 				String path = getEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
-				String subject = "测试邮件";
-				String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
+				String subject = "邀请填写申请表";
+				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
 				getMailService().sendMail(toAdds, null, subject, content, null);
+				this.setAgentName(this.getAgentName());
+				this.setSendTime(new Date());
 				return SUCCESS;
 			}
 		}
 		//这里应该报第三方不能为空的提示
 		this.errorMsg = "第三方信息找不到!";
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	public String confirmRnNumber() throws SaveDBException {
