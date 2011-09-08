@@ -10,6 +10,7 @@
 		<class>com.chinarewards.qqgbvpn.domain.PosAssignment</class>
 		<class>com.chinarewards.qqgbvpn.domain.ReturnNote</class>
 		<class>com.chinarewards.qqgbvpn.domain.ReturnNoteDetail</class>
+		<class>com.chinarewards.qqgbvpn.domain.ReturnNoteInvitation</class>
 		<class>com.chinarewards.qqgbvpn.domain.SysUser</class>
 		<class>com.chinarewards.qqgbvpn.domain.Validation</class>
 		<class>com.chinarewards.qqgbvpn.domain.event.Journal</class>

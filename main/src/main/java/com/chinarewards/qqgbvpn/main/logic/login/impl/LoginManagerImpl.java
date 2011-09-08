@@ -49,6 +49,7 @@ public class LoginManagerImpl implements LoginManager {
 
 	@Override
 	public InitResponseMessage init(InitRequestMessage req) {
+		
 		logger.debug("InitResponse() invoke");
 
 		InitResponseMessage resp = new InitResponseMessage();
@@ -63,6 +64,7 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
 		try {
+			// find the POS machine.
 			pos = posDao.get().fetchPos(req.getPosId(),
 					PosDeliveryStatus.DELIVERED, null,
 					PosOperationStatus.ALLOWED);
@@ -72,6 +74,7 @@ public class LoginManagerImpl implements LoginManager {
 				pos.setSecret(ChallengeUtil.generatePosSecret());
 			}
 
+			// FIXME should not use database for challenge storage.
 			pos.setChallenge(challenge);
 			posDao.get().merge(pos);
 			logger.debug("PosId:{}, init challenge saved - {}", new Object[] {
