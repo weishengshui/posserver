@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -19,6 +21,8 @@ import com.google.inject.Inject;
 public class GroupBuyingServiceImpl implements GroupBuyingService {
 
 	final Configuration configuration;
+	
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 
@@ -54,8 +58,10 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
+		
 		String url = configuration.getString("qq.groupbuy.url.groupBuyingSearchGroupon");
-		System.out.println(url);
+		log.trace("URL for Groupon Searching: qq.groupbuy.url.groupBuyingSearchGroupon={}", url);
+		
 		HashMap<String, Object> searchResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
 				GroupBuyingSearchListVO.class);
