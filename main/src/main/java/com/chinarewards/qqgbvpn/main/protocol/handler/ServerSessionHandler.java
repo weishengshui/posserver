@@ -1,5 +1,8 @@
 package com.chinarewards.qqgbvpn.main.protocol.handler;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -55,7 +58,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 			throws Exception {
 
 		log.debug("messageReceived() start");
-		
+
 		doDispatch(session, message);
 
 		log.debug("messageReceived() end");
@@ -82,18 +85,20 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		long cmdId = msg.getBodyMessage().getCmdId();
 
 		// FIXME throw PackageException if no handler found for command ID
-		
+
 		// build a request (for dispatcher)
 		MinaSession serviceSession = new MinaSession(session);
-		ServiceRequestImpl request = new ServiceRequestImpl(msg.getBodyMessage(), serviceSession);
+		ServiceRequestImpl request = new ServiceRequestImpl(
+				msg.getBodyMessage(), serviceSession);
 		// build a response (for dispatcher)
 		ServiceResponseImpl response = new ServiceResponseImpl();
-		
+
 		// dispatch the command to the corresponding service handler.
 		try {
 			serviceDispatcher.dispatch(serviceMapping, request, response);
 		} catch (ServiceDispatcherException e) {
-			throw new PackageException("No mapping found for command ID " + cmdId, e);
+			throw new PackageException("No mapping found for command ID "
+					+ cmdId, e);
 		}
 
 		// grep the response, and write back to the channel.
@@ -113,7 +118,21 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
+
+		debugPrintSessionOpened(session);
+		
 		super.sessionOpened(session);
+	}
+
+	protected void debugPrintSessionOpened(IoSession session) {
+		// show some meaningful logging message
+		SocketAddress addr = session.getRemoteAddress();
+		if (addr != null && addr instanceof InetSocketAddress) {
+			InetSocketAddress socketAddr = (InetSocketAddress) addr;
+			log.debug("Socket opened. Remote host = {}, port = {}", socketAddr
+					.getAddress().getHostAddress(), socketAddr.getPort());
+
+		}
 	}
 
 }

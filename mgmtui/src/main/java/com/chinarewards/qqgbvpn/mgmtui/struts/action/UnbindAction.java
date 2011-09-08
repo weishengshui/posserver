@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,10 +22,12 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
+import com.chinarewards.utils.StringUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 /**
@@ -69,6 +72,8 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Agent> agentList;
 	
+	private Date sendTime;
+	
 	private String errorMsg;
 	
 	private GroupBuyingUnbindManager getGroupBuyingUnbindManager() {
@@ -92,6 +97,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setInviteCode(String inviteCode) {
 		this.inviteCode = inviteCode;
+	}
+
+	public Date getSendTime() {
+		return sendTime;
+	}
+
+	public void setSendTime(Date sendTime) {
+		this.sendTime = sendTime;
 	}
 
 	public String getAgentId() {
@@ -248,32 +261,44 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String createInvite() throws JsonGenerationException
-		, SaveDBException, UnsupportedEncodingException
-		, MessagingException, javax.mail.MessagingException{
+	public String createInvite() throws UnsupportedEncodingException, MessagingException{
 		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
 			//生成邀请单
 			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
 			if (inviteCode != null) {
 				//发送邮件
-				String path = getEmailPath(inviteCode);
+				String path = getInviteEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
-				String subject = "测试邮件";
-				String content = "<html><body><br><a href='" + path + "'>请点击此链接进行回收POS机，谢谢</a></body></html>";
+				String subject = "邀请填写申请表";
+				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
 				getMailService().sendMail(toAdds, null, subject, content, null);
+				this.setAgentName(this.getAgentName());
+				this.setSendTime(new Date());
 				return SUCCESS;
 			}
 		}
 		//这里应该报第三方不能为空的提示
 		this.errorMsg = "第三方信息找不到!";
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	public String confirmRnNumber() throws SaveDBException {
 		if (posIds != null && !"".equals(posIds.trim())) {
 			try {
+				List<String> posList = splitPosIds(posIds);
 				ReturnNote rn = getGroupBuyingUnbindManager().confirmReturnNote(
-						this.getAgentId(), inviteCode, splitPosIds(posIds));
+						this.getAgentId(), inviteCode, posList);
+				//受邀者填写完后发邮件给我方
+				if (!StringUtil.isEmptyString(inviteCode)) {
+					String[] toAdds = {getConfiguration().getString("company.email")};
+					String subject = "第三方成功填写申请表";
+					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。</body></html>";
+					try {
+						getMailService().sendMail(toAdds, null, subject, content, null);
+					} catch (Throwable e) {
+						
+					}
+				}
 			} catch (UnUseableRNException e) {
 				//TODO 这里到时改为不提示错误
 				this.errorMsg = "回收单已使用!";
@@ -361,7 +386,7 @@ public class UnbindAction extends BaseAction {
 		return Arrays.asList(ids.split(","));
 	}
 	
-	private String getEmailPath(String inviteCode) {
+	private String getInviteEmailPath(String inviteCode) {
 		HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
 		String path = request.getRequestURL().toString();
 		String ctx = request.getContextPath();
