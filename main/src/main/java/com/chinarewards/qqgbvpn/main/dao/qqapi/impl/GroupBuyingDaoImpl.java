@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,10 +10,14 @@ import javax.persistence.Query;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.GroupBuyValidateResult;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -22,6 +27,7 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.CommunicationStatus;
+import com.chinarewards.qqgbvpn.domain.status.GroupBuyValidateResultStatus;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
@@ -514,6 +520,108 @@ public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
 			}
 		}
 		return resultStatus;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public GroupBuyingValidateResultVO groupBuyingValidateLocal(
+			String grouponId, String grouponVCode) throws SaveDBException,
+			JsonGenerationException {
+		if (grouponId == null || grouponId.length() == 0) {
+			throw new SaveDBException("grouponId is null");
+		}
+		if (grouponVCode == null || grouponVCode.length() == 0) {
+			throw new SaveDBException("grouponVCode is null");
+		}
+		String hql = "select r from GroupBuyValidateResult r where r.grouponId = :grouponId and r.grouponVCode = :grouponVCode and r.status = :status";
+		List<GroupBuyValidateResult> list = getEm().createQuery(hql)
+				.setParameter("grouponId", grouponId).setParameter(
+						"grouponVCode", grouponVCode).setParameter("status",
+						GroupBuyValidateResultStatus.QQVALIDATION).getResultList();
+		if (list != null && list.size() > 0) {
+			GroupBuyValidateResult groupBuyValidateResult = list.get(0);
+			String result = groupBuyValidateResult.getResult();
+
+			ObjectMapper mapper = new ObjectMapper();
+			GroupBuyingValidateResultVO groupBuyingValidateResultVO;
+			try {
+				groupBuyingValidateResultVO = mapper.readValue(result,
+						GroupBuyingValidateResultVO.class);
+			} catch (Exception e) {
+				throw new JsonGenerationException("json转换错误");
+			}
+
+			return groupBuyingValidateResultVO;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void createValidateResultLocal(String grouponId,
+			String grouponVCode,
+			GroupBuyingValidateResultVO groupBuyingValidateResultVO)
+			throws SaveDBException, JsonGenerationException {
+
+		if (grouponId == null || grouponId.length() == 0) {
+			throw new SaveDBException("grouponId is null");
+		}
+		if (grouponVCode == null || grouponVCode.length() == 0) {
+			throw new SaveDBException("grouponVCode is null");
+		}
+		if (groupBuyingValidateResultVO == null) {
+			throw new SaveDBException("groupBuyingValidateResultVO is null");
+		}
+		ObjectMapper mapper = new ObjectMapper();
+		String result = null;
+		try {
+			result = mapper.writeValueAsString(groupBuyingValidateResultVO);
+		} catch (Exception e) {
+			throw new JsonGenerationException("json转换错误");
+		}
+		if (!getEm().getTransaction().isActive()) {
+			getEm().getTransaction().begin();
+		}
+		GroupBuyValidateResult groupBuyValidateResult = new GroupBuyValidateResult();
+		groupBuyValidateResult.setCreateAt(new Date());
+		groupBuyValidateResult.setGrouponId(grouponId);
+		groupBuyValidateResult.setGrouponVCode(grouponVCode);
+		groupBuyValidateResult.setResult(result);
+		groupBuyValidateResult.setStatus(GroupBuyValidateResultStatus.QQVALIDATION);
+		getEm().persist(groupBuyValidateResult);
+		if (getEm().getTransaction().isActive()) {
+			getEm().getTransaction().commit();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void groupBuyValidateCallBack(String grouponId, String grouponVCode)
+			throws SaveDBException {
+		if (grouponId == null || grouponId.length() == 0) {
+			throw new SaveDBException("grouponId is null");
+		}
+		if (grouponVCode == null || grouponVCode.length() == 0) {
+			throw new SaveDBException("grouponVCode is null");
+		}
+		if (!getEm().getTransaction().isActive()) {
+			getEm().getTransaction().begin();
+		}
+		
+		String hql = "select r from GroupBuyValidateResult r where r.grouponId = :grouponId and r.grouponVCode = :grouponVCode and r.status = :status";
+		List<GroupBuyValidateResult> list = getEm().createQuery(hql)
+				.setParameter("grouponId", grouponId).setParameter(
+						"grouponVCode", grouponVCode).setParameter("status",
+						GroupBuyValidateResultStatus.QQVALIDATION).getResultList();
+		
+		for (GroupBuyValidateResult groupBuyValidateResult:list) {
+			groupBuyValidateResult.setModifyAt(new Date());
+			groupBuyValidateResult.setStatus(GroupBuyValidateResultStatus.POSVALIDATION);
+			getEm().merge(groupBuyValidateResult);
+		} 
+		if (!getEm().getTransaction().isActive()) {
+			getEm().getTransaction().commit();
+		}
 	}
 	
 }

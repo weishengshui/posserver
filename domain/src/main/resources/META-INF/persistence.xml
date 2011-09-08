@@ -13,5 +13,6 @@
 		<class>com.chinarewards.qqgbvpn.domain.SysUser</class>
 		<class>com.chinarewards.qqgbvpn.domain.Validation</class>
 		<class>com.chinarewards.qqgbvpn.domain.event.Journal</class>
+		<class>com.chinarewards.qqgbvpn.domain.GroupBuyValidateResult</class>
 	</persistence-unit>
 </persistence>
