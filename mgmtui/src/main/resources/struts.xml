@@ -81,7 +81,7 @@
 
 		<global-results>
 		
-			<result name="error">/error.jsp</result>
+			<result name="error" type="tiles">common.error</result>
 			<result name="login" type="redirectAction">
 				<param name="namespace">/</param>
 				<param name="actionName">show_login</param>

@@ -148,33 +148,4 @@ public class CmdCodecTest extends GuiceTest {
 		assertEquals("POS-56789012", decodedMsg.getPosId());
 
 	}
-
-	/**
-	 * Most simple case for dispatching a command.
-	 */
-	@Test
-	public void testDecode_ShortPosIdLength() throws Exception{
-
-		CmdMapping cmdMapping = new SimpleCmdMapping();
-		cmdMapping.addMapping(1, InitMessageCodec.class);
-
-		Charset charset = Charset.forName("ISO-8859-1");
-
-		// 4 byte + 12 byte, see wiki
-		IoBuffer buffer = IoBuffer.allocate(4 + 12);
-		buffer.putUnsignedInt(CmdConstant.INIT_CMD_ID);
-		byte[] posIdBuf = new byte[] { 0x43, 0x59, 0x2d, 0x31, 0x0, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31 };	// "CY-1"
-		buffer.put(posIdBuf);
-		buffer.position(0); // must reset
-
-		// get an instance of command codec
-		CmdCodecFactory cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
-		ICommandCodec codec = cmdCodecFactory.getCodec(1);
-		InitRequestMessage decodedMsg = (InitRequestMessage)codec.decode(buffer, charset);
-		
-		// validation
-		assertEquals(CmdConstant.INIT_CMD_ID, decodedMsg.getCmdId());
-		assertEquals("CY-1", decodedMsg.getPosId());
-
-	}
 }

@@ -7,7 +7,9 @@ import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -62,8 +64,11 @@ public interface DeliveryLogic {
 	 * Only DeliveryNoteStatus#DRAFT could be delete.
 	 * 
 	 * @param noteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             delivery status must be DRAFT.
 	 */
-	public void deleteDeliveryNote(String noteId);
+	public void deleteDeliveryNote(String noteId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Add or modify agent. Agent could be null.
@@ -74,8 +79,11 @@ public interface DeliveryLogic {
 	 * @param deliveryNoteId
 	 * @param agentId
 	 * @return
+	 * @throws DeliveryWithWrongStatusException
+	 *             When Delivery status
 	 */
-	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId);
+	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Append POS to delivery. It will create delivery note detail.
@@ -92,9 +100,12 @@ public interface DeliveryLogic {
 	 * @return
 	 * @throws PosNotExistException
 	 *             POS not existed.
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId) throws PosNotExistException;
+			String posId) throws PosNotExistException,
+			PosWithWrongStatusException, DeliveryWithWrongStatusException;
 
 	/**
 	 * Delete delivery note detail from note.
@@ -104,8 +115,11 @@ public interface DeliveryLogic {
 	 * 
 	 * @param deliveryNoteId
 	 * @param detailId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
-	public void deletePosFromNote(String deliveryNoteId, String detailId);
+	public void deletePosFromNote(String deliveryNoteId, String detailId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * 派送 POS 机给第三方。<br/>
@@ -122,7 +136,7 @@ public interface DeliveryLogic {
 	 * @throws DeliveryNoteWithNoDetailException
 	 *             when delivery not with no details.
 	 */
-	public List<String> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException;
 
 	/**
@@ -134,14 +148,20 @@ public interface DeliveryLogic {
 	 * All the POS will be set as DELIVERED and ALLOWED.
 	 * 
 	 * @param deliveryNoteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
-	public void confirmDelivery(String deliveryNoteId);
+	public void confirmDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Delivery note status should not be {@code DeliveryNoteStatus#DRAFT}. And
 	 * this method will change it to {@code DeliveryNoteStatus#PRINTED}.
 	 * 
 	 * @param deliveryNoteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is DRAFT.
 	 */
-	public void printDelivery(String deliveryNoteId);
+	public void printDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException;
 }

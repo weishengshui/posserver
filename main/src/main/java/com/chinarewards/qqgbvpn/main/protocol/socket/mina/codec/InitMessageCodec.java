@@ -26,7 +26,6 @@ public class InitMessageCodec implements ICommandCodec {
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-		
 		log.debug("init message decode");
 		InitRequestMessage message = new InitRequestMessage();
 		log.debug("in.remaining()={}", in.remaining());
@@ -35,21 +34,11 @@ public class InitMessageCodec implements ICommandCodec {
 					"login packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();
-		// decode POS ID
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		in.get(posid);
-		// detect \0
-		int len = 0;
-		for (; len<posid.length; len++) {
-			if (posid[len] == 0) break;
-		}
 		message.setCmdId(cmdId);
-		if (len > 0) {
-			message.setPosid(new String(posid, 0, len, charset));
-		}
-		
-		log.debug("init message request:cmdId is ({}) , posid is ({})",
-				new Object[] { cmdId, posid });
+		message.setPosid(new String(posid, charset));
+		log.debug("init message request:cmdId is ({}) , posid is ({})",new Object[]{cmdId,posid});
 		return message;
 	}
 

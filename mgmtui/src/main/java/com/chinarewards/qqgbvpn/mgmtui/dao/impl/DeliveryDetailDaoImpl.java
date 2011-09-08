@@ -18,12 +18,14 @@ import com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteDetailAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.google.inject.Inject;
@@ -130,12 +132,17 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 
 	@Override
 	public DeliveryNoteDetailVO create(String noteId, String posId)
-			throws PosNotExistException {
+			throws PosNotExistException, PosWithWrongStatusException {
 		DeliveryNote dn = getEm().find(DeliveryNote.class, noteId);
 		Pos p = null;
 		try {
 			p = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posId")
 					.setParameter("posId", posId).getSingleResult();
+			if (PosDeliveryStatus.DELIVERED.equals(p.getDstatus())) {
+				throw new PosWithWrongStatusException(
+						"Should be PosDeliveryStatus.RETURNED, but was:"
+								+ p.getDstatus());
+			}
 		} catch (NoResultException e) {
 			throw new PosNotExistException("POS(id=" + posId + ") not existed!");
 		}

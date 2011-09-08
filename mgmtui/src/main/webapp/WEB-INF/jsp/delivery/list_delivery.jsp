@@ -24,7 +24,10 @@
 		  <s:iterator id="deliveryNoteVO" value="#request.deliveryNoteVOList" status="i">
 		  	<tr>
 				<td>
-					<s:property value="#deliveryNoteVO.dnNumber" />
+					<s:a namespace="/delivery" action="showAddPosForDelivery">
+						<s:param name="deliveryId" value="#deliveryNoteVO.id"/>
+						<s:property value="#deliveryNoteVO.dnNumber" />
+					</s:a>
 				</td>
 				<td>
 					<s:if test="'PRINTED' == #deliveryNoteVO.status">

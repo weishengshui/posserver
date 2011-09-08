@@ -6,6 +6,7 @@ package com.chinarewards.qqgbvpn.mgmtui.dao;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 
@@ -60,7 +61,7 @@ public interface DeliveryDetailDao {
 	 * @return
 	 */
 	DeliveryNoteDetailVO create(String noteId, String posId)
-			throws PosNotExistException;
+			throws PosNotExistException, PosWithWrongStatusException;
 
 	/**
 	 * Delete detail.

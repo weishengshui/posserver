@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>填写申请单</title>
 </head>
 <body>
 <s:if test="errorMsg!=null">
@@ -13,6 +13,7 @@
 </s:if>
 <s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
+<s:hidden name="agentName" id="agentName" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />

@@ -166,7 +166,7 @@ public class DefaultPosServer implements PosServer {
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
-			throw new PosServerException("Error binding server port " + port, e);
+			throw new PosServerException("Error binding server port", e);
 		}
 	}
 

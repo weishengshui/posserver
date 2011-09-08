@@ -5,6 +5,66 @@
 <!DOCTYPE table PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+
+<script type="text/javascript">
+	function associateAgent(deliveryId, agentId){
+		var url = '<s:url value="/delivery/addAgentForDelivery"/>?a=1';
+
+		url += '&deliveryId=' + deliveryId;
+		url += '&agentId=' + agentId;
+		
+		Kernel.Ajax.ajaxRequest(url, Kernel.Ajax.POST, "associateAgentCellback");
+	}
+
+	function associateAgentCellback(data){
+		var b = true;
+		if(data != null){
+			if(data.processSuccess == false){
+				b = false;
+			}
+		}else{
+			b = false;
+		}
+
+		if(!b){
+			alert('系统正忙，请稍后再试!');
+		}
+	}
+
+	function initAgentSelect(agentId){
+		alert(agentId);
+		
+		var opts = document.getElementById('agentList_ID').options;
+		for(i=0;i<opts.length;i++){
+			if(opts[i].value == agentId){
+				opts[i].selected = true;
+				return;
+			}
+		}
+	}
+
+	function checkFormContent(){
+		var posNum = document.getElementById('posNum_ID').value;
+		if(posNum == ''){
+			alert('请输入POS编号!');
+			return false;
+		}
+		return true;
+	}
+
+	function toNextPage(){
+		window.location.href = '<s:url value="/delivery/showWaitPosInitDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+	}
+
+	function removeDelivery(){
+		window.location.href = '<s:url value="/delivery/deleteDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
+	}
+
+	function printDelivery(){
+		window.location.href = '<s:url value="/delivery/printDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
+	}
+</script>
+
 </head>
 
 <body>

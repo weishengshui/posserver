@@ -26,6 +26,7 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/pos/edit.jsp" />
 	</definition>
 	
+	<!-- unbind begin -->
 	<definition name="unbind.list" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/unbindList.jsp" />
 	</definition>
@@ -37,6 +38,15 @@
 	<definition name="unbind.sendURL" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURL.jsp" />
 	</definition>
+	
+	<definition name="unbind.sendURLSuccess" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURLSuccess.jsp" />
+	</definition>
+	
+	<definition name="unbind.confirmSuccess" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/confirmSuccess.jsp" />
+	</definition>
+	<!-- unbind end -->
 	
 	<!-- agent begin -->
 	<definition name="agent.searchAgent" extends="main">
@@ -51,13 +61,22 @@
 	<definition name="delivery.searchDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/search_delivery.jsp" />
 	</definition>
-	
 	<definition name="delivery.showAddPosForDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_addPosForDelivery.jsp" />
 	</definition>
 	<definition name="delivery.printDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/print_delivery.jsp" />
 	</definition>
+	<definition name="delivery.showWaitPosInitDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_waitPosInitForDelivery.jsp" />
+	</definition>
+	<definition name="delivery.showIsAllowUpdateDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_isAllowUpdateDelivery.jsp" />
+	</definition>
 	<!-- delivery end -->
-	
+	<!-- error start-->
+	<definition name="common.error" extends="main">
+		<put-attribute name="body" value="/error.jsp" />
+	</definition>
+	<!--error end  -->
 </tiles-definitions>

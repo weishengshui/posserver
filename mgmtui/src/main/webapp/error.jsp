@@ -8,6 +8,8 @@
 <title>ERROR</title>
 </head>
 <body>
-error
+<strong>系统错误</strong>
+<br/><br/>
+<strong><font style="color: red"><s:property value="errorMsg"/></font></strong>
 </body>
 </html>

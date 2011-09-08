@@ -3,6 +3,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.delivery;
 import java.util.List;
 import org.apache.struts2.ServletActionContext;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
@@ -101,9 +102,13 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			
 			if(deliveryId != null){
 				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
-//				deliveryNoteVO = findById();
-			}else {
-				deliveryNoteVO = getDeliveryLogic().createDeliveryNote();
+				deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
+				
+				if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+					return INPUT;
+				}
+				log.debug("deliveryNoteVO.number:"+deliveryNoteVO.getDnNumber());
+				log.debug("deliveryNoteVO.getAgent().getId():"+deliveryNoteVO.getAgent().getId());
 			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
@@ -160,10 +165,56 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		return SUCCESS;
 	}
 	
+	/**
+	 * description：等待POS机 Init
+	 * @return
+	 * @time 2011-9-7   下午07:22:25
+	 * @author Seek
+	 */
+	public String showWaitPosInitDelivery(){
+		try{
+			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
+			deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
+			
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
+	/**
+	 * description：显示是否允许update操作
+	 * @return
+	 * @time 2011-9-7   下午08:02:00
+	 * @author Seek
+	 */
+	public String showIsAllowUpdateDelivery(){
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
+			
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
 	public String printDelivery(){
 		try{
 			deliveryNoteVO  = getDeliveryLogic().fetchById(id);
 			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(id);
+			
+			if("DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
 			//print
 			getDeliveryLogic().printDelivery(id);
 		}catch(Throwable e){
@@ -176,6 +227,10 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	public String deleteDelivery(){
 		try{
 			getDeliveryLogic().deleteDeliveryNote(id);
+		}catch(DeliveryWithWrongStatusException e1){
+			log.error(e1.getMessage(), e1);
+			errorMsg = "不能删除非草稿状态的交付单";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;

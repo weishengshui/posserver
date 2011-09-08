@@ -299,15 +299,18 @@ public class UnbindAction extends BaseAction {
 						
 					}
 				}
+				HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
+				request.setAttribute("posCount", posList.size());
+				request.setAttribute("rnNumber", rn.getRnNumber());
 			} catch (UnUseableRNException e) {
 				//TODO 这里到时改为不提示错误
 				this.errorMsg = "回收单已使用!";
 			}
-		} else {
-			// 这里应该报POS机不能为空的提示
-			this.errorMsg = "POS机信息找不到!";
+			return SUCCESS;
 		}
-		return SUCCESS;
+		// 这里应该报POS机不能为空的提示
+		this.errorMsg = "POS机信息找不到!";
+		return ERROR;
 	}
 	
 	public String posSearch() {
