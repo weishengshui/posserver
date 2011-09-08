@@ -34,10 +34,20 @@ public class InitMessageCodec implements ICommandCodec {
 					"login packge message body error, body message is :" + in);
 		}
 		long cmdId = in.getUnsignedInt();
+		
+		// decode POS ID, Pay attention to middle \0
 		byte[] posid = new byte[ProtocolLengths.POS_ID];
 		in.get(posid);
+		int len = 0;
+		for (len = 0; len < posid.length; len++) {
+			if (posid[len] == 0) break;
+		}
+		
+		// reconstruct message.
 		message.setCmdId(cmdId);
-		message.setPosid(new String(posid, charset));
+		if (len > 0 ) {
+			message.setPosid(new String(posid, 0, len, charset));
+		}
 		log.debug("init message request:cmdId is ({}) , posid is ({})",new Object[]{cmdId,posid});
 		return message;
 	}
