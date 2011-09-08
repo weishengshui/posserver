@@ -30,8 +30,7 @@ public class InitCommandHandler implements ServiceHandler {
 		
 		InitRequestMessage bodyMessage = (InitRequestMessage)request.getParameter();
 		
-		log.debug("loginManager: {}", loginManager);
-		log.debug("InitCommandHandler======execute==bodyMessage=:"+bodyMessage);
+		log.debug("InitCommandHandler======execute==bodyMessage=: {}", bodyMessage);
 		
 		InitResponseMessage  initResponseMessage  = null;
 		try {
