@@ -70,8 +70,8 @@
 	<definition name="delivery.showWaitPosInitDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_waitPosInitForDelivery.jsp" />
 	</definition>
-	<definition name="delivery.showIsAllowUpdateDelivery" extends="main">
-		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_isAllowUpdateDelivery.jsp" />
+	<definition name="delivery.showDeliveryWaitConfirm" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_deliveryWaitConfirm.jsp" />
 	</definition>
 	<!-- delivery end -->
 	<!-- error start-->
