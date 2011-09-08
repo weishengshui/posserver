@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
@@ -63,8 +64,11 @@ public interface DeliveryLogic {
 	 * Only DeliveryNoteStatus#DRAFT could be delete.
 	 * 
 	 * @param noteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             delivery status must be DRAFT.
 	 */
-	public void deleteDeliveryNote(String noteId);
+	public void deleteDeliveryNote(String noteId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Add or modify agent. Agent could be null.
