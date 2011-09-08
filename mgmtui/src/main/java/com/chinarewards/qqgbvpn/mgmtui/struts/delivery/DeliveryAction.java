@@ -3,8 +3,6 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.delivery;
 import java.util.List;
 import org.apache.struts2.ServletActionContext;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
-import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
-import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
@@ -52,8 +50,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private String id;
 	
-	private Integer addPosStatus;	//{1 不存在, 2已被使用}
-
 	@Override
 	public String execute(){
 		if(super.getCurrentPage()==0){
@@ -92,23 +88,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	}
 	
 	/**
-	 * description：创建一个交付单
-	 * @return
-	 * @time 2011-9-7   下午05:26:37
-	 * @author Seek
-	 */
-	public String createDeliveryNote(){
-		try{
-			DeliveryNoteVO aDeliveryNoteVO = getDeliveryLogic().createDeliveryNote();
-			deliveryId = aDeliveryNoteVO.getId();
-		}catch(Throwable e){
-			log.error(e.getMessage(), e);
-			return ERROR;
-		}
-		return SUCCESS;
-	}
-	
-	/**
 	 * description：显示添加pos机
 	 * @return
 	 * @time 2011-9-7   下午03:09:10
@@ -123,7 +102,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			if(deliveryId != null){
 				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
 				deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
-				
 				
 				if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
 					return INPUT;
@@ -162,14 +140,10 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 */
 	public String addPosForDelivery(){
 		try{
-			posNum = posNum==null?posNum:posNum.trim();
 			deliveryNoteDetailVO = getDeliveryLogic().appendPosToNote(deliveryId, posNum);
-		}catch(PosNotExistException e){
+		}catch(Throwable e){
 			log.error(e.getMessage(), e);
-			addPosStatus = 1;
-		}catch(PosWithWrongStatusException e){
-			log.error(e.getMessage(), e);
-			addPosStatus = 2;
+			return ERROR;
 		}
 		return SUCCESS;
 	}
@@ -362,14 +336,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public void setDeliveryNoteDetailId(String deliveryNoteDetailId) {
 		this.deliveryNoteDetailId = deliveryNoteDetailId;
-	}
-	
-	public Integer getAddPosStatus() {
-		return addPosStatus;
-	}
-
-	public void setAddPosStatus(Integer addPosStatus) {
-		this.addPosStatus = addPosStatus;
 	}
 	
 }

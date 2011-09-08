@@ -26,7 +26,6 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/pos/edit.jsp" />
 	</definition>
 	
-	<!-- unbind begin -->
 	<definition name="unbind.list" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/unbindList.jsp" />
 	</definition>
@@ -38,11 +37,6 @@
 	<definition name="unbind.sendURL" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURL.jsp" />
 	</definition>
-	
-	<definition name="unbind.sendURLSuccess" extends="main">
-		<put-attribute name="body" value="/WEB-INF/jsp/unbind/sendURLSuccess.jsp" />
-	</definition>
-	<!-- unbind end -->
 	
 	<!-- agent begin -->
 	<definition name="agent.searchAgent" extends="main">
@@ -57,7 +51,6 @@
 	<definition name="delivery.searchDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/search_delivery.jsp" />
 	</definition>
-	
 	<definition name="delivery.showAddPosForDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_addPosForDelivery.jsp" />
 	</definition>

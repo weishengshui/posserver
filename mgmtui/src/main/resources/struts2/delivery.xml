@@ -15,14 +15,6 @@
 			<result name="success">/WEB-INF/jsp/delivery/list_delivery.jsp</result>
 		</action>
 		
-		<action name="createDeliveryNote" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="createDeliveryNote">
-			<result name="success" type="redirectAction">
-				<param name="namespace">/delivery</param>
-				<param name="actionName">showAddPosForDelivery</param>
-				<param name="deliveryId">${deliveryId}</param>
-			</result>
-		</action>
-		
 		<action name="showAddPosForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showAddPosForDelivery">
 			<result name="success" type="tiles">delivery.showAddPosForDelivery</result>
 			<result name="input" type="redirectAction">
@@ -43,9 +35,6 @@
 			<result name="success" type="redirectAction">
 				<param name="namespace">/delivery</param>
 				<param name="actionName">showAddPosForDelivery</param>
-				<param name="deliveryId">${deliveryId}</param>
-				<param name="addPosStatus">${addPosStatus}</param>
-				<param name="posNum">${posNum}</param>
 			</result>
 		</action>
 		
@@ -53,8 +42,8 @@
 			<result name="success" type="redirectAction">
 				<param name="namespace">/delivery</param>
 				<param name="actionName">showAddPosForDelivery</param>
-				<param name="deliveryId">${deliveryId}</param>
 			</result>
+<<<<<<< HEAD
 		</action>
 		
 		<action name="showWaitPosInitDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showWaitPosInitDelivery">
@@ -66,6 +55,9 @@
 		</action>
 		
 		
+=======
+		</action>
+>>>>>>> branch 'master' of git@git.dev.china-rewards.com:qqgbvpn/qqgbvpn-server.git
 		
 		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
 			<param name="id">{1}</param>
