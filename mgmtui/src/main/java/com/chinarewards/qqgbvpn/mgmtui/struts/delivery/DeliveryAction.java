@@ -131,9 +131,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 					return INPUT;
 				}
 				log.debug("deliveryNoteVO.number:"+deliveryNoteVO.getDnNumber());
-				
-				log.debug("deliveryNoteVO.getAgent().getId():" + deliveryNoteVO.getAgent()==null?
-						"NULL":deliveryNoteVO.getAgent().getId());
 			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
