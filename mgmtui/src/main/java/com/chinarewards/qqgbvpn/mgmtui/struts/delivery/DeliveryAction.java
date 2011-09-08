@@ -3,6 +3,7 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.delivery;
 import java.util.List;
 import org.apache.struts2.ServletActionContext;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
@@ -225,9 +226,11 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public String deleteDelivery(){
 		try{
-			
-			
 			getDeliveryLogic().deleteDeliveryNote(id);
+		}catch(DeliveryWithWrongStatusException e1){
+			log.error(e1.getMessage(), e1);
+			errorMsg = "不能删除非草稿状态的交付单";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;

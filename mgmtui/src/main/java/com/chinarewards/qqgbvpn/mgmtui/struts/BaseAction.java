@@ -20,6 +20,8 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 public abstract class BaseAction extends ActionSupport {
 
+	protected String errorMsg;
+	
 	/**
 	 * 
 	 */
@@ -51,6 +53,14 @@ public abstract class BaseAction extends ActionSupport {
 		}
 		log.debug("getCurrentPath()   currentURL:"+urlBuff);
 		return urlBuff.toString();
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
 	} 
 	
 }

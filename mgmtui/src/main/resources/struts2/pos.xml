@@ -25,6 +25,7 @@
 				<param name="actionName">list</param>
 			</result>
 		</action>
+		<!-- 
 		<action name="del/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction"
 			method="delPos">
 			<param name="id">{1}</param>
@@ -32,5 +33,6 @@
 				<param name="actionName">list</param>
 			</result>
 		</action>
+		-->
 	</package>
 </struts>

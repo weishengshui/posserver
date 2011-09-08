@@ -74,5 +74,9 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_isAllowUpdateDelivery.jsp" />
 	</definition>
 	<!-- delivery end -->
-	
+	<!-- error start-->
+	<definition name="common.error" extends="main">
+		<put-attribute name="body" value="/error.jsp" />
+	</definition>
+	<!--error end  -->
 </tiles-definitions>
