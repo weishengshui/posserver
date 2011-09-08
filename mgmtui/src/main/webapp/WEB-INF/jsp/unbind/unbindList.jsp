@@ -12,6 +12,7 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="search" namespace="/unbind" method="Post" id="listForm">
+<s:token/>
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />

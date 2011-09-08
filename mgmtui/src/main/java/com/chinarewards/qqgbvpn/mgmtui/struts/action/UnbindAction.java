@@ -78,6 +78,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String errorMsg;
 	
+	private String successMsg;
+	
 	private GroupBuyingUnbindManager getGroupBuyingUnbindManager() {
 		groupBuyingUnbindMgr = super.getInstance(GroupBuyingUnbindManager.class);
 		return groupBuyingUnbindMgr;
@@ -131,6 +133,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setAgentEmail(String agentEmail) {
 		this.agentEmail = agentEmail;
+	}
+
+	public String getSuccessMsg() {
+		return successMsg;
+	}
+
+	public void setSuccessMsg(String successMsg) {
+		this.successMsg = successMsg;
 	}
 
 	public String getErrorMsg() {
@@ -349,12 +359,7 @@ public class UnbindAction extends BaseAction {
 				String resultCode = (String) result.get("resultCode");
 				System.out.println("resultCode->" + resultCode);
 				if ("0".equals(resultCode)) {
-					List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) result
-							.get("items");
-					for (GroupBuyingUnbindVO item : items) {
-						System.out.println(item.getPosId());
-						System.out.println(item.getResultStatus());
-					}
+					this.successMsg = posId + "解绑成功!";
 				} else {
 					switch (Integer.valueOf(resultCode)) {
 					case -1:
