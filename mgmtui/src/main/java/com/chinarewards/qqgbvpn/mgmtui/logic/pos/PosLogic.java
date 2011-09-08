@@ -61,7 +61,7 @@ public interface PosLogic {
 	/**
 	 * 批量更新 Pos 状态为 {@link PosDeliveryStatus#DELIVERED} 和 {@link PosOperationStatus#ALLOWED}
 	 * @author cream
-	 * @param posIds
+	 * @param posIds Pos.posId
 	 */
 	void updatePosStatusToWorking(List<String> posIds);
 	

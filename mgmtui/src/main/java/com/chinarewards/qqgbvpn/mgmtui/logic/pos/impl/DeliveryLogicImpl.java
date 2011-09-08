@@ -311,7 +311,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 								+ pos.getDstatus());
 			}
 
-			posIds.add(pos.getId());
+			posIds.add(pos.getPosId());
 		}
 		log.debug("Try to update pos status, posIds:{}", posIds);
 		if (posIds == null || posIds.isEmpty()) {
