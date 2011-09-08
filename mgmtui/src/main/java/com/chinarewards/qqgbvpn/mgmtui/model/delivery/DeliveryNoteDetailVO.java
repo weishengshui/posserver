@@ -31,11 +31,17 @@ public class DeliveryNoteDetailVO {
 	 */
 	String istatus;
 
+	/**
+	 * POS secret.
+	 */
+	String secret;
+
 	@Override
 	public String toString() {
 		return "DeliveryNoteDetailVO [id=" + id + ", dn=" + dn + ", posId="
 				+ posId + ", model=" + model + ", sn=" + sn + ", simPhoneNo="
-				+ simPhoneNo + ", istatus=" + istatus + "]";
+				+ simPhoneNo + ", istatus=" + istatus + ", secret=" + secret
+				+ "]";
 	}
 
 	public String getId() {
@@ -92,6 +98,14 @@ public class DeliveryNoteDetailVO {
 
 	public void setIstatus(String istatus) {
 		this.istatus = istatus;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 
 }

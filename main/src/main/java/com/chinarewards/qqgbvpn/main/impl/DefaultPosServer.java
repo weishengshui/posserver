@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
@@ -78,7 +77,7 @@ public class DefaultPosServer implements PosServer {
 	/**
 	 * acceptor
 	 */
-	IoAcceptor acceptor;
+	NioSocketAcceptor acceptor;
 
 	boolean persistenceServiceInited = false;
 
@@ -159,7 +158,10 @@ public class DefaultPosServer implements PosServer {
 
 		acceptor.setHandler(new ServerSessionHandler(injector,
 				serviceDispatcher, mapping));
+		
+		// additional configuration
 		acceptor.setCloseOnDeactivation(true);
+		acceptor.setReuseAddress(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);

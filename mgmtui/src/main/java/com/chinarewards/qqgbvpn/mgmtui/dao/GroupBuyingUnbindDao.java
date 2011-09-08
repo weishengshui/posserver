@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
+import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 
 
 public interface GroupBuyingUnbindDao {
@@ -34,4 +35,8 @@ public interface GroupBuyingUnbindDao {
 	public String createInviteCode(String agentId);
 	
 	public Agent getAgentByInviteCode(String inviteCode);
+	
+	public ReturnNoteInfo getReturnNoteInfoByRnNumber(String rnNumber);
+	
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
 }

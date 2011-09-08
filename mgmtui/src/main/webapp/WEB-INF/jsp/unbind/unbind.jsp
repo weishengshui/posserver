@@ -8,10 +8,14 @@
 <title>解绑</title>
 </head>
 <body>
+<s:if test="successMsg!=null">
+<b>${successMsg}</b>
+</s:if>
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="posSearch" namespace="/unbind" method="Post" id="unbindForm">
+<s:token/>
 <s:hidden name="posId" id="posId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>

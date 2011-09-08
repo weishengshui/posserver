@@ -194,6 +194,7 @@ public class DeliveryLogicTest extends JPATestCase {
 
 		Pos pos = new Pos();
 		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setDstatus(PosDeliveryStatus.RETURNED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
@@ -229,6 +230,7 @@ public class DeliveryLogicTest extends JPATestCase {
 
 		Pos pos = new Pos();
 		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setDstatus(PosDeliveryStatus.RETURNED);
 		pos.setPosId("MiaoLeGeMi");
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");

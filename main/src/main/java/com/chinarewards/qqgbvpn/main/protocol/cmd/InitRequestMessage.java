@@ -10,18 +10,18 @@ public class InitRequestMessage implements ICommand {
 
 	private long cmdId;
 
-	private String posid;
+	private String posId;
 
 	public long getCmdId() {
 		return cmdId;
 	}
 
 	public String getPosId() {
-		return posid;
+		return posId;
 	}
 
-	public void setPosid(String posid) {
-		this.posid = posid;
+	public void setPosId(String posId) {
+		this.posId = posId;
 	}
 
 	public void setCmdId(long cmdId) {

@@ -125,7 +125,7 @@ public class CmdCodecTest extends GuiceTest {
 		// fake a message
 		InitRequestMessage msg = new InitRequestMessage();
 		msg.setCmdId(CmdConstant.INIT_CMD_ID);
-		msg.setPosid("POS-56789012");
+		msg.setPosId("POS-56789012");
 
 		CmdMapping cmdMapping = new SimpleCmdMapping();
 		cmdMapping.addMapping(1, InitMessageCodec.class);
@@ -146,6 +146,36 @@ public class CmdCodecTest extends GuiceTest {
 		// validation
 		assertEquals(CmdConstant.INIT_CMD_ID, decodedMsg.getCmdId());
 		assertEquals("POS-56789012", decodedMsg.getPosId());
+
+	}
+
+
+	/**
+	 * Most simple case for dispatching a command.
+	 */
+	@Test
+	public void testDecode_ShortPosId() throws Exception{
+
+		CmdMapping cmdMapping = new SimpleCmdMapping();
+		cmdMapping.addMapping(1, InitMessageCodec.class);
+
+		Charset charset = Charset.forName("ISO-8859-1");
+
+		// 4 byte + 12 byte, see wiki
+		IoBuffer buffer = IoBuffer.allocate(4 + 12);
+		buffer.putUnsignedInt(CmdConstant.INIT_CMD_ID);
+		// CY-1 with trailing ignorable content
+		buffer.put(new byte[] { 0x43, 0x59, 0x2d, 0x31, 0x0, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31 });
+		buffer.position(0); // must reset
+
+		// get an instance of command codec
+		CmdCodecFactory cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
+		ICommandCodec codec = cmdCodecFactory.getCodec(1);
+		InitRequestMessage decodedMsg = (InitRequestMessage)codec.decode(buffer, charset);
+		
+		// validation
+		assertEquals(CmdConstant.INIT_CMD_ID, decodedMsg.getCmdId());
+		assertEquals("CY-1", decodedMsg.getPosId());
 
 	}
 }

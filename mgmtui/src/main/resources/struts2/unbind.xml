@@ -26,12 +26,22 @@
 			method="createInvite">
 			<result name="success" type="tiles">unbind.sendURLSuccess</result>
 			<result name="error" type="tiles">unbind.sendURL</result>
+			<result name="invalid.token" type="tiles">unbind.sendURL</result>
+        	<interceptor-ref name="defaultStack"/>  
+            <interceptor-ref name="token">  
+                 <param name="includeMethods">createInvite</param>    
+            </interceptor-ref>  
 		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
 			<result name="success" type="tiles">unbind.confirmSuccess</result>
 			<result name="error" type="tiles">unbind.list</result>
+			<result name="invalid.token" type="tiles">unbind.list</result>
+        	<interceptor-ref name="defaultStack"/>  
+            <interceptor-ref name="token">  
+                 <param name="includeMethods">confirmRnNumber</param>    
+            </interceptor-ref>
 		</action>
 		<action name="posSearch"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
@@ -42,11 +52,21 @@
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="unbind">
 			<result name="success" type="tiles">unbind.unbind</result>
+			<result name="invalid.token" type="tiles">unbind.unbind</result>
+        	<interceptor-ref name="defaultStack"/>  
+            <interceptor-ref name="token">  
+                 <param name="includeMethods">unbind</param>    
+            </interceptor-ref>
 		</action>
 		<action name="sendURL"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="sendURL">
 			<result name="success" type="tiles">unbind.sendURL</result>
+		</action>
+		<action name="getReturnNoteList"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="getReturnNoteList">
+			<result name="success" type="tiles">unbind.rnList</result>
 		</action>
 	</package>
 	

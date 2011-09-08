@@ -19,11 +19,23 @@
 	<tr>
 		<td width="77%">POS机：<s:property value="#request.posCount" />台</td>
 	</tr>
+	<s:if test="#request.isAgent!=null && #request.isAgent == 'true'">
+	<tr>
+		<td width="77%"><button type="button" onclick="closeWindow()">完成</button></td>
+	</tr>
+	</s:if>
+	<s:else>
 	<tr>
 		<td width="77%"><input type="submit" value="完成" id="searchBtn" /></td>
 	</tr>
+	</s:else> 
 </table>
 </s:form>
 
+<script type="text/javascript">
+	function closeWindow() {
+		window.close(); 
+	}
+</script>
 </body>
 </html>

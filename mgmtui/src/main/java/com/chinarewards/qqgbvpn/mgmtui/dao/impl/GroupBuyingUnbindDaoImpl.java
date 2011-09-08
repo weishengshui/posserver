@@ -26,6 +26,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
+import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -273,7 +274,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn = this.getReturnNoteByToken(inviteCode);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
 					log.warn("Return Note already confirmed!");
-					throw new UnUseableRNException("Return Note already confirmed!");
+					throw new UnUseableRNException(rn.getRnNumber());
 				}
 			}
 			if (rn == null) {
@@ -416,6 +417,29 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			return rni.getToken();
 		}
 		return null;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getReturnNoteInfoByRnNumber(java.lang.String)
+	 * 查回收单详情
+	 */
+	public ReturnNoteInfo getReturnNoteInfoByRnNumber(String rnNumber) {
+		ReturnNoteInfo rnInfo = new ReturnNoteInfo();
+		
+		return null;
+	}
+	
+	/**
+	 * @param rnNumber
+	 * @return
+	 * 查回收单列表
+	 */
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
+		String sql = "select rn from ReturnNote rn where upper(rn.rnNumber) like ?1";
+		List<Object> params = new ArrayList<Object>();
+		params.add("%" + rnNumber.toUpperCase() + "%");
+		pageInfo = this.findPageInfo(sql, params, pageInfo);
+		return pageInfo;
 	}
 	
 }

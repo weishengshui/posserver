@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>我方生成回收单</title>
+<title>回收单查询</title>
 </head>
 <body>
 <s:if test="errorMsg!=null">
@@ -20,7 +20,7 @@
 <s:hidden name="rnId" id="rnId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>
+		<td width="77%">回收单号：<input type="text" name="agentName" value="${agentName}" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>

@@ -47,6 +47,8 @@ public class UnbindAction extends BaseAction {
 	private MailService mailService;
 	
 	protected Configuration configuration;
+	
+	private HttpServletRequest request;
 
 	private Agent agent;
 	
@@ -62,6 +64,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnId;
 	
+	private String rnNum;
+	
 	private String inviteCode;
 	
 	private String agentName;
@@ -75,6 +79,8 @@ public class UnbindAction extends BaseAction {
 	private Date sendTime;
 	
 	private String errorMsg;
+	
+	private String successMsg;
 	
 	private GroupBuyingUnbindManager getGroupBuyingUnbindManager() {
 		groupBuyingUnbindMgr = super.getInstance(GroupBuyingUnbindManager.class);
@@ -107,6 +113,14 @@ public class UnbindAction extends BaseAction {
 		this.sendTime = sendTime;
 	}
 
+	public String getRnNum() {
+		return rnNum;
+	}
+
+	public void setRnNum(String rnNum) {
+		this.rnNum = rnNum;
+	}
+
 	public String getAgentId() {
 		return agentId;
 	}
@@ -129,6 +143,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setAgentEmail(String agentEmail) {
 		this.agentEmail = agentEmail;
+	}
+
+	public String getSuccessMsg() {
+		return successMsg;
+	}
+
+	public void setSuccessMsg(String successMsg) {
+		this.successMsg = successMsg;
 	}
 
 	public String getErrorMsg() {
@@ -284,10 +306,16 @@ public class UnbindAction extends BaseAction {
 	
 	public String confirmRnNumber() throws SaveDBException {
 		if (posIds != null && !"".equals(posIds.trim())) {
+			List<String> posList = splitPosIds(posIds);
+			ReturnNote rn = null;
+			String rnNumber = "";
 			try {
-				List<String> posList = splitPosIds(posIds);
-				ReturnNote rn = getGroupBuyingUnbindManager().confirmReturnNote(
+				rn = getGroupBuyingUnbindManager().confirmReturnNote(
 						this.getAgentId(), inviteCode, posList);
+			} catch (UnUseableRNException e1) {
+				rnNumber = e1.getMessage();
+			}
+			if (rn != null) {
 				//受邀者填写完后发邮件给我方
 				if (!StringUtil.isEmptyString(inviteCode)) {
 					String[] toAdds = {getConfiguration().getString("company.email")};
@@ -298,18 +326,26 @@ public class UnbindAction extends BaseAction {
 					} catch (Throwable e) {
 						
 					}
+					getRequest().setAttribute("isAgent", "true");
 				}
-				HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
-				request.setAttribute("posCount", posList.size());
-				request.setAttribute("rnNumber", rn.getRnNumber());
-			} catch (UnUseableRNException e) {
-				//TODO 这里到时改为不提示错误
-				this.errorMsg = "回收单已使用!";
+				getRequest().setAttribute("posCount", posList.size());
+				getRequest().setAttribute("rnNumber", rn.getRnNumber());
+				return SUCCESS;
+				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
+			} else if (!StringUtil.isEmptyString(rnNumber)) { 
+				if (!StringUtil.isEmptyString(inviteCode)) {
+					getRequest().setAttribute("isAgent", "true");
+				}
+				getRequest().setAttribute("posCount", posList.size());
+				getRequest().setAttribute("rnNumber", rnNumber);
+				return SUCCESS;
+			} else {
+				this.errorMsg = "第三方信息找不到!";
 			}
-			return SUCCESS;
+		} else {
+			// 这里应该报POS机不能为空的提示
+			this.errorMsg = "POS机信息找不到!";
 		}
-		// 这里应该报POS机不能为空的提示
-		this.errorMsg = "POS机信息找不到!";
 		return ERROR;
 	}
 	
@@ -333,12 +369,7 @@ public class UnbindAction extends BaseAction {
 				String resultCode = (String) result.get("resultCode");
 				System.out.println("resultCode->" + resultCode);
 				if ("0".equals(resultCode)) {
-					List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) result
-							.get("items");
-					for (GroupBuyingUnbindVO item : items) {
-						System.out.println(item.getPosId());
-						System.out.println(item.getResultStatus());
-					}
+					this.successMsg = posId + "解绑成功!";
 				} else {
 					switch (Integer.valueOf(resultCode)) {
 					case -1:
@@ -385,16 +416,32 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String getReturnNoteList() {
+		if (!StringUtil.isEmptyString(rnNum)) {
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(initPageSize);
+			pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
+		}
+		return SUCCESS;
+	}
+	
 	protected List<String> splitPosIds(String ids) {
 		return Arrays.asList(ids.split(","));
 	}
 	
 	private String getInviteEmailPath(String inviteCode) {
-		HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
-		String path = request.getRequestURL().toString();
-		String ctx = request.getContextPath();
+		String path = getRequest().getRequestURL().toString();
+		String ctx = getRequest().getContextPath();
 		path = path.substring(0, path.indexOf(ctx)) + ctx + "/returnnote/request?inviteCode=" + inviteCode;
 		return path;
+	}
+	
+	private HttpServletRequest getRequest() {
+		if (request == null) {
+			request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
+		}
+		return request;
 	}
 
 }

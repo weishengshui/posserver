@@ -89,7 +89,7 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		getEm().flush();
 
 		InitRequestMessage request = new InitRequestMessage();
-		request.setPosid("pos-0001");
+		request.setPosId("pos-0001");
 
 		InitResponseMessage response = getManager().init(request);
 		assertNotNull(response.getChallenge());
