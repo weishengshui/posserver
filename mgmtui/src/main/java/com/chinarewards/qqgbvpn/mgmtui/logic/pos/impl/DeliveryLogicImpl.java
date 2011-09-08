@@ -18,12 +18,10 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
-import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
@@ -31,6 +29,7 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
+import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
@@ -59,7 +58,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	Provider<AgentDao> agentDao;
 
 	@Inject
-	Provider<PosDao> posDao;
+	Provider<PosLogic> posLogic;
 
 	@Inject
 	DateTimeProvider dtProvider;
@@ -285,7 +284,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Transactional
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
-			PosWithWrongStatusException {
+			PosWithWrongStatusException, DeliveryNoteWithNoDetailException {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
@@ -303,6 +302,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		getDeliveryDao().merge(dn);
 
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
+		List<String> posIds = new LinkedList<String>();
 		for (PosVO pos : posList) {
 			// check POS status.
 			if (!PosDeliveryStatus.RETURNED.toString().equals(pos.getDstatus())) {
@@ -310,15 +310,14 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 						"Pos dstatus should be PosDeliveryStatus.RETURNED, but now is:"
 								+ pos.getDstatus());
 			}
-			pos.setDstatus(PosDeliveryStatus.DELIVERED.toString());
-			pos.setOstatus(PosOperationStatus.ALLOWED.toString());
-			try {
-				posDao.get().updatePos(pos);
-			} catch (Exception e) {
-				// Should not reach here.
-				log.error(e.getMessage(), e);
-			}
+
+			posIds.add(pos.getId());
 		}
+		log.debug("Try to update pos status, posIds:{}", posIds);
+		if (posIds == null || posIds.isEmpty()) {
+			throw new DeliveryNoteWithNoDetailException();
+		}
+		posLogic.get().updatePosStatusToWorking(posIds);
 
 		// add journalLogic
 		try {

@@ -154,10 +154,11 @@ public interface DeliveryLogic {
 	 * @throws DeliveryWithWrongStatusException
 	 *             When delivery status is not DRAFT.
 	 * @throws PosWithWrongStatusException
+	 * @throws DeliveryNoteWithNoDetailException
 	 */
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
-			PosWithWrongStatusException;
+			PosWithWrongStatusException, DeliveryNoteWithNoDetailException;
 
 	/**
 	 * Delivery note status should not be {@code DeliveryNoteStatus#DRAFT}. And

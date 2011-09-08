@@ -359,6 +359,25 @@ public class PosDaoImpl implements PosDao {
 	}
 
 	@Override
+	public void updatePosStatusToWorking(List<String> posIds) {
+		if (posIds == null || posIds.isEmpty()) {
+			throw new IllegalArgumentException("posId is missing");
+		}
+		String d_hql = "UPDATE Pos p SET p.dstatus=:dstatus WHERE p.posId IN (:posIds)";
+		String o_hql = "UPDATE Pos p SET p.ostatus=:ostatus WHERE p.posId IN (:posIds)";
+		int d_success = getEm().createQuery(d_hql)
+				.setParameter("dstatus", PosDeliveryStatus.DELIVERED)
+				.setParameter("posIds", posIds).executeUpdate();
+		log.debug("{} pos status updated to PosDeliveryStatus.DELIVERED",
+				d_success);
+		int o_success = getEm().createQuery(o_hql)
+				.setParameter("ostatus", PosOperationStatus.ALLOWED)
+				.setParameter("posIds", posIds).executeUpdate();
+		log.debug("{} pos status updated to PosOperationStatus.ALLOWED",
+				o_success);
+	}
+	
+	@Override
 	public PosVO getPosById(String id) throws ParamsException {
 		log.trace("calling getPosById start and params is {}", id);
 		if (Tools.isEmptyString(id)) {
