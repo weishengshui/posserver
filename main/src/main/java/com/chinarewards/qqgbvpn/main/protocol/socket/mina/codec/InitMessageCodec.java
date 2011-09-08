@@ -45,7 +45,7 @@ public class InitMessageCodec implements ICommandCodec {
 		
 		// reconstruct message.
 		message.setCmdId(cmdId);
-		if (len > 0 ) {
+		if (len > 0) {
 			message.setPosid(new String(posid, 0, len, charset));
 		}
 		log.debug("init message request:cmdId is ({}) , posid is ({})",new Object[]{cmdId,posid});
