@@ -79,8 +79,11 @@ public interface DeliveryLogic {
 	 * @param deliveryNoteId
 	 * @param agentId
 	 * @return
+	 * @throws DeliveryWithWrongStatusException
+	 *             When Delivery status
 	 */
-	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId);
+	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Append POS to delivery. It will create delivery note detail.
@@ -97,10 +100,12 @@ public interface DeliveryLogic {
 	 * @return
 	 * @throws PosNotExistException
 	 *             POS not existed.
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
-			PosWithWrongStatusException;
+			PosWithWrongStatusException, DeliveryWithWrongStatusException;
 
 	/**
 	 * Delete delivery note detail from note.
@@ -110,8 +115,11 @@ public interface DeliveryLogic {
 	 * 
 	 * @param deliveryNoteId
 	 * @param detailId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
-	public void deletePosFromNote(String deliveryNoteId, String detailId);
+	public void deletePosFromNote(String deliveryNoteId, String detailId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * 派送 POS 机给第三方。<br/>
@@ -140,14 +148,20 @@ public interface DeliveryLogic {
 	 * All the POS will be set as DELIVERED and ALLOWED.
 	 * 
 	 * @param deliveryNoteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is not DRAFT.
 	 */
-	public void confirmDelivery(String deliveryNoteId);
+	public void confirmDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException;
 
 	/**
 	 * Delivery note status should not be {@code DeliveryNoteStatus#DRAFT}. And
 	 * this method will change it to {@code DeliveryNoteStatus#PRINTED}.
 	 * 
 	 * @param deliveryNoteId
+	 * @throws DeliveryWithWrongStatusException
+	 *             When delivery status is DRAFT.
 	 */
-	public void printDelivery(String deliveryNoteId);
+	public void printDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException;
 }

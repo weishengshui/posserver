@@ -164,7 +164,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional
-	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId) {
+	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId)
+			throws DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
@@ -173,6 +174,11 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		try {
 			DeliveryNoteVO note = getDeliveryDao().fetchDeliveryById(
 					deliveryNoteId);
+			if (!DeliveryNoteStatus.DRAFT.toString().equals(note.getStatus())) {
+				throw new DeliveryWithWrongStatusException(
+						"Delivery status must be DRAFT, but now is:"
+								+ note.getStatus());
+			}
 			AgentVO agent = agentDao.get().findById(agentId);
 			note.setAgent(agent);
 			note.setAgentName(agent == null ? null : agent.getName());
@@ -187,12 +193,20 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Transactional
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
-			PosWithWrongStatusException {
+			PosWithWrongStatusException, DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
 		if (Tools.isEmptyString(posId)) {
 			throw new IllegalArgumentException("POS ID is missing.");
+		}
+		// check delivery note status.
+		DeliveryNoteVO note = getDeliveryDao()
+				.fetchDeliveryById(deliveryNoteId);
+		if (!DeliveryNoteStatus.DRAFT.toString().equals(note.getStatus())) {
+			throw new DeliveryWithWrongStatusException(
+					"Delivery status must be DRAFT, but now is:"
+							+ note.getStatus());
 		}
 
 		// check the POS first.
@@ -209,13 +223,21 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional
-	public void deletePosFromNote(String deliveryNoteId, String detailId) {
+	public void deletePosFromNote(String deliveryNoteId, String detailId)
+			throws DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
 		if (Tools.isEmptyString(detailId)) {
 			throw new IllegalArgumentException(
 					"Delivery note detail ID is missing.");
+		}
+		// check status
+		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
+		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
+			throw new IllegalArgumentException(
+					"Delivery note status should be DRAFT, not "
+							+ dn.getStatus());
 		}
 
 		// fetch detail and remove it.
@@ -255,11 +277,12 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional
-	public void confirmDelivery(String deliveryNoteId) {
+	public void confirmDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
-			throw new IllegalArgumentException(
+			throw new DeliveryWithWrongStatusException(
 					"Delivery note status should be DRAFT, not "
 							+ dn.getStatus());
 		}
@@ -306,11 +329,12 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional
-	public void printDelivery(String deliveryNoteId) {
+	public void printDelivery(String deliveryNoteId)
+			throws DeliveryWithWrongStatusException {
 		// check delivery note status - not be DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
-			throw new IllegalArgumentException(
+			throw new DeliveryWithWrongStatusException(
 					"Delivery note status should not be DRAFT, it is "
 							+ dn.getStatus() + " now");
 		}

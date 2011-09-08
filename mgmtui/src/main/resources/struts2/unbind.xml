@@ -59,8 +59,8 @@
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
-			<result name="success" type="tiles">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
-			<result name="error" type="tiles">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
+			<result name="success">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
+			<result name="error">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
 		<action name="goPage"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
