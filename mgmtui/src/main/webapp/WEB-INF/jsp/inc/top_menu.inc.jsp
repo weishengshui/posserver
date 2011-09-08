@@ -41,6 +41,7 @@
 		<li><a href="<s:url action="sendURL" namespace="/unbind" />">邀请第三方填写申请表</a></li>
 		<li><a href="<s:url action="list" namespace="/unbind" />">我方生成回收单</a></li>
 		<li><a href="<s:url action="posSearch" namespace="/unbind" />">解绑</a></li>
+		<li><a href="<s:url action="getReturnNoteList" namespace="/unbind" />">回收单查询</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
