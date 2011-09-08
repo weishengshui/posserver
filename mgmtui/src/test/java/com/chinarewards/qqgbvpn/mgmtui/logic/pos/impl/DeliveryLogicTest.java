@@ -15,6 +15,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
@@ -46,7 +47,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	}
 
 	@Test
-	public void testAssociateAgent() {
+	public void testAssociateAgent() throws Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
 		agent.setName("MLGM");
@@ -137,7 +138,7 @@ public class DeliveryLogicTest extends JPATestCase {
 	}
 
 	@Test
-	public void testDelivery_NoDetail() throws PosNotExistException {
+	public void testDelivery_NoDetail() throws PosNotExistException, Exception {
 		Agent agent = new Agent();
 		agent.setEmail("miao@mail.com");
 		agent.setName("MLGM");
@@ -214,7 +215,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		try {
 			getLogic().confirmDelivery(note.getId());
 			fail("should not reach here.");
-		} catch (IllegalArgumentException e) {
+		} catch (DeliveryWithWrongStatusException e) {
 		}
 	}
 

@@ -203,7 +203,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		// check delivery note status.
 		DeliveryNoteVO note = getDeliveryDao()
 				.fetchDeliveryById(deliveryNoteId);
-		if (!DeliveryNoteStatus.DRAFT.equals(note.getStatus())) {
+		if (!DeliveryNoteStatus.DRAFT.toString().equals(note.getStatus())) {
 			throw new DeliveryWithWrongStatusException(
 					"Delivery status must be DRAFT, but now is:"
 							+ note.getStatus());
