@@ -19,7 +19,7 @@
 			intervalLength = 5;
 		}
 		
-		timerTaskForWaitPosInit = window.setInterval(proxy, 1000 * intervalLength);
+		timerTaskForWaitPosInit = window.setInterval(timerRun, 1000 * intervalLength);
 	}
 
 	function closeTimerTask(){
@@ -28,10 +28,10 @@
 		}
 	}
 
-	function proxy(){
+	function timerRun(){
 		var deliveryNoteDetailVOList_SIZE = document.getElementById('deliveryNoteDetailVOList_SIZE_ID').value;
 		if(deliveryNoteDetailVOList_SIZE == 0){
-			window.location.href = '<s:url value=""/>?';
+			window.location.href = '<s:url value="/delivery/showIsAllowUpdateDelivery"/>?deliveryId='+'<s:property value="#request.deliveryNoteVO.id"/>';
 		}else {
 			window.location.reload();
 		}
@@ -60,21 +60,22 @@
 
 <table align="center" width="100%" border="0">
 	<tr>
-		<td>
+		<td colspan="2">
 			交付单编号：
 		</td>
-		<td colspan="4">
+		<td colspan="1" align="left">
 			<s:property value="#request.deliveryNoteVO.dnNumber"/>
 		</td>
+		<td colspan="2"/>
 	</tr>
 	<tr>
 		<td colspan="2">
 			以下POS机尚未初始化，请初始化。
 		</td>
 		<td colspan="1"></td>
-		<td colspan="2">
+		<td colspan="2" align="right">
 			<input type="button" value="手动刷新" onclick="window.location.reload();"/>&nbsp;&nbsp;&nbsp;
-			<input type="checkbox" onselect="isAutoRefresh(this.checked);"/>自动刷新&nbsp;
+			<input type="checkbox" checked="checked" onclick="isAutoRefresh(this.checked);"/>自动刷新&nbsp;
 			每<input type="text" id="intervalLength_ID" size="2" maxlength="2" value="5" onchange="newTimerTask();"/>秒刷新
 		</td>
 	</tr>
@@ -88,7 +89,6 @@
 						<td>制造厂商</td>
 						<td>机身编号</td>
 						<td>初始化状态</td>
-						<td>操作</td>
 					</tr>
 					<s:iterator id="deliveryNoteDetailVO" value="#request.deliveryNoteDetailVOList" status="i">
 						<tr>
@@ -112,13 +112,6 @@
 									是
 								</s:else>
 							</td>
-							<td>
-								<s:a namespace="/delivery" action="removePosForDelivery">
-									<s:param name="deliveryId" value="#request.deliveryNoteVO.id"/>
-									<s:param name="deliveryNoteDetailId" value="#deliveryNoteDetailVO.id"/>
-									移除
-								</s:a>
-							</td>
 						</tr>		
 					</s:iterator>
 				</table>
@@ -133,28 +126,6 @@
 			</s:if>
 			<s:else>0</s:else>
 			台
-		</td>
-	</tr>
-	<tr>
-		<td>加入POS机：</td>
-		<td colspan="4">
-			<form action="<s:url value='/delivery/addPosForDelivery'/>" method="post" onsubmit="return checkFormContent();">
-				<input type="hidden" name="deliveryId" value="<s:property value='#request.deliveryNoteVO.id'/>"/>
-				<input type="text" id="posNum_ID" name="posNum" value="<s:property value='#reqeust.posNum'/>"/>
-				<input type="submit" value="添加"/>
-			</form>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="5" align="center">
-			<s:if test="#deliveryNoteVO.status == 'CONFIRMED' || #deliveryNoteVO.status == 'PRINTED'">
-				<input type="button" value="打印" onclick="printDelivery();" />&nbsp;&nbsp;&nbsp;
-			</s:if>
-			<s:else>
-				<input type="button" value="下一步" onclick="toNextPage();" />&nbsp;&nbsp;&nbsp;
-				<input type="button" value="删除" onclick="removeDelivery();" />&nbsp;&nbsp;&nbsp;
-			</s:else>
-			<input type="button" value="返回" onclick="history.back();" />
 		</td>
 	</tr>
 </table>

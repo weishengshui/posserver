@@ -124,7 +124,12 @@ public class DeliveryAction extends BasePagingToolBarAction {
 				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
 				deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
 				
+				
+				if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+					return INPUT;
+				}
 				log.debug("deliveryNoteVO.number:"+deliveryNoteVO.getDnNumber());
+				log.debug("deliveryNoteVO.getAgent().getId():"+deliveryNoteVO.getAgent().getId());
 			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
@@ -193,7 +198,12 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 */
 	public String showWaitPosInitDelivery(){
 		try{
-//			List<String> getDeliveryLogic().delivery(deliveryId);
+			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
+			deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
+			
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -208,7 +218,17 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 * @author Seek
 	 */
 	public String showIsAllowUpdateDelivery(){
-		//...
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
+			
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
 		return SUCCESS;
 	}
 	
@@ -216,6 +236,10 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		try{
 			deliveryNoteVO  = getDeliveryLogic().fetchById(id);
 			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(id);
+			
+			if("DRAFT".equals(deliveryNoteVO.getStatus())){
+				return INPUT;
+			}
 			//print
 			getDeliveryLogic().printDelivery(id);
 		}catch(Throwable e){
@@ -227,6 +251,8 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public String deleteDelivery(){
 		try{
+			
+			
 			getDeliveryLogic().deleteDeliveryNote(id);
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);

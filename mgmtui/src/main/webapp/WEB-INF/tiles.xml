@@ -64,10 +64,12 @@
 	<definition name="delivery.printDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/print_delivery.jsp" />
 	</definition>
+	<definition name="delivery.showWaitPosInitDelivery" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_waitPosInitForDelivery.jsp" />
+	</definition>
 	<definition name="delivery.showIsAllowUpdateDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_isAllowUpdateDelivery.jsp" />
 	</definition>
-	
 	<!-- delivery end -->
 	
 </tiles-definitions>

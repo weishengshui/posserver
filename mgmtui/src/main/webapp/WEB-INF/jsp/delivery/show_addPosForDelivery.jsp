@@ -32,6 +32,8 @@
 	}
 
 	function initAgentSelect(agentId){
+		alert(agentId);
+		
 		var opts = document.getElementById('agentList_ID').options;
 		for(i=0;i<opts.length;i++){
 			if(opts[i].value == agentId){
@@ -48,6 +50,18 @@
 			return false;
 		}
 		return true;
+	}
+
+	function toNextPage(){
+		window.location.href = '<s:url value="/delivery/showWaitPosInitDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+	}
+
+	function removeDelivery(){
+		window.location.href = '<s:url value="/delivery/deleteDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
+	}
+
+	function printDelivery(){
+		window.location.href = '<s:url value="/delivery/printDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
 	}
 </script>
 
