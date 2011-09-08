@@ -125,7 +125,7 @@ public class CmdCodecTest extends GuiceTest {
 		// fake a message
 		InitRequestMessage msg = new InitRequestMessage();
 		msg.setCmdId(CmdConstant.INIT_CMD_ID);
-		msg.setPosid("POS-56789012");
+		msg.setPosId("POS-56789012");
 
 		CmdMapping cmdMapping = new SimpleCmdMapping();
 		cmdMapping.addMapping(1, InitMessageCodec.class);

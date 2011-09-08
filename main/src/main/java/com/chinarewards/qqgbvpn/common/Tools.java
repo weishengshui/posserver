@@ -1,32 +1,62 @@
 package com.chinarewards.qqgbvpn.common;
 
-import java.text.ParseException;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.apache.mina.core.buffer.IoBuffer;
 
 /**
  * byte tools
  * 
  * @author huangwei
- *
+ * 
  */
-public class Tools {
-	
-	
-	public static byte[] unsignedShortToByte(int src){
+public abstract class Tools {
+
+	/**
+	 * Find out the first occurrence of 0 (numeric 0) in the byte array.
+	 * 
+	 * @param array
+	 * @return 0-based position of the first occurrence of numeric 0 in the
+	 *         array, or -1 if not found.
+	 */
+	public static int findFirstZero(byte[] array) {
+		int pos = 0;
+		for (pos = 0; pos < array.length; pos++) {
+			if (array[pos] == 0)
+				return pos;
+		}
+		// not found
+		return -1;
+	}
+
+	public static String byteToString(byte[] array, Charset charset) {
+		int pos = findFirstZero(array);
+		
+		// first byte is zero, or is an empty string
+		if (pos == 0 || (pos < 0 && array.length == 0)) {
+			return null;
+		}
+		
+		// the whole string, if no numeric zero is found in array
+		if (pos < 0) {
+			pos = array.length;
+		}
+
+		return new String(array, 0, pos, charset);
+	}
+
+	public static byte[] unsignedShortToByte(int src) {
 		byte[] des = new byte[2];
 		des[0] = (byte) (src >> 8);
 		des[1] = (byte) (src >> 0);
 		return des;
 	}
-	
-	public static int byteToUnsignedShort(byte[] bb){
+
+	public static int byteToUnsignedShort(byte[] bb) {
 		return (int) ((((bb[0] & 0xff) << 8) | ((bb[1] & 0xff) << 0)));
 	}
-	
-	public static byte[] unsignedIntToByte(long src){
+
+	public static byte[] unsignedIntToByte(long src) {
 		byte[] des = new byte[4];
 		des[0] = (byte) (src >> 24);
 		des[1] = (byte) (src >> 16);
@@ -34,10 +64,9 @@ public class Tools {
 		des[3] = (byte) (src >> 0);
 		return des;
 	}
-	
-	public static long byteToUnsignedInt(byte[] bb){
-		return ((((long) bb[0] & 0xff) << 24)
-				| (((long) bb[1] & 0xff) << 16)
+
+	public static long byteToUnsignedInt(byte[] bb) {
+		return ((((long) bb[0] & 0xff) << 24) | (((long) bb[1] & 0xff) << 16)
 				| (((long) bb[2] & 0xff) << 8) | (((long) bb[3] & 0xff) << 0));
 	}
 
@@ -59,9 +88,9 @@ public class Tools {
 		bb[index + 2] = (byte) (x >> 8);
 		bb[index + 3] = (byte) (x >> 0);
 	}
-	
+
 	public static void putBytes(byte[] bb, byte[] x, int index) {
-		for(int i=0;i<x.length;i++){
+		for (int i = 0; i < x.length; i++) {
 			bb[index + i] = x[i];
 		}
 	}
@@ -71,15 +100,12 @@ public class Tools {
 				| (((long) bb[index + 1] & 0xff) << 16)
 				| (((long) bb[index + 2] & 0xff) << 8) | (((long) bb[index + 3] & 0xff) << 0));
 	}
-	
-	
-	
-	public static String dateToString(String format, Date date){
+
+	public static String dateToString(String format, Date date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		return dateFormat.format(date);
 	}
-	
-	
+
 	/**
 	 * Calculate the Internet Checksum of a buffer (RFC 1071 -
 	 * http://www.faqs.org/rfcs/rfc1071.html) Algorithm is 1) apply a 16-bit 1's
@@ -90,13 +116,16 @@ public class Tools {
 	 * carry bits are added back to avoid off-by-one errors
 	 * 
 	 * 
-	 * content from http://stackoverflow.com/questions/4113890/how-to-calculate-the-internet-checksum-from-a-byte-in-java
+	 * content from
+	 * http://stackoverflow.com/questions/4113890/how-to-calculate-the
+	 * -internet-checksum-from-a-byte-in-java
 	 * 
 	 * @param packageContent
 	 *            The message
 	 * @return The checksum
 	 */
-	public static final int checkSum(byte[] packageContent, int packageSize) {			//原本是return long
+	public static final int checkSum(byte[] packageContent, int packageSize) { // 原本是return
+																				// long
 		int i = 0;
 
 		int sum = 0;
@@ -138,36 +167,36 @@ public class Tools {
 		return sum;
 	}
 
-	
 	public static void main(String[] args) {
-//		byte[] b = new byte[2];
-//		IoBuffer buf = IoBuffer.allocate(2);
-//
-//		int i = 65535;
-//		b = new byte[2];
-//		putUnsignedShort(b, i, 0);
-//		buf = IoBuffer.allocate(2);
-//		buf.put(b);
-//		buf.flip();
-//		System.out.println(getUnsignedShort(b, 0));
-//		System.out.println(byteToUnsignedShort(b));
-//		System.out.println(buf.getUnsignedShort());
-//		System.out.println(byteToUnsignedShort(unsignedShortToByte(i)));
-//		System.out.println("***************************");
-//		long l = 50;
-//		b = new byte[4];
-//		putUnsignedInt(b, l, 0);
-//		buf = IoBuffer.allocate(4);
-//		buf.put(b);
-//		buf.flip();
-//		System.out.println(getUnsignedInt(b, 0));
-//		System.out.println(byteToUnsignedInt(b));
-//		System.out.println(buf.getUnsignedInt());
-//		System.out.println(byteToUnsignedInt(unsignedIntToByte(l)));
-//		System.out.println("***************************");
-		
-		byte b[] = {0, 0, 0, 1, 32, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 5, 67, 82, 45, 48, 48, 48, 48, 48, 48, 49, 54, 56};
+		// byte[] b = new byte[2];
+		// IoBuffer buf = IoBuffer.allocate(2);
+		//
+		// int i = 65535;
+		// b = new byte[2];
+		// putUnsignedShort(b, i, 0);
+		// buf = IoBuffer.allocate(2);
+		// buf.put(b);
+		// buf.flip();
+		// System.out.println(getUnsignedShort(b, 0));
+		// System.out.println(byteToUnsignedShort(b));
+		// System.out.println(buf.getUnsignedShort());
+		// System.out.println(byteToUnsignedShort(unsignedShortToByte(i)));
+		// System.out.println("***************************");
+		// long l = 50;
+		// b = new byte[4];
+		// putUnsignedInt(b, l, 0);
+		// buf = IoBuffer.allocate(4);
+		// buf.put(b);
+		// buf.flip();
+		// System.out.println(getUnsignedInt(b, 0));
+		// System.out.println(byteToUnsignedInt(b));
+		// System.out.println(buf.getUnsignedInt());
+		// System.out.println(byteToUnsignedInt(unsignedIntToByte(l)));
+		// System.out.println("***************************");
+
+		byte b[] = { 0, 0, 0, 1, 32, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0,
+				5, 67, 82, 45, 48, 48, 48, 48, 48, 48, 49, 54, 56 };
 		System.out.println(checkSum(b, b.length));
-		
+
 	}
 }

@@ -1,5 +1,8 @@
 package com.chinarewards.qqgbvpn.main.protocol.handler;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -114,6 +117,20 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		super.sessionOpened(session);
+		
+		printRemoteSocketAddress(session);
+	}
+	
+	protected void printRemoteSocketAddress(IoSession session) {
+		SocketAddress addr = session.getRemoteAddress();
+		if (addr == null || ! (addr instanceof InetSocketAddress)) {
+			return;
+		}
+		
+		// print it
+		InetSocketAddress sAddr = (InetSocketAddress)addr;
+		log.debug("Remote address: {}, port: {}", sAddr.getAddress()
+				.getHostAddress(), sAddr.getPort());
 	}
 
 }
