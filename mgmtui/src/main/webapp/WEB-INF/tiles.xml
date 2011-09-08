@@ -77,6 +77,10 @@
 	<definition name="delivery.showDeliveryWaitConfirm" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_deliveryWaitConfirm.jsp" />
 	</definition>
+	<definition name="delivery.showDeliveryConfirmDone" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_deliveryConfirmDone.jsp" />
+	</definition>
+	
 	<!-- delivery end -->
 	<!-- error start-->
 	<definition name="common.error" extends="main">
