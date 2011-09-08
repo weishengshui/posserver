@@ -15,18 +15,16 @@
 
 <body>
 
-<table align="center" width="800px">
+<table align="center" width="800px" >
 	<tr align="center">
 		<td colspan="2">
 			<strong>POS机交付单</strong>
 		</td>
 	</tr>
 	<tr style="height: 10px">
-		<td colspan="2">
-		</td>
 	</tr>
 	<tr >
-		<td>
+		<td width="150px">
 			交付单编号:
 		</td>
 		<td align="left">
@@ -84,20 +82,17 @@
 			&nbsp;&nbsp;共 <s:property value="#request.deliveryNoteDetailVOList.size()"/> 台
 		</td>
 	</tr>
-</table>
-<br/><br/><br/>
-<table align="center" width="800px">
+	<tr style="height: 50px"></tr>
 	<tr align="left">
 		<td>
 			&nbsp;&nbsp;签收
 		</td>
 	</tr>
 	<tr style="height: 20px">
-		<td></td>
 	</tr>
 	<tr style="height: 30px">
-		<td>
-			&nbsp;&nbsp;&nbsp;&nbsp;____________
+		<td style="margin-left: 20px">
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;___________
 		</td>
 	</tr>
 	<tr style="height: 30px">
@@ -107,7 +102,7 @@
 	</tr>
 	<tr style="height: 30px">
 		<td>
-			&nbsp;&nbsp;&nbsp;&nbsp;日期:____/____/____(年/月/日)
+			&nbsp;&nbsp;&nbsp;&nbsp;日期:____________(年/月/日)
 		</td>
 	</tr>
 </table>
@@ -115,7 +110,7 @@
 <table align="center" width="800px" class="noprint">
 	<tr align="center">
 		<td>
-			<input type="button" value="打印"onClick="window.print();" />
+			<input type="button" value="打印" onClick="window.print();" />
 		</td>
 	</tr>
 </table>
