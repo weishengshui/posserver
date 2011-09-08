@@ -26,6 +26,11 @@
 			method="createInvite">
 			<result name="success" type="tiles">unbind.sendURLSuccess</result>
 			<result name="error" type="tiles">unbind.sendURL</result>
+			<result name="invalid.token" type="tiles">unbind.sendURL</result>
+        	<interceptor-ref name="defaultStack"/>  
+            <interceptor-ref name="token">  
+                 <param name="includeMethods">createInvite</param>    
+            </interceptor-ref>  
 		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
