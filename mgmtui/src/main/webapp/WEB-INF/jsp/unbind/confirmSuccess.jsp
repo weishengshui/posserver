@@ -11,10 +11,13 @@
 <s:form action="sendURL" namespace="/unbind" method="Post" id="successForm">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td width="77%">已发出通知予：<s:property value="agentName" /></td>
+		<td width="77%">已生成回收单！</td>
 	</tr>
 	<tr>
-		<td width="77%">发出日期：<s:date name="sendTime" format="yyyy-MM-dd hh:mm:ss" /></td>
+		<td width="77%">编号：<s:property value="#request.rnNumber" /></td>
+	</tr>
+	<tr>
+		<td width="77%">POS机：<s:property value="#request.posCount" />台</td>
 	</tr>
 	<tr>
 		<td width="77%"><input type="submit" value="完成" id="searchBtn" /></td>

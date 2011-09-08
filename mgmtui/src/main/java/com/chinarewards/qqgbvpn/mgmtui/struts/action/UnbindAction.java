@@ -299,6 +299,9 @@ public class UnbindAction extends BaseAction {
 						
 					}
 				}
+				HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(StrutsStatics.HTTP_REQUEST);
+				request.setAttribute("posCount", posList.size());
+				request.setAttribute("rnNumber", rn.getRnNumber());
 			} catch (UnUseableRNException e) {
 				//TODO 这里到时改为不提示错误
 				this.errorMsg = "回收单已使用!";
