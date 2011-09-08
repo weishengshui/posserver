@@ -55,7 +55,7 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 	public List<DeliveryNoteDetailVO> fetchDetailListByNoteId(String noteId) {
 		List<Object[]> list = getEm()
 				.createQuery(
-						"SELECT dnd, p.istatus FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.dn.id=:dnId")
+						"SELECT dnd, p.istatus, p.secret FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.dn.id=:dnId")
 				.setParameter("dnId", noteId).getResultList();
 
 		List<DeliveryNoteDetailVO> resultList = new LinkedList<DeliveryNoteDetailVO>();
@@ -63,10 +63,12 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 		for (Object[] obj : list) {
 			DeliveryNoteDetail detail = (DeliveryNoteDetail) obj[0];
 			PosInitializationStatus istatus = (PosInitializationStatus) obj[1];
+			String secret = (String) obj[2];
 
 			DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get()
 					.convertToVO(detail);
 			vo.setIstatus(istatus.toString());
+			vo.setSecret(secret);
 
 			resultList.add(vo);
 		}
@@ -114,7 +116,7 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 	public DeliveryNoteDetailVO fetchByPosId(String posId) {
 		List<Object[]> list = getEm()
 				.createQuery(
-						"SELECT dnd, p.istatus FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.posId=:posId")
+						"SELECT dnd, p.istatus, p.secret FROM DeliveryNoteDetail dnd, Pos p WHERE dnd.posId=p.posId AND dnd.posId=:posId")
 				.setParameter("posId", posId).getResultList();
 
 		if (list == null || list.isEmpty()) {
@@ -124,9 +126,37 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 		Object[] o = list.get(0);
 		DeliveryNoteDetail detail = (DeliveryNoteDetail) o[0];
 		PosInitializationStatus istatus = (PosInitializationStatus) o[1];
+		String secret = (String) o[2];
 		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
 				detail);
 		vo.setIstatus(istatus.toString());
+		vo.setSecret(secret);
+		return vo;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DeliveryNoteDetailVO fetchByDeliveryIdPosId(String noteId,
+			String posId) {
+		List<Object[]> list = getEm()
+				.createQuery(
+						"SELECT dnd, p.istatus, p.secret FROM DeliveryNoteDetail dnd, Pos p "
+								+ " WHERE dnd.posId=p.posId AND dnd.posId=:posId AND dnd.dn.id=:dnId")
+				.setParameter("posId", posId).setParameter("dnId", noteId)
+				.getResultList();
+
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+
+		Object[] o = list.get(0);
+		DeliveryNoteDetail detail = (DeliveryNoteDetail) o[0];
+		PosInitializationStatus istatus = (PosInitializationStatus) o[1];
+		String secret = (String) o[2];
+		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
+				detail);
+		vo.setIstatus(istatus.toString());
+		vo.setSecret(secret);
 		return vo;
 	}
 
@@ -172,6 +202,7 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
 				detail);
 		vo.setIstatus(p.getIstatus().toString());
+		vo.setSecret(p.getSecret());
 		return vo;
 	}
 

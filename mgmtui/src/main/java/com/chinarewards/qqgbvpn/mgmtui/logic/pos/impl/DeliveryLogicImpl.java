@@ -24,6 +24,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
@@ -193,7 +194,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Transactional
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
-			PosWithWrongStatusException, DeliveryWithWrongStatusException {
+			PosWithWrongStatusException, DeliveryWithWrongStatusException,
+			DeliveryDetailExistException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
@@ -210,12 +212,16 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		}
 
 		// check the POS first.
-		DeliveryNoteDetailVO detail = getDetailDao().fetchByPosId(posId);
+		DeliveryNoteDetailVO detail = getDetailDao().fetchByDeliveryIdPosId(
+				deliveryNoteId, posId);
 
 		// if existed, do nothing
 		// else create new deliveryNoteDetail
 		if (detail == null) {
 			detail = getDetailDao().create(deliveryNoteId, posId);
+		} else {
+			throw new DeliveryDetailExistException("delivery note(id="
+					+ deliveryNoteId + ") has added the pos(id=" + posId + ")");
 		}
 
 		return detail;
@@ -278,7 +284,8 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Override
 	@Transactional
 	public void confirmDelivery(String deliveryNoteId)
-			throws DeliveryWithWrongStatusException {
+			throws DeliveryWithWrongStatusException,
+			PosWithWrongStatusException {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
@@ -296,21 +303,21 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		getDeliveryDao().merge(dn);
 
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
-		try {
-			for (PosVO pos : posList) {
-				// check POS status.
-				if (!PosDeliveryStatus.DELIVERED.toString().equals(
-						pos.getDstatus())) {
-					throw new IllegalArgumentException(
-							"Pos dstatus should be PosDeliveryStatus.DELIVERED, but now is:"
-									+ pos.getDstatus());
-				}
-				pos.setDstatus(PosDeliveryStatus.DELIVERED.toString());
-				pos.setOstatus(PosOperationStatus.ALLOWED.toString());
-				posDao.get().updatePos(pos);
+		for (PosVO pos : posList) {
+			// check POS status.
+			if (!PosDeliveryStatus.RETURNED.toString().equals(pos.getDstatus())) {
+				throw new PosWithWrongStatusException(
+						"Pos dstatus should be PosDeliveryStatus.RETURNED, but now is:"
+								+ pos.getDstatus());
 			}
-		} catch (Exception e) {
-			log.error("Unknow Exception catched!", e);
+			pos.setDstatus(PosDeliveryStatus.DELIVERED.toString());
+			pos.setOstatus(PosOperationStatus.ALLOWED.toString());
+			try {
+				posDao.get().updatePos(pos);
+			} catch (Exception e) {
+				// Should not reach here.
+				log.error(e.getMessage(), e);
+			}
 		}
 
 		// add journalLogic

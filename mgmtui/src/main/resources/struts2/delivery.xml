@@ -19,7 +19,7 @@
 			<result name="success" type="tiles">delivery.showAddPosForDelivery</result>
 			<result name="input" type="redirectAction">
 				<param name="namespace">/delivery</param>
-				<param name="actionName">showIsAllowUpdateDelivery</param>
+				<param name="actionName">showDeliveryWaitConfirm</param>
 				<param name="deliveryId">${deliveryId}</param>
 			</result>
 		</action>
@@ -35,6 +35,9 @@
 			<result name="success" type="redirectAction">
 				<param name="namespace">/delivery</param>
 				<param name="actionName">showAddPosForDelivery</param>
+				<param name="deliveryId">${deliveryId}</param>
+				<param name="addPosStatus">${addPosStatus}</param>
+				<param name="posNum">${posNum}</param>
 			</result>
 		</action>
 		
@@ -42,6 +45,7 @@
 			<result name="success" type="redirectAction">
 				<param name="namespace">/delivery</param>
 				<param name="actionName">showAddPosForDelivery</param>
+				<param name="deliveryId">${deliveryId}</param>
 			</result>
 		</action>
 		
@@ -49,8 +53,8 @@
 			<result name="success" type="tiles">delivery.showWaitPosInitDelivery</result>
 		</action>
 		
-		<action name="showIsAllowUpdateDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showIsAllowUpdateDelivery">
-			<result name="success" type="tiles">delivery.showIsAllowUpdateDelivery</result>
+		<action name="showDeliveryWaitConfirm" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showDeliveryWaitConfirm">
+			<result name="success" type="tiles">delivery.showDeliveryWaitConfirm</result>
 		</action>
 		
 		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
@@ -64,32 +68,5 @@
 			</result>
 		</action>
 		
-		<!-- 
-		<action name="showEditAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="showEditAgent">
-			<result name="success" type="tiles">agent.showEditAgent</result>
-		</action>
-		
-		<action name="agentIsExist" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="agentIsExist">
-			<result name="success" type="json">
-				<param name="noCache">true</param>
-				<param name="excludeNullProperties">true</param>
-			</result>
-		</action>
-		
-		<action name="editAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="editAgent">
-			<result name="success" type="redirectAction">
-				<param name="namespace">/agent</param>
-				<param name="actionName">searchAgent</param>
-			</result>
-		</action>
-		
-		<action name="deleteAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="deleteAgent">
-			<result name="success" type="redirectAction">
-				<param name="namespace">/agent</param>
-				<param name="actionName">searchAgent</param>
-			</result>
-		</action>
-		 -->
-		 
 	</package>
 </struts>
