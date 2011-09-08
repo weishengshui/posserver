@@ -16,7 +16,6 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.core.jpa.DbChecker;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
@@ -201,20 +200,6 @@ public class DefaultPosServer implements PosServer {
 		PersistService ps = injector.getInstance(PersistService.class);
 		ps.start();
 		persistenceServiceInited = true;
-	}
-	
-	protected boolean checkDbTablesPrepared() {
-		
-		DbChecker dbChecker = injector.getInstance(DbChecker.class);
-		
-		dbChecker.check();
-		if (dbChecker.hasError()) {
-			return false;
-		}
-		
-		
-		return true;
-		
 	}
 
 	/*

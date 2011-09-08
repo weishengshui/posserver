@@ -12,7 +12,9 @@
 			<td>初始化</td>
 			<td>运营状态</td>
 			<td>密钥</td>
-			<td>操作</td>
+			<%--
+				<td>操作</td>
+			 --%>
 		</tr>
 	<s:if test="#request.posVOList != null && #request.posVOList.size()>0">
 	  <s:iterator  value="#request.posVOList" id="posTmp" status="stat">
@@ -63,9 +65,11 @@
 				</s:else>
 			</td>
 			<td><s:property value="#posTmp.secret" /></td>
-			<td>
-				<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>
-			</td>
+			<%--
+				<td>
+					<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>
+				</td>
+			 --%>
 		</tr>
 	  </s:iterator>
    </s:if> 
