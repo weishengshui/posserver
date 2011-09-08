@@ -40,7 +40,7 @@ public class UnbindAction extends BaseAction {
 
 	private static final long serialVersionUID = -4872248136823406437L;
 	
-	private static final int initPageSize = 1;
+	private static final int initPageSize = 10;
 	
 	private GroupBuyingUnbindManager groupBuyingUnbindMgr;
 	
@@ -417,12 +417,28 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String getReturnNoteList() {
+		if (pageInfo == null) {
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(initPageSize);
+		}
 		if (!StringUtil.isEmptyString(rnNum)) {
 			pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 			pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
+			log.debug("page id {}",pageInfo.getPageId());
 		}
+		return SUCCESS;
+	}
+	
+	public String goPageForRnList() {
+		if (pageInfo == null) {
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(initPageSize);
+		}
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
 		return SUCCESS;
 	}
 	

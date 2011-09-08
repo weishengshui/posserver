@@ -11,16 +11,13 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="search" namespace="/unbind" method="Post" id="listForm">
+<s:form action="getReturnNoteList" namespace="/unbind" method="Post" id="listForm">
 <s:token/>
-<s:hidden name="agentId" id="agentId" />
-<s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-<s:hidden name="rnId" id="rnId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td width="77%">回收单号：<input type="text" name="agentName" value="${agentName}" /></td>
+		<td width="77%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>
@@ -29,17 +26,17 @@
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td></td>
-		<td>posId</td>
-		<td>simPhoneNo</td>
-		<td>sn</td>
+		<td>回收单号</td>
+		<td>第三方</td>
+		<td>状态</td>
+		<td>生成时间</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
-		<td><s:property value="#list.posId" /></td>
-		<td><s:property value="#list.simPhoneNo" /></td>
-		<td><s:property value="#list.sn" /></td>
+		<td><s:property value="#list.rnNumber" /></td>
+		<td><s:property value="#list.agentName" /></td>
+		<td><s:property value="#list.status" /></td>
+		<td><s:date name="#list.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
 	</tr>
 	</s:iterator>
 	<tr>
@@ -48,60 +45,16 @@
 		<td></td>
 		<td><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
-	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><button type="button" onclick="confirmRnNumber()">回收</button></td>
-	</tr>
 </table>
 </s:if>
 </s:form>
 
 <script type="text/javascript">
 
-	$().ready(function() {
-		autoCheckPos();
-	});
-	
-	function autoCheckPos() {
-		var posIds = document.getElementById("posIds").value;
-		if ($.trim(posIds) != "") {
-			$(":checkbox[name='posId']").each(function() {
-				if (posIds.indexOf(this.value) != -1) {
-					this.checked = true; 
-				}
-			});
-		}
-	}
-	
-	function confirmRnNumber() {
-		var posIds = document.getElementById("posIds").value;
-		if ($.trim(posIds) == "") {
-			alert("请选择要回收的POS机!");
-			return;
-		}
-		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
-		var formObj = document.getElementById("listForm");
-		formObj.action = "${ctx}/unbind/confirmRnNumber";
-		formObj.submit();
-	}
-	
-	function ckPosId(obj) {
-		var posIds = document.getElementById("posIds").value;
-		if (obj.checked) {
-			posIds += obj.value + ",";
-		} else {
-			posIds = posIds.replace(new RegExp(obj.value + ",","gm"), "");
-		}
-		document.getElementById("posIds").value = posIds;
-		alert(document.getElementById("posIds").value);
-	}
-	
 	function goPage(pageId) {
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPage";
+		formObj.action = "${ctx}/unbind/goPageForRnList";
 		formObj.submit();
 	}
 	
