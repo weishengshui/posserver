@@ -15,6 +15,14 @@
 			<result name="success">/WEB-INF/jsp/delivery/list_delivery.jsp</result>
 		</action>
 		
+		<action name="createDeliveryNote" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="createDeliveryNote">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/delivery</param>
+				<param name="actionName">showAddPosForDelivery</param>
+				<param name="deliveryId">${deliveryId}</param>
+			</result>
+		</action>
+		
 		<action name="showAddPosForDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showAddPosForDelivery">
 			<result name="success" type="tiles">delivery.showAddPosForDelivery</result>
 			<result name="input" type="redirectAction">
