@@ -77,7 +77,7 @@ public class Tools {
 		sb.append("-");
 		sb.append(getNow());
 		sb.append("-");
-		sb.append(rd.nextInt(999999));
+		sb.append(String.format("%06d", rd.nextInt(999999)));
 		return sb.toString();
 	}
 	
