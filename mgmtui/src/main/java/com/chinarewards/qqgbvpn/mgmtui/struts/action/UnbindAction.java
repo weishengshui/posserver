@@ -64,6 +64,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnId;
 	
+	private String rnNum;
+	
 	private String inviteCode;
 	
 	private String agentName;
@@ -109,6 +111,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setSendTime(Date sendTime) {
 		this.sendTime = sendTime;
+	}
+
+	public String getRnNum() {
+		return rnNum;
+	}
+
+	public void setRnNum(String rnNum) {
+		this.rnNum = rnNum;
 	}
 
 	public String getAgentId() {
@@ -402,6 +412,16 @@ public class UnbindAction extends BaseAction {
 				//这里应该报找不到的提示
 				this.errorMsg = "第三方机信息找不到!";
 			}
+		}
+		return SUCCESS;
+	}
+	
+	public String getReturnNoteList() {
+		if (!StringUtil.isEmptyString(rnNum)) {
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(initPageSize);
+			pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
 		}
 		return SUCCESS;
 	}

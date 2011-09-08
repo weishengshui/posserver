@@ -121,4 +121,8 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	public Agent getAgentByInviteCode(String inviteCode) {
 		return dao.get().getAgentByInviteCode(inviteCode);
 	}
+	
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
+		return dao.get().getReturnNoteLikeRnNumber(rnNumber, pageInfo);
+	}
 }
