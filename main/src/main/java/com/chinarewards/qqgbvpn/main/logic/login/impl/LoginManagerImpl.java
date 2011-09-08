@@ -63,9 +63,14 @@ public class LoginManagerImpl implements LoginManager {
 		byte[] challenge = ChallengeUtil.generateChallenge();
 
 		try {
+			
+			// TODO reports better error code to distinguish between 
+			// POS ID not found or not assigned.
+			
 			pos = posDao.get().fetchPos(req.getPosId(),
 					PosDeliveryStatus.DELIVERED, null,
 					PosOperationStatus.ALLOWED);
+			
 
 			// check pos.secret. When not existed, generate one.
 			if (StringUtil.isEmptyString(pos.getSecret())) {
@@ -74,7 +79,7 @@ public class LoginManagerImpl implements LoginManager {
 
 			pos.setChallenge(challenge);
 			posDao.get().merge(pos);
-			logger.debug("PosId:{}, init challenge saved - {}", new Object[] {
+			logger.debug("POS ID:{}, init challenge saved - {}", new Object[] {
 					req.getPosId(), Arrays.toString(challenge) });
 
 			switch (pos.getIstatus()) {
@@ -89,7 +94,7 @@ public class LoginManagerImpl implements LoginManager {
 				break;
 			}
 		} catch (NoResultException e) {
-			logger.warn("NO result fetch.");
+			logger.warn("No usable POS machine found. POS ID not exists or not assigned.");
 			result = InitResult.OTHERS;
 		}
 		resp.setChallenge(challenge);
