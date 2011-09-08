@@ -46,6 +46,10 @@
 	<definition name="unbind.confirmSuccess" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/confirmSuccess.jsp" />
 	</definition>
+	
+	<definition name="unbind.rnList" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/returnNoteList.jsp" />
+	</definition>
 	<!-- unbind end -->
 	
 	<!-- agent begin -->
