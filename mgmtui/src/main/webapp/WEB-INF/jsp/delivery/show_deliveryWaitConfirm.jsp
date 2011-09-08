@@ -10,11 +10,11 @@
 
 <script type="text/javascript">
 	function toUpdatePage(deliveryId){
-		window.location.href = '<s:url value="/delivery/showAddPosForDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+		window.location.href = '<s:url value="/delivery/showAddPosForDelivery"/>?deliveryId='+deliveryId;
 	}
 	
 	function confirmToPrint(deliveryId){
-		window.location.href = '<s:url value="/delivery/showAddPosForDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+		window.location.href = '<s:url value="/delivery/confirmDelivery"/>?deliveryId='+deliveryId;
 	}
 </script>
 </head>

@@ -250,6 +250,39 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 * @author Seek
 	 */
 	public String confirmDelivery(){
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				log.warn("deliveryNoteVO.getStatus() is DRAFT!");
+				errorMsg = "非草稿状态的交付单不允许进行该操作";
+				return ERROR;
+			}
+			
+			//confirm
+			getDeliveryLogic().confirmDelivery(deliveryId);	
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
+	/**
+	 * description：显示交付单已经确认
+	 * @return
+	 * @time 2011-9-8   下午07:00:27
+	 * @author Seek
+	 */
+	public String showDeliveryConfirmDone(){
+		try{
+			if(deliveryId != null){
+				deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
+			}
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
 		return SUCCESS;
 	}
 	

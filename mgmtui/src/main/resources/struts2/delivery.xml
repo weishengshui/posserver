@@ -19,7 +19,7 @@
 			<result name="success" type="tiles">delivery.showAddPosForDelivery</result>
 			<result name="input" type="redirectAction">
 				<param name="namespace">/delivery</param>
-				<param name="actionName">showDeliveryWaitConfirm</param>
+				<param name="actionName">showDeliveryConfirmDone</param>
 				<param name="deliveryId">${deliveryId}</param>
 			</result>
 		</action>
@@ -55,6 +55,18 @@
 		
 		<action name="showDeliveryWaitConfirm" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showDeliveryWaitConfirm">
 			<result name="success" type="tiles">delivery.showDeliveryWaitConfirm</result>
+		</action>
+		
+		<action name="confirmDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="confirmDelivery">
+			<result name="success" type="redirectAction">
+				<param name="namespace">/delivery</param>
+				<param name="actionName">showDeliveryConfirmDone</param>
+				<param name="deliveryId">${deliveryId}</param>
+			</result>
+		</action>
+		
+		<action name="showDeliveryConfirmDone" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showDeliveryConfirmDone">
+			<result name="success" type="tiles">delivery.showDeliveryConfirmDone</result>
 		</action>
 		
 		<action name="printDelivery/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="printDelivery">
