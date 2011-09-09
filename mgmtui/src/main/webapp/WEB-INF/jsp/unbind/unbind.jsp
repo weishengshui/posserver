@@ -28,10 +28,10 @@
 <s:if test="posList!=null && posList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td>posId</td>
-		<td>simPhoneNo</td>
-		<td>sn</td>
-		<td>操作</td>
+		<td class="td_title">posId</td>
+		<td class="td_title">simPhoneNo</td>
+		<td class="td_title">sn</td>
+		<td class="td_title">操作</td>
 	</tr>
 	<s:iterator value="posList" id="list">
 	<tr>

@@ -9,7 +9,7 @@
 </head>
 <body>
 <s:form action="sendURL" namespace="/unbind" method="Post" id="successForm">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">已发出通知予：<s:property value="agentName" /></td>
 	</tr>

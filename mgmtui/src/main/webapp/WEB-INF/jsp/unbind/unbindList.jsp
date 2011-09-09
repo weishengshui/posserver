@@ -30,9 +30,9 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
-		<td>posId</td>
-		<td>simPhoneNo</td>
-		<td>sn</td>
+		<td class="td_title">posId</td>
+		<td class="td_title">simPhoneNo</td>
+		<td class="td_title">sn</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
