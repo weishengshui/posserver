@@ -26,6 +26,7 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
@@ -436,10 +437,13 @@ public class PosDaoImpl implements PosDao {
 	}
 
 	@Override
-	public void createPosAssignment(String agentId, List<String> posIds) {
+	public void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException {
 		Agent agent = getEm().find(Agent.class, agentId);
 		for (String posId : posIds) {
 			Pos pos = getEm().find(Pos.class, posId);
+			if (pos == null) {
+				throw new PosNotExistException("pos id=" + posId + " not found");
+			}
 			PosAssignment pa = new PosAssignment();
 			pa.setAgent(agent);
 			pa.setPos(pos);

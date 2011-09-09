@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
@@ -66,7 +67,7 @@ public class PosLogicImpl implements PosLogic {
 
 	@Transactional
 	@Override
-	public void createPosAssignment(String agentId, List<String> posIds) {
+	public void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException {
 		posDao.get().createPosAssignment(agentId, posIds);
 	}
 
