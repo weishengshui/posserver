@@ -402,7 +402,7 @@ public class UnbindAction extends BaseAction {
 						this.errorMsg = "服务器繁忙!";
 						break;
 					case -2:
-						this.errorMsg = "md5校验失败!";
+						this.errorMsg = "MD5校验失败!";
 						break;
 					case -3:
 						this.errorMsg = "没有权限!";
