@@ -52,7 +52,7 @@
 		<td></td>
 		<td></td>
 		<td></td>
-		<td><button type="button" onclick="confirmRnNumber()">回收</button></td>
+		<td><button type="button" onclick="confirmAllRnNumber()">全部回收</button>　　<button type="button" onclick="confirmRnNumber()">回收</button></td>
 	</tr>
 </table>
 </s:if>
@@ -84,6 +84,12 @@
 		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
 		var formObj = document.getElementById("listForm");
 		formObj.action = "${ctx}/unbind/confirmRnNumber";
+		formObj.submit();
+	}
+	
+	function confirmAllRnNumber() {
+		var formObj = document.getElementById("listForm");
+		formObj.action = "${ctx}/unbind/confirmAllRnNumber";
 		formObj.submit();
 	}
 	

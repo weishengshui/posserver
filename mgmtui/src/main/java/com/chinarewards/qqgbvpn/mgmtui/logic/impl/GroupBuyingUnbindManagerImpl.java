@@ -130,4 +130,9 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {
 		return dao.get().getReturnNoteInfoByRnId(rnId);
 	}
+	
+	@Transactional
+	public ReturnNoteInfo confirmAllReturnNote(String agentId) throws SaveDBException {
+		return dao.get().confirmAllReturnNote(agentId);
+	}
 }

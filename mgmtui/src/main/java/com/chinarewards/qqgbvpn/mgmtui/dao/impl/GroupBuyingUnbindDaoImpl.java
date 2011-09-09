@@ -188,6 +188,13 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		return resultList;
 	}
 	
+	private List<Pos> getPosByAgentId(String agentId) {
+		Query jql = em.get().createQuery("select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1");
+		jql.setParameter(1, agentId);
+		List<Pos> resultList = jql.getResultList();
+		return resultList;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getAgentByName(java.lang.String)
 	 * 发送URL页面查询调用
@@ -322,6 +329,55 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				throw new SaveDBException(e);
 			}
 			return rn;
+		}
+		return null;
+	}
+	
+	public ReturnNoteInfo confirmAllReturnNote(String agentId) throws SaveDBException {
+		List<Pos> posList = null;
+		Date date = new Date();
+		Agent a = this.getAgentById(agentId);
+		if (a != null) {
+			ReturnNote rn = new ReturnNote();
+			rn.setRnNumber(Tools.getOnlyNumber("POSRN"));
+			rn.setAgent(a);
+			rn.setAgentName(a.getName());
+			rn.setStatus(ReturnNoteStatus.CONFIRMED);
+			rn.setCreateDate(date);
+			rn.setConfirmDate(date);
+			try {
+				
+				saveReturnNote(rn);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				journal.setEventDetail(gson.toJson(rn));
+				saveJournal(journal);
+				
+				posList = getPosByAgentId(agentId);
+				
+				if (posList != null && posList.size() > 0) {
+					for (Pos p : posList) {
+						ReturnNoteDetail rnd = new ReturnNoteDetail();
+						rnd.setRn(rn);
+						rnd.setPosId(p.getPosId());
+						rnd.setModel(p.getModel());
+						rnd.setSimPhoneNo(p.getSimPhoneNo());
+						rnd.setSn(p.getSn());
+						saveReturnNoteDetail(rnd);
+					}
+				}
+				
+			} catch (Exception e) {
+				throw new SaveDBException(e);
+			}
+			ReturnNoteInfo rnInfo = new ReturnNoteInfo(a, rn, posList);
+			return rnInfo;
 		}
 		return null;
 	}

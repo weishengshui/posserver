@@ -62,8 +62,10 @@
 	<tr>
 		<td>日期：______年_____月______</td>
 	</tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><button type="button" onclick="printInfo()">打印</button></td>
+		<td align="right"><button type="button" onclick="printInfo()">打印</button></td>
 	</tr>
 </table>
 

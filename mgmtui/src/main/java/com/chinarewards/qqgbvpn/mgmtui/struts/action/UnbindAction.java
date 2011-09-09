@@ -362,6 +362,20 @@ public class UnbindAction extends BaseAction {
 		return ERROR;
 	}
 	
+	public String confirmAllRnNumber() throws SaveDBException {
+		if (!StringUtil.isEmptyString(agentId)) {
+			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
+			if (rnInfo != null) {
+				getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
+				getRequest().setAttribute("rnId", rnInfo.getRn().getId());
+				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());
+				return SUCCESS;
+			}
+		}
+		this.errorMsg = "第三方信息找不到!";
+		return ERROR;
+	}
+	
 	public String posSearch() {
 		if (posCondition != null && !"".equals(posCondition.trim())) {
 			posList = getGroupBuyingUnbindManager().getPosByPosInfo(posCondition.trim());
@@ -380,7 +394,6 @@ public class UnbindAction extends BaseAction {
 			try {
 				HashMap<String, Object> result = getGroupBuyingUnbindManager().groupBuyingUnbind(params);
 				String resultCode = (String) result.get("resultCode");
-				System.out.println("resultCode->" + resultCode);
 				if ("0".equals(resultCode)) {
 					this.successMsg = posId + "解绑成功!";
 				} else {
