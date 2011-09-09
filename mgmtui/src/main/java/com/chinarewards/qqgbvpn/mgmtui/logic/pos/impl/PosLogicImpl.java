@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.pos.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +56,12 @@ public class PosLogicImpl implements PosLogic {
 	@Override
 	public PosVO getPosById(String id) throws ParamsException {
 		return posDao.get().getPosById(id);
+	}
+
+	@Transactional
+	@Override
+	public void updatePosStatusToWorking(List<String> posIds) {
+		posDao.get().updatePosStatusToWorking(posIds);
 	}
 
 	

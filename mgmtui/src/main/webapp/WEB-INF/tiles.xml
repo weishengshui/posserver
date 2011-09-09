@@ -46,6 +46,10 @@
 	<definition name="unbind.confirmSuccess" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/confirmSuccess.jsp" />
 	</definition>
+	
+	<definition name="unbind.rnList" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/returnNoteList.jsp" />
+	</definition>
 	<!-- unbind end -->
 	
 	<!-- agent begin -->
@@ -70,9 +74,13 @@
 	<definition name="delivery.showWaitPosInitDelivery" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_waitPosInitForDelivery.jsp" />
 	</definition>
-	<definition name="delivery.showIsAllowUpdateDelivery" extends="main">
-		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_isAllowUpdateDelivery.jsp" />
+	<definition name="delivery.showDeliveryWaitConfirm" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_deliveryWaitConfirm.jsp" />
 	</definition>
+	<definition name="delivery.showDeliveryConfirmDone" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/delivery/show_deliveryConfirmDone.jsp" />
+	</definition>
+	
 	<!-- delivery end -->
 	<!-- error start-->
 	<definition name="common.error" extends="main">

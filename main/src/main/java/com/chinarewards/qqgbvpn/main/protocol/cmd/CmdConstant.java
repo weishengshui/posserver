@@ -84,5 +84,15 @@ public class CmdConstant {
 	 * enter
 	 */
 	public static final char ENTER = 13;
+	
+
+	/**
+	 * 验证回调请求
+	 */
+	public static final long VAL_CALLBACK_CMD_ID = 11;
+	/**
+	 * 验证回调应答
+	 */
+	public static final long VAL_CALLBACK_CMD_ID_RESPONSE = 12;
 
 }

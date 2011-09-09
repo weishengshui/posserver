@@ -103,12 +103,12 @@ public class QQApiUATTest extends JpaGuiceTest {
 		GroupBuyingUtil.sendPost(url, postParams);
 	}
 
-	// @Test
+	//@Test
 	public void testGroupBuyingSearchParseXML() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
 		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", "JXTPOS");
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -120,7 +120,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 
-		String url = "http://121.14.96.114/api/pos/query";
+		String url = "http://113.108.82.162/api/pos/query";
 
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",

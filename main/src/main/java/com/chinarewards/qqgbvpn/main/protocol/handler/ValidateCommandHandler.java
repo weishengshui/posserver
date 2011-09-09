@@ -61,44 +61,66 @@ public class ValidateCommandHandler implements ServiceHandler {
 
 		
 		try {
-			HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
-			int resultCode = Integer.valueOf((String) result.get("resultCode"));
-			log.debug("resultCode=========: {}"+resultCode);
-			if (resultCode == SUCCESS_CODE ) {
-				List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
-						.get("items");
-				validateResponseMessage.setResult(SUCCESS_CODE);
-				for (GroupBuyingValidateResultVO item : items) {
-					log.debug("item.getResultStatus()=============:"+item.getResultStatus());
-					if (!"0".equals(item.getResultStatus())) {
-						validateResponseMessage.setResult(1);
+			//本地验证
+			GroupBuyingValidateResultVO groupBuyingValidateResultVO = gbm.get().groupBuyingValidateLocal(validateRequestMessage.getGrouponId(), validateRequestMessage.getGrouponVCode());
+			//本地验证通过
+			if(groupBuyingValidateResultVO != null){
+				validateResponseMessage.setResult(0);
+				validateResponseMessage.setResultName(groupBuyingValidateResultVO.getResultName());
+				validateResponseMessage.setCurrentTime(groupBuyingValidateResultVO.getCurrentTime());
+				validateResponseMessage.setResultExplain(groupBuyingValidateResultVO.getResultExplain());
+				validateResponseMessage.setUseTime(groupBuyingValidateResultVO.getUseTime());
+				validateResponseMessage.setValidTime(groupBuyingValidateResultVO.getValidTime());
+				log.debug("ValidateCommandHandler======local==");
+			}
+			//本地验证失败
+			else{
+				log.debug("ValidateCommandHandler======remote==");
+				HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
+				int resultCode = Integer.valueOf((String) result.get("resultCode"));
+				log.debug("resultCode=========: {}"+resultCode);
+				if (resultCode == SUCCESS_CODE ) {
+					List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
+							.get("items");
+					validateResponseMessage.setResult(SUCCESS_CODE);
+					for (GroupBuyingValidateResultVO item : items) {
+						log.debug("item.getResultStatus()=============:"+item.getResultStatus());
+						//腾讯验证通过
+						if (!"0".equals(item.getResultStatus())) {
+							validateResponseMessage.setResult(1);
+						}else{
+							//创建本地验证记录
+							log.debug("ValidateCommandHandler==========create local===");
+							gbm.get().createValidateResultLocal(validateRequestMessage.getGrouponId(), validateRequestMessage.getGrouponVCode(), item);
+						}
+						validateResponseMessage.setResultName(item.getResultName());
+						validateResponseMessage.setCurrentTime(item.getCurrentTime());
+						validateResponseMessage.setResultExplain(item.getResultExplain());
+						validateResponseMessage.setUseTime(item.getUseTime());
+						validateResponseMessage.setValidTime(item.getValidTime());
 					}
-					validateResponseMessage.setResultName(item.getResultName());
-					validateResponseMessage.setCurrentTime(item.getCurrentTime());
-					validateResponseMessage.setResultExplain(item.getResultExplain());
-					validateResponseMessage.setUseTime(item.getUseTime());
-					validateResponseMessage.setValidTime(item.getValidTime());
-				}
-			} else {
-				switch (resultCode) {
-				case -1:
-					log.debug("error=========:服务器繁忙");
-					validateResponseMessage.setResult(resultCode);
-					break;
-				case -2:
-					log.debug("error=========:md5校验失败");
-					validateResponseMessage.setResult(resultCode);
-					break;
-				case -3:
-					log.debug("error=========:没有权限");
-					validateResponseMessage.setResult(resultCode);
-					break;
-				default:
-					log.debug("error=========:未知错误");
-					validateResponseMessage.setResult(resultCode);
-					break;
+				} else {
+					switch (resultCode) {
+					case -1:
+						log.debug("error=========:服务器繁忙");
+						validateResponseMessage.setResult(resultCode);
+						break;
+					case -2:
+						log.debug("error=========:md5校验失败");
+						validateResponseMessage.setResult(resultCode);
+						break;
+					case -3:
+						log.debug("error=========:没有权限");
+						validateResponseMessage.setResult(resultCode);
+						break;
+					default:
+						log.debug("error=========:未知错误");
+						validateResponseMessage.setResult(resultCode);
+						break;
+					}
 				}
 			}
+			
 		} catch (JsonGenerationException e) {
 			log.error("error=========:生成JSON对象出错");
 			validateResponseMessage.setResult(ERROR_CODE_THER);

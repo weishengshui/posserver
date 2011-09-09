@@ -69,4 +69,12 @@ public interface DeliveryDetailDao {
 	 * @param detailId
 	 */
 	void delete(String detailId);
+
+	/**
+	 * Return detail by delivery note ID and pos ID.
+	 * 
+	 * @param posId
+	 * @return
+	 */
+	DeliveryNoteDetailVO fetchByDeliveryIdPosId(String noteId, String posId);
 }

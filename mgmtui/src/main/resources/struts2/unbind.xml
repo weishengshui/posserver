@@ -63,6 +63,16 @@
 			method="sendURL">
 			<result name="success" type="tiles">unbind.sendURL</result>
 		</action>
+		<action name="getReturnNoteList"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="getReturnNoteList">
+			<result name="success" type="tiles">unbind.rnList</result>
+		</action>
+		<action name="goPageForRnList"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="goPageForRnList">
+			<result name="success" type="tiles">unbind.rnList</result>
+		</action>
 	</package>
 	
 	<package name="unbindportal" extends="default" namespace="/returnnote">

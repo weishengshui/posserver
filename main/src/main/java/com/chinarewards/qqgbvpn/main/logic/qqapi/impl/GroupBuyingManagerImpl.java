@@ -13,6 +13,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
+import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -78,6 +79,28 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		map.putAll(params);
 		dao.get().handleGroupBuyingValidate(map);
 		return map;
+	}
+
+
+	@Override
+	public GroupBuyingValidateResultVO groupBuyingValidateLocal(String grouponId,
+			String grouponVCode)throws SaveDBException,JsonGenerationException{
+		return dao.get().groupBuyingValidateLocal(grouponId, grouponVCode);
+	}
+
+
+	@Override
+	public void createValidateResultLocal(String grouponId,String grouponVCode,
+			GroupBuyingValidateResultVO groupBuyingValidateResultVO)
+			throws SaveDBException,JsonGenerationException{
+		dao.get().createValidateResultLocal(grouponId, grouponVCode, groupBuyingValidateResultVO);
+	}
+
+
+	@Override
+	public void groupBuyValidateCallBack(String grouponId, String grouponVCode)
+			throws SaveDBException {
+		dao.get().groupBuyValidateCallBack(grouponId, grouponVCode);
 	}
 
 	/**

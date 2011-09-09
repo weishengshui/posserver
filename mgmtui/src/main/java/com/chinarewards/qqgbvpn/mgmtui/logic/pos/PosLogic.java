@@ -1,6 +1,9 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.pos;
 
+import java.util.List;
+
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
@@ -54,5 +57,12 @@ public interface PosLogic {
 	 * @return
 	 */
 	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO,PaginationTools paginationTools);
+
+	/**
+	 * 批量更新 Pos 状态为 {@link PosDeliveryStatus#DELIVERED} 和 {@link PosOperationStatus#ALLOWED}
+	 * @author cream
+	 * @param posIds Pos.posId
+	 */
+	void updatePosStatusToWorking(List<String> posIds);
 	
 }
