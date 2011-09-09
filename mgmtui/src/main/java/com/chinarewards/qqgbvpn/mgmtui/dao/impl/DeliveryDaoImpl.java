@@ -133,7 +133,7 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 	@Override
 	public int countDeliverys(DeliverySearchVO criteria) {
 		Query query = buildQuery(COUNT, criteria);
-		return new Integer(""+query.getSingleResult());
+		return new Integer("" + query.getSingleResult());
 	}
 
 	private Query buildQuery(String type, DeliverySearchVO criteria) {
@@ -176,6 +176,11 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 					.getStatus());
 			hql.append(" AND dn.status=:status");
 			param.put("status", status);
+		}
+
+		// order by create date
+		if (SEARCH.equals(type)) {
+			hql.append(" ORDER BY dn.createDate DESC");
 		}
 
 		// build query

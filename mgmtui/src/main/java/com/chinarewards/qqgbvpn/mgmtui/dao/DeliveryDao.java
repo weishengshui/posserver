@@ -30,7 +30,7 @@ public interface DeliveryDao {
 	public List<DeliveryNoteVO> fetchDeliveryList(int start, int limit);
 
 	/**
-	 * Search delivery.
+	 * Search delivery. It will order by create date.
 	 * 
 	 * @param criteria
 	 * @return
