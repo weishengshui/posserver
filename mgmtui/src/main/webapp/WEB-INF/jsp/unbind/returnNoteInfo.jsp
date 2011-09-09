@@ -21,7 +21,7 @@
 			</tr>
 			<tr>
 				<td class="td_left">生成日期：</td>
-				<td><s:date name="rnInfo.rn.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
+				<td><s:date name="rnInfo.rn.createDate" format="%{getText('dateformat.ymdhm')}" /></td>
 			</tr>
 			<tr>
 				<td class="td_left">第三方：</td>

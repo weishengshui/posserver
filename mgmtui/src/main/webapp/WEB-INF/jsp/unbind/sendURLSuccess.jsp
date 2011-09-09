@@ -14,7 +14,7 @@
 		<td width="77%">已发出通知予：<s:property value="agentName" /></td>
 	</tr>
 	<tr>
-		<td width="77%">发出日期：<s:date name="sendTime" format="yyyy-MM-dd hh:mm:ss" /></td>
+		<td width="77%">发出日期：<s:date name="sendTime" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	<tr>
 		<td width="77%"><input type="submit" value="完成" id="searchBtn" /></td>
