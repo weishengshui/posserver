@@ -13,6 +13,7 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliverySearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 
 /**
@@ -51,6 +52,14 @@ public interface DeliveryLogic {
 	 * @return
 	 */
 	public List<DeliveryNoteDetailVO> fetchDetailListByNoteId(String deliveryId);
+
+	/**
+	 * Search delivery.
+	 * 
+	 * @param criteria
+	 * @return
+	 */
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria);
 
 	/**
 	 * Create an empty delivery note. Generate a serial number for it.

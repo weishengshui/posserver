@@ -33,6 +33,7 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliverySearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
@@ -132,6 +133,13 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		log.debug("result.size:{}",
 				resultList == null ? "null" : resultList.size());
 		return resultList;
+	}
+
+	@Override
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria) {
+		log.debug(" Process in method fetchDeliverys, criteria:{}", criteria.toString());
+//		List<DeliveryNoteDetailVO> resultList = getDeliveryDao().
+		return null;
 	}
 
 	@Override
