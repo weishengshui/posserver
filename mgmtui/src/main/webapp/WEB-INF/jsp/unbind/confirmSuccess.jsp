@@ -19,6 +19,9 @@
 	<tr>
 		<td width="77%">POS机：<s:property value="#request.posCount" />台</td>
 	</tr>
+	<tr>
+		<td width="77%">发出邀请时间：<s:date name="#request.rnTime" format="%{getText('dateformat.ymdhm')}" /></td>
+	</tr>
 	<s:if test="#request.isAgent!=null && #request.isAgent == 'true'">
 	<tr>
 		<td width="77%"><button type="button" onclick="closeWindow()">完成</button></td>

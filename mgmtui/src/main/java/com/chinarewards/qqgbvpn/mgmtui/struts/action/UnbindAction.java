@@ -342,6 +342,8 @@ public class UnbindAction extends BaseAction {
 				getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", rn.getId());
 				getRequest().setAttribute("rnNumber", rn.getRnNumber());
+				log.debug("create date: {}" , rn.getCreateDate());
+				getRequest().setAttribute("rnTime", rn.getCreateDate());
 				return SUCCESS;
 				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
 			} else if (!StringUtil.isEmptyString(errInfo)) { 
@@ -351,6 +353,8 @@ public class UnbindAction extends BaseAction {
 				getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", errInfo.split(",")[0]);
 				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
+				log.debug("create date2222: {}" , errInfo.split(",")[2]);
+				getRequest().setAttribute("rnTime", errInfo.split(",")[2]);
 				return SUCCESS;
 			} else {
 				this.errorMsg = "第三方信息找不到!";
@@ -360,6 +364,11 @@ public class UnbindAction extends BaseAction {
 			this.errorMsg = "POS机信息找不到!";
 		}
 		return ERROR;
+	}
+	
+	public String confirmSuccess() {
+		getRequest().setAttribute("posCount", splitPosIds(posIds.trim()).size());
+		return SUCCESS;
 	}
 	
 	public String confirmAllRnNumber() throws SaveDBException {

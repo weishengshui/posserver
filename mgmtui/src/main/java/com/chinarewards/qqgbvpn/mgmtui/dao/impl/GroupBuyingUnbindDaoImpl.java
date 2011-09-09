@@ -281,7 +281,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn = this.getReturnNoteByToken(inviteCode);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
 					log.warn("Return Note already confirmed!");
-					throw new UnUseableRNException(rn.getId() + "," + rn.getRnNumber());
+					throw new UnUseableRNException(rn.getId() + "," + rn.getRnNumber() + "," + rn.getCreateDate());
 				}
 			}
 			if (rn == null) {
