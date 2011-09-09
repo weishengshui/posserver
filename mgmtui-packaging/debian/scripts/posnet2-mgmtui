@@ -1,0 +1,115 @@
+#!/bin/bash
+# /etc/init.d/hudson
+# debian-compatible hudson startup script.
+# Amelia A Lewis <alewis@ibco.com>
+#
+### BEGIN INIT INFO
+# Provides:          posnet2-mgmtui
+# Required-Start:    jetty
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start posnet2-mgmtui at boot time
+# Description:       Controls the start/stop of posnet2-mgmtui service (within Jetty 6).
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+DESC="POSNet2 Server Management UI"
+NAME=posnet2-mgmtui
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+JBOSSDEPLOY=${JBOSSDEPLOY:-"/usr/share/jbossas5/server/$JBOSSPROFILE/deploy"}
+JBOSSLIB=${JBOSSLIB:-"/usr/share/jbossas5/server/$JBOSSPROFILE/lib"}
+
+
+
+
+# Make sure we run as root
+if [ `id -u` -ne 0 ]; then
+    echo "The $NAME init script can only be run as root"
+    exit 1
+fi
+
+
+#
+# deploy the application to jetty
+#
+do_start()
+{
+	ln -sf /etc/zooticket/* $JBOSSDEPLOY
+	
+	ln -sf /usr/share/zooticket/bin/* $JBOSSDEPLOY
+	
+	if [ "$RESTART" = "y" ]
+	then
+		echo "Restart Jetty Required.  Please run:"
+		echo "  /etc/init.d/jetty restart"
+	fi
+	return 0
+}
+
+force_stop() 
+{
+	for i in `find $JBOSSDEPLOY -type l` 
+	# don't remove lib for stopping service
+	# `find $JBOSSLIB -type l`
+	do
+		readlink $i | grep zooticket > /dev/null
+		if [ $? -eq 0 ]
+		then
+			echo "Removing link: $i"
+			rm -rf $i
+		fi
+	done
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	force_stop
+	return 0
+}
+
+case "$1" in
+  start)
+    log_daemon_msg "Starting $DESC" "$NAME"
+    do_start
+    case "$?" in
+        0|1) log_end_msg 0 ;;
+        2) log_end_msg 1 ;;
+    esac
+    ;;
+  stop)
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    do_stop
+    case "$?" in
+        0|1) log_end_msg 0 ;;
+        2) log_end_msg 1 ;;
+    esac
+    ;;
+  restart|force-reload)
+    log_daemon_msg "Restarting $DESC" "$NAME"
+    do_stop
+    do_start
+    log_end_msg 0
+    ;;
+  status)
+  	echo "Unimplemented"
+    ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+    exit 3
+    ;;
+esac
+
+exit 0
