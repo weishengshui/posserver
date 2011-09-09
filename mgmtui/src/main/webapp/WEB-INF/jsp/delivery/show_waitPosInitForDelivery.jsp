@@ -89,6 +89,7 @@
 						<td>制造厂商</td>
 						<td>机身编号</td>
 						<td>初始化状态</td>
+						<td>密钥</td>
 					</tr>
 					<s:iterator id="deliveryNoteDetailVO" value="#request.deliveryNoteDetailVOList" status="i">
 						<tr>
@@ -111,6 +112,9 @@
 								<s:else>
 									是
 								</s:else>
+							</td>
+							<td>
+								<s:property value="#deliveryNoteDetailVO.secret"/>
 							</td>
 						</tr>		
 					</s:iterator>
