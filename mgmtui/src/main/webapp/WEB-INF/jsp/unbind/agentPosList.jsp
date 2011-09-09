@@ -95,7 +95,6 @@
 			posIds = posIds.replace(new RegExp(obj.value + ",","gm"), "");
 		}
 		document.getElementById("posIds").value = posIds;
-		alert(document.getElementById("posIds").value);
 	}
 	
 	function goPage(pageId) {
