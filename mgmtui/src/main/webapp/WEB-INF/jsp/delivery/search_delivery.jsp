@@ -13,6 +13,30 @@
 <table align="center" width="800px">
 	<tr>
 		<td>
+			<s:form  namespace="/agent" action="searchAgent">
+				交付单编号：
+				<input type="text" name="" value="<s:property value='#request.agentSearchVO.'/>"/>&nbsp;&nbsp;&nbsp;
+				交付单状态：
+				<select name="">
+					<option value="DRAFT">草稿</option>
+					<option value="CONFIRMED">已确定</option>
+					<option value="PRINTED">已打印</option>
+				</select>&nbsp;&nbsp;&nbsp;
+				第三方：
+				<select name="">
+					<option></option>
+					<s:iterator id="agentVO" value="#request.agentVOList" status="i">
+						<option value="<s:property value='#agentVO.id'/>">
+							<s:property value="#agentVO.name"/>
+						</option>
+					</s:iterator>
+				</select>&nbsp;&nbsp;&nbsp;
+				<input type="submit" name="submit" value="查询" />
+			</s:form>
+		</td>
+	</tr>
+	<tr>
+		<td>
 			<div id="DATA_List_DIV_ID">
 				数据加载中...
 			</div>
