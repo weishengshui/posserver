@@ -11,6 +11,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
+<s:else>
 <s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="agentName" id="agentName" />
@@ -18,19 +19,20 @@
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <s:hidden name="inviteCode" id="inviteCode" />
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">第三方名称：<s:property value="agentName" /></td>
 		<td width="13%"></td>
 	</tr>
 </table>
+<br/>
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
-		<td>posId</td>
-		<td>simPhoneNo</td>
-		<td>sn</td>
+		<td class="td_title">posId</td>
+		<td class="td_title">simPhoneNo</td>
+		<td class="td_title">sn</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
@@ -55,7 +57,7 @@
 </table>
 </s:if>
 </s:form>
-
+</s:else>
 <script type="text/javascript">
 	
 	$().ready(function() {
@@ -93,7 +95,6 @@
 			posIds = posIds.replace(new RegExp(obj.value + ",","gm"), "");
 		}
 		document.getElementById("posIds").value = posIds;
-		alert(document.getElementById("posIds").value);
 	}
 	
 	function goPage(pageId) {

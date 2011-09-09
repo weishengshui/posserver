@@ -24,7 +24,7 @@
 				厂商编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="posVO.sn" label="Serial number"/>
+				<s:textfield name="posVO.model" label="model"/>
 			</td>
 		</tr>
 		<tr>
@@ -32,7 +32,7 @@
 				型号:
 			</td>
 			<td >
-				<s:textfield name="posVO.model" label="model"/>
+				<s:textfield name="posVO.sn" label="Serial number"/>
 			</td>
 			<td >
 				电机号码:

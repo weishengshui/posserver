@@ -313,6 +313,9 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String confirmRnNumber() throws SaveDBException {
+		if (inviteCode == null) {
+			inviteCode = "";
+		}
 		if (posIds != null && !"".equals(posIds.trim())) {
 			List<String> posList = splitPosIds(posIds.trim());
 			ReturnNote rn = null;
