@@ -78,7 +78,7 @@
 		</td>
 		<td colspan="1"></td>
 		<td colspan="2" align="right">
-			<input type="button" value="手动刷新" onclick="window.location.reload();"/>&nbsp;&nbsp;&nbsp;
+			<input type="button" value="手动刷新" onclick="timerRun();"/>&nbsp;&nbsp;&nbsp;
 			<input type="checkbox" checked="checked" onclick="isAutoRefresh(this.checked);"/>自动刷新&nbsp;
 			每<input type="text" id="intervalLength_ID" size="2" maxlength="2" value="5" onchange="newTimerTask();"/>秒刷新
 		</td>
