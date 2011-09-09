@@ -26,6 +26,9 @@ case "$1" in
     
     	# create a soft link to the .war file, which will change between 
     	# version.
+	for i in `find /usr/share/posnet2-mgmtui/lib/mgmtui-*.war -type f`; do
+		ln -sf $i /usr/share/posnet2-mgmtui/lib/mgmtui.war
+	done
     
     ;;
 
@@ -39,7 +42,7 @@ case "$1" in
 esac
 
 
-update-rc.d zooticket defaults
+update-rc.d posnet2-mgmtui defaults
 
 if which invoke-rc.d >/dev/null 2>&1; then
 	invoke-rc.d posnet2-mgmtui restart
