@@ -113,4 +113,12 @@ public interface GroupBuyingUnbindManager {
 	 */
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId);
 	
+	/**
+	 * 全部回收
+	 * @param agentId
+	 * @return
+	 * @throws SaveDBException
+	 */
+	public ReturnNoteInfo confirmAllReturnNote(String agentId) throws SaveDBException;
+	
 }

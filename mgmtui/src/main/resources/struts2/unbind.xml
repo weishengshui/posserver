@@ -43,6 +43,17 @@
                  <param name="includeMethods">confirmRnNumber</param>    
             </interceptor-ref>
 		</action>
+		<action name="confirmAllRnNumber"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="confirmAllRnNumber">
+			<result name="success" type="tiles">unbind.confirmSuccess</result>
+			<result name="error" type="tiles">unbind.list</result>
+			<result name="invalid.token" type="tiles">unbind.list</result>
+        	<interceptor-ref name="defaultStack"/>  
+            <interceptor-ref name="token">  
+                 <param name="includeMethods">confirmAllRnNumber</param>    
+            </interceptor-ref>
+		</action>
 		<action name="posSearch"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="posSearch">
