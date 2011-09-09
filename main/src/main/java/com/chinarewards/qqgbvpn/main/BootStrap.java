@@ -115,8 +115,8 @@ public class BootStrap {
 	protected void printAppVersion() {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
-		System.out
-				.println(APP_NAME + ": version " + appInfo.getVersionString());
+		System.out.println(APP_NAME + ": version " + appInfo.getVersionString()
+				+ "(build: " + appInfo.getBuildNumber() + ")");
 
 	}
 
