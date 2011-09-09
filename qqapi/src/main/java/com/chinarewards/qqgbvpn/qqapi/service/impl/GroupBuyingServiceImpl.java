@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -22,7 +20,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 
 	final Configuration configuration;
 	
-	Logger log = LoggerFactory.getLogger(getClass());
+	//Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 
@@ -60,7 +58,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		// 发送POST请求，并得到返回数据
 		
 		String url = configuration.getString("qq.groupbuy.url.groupBuyingSearchGroupon");
-		log.trace("URL for Groupon Searching: qq.groupbuy.url.groupBuyingSearchGroupon={}", url);
+		//log.trace("URL for Groupon Searching: qq.groupbuy.url.groupBuyingSearchGroupon={}", url);
 		
 		HashMap<String, Object> searchResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
