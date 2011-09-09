@@ -5,7 +5,9 @@ package com.chinarewards.qqgbvpn.mgmtui.dao;
 
 import java.util.List;
 
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliverySearchVO;
 
 /**
  * @author cream
@@ -27,6 +29,14 @@ public interface DeliveryDao {
 	 * @return
 	 */
 	public List<DeliveryNoteVO> fetchDeliveryList(int start, int limit);
+
+	/**
+	 * Search delivery.
+	 * 
+	 * @param criteria
+	 * @return
+	 */
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria);
 
 	/**
 	 * Counts the number of delivery note.

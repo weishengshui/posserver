@@ -13,6 +13,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
+import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -124,5 +125,9 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	
 	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
 		return dao.get().getReturnNoteLikeRnNumber(rnNumber, pageInfo);
+	}
+	
+	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {
+		return dao.get().getReturnNoteInfoByRnId(rnId);
 	}
 }

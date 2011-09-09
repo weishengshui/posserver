@@ -423,10 +423,19 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @see com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao#getReturnNoteInfoByRnNumber(java.lang.String)
 	 * 查回收单详情
 	 */
-	public ReturnNoteInfo getReturnNoteInfoByRnNumber(String rnNumber) {
+	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {
 		ReturnNoteInfo rnInfo = new ReturnNoteInfo();
-		
-		return null;
+		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		if (rn != null) {
+			Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = (?1)");
+			jql.setParameter(1, rnId);
+			List<ReturnNoteDetail> rnDetailList = jql.getResultList();
+			
+			rnInfo.setRn(rn);
+			rnInfo.setAgent(rn.getAgent());
+			rnInfo.setRnDetailList(rnDetailList);
+		}
+		return rnInfo;
 	}
 	
 	/**

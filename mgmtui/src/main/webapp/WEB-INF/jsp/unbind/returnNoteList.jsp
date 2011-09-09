@@ -15,6 +15,7 @@
 <s:token/>
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
+<s:hidden name="rnId" id="rnId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="77%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
@@ -33,7 +34,7 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><s:property value="#list.rnNumber" /></td>
+		<td><a href="javascript:showRnInfo('${list.id}');"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
 		<td><s:property value="#list.status" /></td>
 		<td><s:date name="#list.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
@@ -55,6 +56,14 @@
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
 		formObj.action = "${ctx}/unbind/goPageForRnList";
+		formObj.submit();
+	}
+	
+	function showRnInfo(rnId) {
+		var formObj = document.getElementById("listForm");
+		document.getElementById("rnId").value = rnId;
+		formObj.action = "${ctx}/unbind/getReturnNoteInfo";
+		formObj.target = "_blank";
 		formObj.submit();
 	}
 	

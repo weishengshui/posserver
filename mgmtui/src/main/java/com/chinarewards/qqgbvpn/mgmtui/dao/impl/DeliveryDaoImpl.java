@@ -3,7 +3,9 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -13,12 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.DeliveryNote;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.delivery.DeliveryNoteAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliverySearchVO;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -111,4 +116,14 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 				delNum, id });
 		getEm().remove(dn);
 	}
+
+	@Override
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria) {
+		Map<String, Object> param = new HashMap<String, Object>();
+		if (Tools.isEmptyString(criteria.getAgentName())) {
+			param.put("", criteria.getAgentName());
+		}
+		return null;
+	}
+	
 }

@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
+import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -103,5 +104,13 @@ public interface GroupBuyingUnbindManager {
 	 * @return
 	 */
 	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
+	
+	/**
+	 * 根据回收单ID查询回收单具体信息
+	 * @param rnNumber
+	 * @param pageInfo
+	 * @return
+	 */
+	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId);
 	
 }
