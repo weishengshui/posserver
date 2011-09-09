@@ -31,7 +31,7 @@
 	function timerRun(){
 		var deliveryNoteDetailVOList_SIZE = document.getElementById('deliveryNoteDetailVOList_SIZE_ID').value;
 		if(deliveryNoteDetailVOList_SIZE == 0){
-			window.location.href = '<s:url value="/delivery/showIsAllowUpdateDelivery"/>?deliveryId='+'<s:property value="#request.deliveryNoteVO.id"/>';
+			window.location.href = '<s:url value="/delivery/showDeliveryWaitConfirm"/>?deliveryId='+'<s:property value="#request.deliveryNoteVO.id"/>';
 		}else {
 			window.location.reload();
 		}
@@ -59,7 +59,7 @@
 
 
 <table align="center" width="100%" border="0">
-	<tr>
+	<tr height="50">
 		<td colspan="2">
 			交付单编号：
 		</td>
@@ -68,7 +68,7 @@
 		</td>
 		<td colspan="2"/>
 	</tr>
-	<tr>
+	<tr height="50">
 		<td colspan="2">
 			以下POS机尚未初始化，请初始化。
 		</td>
@@ -118,7 +118,7 @@
 			</td>
 		</tr>
 	</s:if>
-	<tr>
+	<tr height="50">
 		<td colspan="5">
 			共
 			<s:if test="#request.deliveryNoteDetailVOList != null">

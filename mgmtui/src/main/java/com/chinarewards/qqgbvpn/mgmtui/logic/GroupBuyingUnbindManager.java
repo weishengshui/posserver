@@ -96,4 +96,12 @@ public interface GroupBuyingUnbindManager {
 	 */
 	public Agent getAgentByInviteCode(String inviteCode);
 	
+	/**
+	 * 根据回收单号查询回收单列表（模糊）
+	 * @param rnNumber
+	 * @param pageInfo
+	 * @return
+	 */
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
+	
 }

@@ -1,9 +1,13 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.delivery;
 
 import java.util.List;
+
 import org.apache.struts2.ServletActionContext;
+
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
@@ -51,6 +55,8 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private String id;
 	
+	private Integer addPosStatus;
+	
 	@Override
 	public String execute(){
 		if(super.getCurrentPage()==0){
@@ -89,6 +95,23 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	}
 	
 	/**
+	 * description：创建一个交付单
+	 * @return
+	 * @time 2011-9-7   下午05:26:37
+	 * @author Seek
+	 */
+	public String createDeliveryNote(){
+		try{
+			DeliveryNoteVO aDeliveryNoteVO = getDeliveryLogic().createDeliveryNote();
+			deliveryId = aDeliveryNoteVO.getId();
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
+	/**
 	 * description：显示添加pos机
 	 * @return
 	 * @time 2011-9-7   下午03:09:10
@@ -108,7 +131,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 					return INPUT;
 				}
 				log.debug("deliveryNoteVO.number:"+deliveryNoteVO.getDnNumber());
-				log.debug("deliveryNoteVO.getAgent().getId():"+deliveryNoteVO.getAgent().getId());
 			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
@@ -127,6 +149,11 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		try{
 			getDeliveryLogic().associateAgent(deliveryId, agentId);
 			processSuccess = true;
+		}catch(DeliveryWithWrongStatusException e){
+			log.error(e.getMessage(), e);
+			processSuccess = false;
+			errorMsg = "非草稿状态的交付单不允许进行该操作";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			processSuccess = false;
@@ -140,8 +167,23 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 * @author Seek
 	 */
 	public String addPosForDelivery(){
+		log.debug("addPosForDelivery() run...");
+		log.debug("deliveryId:"+deliveryId);
+		log.debug("posNum:"+posNum);
 		try{
 			deliveryNoteDetailVO = getDeliveryLogic().appendPosToNote(deliveryId, posNum);
+			addPosStatus = 0;
+		}catch(DeliveryWithWrongStatusException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "非草稿状态的交付单不允许进行该操作";
+			addPosStatus = 3;
+			return ERROR;
+		}catch(PosNotExistException e){
+			addPosStatus = 1;
+			log.error(e.getMessage(), e);
+		}catch(PosWithWrongStatusException e){
+			addPosStatus = 2;
+			log.error(e.getMessage(), e);
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -158,6 +200,10 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	public String removePosForDelivery(){
 		try{
 			getDeliveryLogic().deletePosFromNote(deliveryId, deliveryNoteDetailId);
+		}catch(DeliveryWithWrongStatusException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "非草稿状态的交付单不允许进行该操作";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -173,12 +219,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 */
 	public String showWaitPosInitDelivery(){
 		try{
-			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
 			deliveryNoteVO = getDeliveryLogic().fetchById(deliveryId);
-			
 			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
-				return INPUT;
+				log.warn("deliveryNoteVO.getStatus() is not DRAFT!");
+				errorMsg = "非草稿状态的交付单不允许进行该操作";
+				return ERROR;
 			}
+			
+			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -187,18 +235,63 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	}
 	
 	/**
-	 * description：显示是否允许update操作
+	 * description：显示交付单等待确认
 	 * @return
 	 * @time 2011-9-7   下午08:02:00
 	 * @author Seek
 	 */
-	public String showIsAllowUpdateDelivery(){
+	public String showDeliveryWaitConfirm(){
 		try{
 			deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
-			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
-			
 			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
-				return INPUT;
+				log.warn("deliveryNoteVO.getStatus() is not DRAFT!");
+				errorMsg = "非草稿状态的交付单不允许进行该操作";
+				return ERROR;
+			}
+			
+			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
+	/**
+	 * description：确认交付单
+	 * @return
+	 * @time 2011-9-8   下午06:28:01
+	 * @author Seek
+	 */
+	public String confirmDelivery(){
+		try{
+			deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+			if(!"DRAFT".equals(deliveryNoteVO.getStatus())){
+				log.warn("deliveryNoteVO.getStatus() is DRAFT!");
+				errorMsg = "非草稿状态的交付单不允许进行该操作";
+				return ERROR;
+			}
+			
+			//confirm
+			getDeliveryLogic().confirmDelivery(deliveryId);	
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+	
+	/**
+	 * description：显示交付单已经确认
+	 * @return
+	 * @time 2011-9-8   下午07:00:27
+	 * @author Seek
+	 */
+	public String showDeliveryConfirmDone(){
+		try{
+			if(deliveryId != null){
+				deliveryNoteVO  = getDeliveryLogic().fetchById(deliveryId);
+				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
 			}
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
@@ -213,7 +306,9 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(id);
 			
 			if("DRAFT".equals(deliveryNoteVO.getStatus())){
-				return INPUT;
+				log.warn("deliveryNoteVO.getStatus() is DRAFT!");
+				errorMsg = "不能打印草稿状态的交付单";
+				return ERROR;
 			}
 			//print
 			getDeliveryLogic().printDelivery(id);
@@ -339,6 +434,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public void setDeliveryNoteDetailId(String deliveryNoteDetailId) {
 		this.deliveryNoteDetailId = deliveryNoteDetailId;
+	}
+	
+	public Integer getAddPosStatus() {
+		return addPosStatus;
+	}
+
+	public void setAddPosStatus(Integer addPosStatus) {
+		this.addPosStatus = addPosStatus;
 	}
 	
 }

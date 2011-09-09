@@ -9,6 +9,7 @@ package com.chinarewards.qqgbvpn.mgmtui.exception;
  */
 public class DeliveryWithWrongStatusException extends Exception {
 
+	private static final long serialVersionUID = 4239086470852945217L;
 
 	public DeliveryWithWrongStatusException() {
 		super();

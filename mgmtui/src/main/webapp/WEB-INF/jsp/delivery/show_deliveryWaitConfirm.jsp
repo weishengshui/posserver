@@ -6,12 +6,22 @@
 
 <html>
 
-<head>	
+<head>
+
+<script type="text/javascript">
+	function toUpdatePage(deliveryId){
+		window.location.href = '<s:url value="/delivery/showAddPosForDelivery"/>?deliveryId='+deliveryId;
+	}
+	
+	function confirmToPrint(deliveryId){
+		window.location.href = '<s:url value="/delivery/confirmDelivery"/>?deliveryId='+deliveryId;
+	}
+</script>
 </head>
 <body>
 
 <table align="center" width="100%" border="0">
-	<tr>
+	<tr height="50">
 		<td colspan="2">
 			交付单编号：
 		</td>
@@ -20,7 +30,7 @@
 		</td>
 		<td colspan="2"/>
 	</tr>
-	<tr>
+	<tr height="50">
 		<td colspan="5">
 			请确定POS机列表是否正确。
 		</td>
@@ -55,7 +65,7 @@
 			</td>
 		</tr>
 	</s:if>
-	<tr>
+	<tr height="50">
 		<td colspan="5">
 			共
 			<s:if test="#request.deliveryNoteDetailVOList != null">
@@ -65,14 +75,16 @@
 			台
 		</td>
 	</tr>
-	<tr>
+	<tr height="50">
 		<td colspan="5">
 			<span style="color:red;"><strong>当你按下确定后，就不能更改交付单内的信息</strong></span>
 		</td>
 	</tr>
 	<tr>
-		<input type="button" value="确定并打印" onclick="confirmToPrint('<s:property value="#request.deliveryNoteVO.id"/>');" />&nbsp;&nbsp;&nbsp;
-		<input type="button" value="继续修改" onclick="toUpdatePage('');" />
+		<td colspan="5" align="center">
+			<input type="button" value="确定并打印" onclick="confirmToPrint('<s:property value="#request.deliveryNoteVO.id"/>');" />&nbsp;&nbsp;&nbsp;
+			<input type="button" value="继续修改" onclick="toUpdatePage('<s:property value="#request.deliveryNoteVO.id"/>');" />
+		</td>
 	</tr>
 </table>
 
