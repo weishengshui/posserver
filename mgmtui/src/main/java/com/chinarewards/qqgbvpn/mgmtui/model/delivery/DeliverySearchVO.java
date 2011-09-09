@@ -16,6 +16,7 @@ public class DeliverySearchVO {
 	Date confirmDate;
 	Date printDate;
 
+	String agentId;
 	String agentName;
 
 	PaginationTools pagination;
@@ -25,8 +26,8 @@ public class DeliverySearchVO {
 		return "DeliverySearchVO [id=" + id + ", dnNumber=" + dnNumber
 				+ ", status=" + status + ", createDate=" + createDate
 				+ ", confirmDate=" + confirmDate + ", printDate=" + printDate
-				+ ", agentName=" + agentName + ", pagination=" + pagination
-				+ "]";
+				+ ", agentId=" + agentId + ", agentName=" + agentName
+				+ ", pagination=" + pagination + "]";
 	}
 
 	public String getId() {
@@ -75,6 +76,14 @@ public class DeliverySearchVO {
 
 	public void setPrintDate(Date printDate) {
 		this.printDate = printDate;
+	}
+
+	public String getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(String agentId) {
+		this.agentId = agentId;
 	}
 
 	public String getAgentName() {
