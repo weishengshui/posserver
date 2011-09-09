@@ -93,7 +93,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>prefix</type>
-										<prefix>/etc/${posnet2-mgmtui}</prefix>
+										<prefix>/etc/${pkgname}</prefix>
 									</mapper>
 								</data>
 								<!-- /etc/init.d script. -->

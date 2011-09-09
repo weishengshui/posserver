@@ -33,7 +33,7 @@
 		<td><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
 		<td><s:property value="#list.status" /></td>
-		<td><s:date name="#list.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
+		<td><s:date name="#list.createDate" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	</s:iterator>
 	<tr>
