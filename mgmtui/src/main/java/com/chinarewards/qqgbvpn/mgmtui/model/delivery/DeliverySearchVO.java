@@ -6,15 +6,12 @@ import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 
 public class DeliverySearchVO {
 
-	String id;
-
 	String dnNumber;
 
 	String status;
 
-	Date createDate;
-	Date confirmDate;
-	Date printDate;
+	Date createDateFrom;
+	Date createDateTO;
 
 	String agentId;
 	String agentName;
@@ -23,19 +20,10 @@ public class DeliverySearchVO {
 
 	@Override
 	public String toString() {
-		return "DeliverySearchVO [id=" + id + ", dnNumber=" + dnNumber
-				+ ", status=" + status + ", createDate=" + createDate
-				+ ", confirmDate=" + confirmDate + ", printDate=" + printDate
-				+ ", agentId=" + agentId + ", agentName=" + agentName
-				+ ", pagination=" + pagination + "]";
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		return "DeliverySearchVO [dnNumber=" + dnNumber + ", status=" + status
+				+ ", createDateFrom=" + createDateFrom + ", createDateTO="
+				+ createDateTO + ", agentId=" + agentId + ", agentName="
+				+ agentName + ", pagination=" + pagination + "]";
 	}
 
 	public String getDnNumber() {
@@ -54,28 +42,20 @@ public class DeliverySearchVO {
 		this.status = status;
 	}
 
-	public Date getCreateDate() {
-		return createDate;
+	public Date getCreateDateTO() {
+		return createDateTO;
 	}
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
+	public void setCreateDateTO(Date createDateTO) {
+		this.createDateTO = createDateTO;
 	}
 
-	public Date getConfirmDate() {
-		return confirmDate;
+	public Date getCreateDateFrom() {
+		return createDateFrom;
 	}
 
-	public void setConfirmDate(Date confirmDate) {
-		this.confirmDate = confirmDate;
-	}
-
-	public Date getPrintDate() {
-		return printDate;
-	}
-
-	public void setPrintDate(Date printDate) {
-		this.printDate = printDate;
+	public void setCreateDateFrom(Date createDateFrom) {
+		this.createDateFrom = createDateFrom;
 	}
 
 	public String getAgentId() {
