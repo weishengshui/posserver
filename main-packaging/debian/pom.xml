@@ -62,6 +62,14 @@
 									<outputDirectory>${project.build.directory}/bin</outputDirectory>
 									<destFileName>dbdeploy-core.jar</destFileName>
 								</artifactItem>
+								<artifactItem>
+									<groupId>com.dbdeploy</groupId>
+									<artifactId>dbdeploy-ant</artifactId>
+									<version>${dbdeploy.version}</version>
+									<type>jar</type>
+									<outputDirectory>${project.build.directory}/bin</outputDirectory>
+									<destFileName>dbdeploy-ant.jar</destFileName>
+								</artifactItem>
 							</artifactItems>
 						</configuration>
 					</execution>
@@ -110,12 +118,30 @@
 								</data>
 								<!-- Just the main .jar and lib/ jars -->
 								<data>
+									<src>${project.build.directory}/bin</src>
+									<type>directory</type>
+									<mapper>
+										<type>prefix</type>
+										<prefix>/usr/share/posnet2/bin</prefix>
+										<filemode>0644</filemode>
+									</mapper>
+								</data>
+								<data>
+									<src>${project.build.directory}/main-${project.version}/db</src>
+									<type>directory</type>
+									<mapper>
+										<type>prefix</type>
+										<prefix>/usr/share/posnet2/db</prefix>
+										<filemode>0644</filemode>
+									</mapper>
+								</data>
+								<data>
 									<src>${project.build.directory}/main-${project.version}/lib</src>
 									<type>directory</type>
 									<mapper>
 										<type>prefix</type>
 										<prefix>/usr/share/posnet2/lib</prefix>
-										<filemode>0600</filemode>
+										<filemode>0644</filemode>
 									</mapper>
 								</data>
 								<data>
