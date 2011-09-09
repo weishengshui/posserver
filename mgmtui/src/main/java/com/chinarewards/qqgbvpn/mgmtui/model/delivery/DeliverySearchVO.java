@@ -11,7 +11,7 @@ public class DeliverySearchVO {
 	String status;
 
 	Date createDateFrom;
-	Date createDateTO;
+	Date createDateTo;
 
 	String agentId;
 	String agentName;
@@ -21,8 +21,8 @@ public class DeliverySearchVO {
 	@Override
 	public String toString() {
 		return "DeliverySearchVO [dnNumber=" + dnNumber + ", status=" + status
-				+ ", createDateFrom=" + createDateFrom + ", createDateTO="
-				+ createDateTO + ", agentId=" + agentId + ", agentName="
+				+ ", createDateFrom=" + createDateFrom + ", createDateTo="
+				+ createDateTo + ", agentId=" + agentId + ", agentName="
 				+ agentName + ", pagination=" + pagination + "]";
 	}
 
@@ -42,12 +42,12 @@ public class DeliverySearchVO {
 		this.status = status;
 	}
 
-	public Date getCreateDateTO() {
-		return createDateTO;
+	public Date getCreateDateTo() {
+		return createDateTo;
 	}
 
-	public void setCreateDateTO(Date createDateTO) {
-		this.createDateTO = createDateTO;
+	public void setCreateDateTo(Date createDateTo) {
+		this.createDateTo = createDateTo;
 	}
 
 	public Date getCreateDateFrom() {
