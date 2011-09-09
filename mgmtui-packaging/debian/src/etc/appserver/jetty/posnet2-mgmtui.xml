@@ -3,10 +3,9 @@
 <Configure class="org.mortbay.jetty.webapp.WebAppContext">
 	<Set name="contextPath">/mgmtui</Set>
 	<Set name="war">/usr/share/posnet2-mgmtui/lib/mgmtui.war</Set>
-	<!-- Set the system properties without using java -D parameter, which
-		will go into the Jetty start/stop script and each deployment requires
-		restarting of jetty, which is not elegant. 
-	 -->
+	<!-- Set the system properties without using java -D parameter, which will 
+		go into the Jetty start/stop script and each deployment requires restarting 
+		of jetty, which is not elegant. -->
 	<Call class="java.lang.System" name="setProperties">
 		<Arg>
 			<New class="java.util.Properties">

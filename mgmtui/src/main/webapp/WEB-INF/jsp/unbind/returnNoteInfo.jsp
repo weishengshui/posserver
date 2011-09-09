@@ -21,7 +21,7 @@
 			</tr>
 			<tr>
 				<td class="td_left">生成日期：</td>
-				<td><s:date name="rnInfo.rn.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
+				<td><s:date name="rnInfo.rn.createDate" format="%{getText('dateformat.ymdhm')}" /></td>
 			</tr>
 			<tr>
 				<td class="td_left">第三方：</td>
@@ -62,8 +62,10 @@
 	<tr>
 		<td>日期：______年_____月______</td>
 	</tr>
+</table>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
-		<td><button type="button" onclick="printInfo()">打印</button></td>
+		<td align="right"><button type="button" onclick="printInfo()">打印</button></td>
 	</tr>
 </table>
 

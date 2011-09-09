@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.domain.ReturnNoteDetail;
 
@@ -16,6 +17,24 @@ public class ReturnNoteInfo implements Serializable {
 	private Agent agent;
 	
 	private List<ReturnNoteDetail> rnDetailList;
+	
+	private List<Pos> posList;
+	
+	public ReturnNoteInfo() {}
+	
+	public ReturnNoteInfo(Agent agent, ReturnNote rn, List<Pos> posList) {
+		this.agent = agent;
+		this.rn = rn;
+		this.posList = posList;
+	}
+
+	public List<Pos> getPosList() {
+		return posList;
+	}
+
+	public void setPosList(List<Pos> posList) {
+		this.posList = posList;
+	}
 
 	public ReturnNote getRn() {
 		return rn;

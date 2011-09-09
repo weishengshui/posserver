@@ -342,6 +342,8 @@ public class UnbindAction extends BaseAction {
 				getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", rn.getId());
 				getRequest().setAttribute("rnNumber", rn.getRnNumber());
+				log.debug("create date: {}" , rn.getCreateDate());
+				getRequest().setAttribute("rnTime", rn.getCreateDate());
 				return SUCCESS;
 				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
 			} else if (!StringUtil.isEmptyString(errInfo)) { 
@@ -351,6 +353,8 @@ public class UnbindAction extends BaseAction {
 				getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", errInfo.split(",")[0]);
 				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
+				log.debug("create date2222: {}" , errInfo.split(",")[2]);
+				getRequest().setAttribute("rnTime", errInfo.split(",")[2]);
 				return SUCCESS;
 			} else {
 				this.errorMsg = "第三方信息找不到!";
@@ -359,6 +363,25 @@ public class UnbindAction extends BaseAction {
 			// 这里应该报POS机不能为空的提示
 			this.errorMsg = "POS机信息找不到!";
 		}
+		return ERROR;
+	}
+	
+	public String confirmSuccess() {
+		getRequest().setAttribute("posCount", splitPosIds(posIds.trim()).size());
+		return SUCCESS;
+	}
+	
+	public String confirmAllRnNumber() throws SaveDBException {
+		if (!StringUtil.isEmptyString(agentId)) {
+			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
+			if (rnInfo != null) {
+				getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
+				getRequest().setAttribute("rnId", rnInfo.getRn().getId());
+				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());
+				return SUCCESS;
+			}
+		}
+		this.errorMsg = "第三方信息找不到!";
 		return ERROR;
 	}
 	
@@ -380,7 +403,6 @@ public class UnbindAction extends BaseAction {
 			try {
 				HashMap<String, Object> result = getGroupBuyingUnbindManager().groupBuyingUnbind(params);
 				String resultCode = (String) result.get("resultCode");
-				System.out.println("resultCode->" + resultCode);
 				if ("0".equals(resultCode)) {
 					this.successMsg = posId + "解绑成功!";
 				} else {
@@ -389,7 +411,7 @@ public class UnbindAction extends BaseAction {
 						this.errorMsg = "服务器繁忙!";
 						break;
 					case -2:
-						this.errorMsg = "md5校验失败!";
+						this.errorMsg = "MD5校验失败!";
 						break;
 					case -3:
 						this.errorMsg = "没有权限!";

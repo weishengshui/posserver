@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
@@ -65,4 +66,12 @@ public interface PosLogic {
 	 */
 	void updatePosStatusToWorking(List<String> posIds);
 	
+	/**
+	 * 创建 PosAssignment
+	 * 
+	 * @param agentId
+	 * @param posIds - POS ID Pos.ID
+	 * @throws PosNotExistException 
+	 */
+	void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException;
 }

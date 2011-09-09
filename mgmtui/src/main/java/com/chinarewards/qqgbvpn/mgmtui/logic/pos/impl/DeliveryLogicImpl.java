@@ -22,6 +22,8 @@ import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
+import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
@@ -29,7 +31,6 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
-import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
@@ -58,8 +59,9 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Inject
 	Provider<AgentDao> agentDao;
 
+	// With no transaction.
 	@Inject
-	Provider<PosLogic> posLogic;
+	Provider<PosDao> posDao;
 
 	@Inject
 	DateTimeProvider dtProvider;
@@ -303,10 +305,12 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Override
 	@Transactional(rollbackOn = { DeliveryWithWrongStatusException.class,
 			PosWithWrongStatusException.class,
-			DeliveryNoteWithNoDetailException.class, RuntimeException.class })
+			DeliveryNoteWithNoDetailException.class, AgentNotException.class,
+			PosNotExistException.class, RuntimeException.class })
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
-			PosWithWrongStatusException, DeliveryNoteWithNoDetailException {
+			PosWithWrongStatusException, DeliveryNoteWithNoDetailException,
+			AgentNotException, PosNotExistException {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
@@ -324,6 +328,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		getDeliveryDao().merge(dn);
 
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
+		List<String> posNums = new LinkedList<String>();
 		List<String> posIds = new LinkedList<String>();
 		for (PosVO pos : posList) {
 			// check POS status.
@@ -333,13 +338,18 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 								+ pos.getDstatus());
 			}
 
-			posIds.add(pos.getPosId());
+			posNums.add(pos.getPosId());
+			posIds.add(pos.getId());
 		}
 		log.debug("Try to update pos status, posIds:{}", posIds);
 		if (posIds == null || posIds.isEmpty()) {
 			throw new DeliveryNoteWithNoDetailException();
 		}
-		posLogic.get().updatePosStatusToWorking(posIds);
+		if (dn.getAgent() == null) {
+			throw new AgentNotException();
+		}
+		posDao.get().createPosAssignment(dn.getAgent().getId(), posIds);
+		posDao.get().updatePosStatusToWorking(posNums);
 
 		// add journalLogic
 		try {

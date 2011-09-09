@@ -89,16 +89,16 @@
 								</data>
 								<!-- Application server specific scripts -->
 								<data>
-									<src>etc/appserver</src>
+									<src>${basedir}/src/etc</src>
 									<type>directory</type>
 									<mapper>
 										<type>prefix</type>
-										<prefix>${home.dir}/conf/appserver</prefix>
+										<prefix>/etc/${pkgname}</prefix>
 									</mapper>
 								</data>
 								<!-- /etc/init.d script. -->
 								<data>
-									<src>${basedir}/scripts/posnet2-mgmtui</src>
+									<src>${basedir}/src/scripts/posnet2-mgmtui</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>

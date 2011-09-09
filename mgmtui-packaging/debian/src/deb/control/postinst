@@ -18,7 +18,7 @@ set -e
 # the debian-policy package
 
 
-ETC_DIR=/etc/posnet2
+ETC_DIR=/etc/posnet2-mgmtui
 
 
 case "$1" in
@@ -29,6 +29,9 @@ case "$1" in
 	for i in `find /usr/share/posnet2-mgmtui/lib/mgmtui-*.war -type f`; do
 		ln -sf $i /usr/share/posnet2-mgmtui/lib/mgmtui.war
 	done
+
+	# restore the conf/ symlink
+	ln -sf /etc/posnet2-mgmtui /usr/share/posnet2-mgmtui/conf
     
     ;;
 

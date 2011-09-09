@@ -3,6 +3,6 @@
 
 <Configure id='wac' class="org.mortbay.jetty.webapp.WebAppContext">
 
-	<Set name="contextPath">/qqgbvpn</Set>
+	<Set name="contextPath">/mgmtui</Set>
 
 </Configure>
