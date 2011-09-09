@@ -58,7 +58,7 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private Integer addPosStatus;
 	
-	private DeliverySearchVO deliverySearchVO;
+	private DeliverySearchVO deliverySearchVO = new DeliverySearchVO();
 	
 	@Override
 	public String execute(){
@@ -88,6 +88,7 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		paginationTools.setStartIndex( (super.getCurrentPage()-1) * super.getPageSize() );
 		
 		try{
+			deliverySearchVO.setPagination(paginationTools);
 			PageInfo<DeliveryNoteVO> pageInfo = getDeliveryLogic().fetchDeliverys(deliverySearchVO);
 			
 			deliveryNoteVOList = pageInfo.getItems();

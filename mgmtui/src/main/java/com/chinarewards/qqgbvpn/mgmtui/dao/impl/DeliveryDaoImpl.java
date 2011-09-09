@@ -133,7 +133,7 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 	@Override
 	public int countDeliverys(DeliverySearchVO criteria) {
 		Query query = buildQuery(COUNT, criteria);
-		return (Integer) query.getSingleResult();
+		return new Integer(""+query.getSingleResult());
 	}
 
 	private Query buildQuery(String type, DeliverySearchVO criteria) {
@@ -141,17 +141,17 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 
 		StringBuffer hql = new StringBuffer();
 		if (SEARCH.equals(type)) {
-			hql.append("SELECT * FROM DeliveryNote dn WHERE 1=1");
+			hql.append("SELECT dn FROM DeliveryNote dn WHERE 1=1");
 		} else if (COUNT.equals(type)) {
 			hql.append("SELECT COUNT(dn.id) FROM DeliveryNote dn WHERE 1=1");
 		}
 
-		if (Tools.isEmptyString(criteria.getAgentName())) {
+		if (!Tools.isEmptyString(criteria.getAgentName())) {
 			hql.append(" AND UPPER(dn.agentName) LIKE :agentName");
 			param.put("agentName", "%" + criteria.getAgentName().toUpperCase()
 					+ "%");
 		}
-		if (Tools.isEmptyString(criteria.getAgentId())) {
+		if (!Tools.isEmptyString(criteria.getAgentId())) {
 			hql.append(" AND dn.agent.id=:agentId");
 			param.put("agentId", criteria.getAgentId());
 		}
@@ -166,12 +166,12 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 			param.put("createDateTo", lastDate);
 		}
 
-		if (Tools.isEmptyString(criteria.getDnNumber())) {
+		if (!Tools.isEmptyString(criteria.getDnNumber())) {
 			hql.append(" AND UPPER(dn.dnNumber) LIKE :dnNumber");
 			param.put("dnNumber", "%" + criteria.getDnNumber().toUpperCase()
 					+ "%");
 		}
-		if (Tools.isEmptyString(criteria.getStatus())) {
+		if (!Tools.isEmptyString(criteria.getStatus())) {
 			DeliveryNoteStatus status = DeliveryNoteStatus.valueOf(criteria
 					.getStatus());
 			hql.append(" AND dn.status=:status");
