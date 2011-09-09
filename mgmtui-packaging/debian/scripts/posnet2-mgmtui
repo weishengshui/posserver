@@ -44,31 +44,14 @@ fi
 #
 do_start()
 {
-	ln -sf /etc/zooticket/* $JBOSSDEPLOY
-	
-	ln -sf /usr/share/zooticket/bin/* $JBOSSDEPLOY
-	
-	if [ "$RESTART" = "y" ]
-	then
-		echo "Restart Jetty Required.  Please run:"
-		echo "  /etc/init.d/jetty restart"
-	fi
+
 	return 0
 }
 
 force_stop() 
 {
-	for i in `find $JBOSSDEPLOY -type l` 
-	# don't remove lib for stopping service
-	# `find $JBOSSLIB -type l`
-	do
-		readlink $i | grep zooticket > /dev/null
-		if [ $? -eq 0 ]
-		then
-			echo "Removing link: $i"
-			rm -rf $i
-		fi
-	done
+
+	return 0
 }
 
 #
