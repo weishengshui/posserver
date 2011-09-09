@@ -340,6 +340,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 			throw new DeliveryNoteWithNoDetailException();
 		}
 		posLogic.get().updatePosStatusToWorking(posIds);
+		posLogic.get().createPosAssignment(dn.getAgent().getId(), posIds);
 
 		// add journalLogic
 		try {

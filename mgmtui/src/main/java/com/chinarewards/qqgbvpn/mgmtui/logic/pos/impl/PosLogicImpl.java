@@ -64,6 +64,10 @@ public class PosLogicImpl implements PosLogic {
 		posDao.get().updatePosStatusToWorking(posIds);
 	}
 
-	
+	@Transactional
+	@Override
+	public void createPosAssignment(String agentId, List<String> posIds) {
+		posDao.get().createPosAssignment(agentId, posIds);
+	}
 
 }
