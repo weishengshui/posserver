@@ -165,7 +165,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public void deleteDeliveryNote(String noteId)
 			throws DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(noteId)) {
@@ -180,7 +180,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public DeliveryNoteVO associateAgent(String deliveryNoteId, String agentId)
 			throws DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
@@ -207,7 +207,10 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = { PosNotExistException.class,
+			PosWithWrongStatusException.class,
+			DeliveryWithWrongStatusException.class,
+			DeliveryDetailExistException.class })
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
 			PosWithWrongStatusException, DeliveryWithWrongStatusException,
@@ -244,7 +247,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public void deletePosFromNote(String deliveryNoteId, String detailId)
 			throws DeliveryWithWrongStatusException {
 		if (Tools.isEmptyString(deliveryNoteId)) {
@@ -267,7 +270,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = DeliveryNoteWithNoDetailException.class)
 	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException {
 		log.debug("Process in delivery(), noteId:{}", deliveryNoteId);
@@ -298,7 +301,9 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = { DeliveryWithWrongStatusException.class,
+			PosWithWrongStatusException.class,
+			DeliveryNoteWithNoDetailException.class, RuntimeException.class })
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
 			PosWithWrongStatusException, DeliveryNoteWithNoDetailException {
@@ -351,7 +356,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public void printDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException {
 		// check delivery note status - not be DeliveryNoteStatus#DRAFT

@@ -8,23 +8,23 @@
 <title>回收单信息</title>
 </head>
 <body>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td>POS机回收单</td>
 	</tr>
 	<tr>
 		<td>
-		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 			<tr>
-				<td>编号：</td>
+				<td class="td_left">编号：</td>
 				<td><s:property value="rnInfo.rn.rnNumber" /></td>
 			</tr>
 			<tr>
-				<td>生成日期：</td>
+				<td class="td_left">生成日期：</td>
 				<td><s:date name="rnInfo.rn.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
 			</tr>
 			<tr>
-				<td>第三方：</td>
+				<td class="td_left">第三方：</td>
 				<td><s:property value="rnInfo.agent.name" /></td>
 			</tr>
 		</table>
@@ -32,11 +32,11 @@
 	</tr>
 	<tr>
 		<td>
-		<table width="100%" border="0" cellspacing="0" cellpadding="0">
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 			<tr>
-				<td>posId</td>
-				<td>sn</td>
-				<td>simPhoneNo</td>
+				<td class="td_title">posId</td>
+				<td class="td_title">sn</td>
+				<td class="td_title">simPhoneNo</td>
 			</tr>
 			<s:if test="rnInfo.rnDetailList!=null && rnInfo.rnDetailList.size()>0">
 			<s:iterator value="rnInfo.rnDetailList" id="list">

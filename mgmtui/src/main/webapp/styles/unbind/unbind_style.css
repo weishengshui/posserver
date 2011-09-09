@@ -1,0 +1,26 @@
+.table_style{
+	padding:10px;
+	line-height:24px;
+	border:1px solid #202B31;
+}
+
+.td_left{
+	width:100px;
+}
+
+.td_200{
+	width:200px;
+}
+
+.td_300 {
+	width:300px;
+}
+
+.td_pageInfo {
+	text-align:right;
+}
+
+.td_title {
+	font-size: 16px;
+	font-weight:bold;
+}

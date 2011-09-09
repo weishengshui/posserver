@@ -1,8 +1,9 @@
 Package: posnet2-server
 Version: [[version]]
-Section: apps
+Section: chinarewards
 Priority: extra
 Distribution: chinarewards
 Architecture: all
 Description: POSNet2 Server
 Maintainer: China Rewards (info@china-rewards.com)
+Depends: default-jre-headless | java5-runtime-headless

@@ -264,7 +264,7 @@ public class UnbindAction extends BaseAction {
 	public String request() {
 		posIds = "";
 		if (inviteCode != null && !"".equals(inviteCode.trim())) {
-			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode);
+			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode.trim());
 			if (a != null) {
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
@@ -287,7 +287,7 @@ public class UnbindAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 		}
-		pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, this.getAgentId());
+		pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, this.getAgentId().trim());
 		return SUCCESS;
 	}
 	
@@ -313,13 +313,16 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String confirmRnNumber() throws SaveDBException {
+		if (inviteCode == null) {
+			inviteCode = "";
+		}
 		if (posIds != null && !"".equals(posIds.trim())) {
-			List<String> posList = splitPosIds(posIds);
+			List<String> posList = splitPosIds(posIds.trim());
 			ReturnNote rn = null;
 			String errInfo = "";
 			try {
 				rn = getGroupBuyingUnbindManager().confirmReturnNote(
-						this.getAgentId(), inviteCode, posList);
+						this.getAgentId(), inviteCode.trim(), posList);
 			} catch (UnUseableRNException e1) {
 				errInfo = e1.getMessage();
 			}
@@ -372,7 +375,7 @@ public class UnbindAction extends BaseAction {
 	public String unbind(){
 		if (posId != null && !"".equals(posId.trim())) {
 			HashMap<String, Object> params = new HashMap<String, Object>();
-			params.put("posId", new String[] { posId });
+			params.put("posId", new String[] { posId.trim() });
 			params.put("key", getConfiguration().getString("txserver.key"));
 			try {
 				HashMap<String, Object> result = getGroupBuyingUnbindManager().groupBuyingUnbind(params);
@@ -414,14 +417,15 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String sendURL() {
-		if (agentName != null && !"".equals(agentName.trim())) {
-			List<Agent> list = getGroupBuyingUnbindManager().getAgentLikeName(agentName.trim());
-			if (list != null && list.size() > 0) {
-				this.setAgentList(list);
-			} else {
-				//这里应该报找不到的提示
-				this.errorMsg = "第三方机信息找不到!";
-			}
+		if (agentName == null) {
+			agentName = "";
+		}
+		List<Agent> list = getGroupBuyingUnbindManager().getAgentLikeName(agentName.trim());
+		if (list != null && list.size() > 0) {
+			this.setAgentList(list);
+		} else {
+			//这里应该报找不到的提示
+			this.errorMsg = "第三方机信息找不到!";
 		}
 		return SUCCESS;
 	}
@@ -433,23 +437,26 @@ public class UnbindAction extends BaseAction {
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(initPageSize);
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
 	public String goPageForRnList() {
+		if (rnNum == null) {
+			rnNum = "";
+		}
 		if (pageInfo == null) {
 			pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 		}
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
 	public String getReturnNoteInfo() {
 		if (!StringUtil.isEmptyString(rnId)) {
-			rnInfo = getGroupBuyingUnbindManager().getReturnNoteInfoByRnId(rnId);
+			rnInfo = getGroupBuyingUnbindManager().getReturnNoteInfoByRnId(rnId.trim());
 		}
 		return SUCCESS;
 	}

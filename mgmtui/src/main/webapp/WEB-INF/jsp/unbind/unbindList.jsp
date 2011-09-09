@@ -18,7 +18,7 @@
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <s:hidden name="rnId" id="rnId" />
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>
 		<td width="13%">
@@ -27,12 +27,12 @@
 	</tr>
 </table>
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
-		<td>posId</td>
-		<td>simPhoneNo</td>
-		<td>sn</td>
+		<td class="td_title">posId</td>
+		<td class="td_title">simPhoneNo</td>
+		<td class="td_title">sn</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
@@ -95,7 +95,6 @@
 			posIds = posIds.replace(new RegExp(obj.value + ",","gm"), "");
 		}
 		document.getElementById("posIds").value = posIds;
-		alert(document.getElementById("posIds").value);
 	}
 	
 	function goPage(pageId) {
