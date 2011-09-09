@@ -34,9 +34,9 @@
 		<td>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 			<tr>
-				<td>posId</td>
-				<td>sn</td>
-				<td>simPhoneNo</td>
+				<td class="td_title">posId</td>
+				<td class="td_title">sn</td>
+				<td class="td_title">simPhoneNo</td>
 			</tr>
 			<s:if test="rnInfo.rnDetailList!=null && rnInfo.rnDetailList.size()>0">
 			<s:iterator value="rnInfo.rnDetailList" id="list">

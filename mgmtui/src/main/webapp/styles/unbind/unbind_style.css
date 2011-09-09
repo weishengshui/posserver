@@ -1,6 +1,7 @@
 .table_style{
 	padding:10px;
-	line-height:20px;
+	line-height:24px;
+	border:1px solid #202B31;
 }
 
 .td_left{
@@ -17,4 +18,9 @@
 
 .td_pageInfo {
 	text-align:right;
-}}
+}
+
+.td_title {
+	font-size: 16px;
+	font-weight:bold;
+}

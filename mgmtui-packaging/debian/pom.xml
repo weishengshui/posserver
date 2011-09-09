@@ -72,6 +72,11 @@
 						</goals>
 						<configuration>
 							<deb>${project.build.directory}/${pkgname}_${project.version}_all.deb</deb>
+							<!-- points to an empty file -->
+							<changesIn>${basedir}/CHANGES.txt</changesIn>
+							<changesOut>${project.build.directory}/${pkgname}_${project.version}.changes</changesOut>
+							<changesSave>${project.build.directory}/CHANGES.save</changesSave>
+							<attach>false</attach>
 							<dataSet>
 								<!-- Application: .war webapp -->
 								<data>
