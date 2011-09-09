@@ -26,9 +26,9 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
-JBOSSDEPLOY=${JBOSSDEPLOY:-"/usr/share/jbossas5/server/$JBOSSPROFILE/deploy"}
-JBOSSLIB=${JBOSSLIB:-"/usr/share/jbossas5/server/$JBOSSPROFILE/lib"}
 
+JETTY_CONF_DIR=/etc/jetty
+JETTY_CONF_CTX_DIR=$JETTY_CONF_DIR/contexts
 
 
 
@@ -44,12 +44,17 @@ fi
 #
 do_start()
 {
+	# rstore link to the jetty context (deploy).
+	rm -f $JETTY_CONF_CTX_DIR/posnet2-mgmtui.xml
+	# the traling slash '/' is IMPORTANT!
+	ln -s /usr/share/posnet2-mgmtui/conf/appserver/jetty/posnet2-mgmtui.xml $JETTY_CONF_CTX_DIR
 
 	return 0
 }
 
 force_stop() 
 {
+	rm -f $JETTY_CONF_CTX_DIR/posnet2-mgmtui.xml
 
 	return 0
 }

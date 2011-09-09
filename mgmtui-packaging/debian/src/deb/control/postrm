@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for zooticket
+# postrm script for posnet2-mgmtui
 #
 # see: dh_installdeb(1)
 
@@ -23,6 +23,8 @@ set -e
 
 case "$1" in
     purge|remove)
+	# remove any symlinks to the war
+	rm -rf /usr/share/posnet2-mgmtui/lib/mgmtui*.war
     ;;
     
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
