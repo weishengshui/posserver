@@ -12,7 +12,7 @@
 <s:token/>
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
 		<td width="13%">
@@ -21,12 +21,12 @@
 	</tr>
 </table>
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td>回收单号</td>
-		<td>第三方</td>
-		<td>状态</td>
-		<td>生成时间</td>
+		<td class="td_200">回收单号</td>
+		<td class="td_200">第三方</td>
+		<td class="td_left">状态</td>
+		<td class="td_left">生成时间</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
@@ -37,10 +37,7 @@
 	</tr>
 	</s:iterator>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><p:page pageInfo="${pageInfo}" /></td>
+		<td colspan="4" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
 </table>
 </s:if>

@@ -18,7 +18,7 @@
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <s:hidden name="rnId" id="rnId" />
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">第三方名称：<input type="text" name="agentName" value="${agentName}" /></td>
 		<td width="13%">
@@ -27,7 +27,7 @@
 	</tr>
 </table>
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
 		<td>posId</td>
