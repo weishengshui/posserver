@@ -66,11 +66,9 @@ public class LoginManagerImpl implements LoginManager {
 			
 			// TODO reports better error code to distinguish between 
 			// POS ID not found or not assigned.
-			
-			pos = posDao.get().fetchPos(req.getPosId(),
-					PosDeliveryStatus.DELIVERED, null,
+
+			pos = posDao.get().fetchPos(req.getPosId(), null, null,
 					PosOperationStatus.ALLOWED);
-			
 
 			// check pos.secret. When not existed, generate one.
 			if (StringUtil.isEmptyString(pos.getSecret())) {

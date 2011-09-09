@@ -14,8 +14,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.PosAssignment;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
@@ -430,6 +432,18 @@ public class PosDaoImpl implements PosDao {
 			return list.get(0);
 		}else{
 			return null;
+		}
+	}
+
+	@Override
+	public void createPosAssignment(String agentId, List<String> posIds) {
+		Agent agent = getEm().find(Agent.class, agentId);
+		for (String posId : posIds) {
+			Pos pos = getEm().find(Pos.class, posId);
+			PosAssignment pa = new PosAssignment();
+			pa.setAgent(agent);
+			pa.setPos(pos);
+			getEm().persist(pa);
 		}
 	}
 

@@ -65,4 +65,11 @@ public interface PosLogic {
 	 */
 	void updatePosStatusToWorking(List<String> posIds);
 	
+	/**
+	 * 创建 PosAssignment
+	 * 
+	 * @param agentId
+	 * @param posIds
+	 */
+	void createPosAssignment(String agentId, List<String> posIds);
 }
