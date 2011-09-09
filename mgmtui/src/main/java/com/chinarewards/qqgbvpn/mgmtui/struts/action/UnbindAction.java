@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.struts2.StrutsStatics;
-import org.codehaus.jackson.JsonGenerationException;
 
 import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.chinarewards.qqgbvpn.domain.Agent;
@@ -22,11 +21,10 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
-import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
+import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.chinarewards.utils.StringUtil;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -78,6 +76,8 @@ public class UnbindAction extends BaseAction {
 	
 	private Date sendTime;
 	
+	private ReturnNoteInfo rnInfo;
+	
 	private String errorMsg;
 	
 	private String successMsg;
@@ -97,6 +97,14 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public ReturnNoteInfo getRnInfo() {
+		return rnInfo;
+	}
+
+	public void setRnInfo(ReturnNoteInfo rnInfo) {
+		this.rnInfo = rnInfo;
+	}
+
 	public String getInviteCode() {
 		return inviteCode;
 	}
@@ -443,6 +451,10 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String getReturnNoteInfo() {
+		log.debug("rnId: {}", rnId);
+		if (!StringUtil.isEmptyString(rnId)) {
+			rnInfo = getGroupBuyingUnbindManager().getReturnNoteInfoByRnId(rnId);
+		}
 		return SUCCESS;
 	}
 	

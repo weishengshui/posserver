@@ -17,15 +17,15 @@
 		<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td>编号：</td>
-				<td>aaaaaaaaaaa</td>
+				<td><s:property value="rnInfo.rn.rnNumber" /></td>
 			</tr>
 			<tr>
 				<td>生成日期：</td>
-				<td>1245665</td>
+				<td><s:date name="rnInfo.rn.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
 			</tr>
 			<tr>
 				<td>第三方：</td>
-				<td>1245665</td>
+				<td><s:property value="rnInfo.agent.name" /></td>
 			</tr>
 		</table>
 		</td>
@@ -38,28 +38,39 @@
 				<td>sn</td>
 				<td>simPhoneNo</td>
 			</tr>
+			<s:if test="rnInfo.rnDetailList!=null && rnInfo.rnDetailList.size()>0">
+			<s:iterator value="rnInfo.rnDetailList" id="list">
 			<tr>
-				<td>123123123</td>
-				<td>123123123</td>
-				<td>12312312</td>
+				<td><s:property value="#list.posId" /></td>
+				<td><s:property value="#list.sn" /></td>
+				<td><s:property value="#list.simPhoneNo" /></td>
 			</tr>
-			<tr>
-				<td>123123123</td>
-				<td>123123123</td>
-				<td>12312312</td>
-			</tr>
+			</s:iterator>
+			</s:if>
 		</table>
 		</td>
+	</tr>
+	<tr>
+		<td>共<s:property value="rnInfo.rnDetailList.size()" />台</td>
+	</tr>
+	<tr>
+		<td>签收：_____________________</td>
+	</tr>
+	<tr>
+		<td>　　　(姓名：______________)</td>
+	</tr>
+	<tr>
+		<td>日期：______年_____月______</td>
+	</tr>
+	<tr>
+		<td><button type="button" onclick="printInfo()">打印</button></td>
 	</tr>
 </table>
 
 <script type="text/javascript">
 
-	function goPage(pageId) {
-		var formObj = document.getElementById("listForm");
-		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPageForRnList";
-		formObj.submit();
+	function printInfo() {
+		window.print();
 	}
 	
 </script>

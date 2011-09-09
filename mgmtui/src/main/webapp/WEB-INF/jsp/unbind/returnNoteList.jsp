@@ -34,7 +34,7 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><a href="javascript:showRnInfo('${#list.id}');"><s:property value="#list.rnNumber" /></a></td>
+		<td><a href="javascript:showRnInfo('${list.id}');"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
 		<td><s:property value="#list.status" /></td>
 		<td><s:date name="#list.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
