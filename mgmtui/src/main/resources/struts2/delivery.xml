@@ -13,6 +13,7 @@
 		
 		<action name="queryDeliveryList" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="deliveryList">
 			<result name="success">/WEB-INF/jsp/delivery/list_delivery.jsp</result>
+			<result name="error">/error.jsp</result>
 		</action>
 		
 		<action name="createDeliveryNote" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="createDeliveryNote">
