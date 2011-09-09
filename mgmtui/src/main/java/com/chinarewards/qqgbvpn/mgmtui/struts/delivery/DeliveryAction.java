@@ -14,6 +14,7 @@ import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliverySearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
 import com.google.inject.Injector;
@@ -57,6 +58,8 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private Integer addPosStatus;
 	
+	private DeliverySearchVO deliverySearchVO = new DeliverySearchVO();
+	
 	@Override
 	public String execute(){
 		if(super.getCurrentPage()==0){
@@ -85,7 +88,8 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		paginationTools.setStartIndex( (super.getCurrentPage()-1) * super.getPageSize() );
 		
 		try{
-			PageInfo<DeliveryNoteVO> pageInfo = getDeliveryLogic().fetchDeliveryList(paginationTools);
+			deliverySearchVO.setPagination(paginationTools);
+			PageInfo<DeliveryNoteVO> pageInfo = getDeliveryLogic().fetchDeliverys(deliverySearchVO);
 			
 			deliveryNoteVOList = pageInfo.getItems();
 			super.setCountTotal(pageInfo.getRecordCount());
@@ -455,6 +459,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public void setAddPosStatus(Integer addPosStatus) {
 		this.addPosStatus = addPosStatus;
+	}
+	
+	public DeliverySearchVO getDeliverySearchVO() {
+		return deliverySearchVO;
+	}
+
+	public void setDeliverySearchVO(DeliverySearchVO deliverySearchVO) {
+		this.deliverySearchVO = deliverySearchVO;
 	}
 	
 }

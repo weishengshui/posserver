@@ -12,6 +12,7 @@
 		</action>
 		<action name="listCenter" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction" method="listCenter">
 			<result name="success">/WEB-INF/jsp/pos/posListCenter.jsp</result>
+			<result name="error">/error.jsp</result>
 		</action>
 		<action name="detail/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction"
 			method="detail">

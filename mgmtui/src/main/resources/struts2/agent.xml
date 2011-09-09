@@ -13,6 +13,7 @@
 		
 		<action name="queryAgentList" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="agentList">
 			<result name="success">/WEB-INF/jsp/agent/list_agent.jsp</result>
+			<result name="error">/error.jsp</result>
 		</action>
 		
 		<action name="showEditAgent" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="showEditAgent">

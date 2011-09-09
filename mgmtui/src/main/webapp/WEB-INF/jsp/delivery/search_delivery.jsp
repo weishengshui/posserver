@@ -7,24 +7,48 @@
 <html>
 
 <head>
+
+<script type="text/javascript">
+	function initDeliveryStatus(deliveryStatus){
+		var opts = document.getElementById('deliveryStatusList_ID').options;
+		for(i=0;i<opts.length;i++){
+			if(opts[i].value == deliveryStatus){
+				opts[i].selected = true;
+				return;
+			}
+		}
+	}
+	
+	function initDeliveryAgent(deliveryAgentId){
+		var opts = document.getElementById('deliveryAgentList_ID').options;
+		for(i=0;i<opts.length;i++){
+			if(opts[i].value == deliveryAgentId){
+				opts[i].selected = true;
+				return;
+			}
+		}
+	}
+</script>
+
 </head>
 <body>
 
 <table align="center" width="800px">
 	<tr>
 		<td>
-			<s:form  namespace="/agent" action="searchAgent">
+			<s:form  namespace="/delivery" action="searchDelivery">
 				交付单编号：
-				<input type="text" name="" value="<s:property value='#request.agentSearchVO.'/>"/>&nbsp;&nbsp;&nbsp;
+				<input type="text" name="deliverySearchVO.dnNumber" value="<s:property value='#request.deliverySearchVO.dnNumber'/>"/>&nbsp;&nbsp;&nbsp;
 				交付单状态：
-				<select name="">
+				<select id="deliveryStatusList_ID" name="deliverySearchVO.status">
+					<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 					<option value="DRAFT">草稿</option>
 					<option value="CONFIRMED">已确定</option>
 					<option value="PRINTED">已打印</option>
 				</select>&nbsp;&nbsp;&nbsp;
 				第三方：
-				<select name="">
-					<option></option>
+				<select id="deliveryAgentList_ID" name="deliverySearchVO.agentId" >
+					<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 					<s:iterator id="agentVO" value="#request.agentVOList" status="i">
 						<option value="<s:property value='#agentVO.id'/>">
 							<s:property value="#agentVO.name"/>
@@ -53,6 +77,9 @@
 <div id="form_DIV_ID" style="display: none;">
 	<s:hidden id="currentPage_ID" name="currentPage" />
 	<s:hidden id="pageSize_ID" name="pageSize" />
+	<s:hidden id="deliverySearchVO.dnNumber_ID" name="deliverySearchVO.dnNumber"/>
+	<s:hidden id="deliverySearchVO.status_ID" name="deliverySearchVO.status"/>
+	<s:hidden id="deliverySearchVO.agentId_ID" name="deliverySearchVO.agentId"/>
 </div>
 
 
@@ -72,6 +99,12 @@
 	}
 	//加载数据列表页面
 	loadDeliveryListPageToDIV();
+</script>
+
+<!-- init -->
+<script type="text/javascript">
+	initDeliveryStatus('<s:property value="#request.deliverySearchVO.status"/>');
+	initDeliveryAgent('<s:property value="#request.deliverySearchVO.agentId"/>');
 </script>
 
 </body>
