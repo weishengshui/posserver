@@ -36,7 +36,7 @@ public interface GroupBuyingUnbindDao {
 	
 	public Agent getAgentByInviteCode(String inviteCode);
 	
-	public ReturnNoteInfo getReturnNoteInfoByRnNumber(String rnNumber);
+	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId);
 	
 	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
 }

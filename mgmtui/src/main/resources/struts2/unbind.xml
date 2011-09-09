@@ -73,6 +73,11 @@
 			method="goPageForRnList">
 			<result name="success" type="tiles">unbind.rnList</result>
 		</action>
+		<action name="getReturnNoteInfo"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="getReturnNoteInfo">
+			<result name="success" type="tiles">unbind.rnInfo</result>
+		</action>
 	</package>
 	
 	<package name="unbindportal" extends="default" namespace="/returnnote">

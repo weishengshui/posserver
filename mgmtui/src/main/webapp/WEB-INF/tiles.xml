@@ -50,6 +50,10 @@
 	<definition name="unbind.rnList" extends="main">
 		<put-attribute name="body" value="/WEB-INF/jsp/unbind/returnNoteList.jsp" />
 	</definition>
+	
+	<definition name="unbind.rnInfo" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/unbind/returnNoteInfo.jsp" />
+	</definition>
 	<!-- unbind end -->
 	
 	<!-- agent begin -->
