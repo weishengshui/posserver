@@ -442,6 +442,10 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String getReturnNoteInfo() {
+		return SUCCESS;
+	}
+	
 	protected List<String> splitPosIds(String ids) {
 		return Arrays.asList(ids.split(","));
 	}
