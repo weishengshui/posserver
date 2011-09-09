@@ -1,0 +1,20 @@
+.table_style{
+	padding:10px;
+	line-height:20px;
+}
+
+.td_left{
+	width:100px;
+}
+
+.td_200{
+	width:200px;
+}
+
+.td_300 {
+	width:300px;
+}
+
+.td_pageInfo {
+	text-align:right;
+}}

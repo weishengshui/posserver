@@ -7,3 +7,4 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 
 <script type="text/javascript" src="${ctx}/js/jquery/jquery-latest.min.js"></script>
+<link rel="stylesheet" href="<s:url value='/styles/unbind/unbind_style.css'/>" type="text/css" />
