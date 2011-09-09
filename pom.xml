@@ -202,6 +202,8 @@
 		<module>main</module>
 		<module>mgmtui</module>
 		<module>qqapi</module>
+		<!-- Packaging projects -->
 		<module>main-packaging</module>
+		<module>mgmtui-packaging</module>
 	</modules>
 </project>
