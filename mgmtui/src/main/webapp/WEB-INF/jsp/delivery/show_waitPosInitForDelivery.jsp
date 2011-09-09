@@ -45,6 +45,10 @@
 			closeTimerTask();
 		}
 	}
+
+	function toUpdatePage(deliveryId){
+		window.location.href = '<s:url value="/delivery/showAddPosForDelivery"/>?deliveryId='+deliveryId;
+	}
 </script>
 	
 </head>
@@ -130,6 +134,11 @@
 			</s:if>
 			<s:else>0</s:else>
 			台
+		</td>
+	</tr>
+	<tr>
+		<td colspan="5" align="center">
+			<input type="button" value="继续修改" onclick="toUpdatePage('<s:property value="#request.deliveryNoteVO.id"/>');" />
 		</td>
 	</tr>
 </table>
