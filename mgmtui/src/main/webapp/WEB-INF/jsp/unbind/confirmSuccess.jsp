@@ -26,7 +26,7 @@
 	</s:if>
 	<s:else>
 	<tr>
-		<td width="77%"><input type="submit" value="完成" id="searchBtn" /></td>
+		<td width="77%"><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${rnId}" target="_blank">打印</a>　　<input type="submit" value="完成" id="searchBtn" /></td>
 	</tr>
 	</s:else> 
 </table>

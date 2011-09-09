@@ -316,12 +316,12 @@ public class UnbindAction extends BaseAction {
 		if (posIds != null && !"".equals(posIds.trim())) {
 			List<String> posList = splitPosIds(posIds);
 			ReturnNote rn = null;
-			String rnNumber = "";
+			String errInfo = "";
 			try {
 				rn = getGroupBuyingUnbindManager().confirmReturnNote(
 						this.getAgentId(), inviteCode, posList);
 			} catch (UnUseableRNException e1) {
-				rnNumber = e1.getMessage();
+				errInfo = e1.getMessage();
 			}
 			if (rn != null) {
 				//受邀者填写完后发邮件给我方
@@ -337,15 +337,17 @@ public class UnbindAction extends BaseAction {
 					getRequest().setAttribute("isAgent", "true");
 				}
 				getRequest().setAttribute("posCount", posList.size());
+				getRequest().setAttribute("rnId", rn.getId());
 				getRequest().setAttribute("rnNumber", rn.getRnNumber());
 				return SUCCESS;
 				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
-			} else if (!StringUtil.isEmptyString(rnNumber)) { 
+			} else if (!StringUtil.isEmptyString(errInfo)) { 
 				if (!StringUtil.isEmptyString(inviteCode)) {
 					getRequest().setAttribute("isAgent", "true");
 				}
 				getRequest().setAttribute("posCount", posList.size());
-				getRequest().setAttribute("rnNumber", rnNumber);
+				getRequest().setAttribute("rnId", errInfo.split(",")[0]);
+				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
 				return SUCCESS;
 			} else {
 				this.errorMsg = "第三方信息找不到!";
@@ -425,18 +427,13 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String getReturnNoteList() {
-		if (pageInfo == null) {
-			pageInfo = new PageInfo();
-			pageInfo.setPageId(1);
-			pageInfo.setPageSize(initPageSize);
+		if (rnNum == null) {
+			rnNum = "";
 		}
-		if (!StringUtil.isEmptyString(rnNum)) {
-			pageInfo = new PageInfo();
-			pageInfo.setPageId(1);
-			pageInfo.setPageSize(initPageSize);
-			pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
-			log.debug("page id {}",pageInfo.getPageId());
-		}
+		pageInfo = new PageInfo();
+		pageInfo.setPageId(1);
+		pageInfo.setPageSize(initPageSize);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum, pageInfo);
 		return SUCCESS;
 	}
 	
@@ -451,7 +448,6 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String getReturnNoteInfo() {
-		log.debug("rnId: {}", rnId);
 		if (!StringUtil.isEmptyString(rnId)) {
 			rnInfo = getGroupBuyingUnbindManager().getReturnNoteInfoByRnId(rnId);
 		}
