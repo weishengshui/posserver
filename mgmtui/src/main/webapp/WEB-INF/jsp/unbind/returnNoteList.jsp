@@ -23,10 +23,10 @@
 <s:if test="pageInfo.items!=null && pageInfo.items.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td class="td_200">回收单号</td>
-		<td class="td_200">第三方</td>
-		<td class="td_left">状态</td>
-		<td class="td_left">生成时间</td>
+		<td class="td_200 td_title">回收单号</td>
+		<td class="td_200 td_title">第三方</td>
+		<td class="td_left td_title">状态</td>
+		<td class="td_left td_title">生成时间</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>

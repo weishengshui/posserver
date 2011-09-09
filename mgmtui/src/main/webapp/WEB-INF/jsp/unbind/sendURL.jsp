@@ -26,10 +26,10 @@
 <s:if test="agentList!=null && agentList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td>Agent Id</td>
-		<td>Agent Name</td>
-		<td>Agent Email</td>
-		<td>操作</td>
+		<td class="td_title">Agent Id</td>
+		<td class="td_title">Agent Name</td>
+		<td class="td_title">Agent Email</td>
+		<td class="td_title">操作</td>
 	</tr>
 	<s:iterator value="agentList" id="list">
 	<tr>
