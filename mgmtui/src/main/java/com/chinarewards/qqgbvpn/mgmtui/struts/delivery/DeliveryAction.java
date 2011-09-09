@@ -62,6 +62,15 @@ public class DeliveryAction extends BasePagingToolBarAction {
 		if(super.getCurrentPage()==0){
 			super.setCurrentPage(1);
 		}
+		
+		try{
+			//查询所有的第三方合作伙伴
+			AgentStore agentStore = getAgentLogic().queryAgent(null);
+			agentVOList = agentStore.getAgentVOList();
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+			return ERROR;
+		}
 		return SUCCESS;
 	}
 	
@@ -147,6 +156,10 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	 */
 	public String addAgentForDelivery(){
 		try{
+			if(agentId != null && agentId.length() == 0){
+				agentId = null;
+			}
+			
 			getDeliveryLogic().associateAgent(deliveryId, agentId);
 			processSuccess = true;
 		}catch(DeliveryWithWrongStatusException e){
