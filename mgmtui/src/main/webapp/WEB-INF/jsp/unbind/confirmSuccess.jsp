@@ -8,7 +8,7 @@
 <title>生成回收单成功</title>
 </head>
 <body>
-<s:form action="list" namespace="/unbind" method="Post" id="successForm">
+<s:form action="list" namespace="/unbind" method="Get" id="successForm">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">已生成回收单！</td>

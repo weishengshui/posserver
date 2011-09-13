@@ -11,7 +11,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="search" namespace="/unbind" method="Post" id="listForm">
+<s:form action="search" namespace="/unbind" method="Get" id="listForm">
 <s:token/>
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="posIds" id="posIds" />

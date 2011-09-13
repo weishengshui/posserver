@@ -64,6 +64,10 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnNum;
 	
+	private Date rnTime;
+	
+	private Integer posCount;
+	
 	private String inviteCode;
 	
 	private String agentName;
@@ -97,6 +101,22 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public Integer getPosCount() {
+		return posCount;
+	}
+
+	public void setPosCount(Integer posCount) {
+		this.posCount = posCount;
+	}
+
+	public Date getRnTime() {
+		return rnTime;
+	}
+
+	public void setRnTime(Date rnTime) {
+		this.rnTime = rnTime;
+	}
+
 	public ReturnNoteInfo getRnInfo() {
 		return rnInfo;
 	}
@@ -339,11 +359,15 @@ public class UnbindAction extends BaseAction {
 					}
 					getRequest().setAttribute("isAgent", "true");
 				}
-				getRequest().setAttribute("posCount", posList.size());
+				/*getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", rn.getId());
 				getRequest().setAttribute("rnNumber", rn.getRnNumber());
 				log.debug("create date: {}" , rn.getCreateDate());
-				getRequest().setAttribute("rnTime", rn.getCreateDate());
+				getRequest().setAttribute("rnTime", rn.getCreateDate());*/
+				this.setPosCount(splitPosIds(posIds.trim()).size());
+				this.setRnId(rn.getId());
+				this.setRnNum(rn.getRnNumber());
+				this.setRnTime(rn.getCreateDate());
 				return SUCCESS;
 				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
 			} else if (!StringUtil.isEmptyString(errInfo)) { 
@@ -367,7 +391,10 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String confirmSuccess() {
-		getRequest().setAttribute("posCount", splitPosIds(posIds.trim()).size());
+		getRequest().setAttribute("posCount", posCount);
+		getRequest().setAttribute("rnId", rnId);
+		getRequest().setAttribute("rnNumber", rnNum);
+		getRequest().setAttribute("rnTime", rnTime);
 		return SUCCESS;
 	}
 	
@@ -375,9 +402,13 @@ public class UnbindAction extends BaseAction {
 		if (!StringUtil.isEmptyString(agentId)) {
 			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
 			if (rnInfo != null) {
-				getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
+				/*getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
 				getRequest().setAttribute("rnId", rnInfo.getRn().getId());
-				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());
+				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());*/
+				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
+				this.setRnId(rnInfo.getRn().getId());
+				this.setRnNum(rnInfo.getRn().getRnNumber());
+				this.setRnTime(rnInfo.getRn().getCreateDate());
 				return SUCCESS;
 			}
 		}

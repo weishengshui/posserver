@@ -42,7 +42,10 @@
 			method="confirmRnNumber">
 			<result name="success" type="redirectAction">
 				<param name="actionName">confirmSuccess</param>
-				<param name="posIds">posIds</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${rnTime}</param>
 			</result>
 			<result name="error" type="tiles">unbind.list</result>
 			<result name="invalid.token" type="tiles">unbind.list</result>
@@ -54,7 +57,13 @@
 		<action name="confirmAllRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmAllRnNumber">
-			<result name="success" type="tiles">unbind.confirmSuccess</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${rnTime}</param>
+			</result>
 			<result name="error" type="tiles">unbind.list</result>
 			<result name="invalid.token" type="tiles">unbind.list</result>
         	<interceptor-ref name="defaultStack"/>  
