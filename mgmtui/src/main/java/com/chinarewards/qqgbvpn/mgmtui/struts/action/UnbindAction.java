@@ -65,6 +65,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnNum;
 	
+	private String status;
+	
 	private Date rnTime;
 	
 	private Integer posCount;
@@ -106,6 +108,14 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public String getPassTime() {
 		return passTime;
 	}
@@ -504,10 +514,13 @@ public class UnbindAction extends BaseAction {
 		if (rnNum == null) {
 			rnNum = "";
 		}
+		if (status == null) {
+			status = "";
+		}
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(initPageSize);
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
@@ -520,7 +533,7 @@ public class UnbindAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 		}
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	

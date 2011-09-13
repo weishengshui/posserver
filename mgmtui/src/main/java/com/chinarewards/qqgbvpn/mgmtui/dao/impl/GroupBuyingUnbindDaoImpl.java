@@ -527,11 +527,15 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @return
 	 * 查回收单列表
 	 */
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
-		String sql = "select rn from ReturnNote rn where upper(rn.rnNumber) like ?1 order by rn.createDate desc";
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo) {
+		StringBuffer sql = new StringBuffer("select rn from ReturnNote rn where upper(rn.rnNumber) like ?1");
+		if (!Tools.isEmptyString(status)) {
+			sql.append(" and rn.status = '" + status + "'");
+		}
+		sql.append(" order by rn.createDate desc");
 		List<Object> params = new ArrayList<Object>();
 		params.add("%" + rnNumber.toUpperCase() + "%");
-		pageInfo = this.findPageInfo(sql, params, pageInfo);
+		pageInfo = this.findPageInfo(sql.toString(), params, pageInfo);
 		return pageInfo;
 	}
 	

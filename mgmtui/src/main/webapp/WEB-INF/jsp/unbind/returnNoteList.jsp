@@ -13,7 +13,9 @@
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td width="77%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
+		<td width="50%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
+		<td width="37%">状态：<s:select name="status" id="status" value="status"   list="#{'CONFIRMED':'已确认','RETURNED':'已全部全收'}" 
+		listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>
