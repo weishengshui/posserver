@@ -389,7 +389,9 @@ public class UnbindAction extends BaseAction {
 				if (!StringUtil.isEmptyString(inviteCode)) {
 					String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
-					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。</body></html>";
+					String path = getRnDetailPath(rn.getId());
+					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。" +
+							"<br><a href='" + path + "'>请点击此链接查看回收单具体信息，谢谢。</a></body></html>";
 					try {
 						getMailService().sendMail(toAdds, null, subject, content, null);
 					} catch (Throwable e) {
@@ -552,6 +554,13 @@ public class UnbindAction extends BaseAction {
 		String path = getRequest().getRequestURL().toString();
 		String ctx = getRequest().getContextPath();
 		path = path.substring(0, path.indexOf(ctx)) + ctx + "/returnnote/request?inviteCode=" + inviteCode;
+		return path;
+	}
+	
+	private String getRnDetailPath(String rnId) {
+		String path = getRequest().getRequestURL().toString();
+		String ctx = getRequest().getContextPath();
+		path = path.substring(0, path.indexOf(ctx)) + ctx + "/unbind/getReturnNoteInfo?rnId=" + rnId;
 		return path;
 	}
 	
