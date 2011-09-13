@@ -67,10 +67,12 @@
 
 <script type="text/javascript">
 	function unbind(posId) {
-		document.getElementById("posId").value = posId;
-		var formObj = document.getElementById("unbindForm");
-		formObj.action = "${ctx}/unbind/unbind";
-		formObj.submit();
+		if (confirm("确定要解除POS机：\"" + posId + "\"的绑定关系吗？")) {
+			document.getElementById("posId").value = posId;
+			var formObj = document.getElementById("unbindForm");
+			formObj.action = "${ctx}/unbind/unbind";
+			formObj.submit();
+		}
 	}
 </script>
 </body>

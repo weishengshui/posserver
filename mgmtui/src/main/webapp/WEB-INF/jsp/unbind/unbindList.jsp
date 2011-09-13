@@ -54,16 +54,10 @@
 	</tr>
 	</s:iterator>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><p:page pageInfo="${pageInfo}" /></td>
+		<td colspan="6" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><button type="button" onclick="confirmAllRnNumber()">全部回收</button>　　<button type="button" onclick="confirmRnNumber()">回收</button></td>
+		<td colspan="6" class="td_pageInfo"><button type="button" onclick="confirmAllRnNumber()">全部回收</button>　　<button type="button" onclick="confirmRnNumber()">回收</button></td>
 	</tr>
 </table>
 </s:if>
@@ -92,16 +86,20 @@
 			alert("请选择要回收的POS机!");
 			return;
 		}
-		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
-		var formObj = document.getElementById("listForm");
-		formObj.action = "${ctx}/unbind/confirmRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收以选中的POS机吗？")) {
+			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
+			var formObj = document.getElementById("listForm");
+			formObj.action = "${ctx}/unbind/confirmRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function confirmAllRnNumber() {
-		var formObj = document.getElementById("listForm");
-		formObj.action = "${ctx}/unbind/confirmAllRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收所有的POS机吗？")) {
+			var formObj = document.getElementById("listForm");
+			formObj.action = "${ctx}/unbind/confirmAllRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function ckPosId(obj) {
