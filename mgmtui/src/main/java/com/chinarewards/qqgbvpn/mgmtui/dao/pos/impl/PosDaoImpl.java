@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -399,6 +400,37 @@ public class PosDaoImpl implements PosDao {
 			return null;
 		}
 
+	}
+	
+	@Override
+	public PosVO getPosByPosNum(String posNum) throws ParamsException, PosNotExistException {
+		log.trace("calling getPosByPosNum start and params is {}", posNum);
+		if (Tools.isEmptyString(posNum)) {
+			throw new ParamsException("pos number is null");
+		}
+		
+		Pos pos = null;
+		
+		try{
+			pos = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posNum")
+					.setParameter("posNum", posNum)
+					.getSingleResult();
+		}catch (NoResultException e) {
+			throw new PosNotExistException("POS(posNum=" + posNum + ") not existed!");
+		}
+		
+		
+		if (pos != null) {
+			PosVO posVO = posAdapter.get().convertToPosVO(pos);
+			if(pos.getDstatus() == PosDeliveryStatus.DELIVERED){
+				posVO.setDeliveryAgent(getDeliveryAgentByPos(pos.getId()));
+			}
+			posVO.setCreateAt(this.getPosCreateAtById(pos.getId()));
+			posVO.setLastModifyAt(this.getPosLastModifyAtById(pos.getId()));
+			return posVO;
+		} else {
+			return null;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

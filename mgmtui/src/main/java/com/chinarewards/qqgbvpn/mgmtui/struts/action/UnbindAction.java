@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +65,8 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnNum;
 	
+	private String status;
+	
 	private Date rnTime;
 	
 	private Integer posCount;
@@ -81,6 +84,8 @@ public class UnbindAction extends BaseAction {
 	private String isAgent;
 	
 	private Date sendTime;
+	
+	private String passTime;
 	
 	private ReturnNoteInfo rnInfo;
 	
@@ -103,6 +108,22 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getPassTime() {
+		return passTime;
+	}
+
+	public void setPassTime(String passTime) {
+		this.passTime = passTime;
+	}
+
 	public Integer getPosCount() {
 		return posCount;
 	}
@@ -296,10 +317,15 @@ public class UnbindAction extends BaseAction {
 		if (inviteCode != null && !"".equals(inviteCode.trim())) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode.trim());
 			if (a != null) {
+				log.debug("a.getId() : {}",a.getId());
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				List<Pos> posList = pageInfo.getItems();
+				for (Pos p : posList) {
+					log.debug("p.getDstatus() : {}",p.getDstatus());
+				}
 				this.setAgentId(a.getId());
 				this.setAgentName(a.getName());
 				this.setAgent(a);
@@ -333,7 +359,9 @@ public class UnbindAction extends BaseAction {
 				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
 				getMailService().sendMail(toAdds, null, subject, content, null);
 				this.setAgentName(this.getAgentName());
-				this.setSendTime(new Date());
+				//this.setSendTime(new Date());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(new Date()));
 				return SUCCESS;
 			}
 		}
@@ -361,7 +389,9 @@ public class UnbindAction extends BaseAction {
 				if (!StringUtil.isEmptyString(inviteCode)) {
 					String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
-					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。</body></html>";
+					String path = getRnDetailPath(rn.getId());
+					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。" +
+							"<br><a href='" + path + "'>请点击此链接查看回收单具体信息，谢谢。</a></body></html>";
 					try {
 						getMailService().sendMail(toAdds, null, subject, content, null);
 					} catch (Throwable e) {
@@ -372,7 +402,9 @@ public class UnbindAction extends BaseAction {
 				this.setPosCount(splitPosIds(posIds.trim()).size());
 				this.setRnId(rn.getId());
 				this.setRnNum(rn.getRnNumber());
-				this.setRnTime(rn.getCreateDate());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rn.getCreateDate()));
+				//this.setRnTime(rn.getCreateDate());
 				return SUCCESS;
 			}else {
 				this.errorMsg = "第三方信息找不到!";
@@ -388,6 +420,10 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String unbindSuccess() {
+		return SUCCESS;
+	}
+	
 	public String confirmAllRnNumber() throws SaveDBException {
 		if (!StringUtil.isEmptyString(agentId)) {
 			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
@@ -395,7 +431,9 @@ public class UnbindAction extends BaseAction {
 				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
 				this.setRnId(rnInfo.getRn().getId());
 				this.setRnNum(rnInfo.getRn().getRnNumber());
-				this.setRnTime(rnInfo.getRn().getCreateDate());
+				//this.setRnTime(rnInfo.getRn().getCreateDate());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rnInfo.getRn().getCreateDate()));
 				return SUCCESS;
 			}
 		}
@@ -478,10 +516,13 @@ public class UnbindAction extends BaseAction {
 		if (rnNum == null) {
 			rnNum = "";
 		}
+		if (status == null) {
+			status = "";
+		}
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(initPageSize);
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
@@ -494,7 +535,7 @@ public class UnbindAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 		}
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
@@ -513,6 +554,13 @@ public class UnbindAction extends BaseAction {
 		String path = getRequest().getRequestURL().toString();
 		String ctx = getRequest().getContextPath();
 		path = path.substring(0, path.indexOf(ctx)) + ctx + "/returnnote/request?inviteCode=" + inviteCode;
+		return path;
+	}
+	
+	private String getRnDetailPath(String rnId) {
+		String path = getRequest().getRequestURL().toString();
+		String ctx = getRequest().getContextPath();
+		path = path.substring(0, path.indexOf(ctx)) + ctx + "/unbind/getReturnNoteInfo?rnId=" + rnId;
 		return path;
 	}
 	

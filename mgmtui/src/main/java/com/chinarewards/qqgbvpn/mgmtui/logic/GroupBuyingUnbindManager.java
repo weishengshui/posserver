@@ -103,7 +103,7 @@ public interface GroupBuyingUnbindManager {
 	 * @param pageInfo
 	 * @return
 	 */
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo);
 	
 	/**
 	 * 根据回收单ID查询回收单具体信息

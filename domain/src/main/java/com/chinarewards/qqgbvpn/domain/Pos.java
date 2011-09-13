@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -64,6 +65,9 @@ public class Pos {
 	 * @deprecated
 	 */
 	byte[] challenge;
+	
+	@Version
+    long version;	//2011-09-13   Seek
 
 	public String getId() {
 		return id;
@@ -168,7 +172,15 @@ public class Pos {
 	public void setChallenge(byte[] challenge) {
 		this.challenge = challenge;
 	}
+	
+	public long getVersion() {
+		return version;
+	}
 
+	public void setVersion(long version) {
+		this.version = version;
+	}
+	
 	@Override
 	public String toString() {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
@@ -177,4 +189,5 @@ public class Pos {
 				+ ", secret=" + secret + ", challenge="
 				+ Arrays.toString(challenge) + "]";
 	}
+	
 }

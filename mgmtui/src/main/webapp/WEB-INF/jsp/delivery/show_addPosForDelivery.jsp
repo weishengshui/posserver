@@ -49,15 +49,36 @@
 		}
 		return true;
 	}
-
+	
+	function checkForm(){
+		var b = true;
+		var agentSelectValue = document.getElementById('agentList_ID').value;
+		if(agentSelectValue == ''){
+			alert('请选择第三方!');
+			return false;
+		}
+		
+		var posListSize = '<s:property value="#request.deliveryNoteDetailVOList.size()"/>';
+		if(posListSize == 0){
+			alert('请添加POS机!');
+			return false;
+		}
+		return b;
+	}
+	
 	function toNextPage(){
-		window.location.href = '<s:url value="/delivery/showWaitPosInitDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+		if(checkForm()){
+			window.location.href = '<s:url value="/delivery/showWaitPosInitDelivery"/>?deliveryId=<s:property value="#request.deliveryNoteVO.id"/>';
+		}
 	}
-
+	
 	function removeDelivery(){
-		window.location.href = '<s:url value="/delivery/deleteDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
+		var res = window.confirm("是否要删除该交付单，删除后将不能恢复?");
+		if(res == true) {
+			window.location.href = '<s:url value="/delivery/deleteDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
+		}
 	}
-
+	
 	function printDelivery(){
 		window.location.href = '<s:url value="/delivery/printDelivery"/>/<s:property value="#request.deliveryNoteVO.id"/>';
 	}
@@ -71,11 +92,11 @@
 <table align="center" width="100%" border="0">
 	<tr height="50">
 		<td width="20%">
-			选择第三方：
+			第三方：
 		</td>
 		<td colspan="4">
 			<select id="agentList_ID" onchange="associateAgent('<s:property value="#request.deliveryNoteVO.id"/>', this.options[this.selectedIndex].value);">
-				<option value="null"></option>
+				<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 				<s:iterator id="agentVO" value="#request.agentVOList" status="i">
 					<option value="<s:property value='#agentVO.id'/>" >
 						<s:property value="#agentVO.name"/>
@@ -170,7 +191,7 @@
 		<td colspan="4">
 			<form action="<s:url value='/delivery/addPosForDelivery'/>" method="post" onsubmit="return checkFormContent();">
 				<input type="hidden" name="deliveryId" value="<s:property value='#request.deliveryNoteVO.id'/>"/>
-				<input type="text" id="posNum_ID" name="posNum" value="<s:property value='#request.posNum'/>"/>
+				<input type="text" id="posNum_ID" name="posNum" value="<s:property value='#request.posNum'/>" autocomplete="off"/>
 				<input type="submit" value="添加"/>
 			</form>
 		</td>

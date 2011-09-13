@@ -37,8 +37,18 @@ public class PosVO implements java.io.Serializable{
 	Date createAt;
 	
 	Date lastModifyAt;
+	
+	long version;
 
 	//-------------------------------------------//
+
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
+	}
 
 	public String getId() {
 		return id;

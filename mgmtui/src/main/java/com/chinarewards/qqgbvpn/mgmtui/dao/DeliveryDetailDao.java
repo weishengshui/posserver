@@ -57,11 +57,10 @@ public interface DeliveryDetailDao {
 	 * Create by note and pos.
 	 * 
 	 * @param noteId
-	 * @param posId
+	 * @param posVO
 	 * @return
 	 */
-	DeliveryNoteDetailVO create(String noteId, String posId)
-			throws PosNotExistException, PosWithWrongStatusException;
+	DeliveryNoteDetailVO create(String noteId, PosVO posVO);
 
 	/**
 	 * Delete detail.

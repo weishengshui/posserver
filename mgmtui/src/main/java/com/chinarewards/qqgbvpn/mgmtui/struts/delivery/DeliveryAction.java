@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
@@ -243,7 +245,15 @@ public class DeliveryAction extends BasePagingToolBarAction {
 				return ERROR;
 			}
 			
-			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
+			deliveryNoteDetailVOList = getDeliveryLogic().getAllDeliveryNoteDetailVOByUnInitPosStatus(deliveryId);
+			
+			if(deliveryNoteDetailVOList == null || deliveryNoteDetailVOList.size() == 0){
+				return INPUT;
+			}
+		}catch(DeliveryNoteWithNoDetailException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "该订单没有添加任何POS机";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -291,6 +301,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			
 			//confirm
 			getDeliveryLogic().confirmDelivery(deliveryId);	
+		}catch(DeliveryWithWrongStatusException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "交付单状态异常";
+			return ERROR;
+		}catch(AgentNotException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "无效的第三方关联";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;

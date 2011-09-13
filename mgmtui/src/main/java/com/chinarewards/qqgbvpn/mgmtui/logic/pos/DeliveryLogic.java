@@ -117,8 +117,7 @@ public interface DeliveryLogic {
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
-			PosWithWrongStatusException, DeliveryWithWrongStatusException,
-			DeliveryDetailExistException;
+			PosWithWrongStatusException, DeliveryWithWrongStatusException;
 
 	/**
 	 * Delete delivery note detail from note.
@@ -149,7 +148,7 @@ public interface DeliveryLogic {
 	 * @throws DeliveryNoteWithNoDetailException
 	 *             when delivery not with no details.
 	 */
-	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> getAllDeliveryNoteDetailVOByUnInitPosStatus(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException;
 
 	/**

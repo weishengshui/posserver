@@ -54,16 +54,10 @@
 	</tr>
 	</s:iterator>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><p:page pageInfo="${pageInfo}" /></td>
+		<td colspan="6" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><button type="button" onclick="confirmRnNumber()">回收</button></td>
+		<td colspan="6" class="td_pageInfo"><button type="button" onclick="confirmRnNumber()">回收</button></td>
 	</tr>
 </table>
 </s:if>
@@ -92,10 +86,12 @@
 			alert("请选择要回收的POS机!");
 			return;
 		}
-		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
-		var formObj = document.getElementById("confirmForm");
-		formObj.action = "${ctx}/returnnote/confirmRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收以选中的POS机吗？")) {
+			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
+			var formObj = document.getElementById("confirmForm");
+			formObj.action = "${ctx}/returnnote/confirmRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function ckPosId(obj) {

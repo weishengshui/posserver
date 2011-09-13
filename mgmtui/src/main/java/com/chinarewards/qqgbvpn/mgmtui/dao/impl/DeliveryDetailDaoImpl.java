@@ -161,29 +161,15 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 	}
 
 	@Override
-	public DeliveryNoteDetailVO create(String noteId, String posId)
-			throws PosNotExistException, PosWithWrongStatusException {
+	public DeliveryNoteDetailVO create(String noteId, PosVO posVO) {
 		DeliveryNote dn = getEm().find(DeliveryNote.class, noteId);
-		Pos p = null;
-		try {
-			p = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posId")
-					.setParameter("posId", posId).getSingleResult();
-			if (PosDeliveryStatus.DELIVERED.equals(p.getDstatus())) {
-				throw new PosWithWrongStatusException(
-						"Should be PosDeliveryStatus.RETURNED, but was:"
-								+ p.getDstatus());
-			}
-		} catch (NoResultException e) {
-			throw new PosNotExistException("POS(id=" + posId + ") not existed!");
-		}
-
 		DeliveryNoteDetail detail = new DeliveryNoteDetail();
 
 		detail.setDn(dn);
-		detail.setPosId(posId);
-		detail.setModel(p.getModel());
-		detail.setSimPhoneNo(p.getSimPhoneNo());
-		detail.setSn(p.getSn());
+		detail.setPosId(posVO.getPosId());
+		detail.setModel(posVO.getModel());
+		detail.setSimPhoneNo(posVO.getSimPhoneNo());
+		detail.setSn(posVO.getSn());
 		getEm().persist(detail);
 
 		// add journalLogic
@@ -201,8 +187,8 @@ public class DeliveryDetailDaoImpl extends BaseDao implements DeliveryDetailDao 
 
 		DeliveryNoteDetailVO vo = deliveryNoteDetailAdapter.get().convertToVO(
 				detail);
-		vo.setIstatus(p.getIstatus().toString());
-		vo.setSecret(p.getSecret());
+		vo.setIstatus(posVO.getIstatus().toString());
+		vo.setSecret(posVO.getSecret());
 		return vo;
 	}
 

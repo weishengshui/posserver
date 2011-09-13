@@ -45,7 +45,7 @@
 						<a target="_blank" href='<s:url value="/delivery/printDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>打印</a>
 					</s:if>
 					<s:if test="#deliveryNoteVO.status != 'PRINTED' && #deliveryNoteVO.status != 'CONFIRMED'">
-						<a href='<s:url value="/delivery/deleteDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'>删除</a>
+						<a href="javascript:void(0);" onclick="deleteDelivery('<s:url value="/delivery/deleteDelivery"/>/<s:property value="#deliveryNoteVO.id"/>'); return false;">删除</a>
 					</s:if>
 				</td>
 			</tr>
@@ -55,6 +55,15 @@
 	
 	<div id="pagingToolBar_ID" class="pagingToolbar"></div>
 </div>
+
+<script type="text/javascript">
+	function deleteDelivery(url){
+		var res = window.confirm("是否要删除该交付单，删除后将不能恢复?");
+		if(res == true){
+			window.location.href = url;
+		}
+	}
+</script>
 
 <%-- 加载分页条 --%>
 <script type="text/javascript">

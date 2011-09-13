@@ -61,12 +61,37 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						try {
 							
 							if ("0".equals(resultCode)) {
+								log.debug("resultCode : {}", resultCode);
 								//删除绑定关系
 								em.get().remove(pa);
 								//更新POS机交付状态
 								Pos p = pa.getPos();
+								log.debug("posId : {}", p.getPosId());
 								p.setDstatus(PosDeliveryStatus.RETURNED);
 								savePos(p);
+								//更新POS机所关联的所有回收单中POS机的交付状态
+								List<ReturnNoteDetail> rnDetailList = getReturnNoteDetailListByPosId(p.getPosId());
+								log.debug("rnDetailList.size : {}", rnDetailList.size());
+								if (rnDetailList != null && rnDetailList.size() > 0) {
+									HashMap<String,ReturnNote> tempMap = new HashMap<String,ReturnNote>();
+									for (ReturnNoteDetail rnd : rnDetailList) {
+										rnd.setDstatus(PosDeliveryStatus.RETURNED);
+										saveReturnNoteDetail(rnd);
+										//收集还没有完全回收的回收单
+										if (!ReturnNoteStatus.RETURNED.equals(rnd.getRn().getStatus()) 
+												&& !tempMap.containsKey(rnd.getRn().getId())) {
+											tempMap.put(rnd.getRn().getId(), rnd.getRn());
+										}
+									}
+									for (String rnId : tempMap.keySet()) {
+										//如果回收单中的所有POS机都已经回收，则修改回收单的状态为全部回收
+										if (isReadyToReturned(rnId)) {
+											ReturnNote returnNote = tempMap.get(rnId);
+											returnNote.setStatus(ReturnNoteStatus.RETURNED);
+											saveReturnNote(returnNote);
+										}
+									}
+								}
 							}
 							saveJournal(journal);
 						} catch (Exception e) {
@@ -315,6 +340,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				
 				if (posList != null && posList.size() > 0) {
 					for (Pos p : posList) {
+						log.debug("p.getDstatus() : {}", p.getDstatus());
 						ReturnNoteDetail rnd = new ReturnNoteDetail();
 						rnd.setRn(rn);
 						rnd.setPosId(p.getPosId());
@@ -485,7 +511,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 		ReturnNoteInfo rnInfo = new ReturnNoteInfo();
 		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
 		if (rn != null) {
-			Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = (?1)");
+			Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = ?1");
 			jql.setParameter(1, rnId);
 			List<ReturnNoteDetail> rnDetailList = jql.getResultList();
 			
@@ -501,12 +527,33 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @return
 	 * 查回收单列表
 	 */
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
-		String sql = "select rn from ReturnNote rn where upper(rn.rnNumber) like ?1 order by rn.createDate desc";
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo) {
+		StringBuffer sql = new StringBuffer("select rn from ReturnNote rn where upper(rn.rnNumber) like ?1");
+		if (!Tools.isEmptyString(status)) {
+			sql.append(" and rn.status = '" + status + "'");
+		}
+		sql.append(" order by rn.createDate desc");
 		List<Object> params = new ArrayList<Object>();
 		params.add("%" + rnNumber.toUpperCase() + "%");
-		pageInfo = this.findPageInfo(sql, params, pageInfo);
+		pageInfo = this.findPageInfo(sql.toString(), params, pageInfo);
 		return pageInfo;
+	}
+	
+	private List<ReturnNoteDetail> getReturnNoteDetailListByPosId(String posId) {
+		Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.dstatus = '" 
+					+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.posId = ?1");
+		jql.setParameter(1, posId);
+		return jql.getResultList();
+	}
+	
+	private boolean isReadyToReturned(String rnId) {
+		log.debug("rnId : {}", rnId);
+		Query jql = em.get().createQuery("select count(rnd.id) from ReturnNoteDetail rnd where rnd.dstatus = '" 
+				+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.rn.id = ?1");
+		jql.setParameter(1, rnId);
+		Long count = (Long) jql.getSingleResult();
+		log.debug("count : {}", count);
+		return count != null && count > 0 ? false : true;
 	}
 	
 }
