@@ -49,7 +49,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					if (pa != null) {
 						Journal journal = new Journal();
 						journal.setTs(data);
-						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+						journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 						journal.setEntityId(pa.getId());
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
 						if (items != null) {
@@ -82,7 +82,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					} else {
 						Journal journal = new Journal();
 						journal.setTs(data);
-						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+						journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 						journal.setEntityId(posId);
 						journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 						journal.setEventDetail("group buying unbind error,pos assignment not found by posId : " + posId);
@@ -103,7 +103,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					//resultStatus取消状态，非0代表不成功，直接写失败日志
 					Journal journal = new Journal();
 					journal.setTs(data);
-					journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+					journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 					journal.setEntityId(posId);
 					journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 					journal.setEventDetail(resultStatus);
@@ -125,7 +125,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			//resultCode不等于0说明QQ响应失败，直接写错误日志
 			Journal journal = new Journal();
 			journal.setTs(data);
-			journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+			journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 			journal.setEntityId(posIds.toString());
 			journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 			journal.setEventDetail(resultCode);
