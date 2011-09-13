@@ -52,6 +52,7 @@
 									<version>${project.version}</version>
 									<type>war</type>
 									<outputDirectory>${project.build.directory}</outputDirectory>
+									<destFileName>mgmtui-${project.version}.war</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
