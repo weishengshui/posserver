@@ -12,7 +12,7 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:else>
-<s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
+<s:form action="confirmRnNumber" namespace="/returnnote" method="Get" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="agentName" id="agentName" />
 <s:hidden name="posIds" id="posIds" />

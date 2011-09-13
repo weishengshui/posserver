@@ -24,13 +24,22 @@
 		<action name="createInvite"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createInvite">
-			<result name="success" type="tiles">unbind.sendURLSuccess</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">sendURLSuccess</param>
+				<param name="agentName">${agentName}</param>
+				<param name="sendTime">${sendTime}</param>
+			</result>
 			<result name="error" type="tiles">unbind.sendURL</result>
 			<result name="invalid.token" type="tiles">unbind.sendURL</result>
         	<interceptor-ref name="defaultStack"/>  
             <interceptor-ref name="token">  
                  <param name="includeMethods">createInvite</param>    
             </interceptor-ref>  
+		</action>
+		<action name="sendURLSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="sendURLSuccess">
+			<result name="success" type="tiles">unbind.sendURLSuccess</result>
 		</action>
 		<action name="confirmSuccess"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
@@ -79,6 +88,11 @@
 		<action name="unbind"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="unbind">
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="successMsg">${successMsg}</param>
+				<param name="errorMsg">${errorMsg}</param>
+			</result>
 			<result name="success" type="tiles">unbind.unbind</result>
 			<result name="invalid.token" type="tiles">unbind.unbind</result>
         	<interceptor-ref name="defaultStack"/>  

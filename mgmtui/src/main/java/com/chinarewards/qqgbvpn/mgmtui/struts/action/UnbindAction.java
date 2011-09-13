@@ -494,6 +494,12 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String sendURLSuccess() {
+		/*getRequest().setAttribute("agentName", agentName);
+		getRequest().setAttribute("sendTime", agentName);*/
+		return SUCCESS;
+	}
+	
 	public String getReturnNoteList() {
 		if (rnNum == null) {
 			rnNum = "";
