@@ -12,7 +12,7 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:else>
-<s:form action="confirmRnNumber" namespace="/returnnote" method="Post" id="confirmForm">
+<s:form action="confirmRnNumber" namespace="/returnnote" method="Get" id="confirmForm">
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="agentName" id="agentName" />
 <s:hidden name="posIds" id="posIds" />
@@ -30,29 +30,34 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
-		<td class="td_title">posId</td>
-		<td class="td_title">simPhoneNo</td>
-		<td class="td_title">sn</td>
+		<td class="td_title">POS机编号</td>
+		<td class="td_title">厂商编号</td>
+		<td class="td_title">型号</td>
+		<td class="td_title">电机号码</td>
+		<td class="td_title">交付状态</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
 		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
 		<td><s:property value="#list.posId" /></td>
-		<td><s:property value="#list.simPhoneNo" /></td>
+		<td><s:property value="#list.model" /></td>
 		<td><s:property value="#list.sn" /></td>
+		<td><s:property value="#list.simPhoneNo" /></td>
+		<td>
+			<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
+				已交付
+			</s:if>
+			<s:elseif test="#list.dstatus != null && #list.dstatus.toString() == 'RETURNED'">
+				已回收
+			</s:elseif>	
+		</td>
 	</tr>
 	</s:iterator>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><p:page pageInfo="${pageInfo}" /></td>
+		<td colspan="6" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><button type="button" onclick="confirmRnNumber()">回收</button></td>
+		<td colspan="6" class="td_pageInfo"><button type="button" onclick="confirmRnNumber()">回收</button></td>
 	</tr>
 </table>
 </s:if>
@@ -81,10 +86,12 @@
 			alert("请选择要回收的POS机!");
 			return;
 		}
-		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
-		var formObj = document.getElementById("confirmForm");
-		formObj.action = "${ctx}/returnnote/confirmRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收以选中的POS机吗？")) {
+			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
+			var formObj = document.getElementById("confirmForm");
+			formObj.action = "${ctx}/returnnote/confirmRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function ckPosId(obj) {

@@ -123,8 +123,8 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 		return dao.get().getAgentByInviteCode(inviteCode);
 	}
 	
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
-		return dao.get().getReturnNoteLikeRnNumber(rnNumber, pageInfo);
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo) {
+		return dao.get().getReturnNoteLikeRnNumber(rnNumber, status, pageInfo);
 	}
 	
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {

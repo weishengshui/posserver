@@ -38,7 +38,7 @@ public interface GroupBuyingUnbindDao {
 	
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId);
 	
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo);
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo);
 	
 	public ReturnNoteInfo confirmAllReturnNote(String agentId) throws SaveDBException;
 }

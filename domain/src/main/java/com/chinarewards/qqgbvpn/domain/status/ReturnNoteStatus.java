@@ -15,5 +15,7 @@ public enum ReturnNoteStatus {
 	/**
 	 * Final state.
 	 */
-	CONFIRMED
+	CONFIRMED,
+	
+	RETURNED
 }

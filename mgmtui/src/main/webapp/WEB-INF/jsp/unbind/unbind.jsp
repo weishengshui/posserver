@@ -14,8 +14,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="posSearch" namespace="/unbind" method="Post" id="unbindForm">
-<s:token/>
+<s:form action="posSearch" namespace="/unbind" method="Get" id="unbindForm">
 <s:hidden name="posId" id="posId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
@@ -28,16 +27,36 @@
 <s:if test="posList!=null && posList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td class="td_title">posId</td>
-		<td class="td_title">simPhoneNo</td>
-		<td class="td_title">sn</td>
+		<td class="td_title">POS机编号</td>
+		<td class="td_title">厂商编号</td>
+		<td class="td_title">型号</td>
+		<td class="td_title">电机号码</td>
+		<td class="td_title">交付状态</td>
+		<td class="td_title">运营状态</td>
 		<td class="td_title">操作</td>
 	</tr>
 	<s:iterator value="posList" id="list">
 	<tr>
 		<td><s:property value="#list.posId" /></td>
-		<td><s:property value="#list.simPhoneNo" /></td>
+		<td><s:property value="#list.model" /></td>
 		<td><s:property value="#list.sn" /></td>
+		<td><s:property value="#list.simPhoneNo" /></td>
+		<td>
+			<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
+				已交付
+			</s:if>
+			<s:elseif test="#list.dstatus != null && #list.dstatus.toString() == 'RETURNED'">
+				已回收
+			</s:elseif>	
+		</td>
+		<td>
+			<s:if test="#list.ostatus != null && #list.ostatus.toString() == 'ALLOWED'">
+				允许
+			</s:if>
+			<s:elseif test="#list.ostatus != null && #list.ostatus.toString() == 'STOPPED'">
+				禁止
+			</s:elseif>	
+		</td>
 		<td><button type="button" onclick="unbind('<s:property value="#list.posId" />')">解绑</button></td>
 	</tr>
 	</s:iterator>
@@ -47,10 +66,12 @@
 
 <script type="text/javascript">
 	function unbind(posId) {
-		document.getElementById("posId").value = posId;
-		var formObj = document.getElementById("unbindForm");
-		formObj.action = "${ctx}/unbind/unbind";
-		formObj.submit();
+		if (confirm("确定要解除POS机：\"" + posId + "\"的绑定关系吗？")) {
+			document.getElementById("posId").value = posId;
+			var formObj = document.getElementById("unbindForm");
+			formObj.action = "${ctx}/unbind/unbind";
+			formObj.submit();
+		}
 	}
 </script>
 </body>
