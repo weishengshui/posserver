@@ -385,10 +385,6 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String confirmSuccess() {
-		getRequest().setAttribute("posCount", posCount);
-		getRequest().setAttribute("rnId", rnId);
-		getRequest().setAttribute("rnNumber", rnNum);
-		getRequest().setAttribute("rnTime", rnTime);
 		return SUCCESS;
 	}
 	

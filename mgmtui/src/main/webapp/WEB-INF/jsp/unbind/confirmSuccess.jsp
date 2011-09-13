@@ -14,13 +14,13 @@
 		<td width="77%">已生成回收单！</td>
 	</tr>
 	<tr>
-		<td width="77%">编号：<s:property value="#request.rnNumber" /></td>
+		<td width="77%">编号：<s:property value="rnNum" /></td>
 	</tr>
 	<tr>
-		<td width="77%">POS机：<s:property value="#request.posCount" />台</td>
+		<td width="77%">POS机：<s:property value="posCount" />台</td>
 	</tr>
 	<tr>
-		<td width="77%">发出邀请时间：<s:date name="#request.rnTime" format="%{getText('dateformat.ymdhm')}" /></td>
+		<td width="77%">发出邀请时间：<s:date name="rnTime" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	<s:if test="#request.isAgent!=null && #request.isAgent == 'true'">
 	<tr>
