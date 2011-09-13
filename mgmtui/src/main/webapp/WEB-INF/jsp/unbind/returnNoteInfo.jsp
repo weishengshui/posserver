@@ -36,6 +36,9 @@
 					<s:elseif test="rnInfo.rn.status != null && 'CONFIRMED' == rnInfo.rn.status.toString()">
 						已确认
 					</s:elseif>
+					<s:elseif test="rnInfo.rn.status != null && 'RETURNED' == rnInfo.rn.status.toString()">
+						已全部全收
+					</s:elseif>
 					<s:else>
 						草稿
 					</s:else>

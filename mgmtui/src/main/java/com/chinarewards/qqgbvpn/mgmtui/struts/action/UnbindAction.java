@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,6 +83,8 @@ public class UnbindAction extends BaseAction {
 	
 	private Date sendTime;
 	
+	private String passTime;
+	
 	private ReturnNoteInfo rnInfo;
 	
 	private String errorMsg;
@@ -103,6 +106,14 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public String getPassTime() {
+		return passTime;
+	}
+
+	public void setPassTime(String passTime) {
+		this.passTime = passTime;
+	}
+
 	public Integer getPosCount() {
 		return posCount;
 	}
@@ -296,10 +307,15 @@ public class UnbindAction extends BaseAction {
 		if (inviteCode != null && !"".equals(inviteCode.trim())) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode.trim());
 			if (a != null) {
+				log.debug("a.getId() : {}",a.getId());
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				List<Pos> posList = pageInfo.getItems();
+				for (Pos p : posList) {
+					log.debug("p.getDstatus() : {}",p.getDstatus());
+				}
 				this.setAgentId(a.getId());
 				this.setAgentName(a.getName());
 				this.setAgent(a);
@@ -333,7 +349,9 @@ public class UnbindAction extends BaseAction {
 				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
 				getMailService().sendMail(toAdds, null, subject, content, null);
 				this.setAgentName(this.getAgentName());
-				this.setSendTime(new Date());
+				//this.setSendTime(new Date());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(new Date()));
 				return SUCCESS;
 			}
 		}
@@ -372,7 +390,9 @@ public class UnbindAction extends BaseAction {
 				this.setPosCount(splitPosIds(posIds.trim()).size());
 				this.setRnId(rn.getId());
 				this.setRnNum(rn.getRnNumber());
-				this.setRnTime(rn.getCreateDate());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rn.getCreateDate()));
+				//this.setRnTime(rn.getCreateDate());
 				return SUCCESS;
 			}else {
 				this.errorMsg = "第三方信息找不到!";
@@ -388,6 +408,10 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String unbindSuccess() {
+		return SUCCESS;
+	}
+	
 	public String confirmAllRnNumber() throws SaveDBException {
 		if (!StringUtil.isEmptyString(agentId)) {
 			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
@@ -395,7 +419,9 @@ public class UnbindAction extends BaseAction {
 				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
 				this.setRnId(rnInfo.getRn().getId());
 				this.setRnNum(rnInfo.getRn().getRnNumber());
-				this.setRnTime(rnInfo.getRn().getCreateDate());
+				//this.setRnTime(rnInfo.getRn().getCreateDate());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rnInfo.getRn().getCreateDate()));
 				return SUCCESS;
 			}
 		}

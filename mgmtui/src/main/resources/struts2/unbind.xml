@@ -27,7 +27,7 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">sendURLSuccess</param>
 				<param name="agentName">${agentName}</param>
-				<param name="sendTime">${sendTime}</param>
+				<param name="sendTime">${passTime}</param>
 			</result>
 			<result name="error" type="tiles">unbind.sendURL</result>
 		</action>
@@ -49,7 +49,7 @@
 				<param name="posCount">${posCount}</param>
 				<param name="rnId">${rnId}</param>
 				<param name="rnNum">${rnNum}</param>
-				<param name="rnTime">${rnTime}</param>
+				<param name="rnTime">${passTime}</param>
 			</result>
 			<result name="error" type="tiles">unbind.list</result>
 		</action>
@@ -61,7 +61,7 @@
 				<param name="posCount">${posCount}</param>
 				<param name="rnId">${rnId}</param>
 				<param name="rnNum">${rnNum}</param>
-				<param name="rnTime">${rnTime}</param>
+				<param name="rnTime">${passTime}</param>
 			</result>
 			<result name="error" type="tiles">unbind.list</result>
 		</action>
@@ -74,10 +74,14 @@
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="unbind">
 			<result name="success" type="redirectAction">
-				<param name="actionName">confirmSuccess</param>
+				<param name="actionName">unbindSuccess</param>
 				<param name="successMsg">${successMsg}</param>
 				<param name="errorMsg">${errorMsg}</param>
 			</result>
+		</action>
+		<action name="unbindSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="unbindSuccess">
 			<result name="success" type="tiles">unbind.unbind</result>
 		</action>
 		<action name="sendURL"
@@ -121,7 +125,7 @@
 				<param name="posCount">${posCount}</param>
 				<param name="rnId">${rnId}</param>
 				<param name="rnNum">${rnNum}</param>
-				<param name="rnTime">${rnTime}</param>
+				<param name="rnTime">${passTime}</param>
 				<param name="isAgent">${isAgent}</param>
 			</result>
 			<result name="error">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
