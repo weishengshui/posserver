@@ -26,14 +26,12 @@
 <s:if test="agentList!=null && agentList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td class="td_title">Agent Id</td>
-		<td class="td_title">Agent Name</td>
-		<td class="td_title">Agent Email</td>
+		<td class="td_title">名称</td>
+		<td class="td_title">Email</td>
 		<td class="td_title">操作</td>
 	</tr>
 	<s:iterator value="agentList" id="list">
 	<tr>
-		<td><s:property value="#list.id" /></td>
 		<td><s:property value="#list.name" /></td>
 		<td><s:property value="#list.email" /></td>
 		<td><button type="button" onclick="sendURL('${list.id}', '${list.name}','${list.email}')">发送</button></td>
