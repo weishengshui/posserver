@@ -1,12 +1,16 @@
 package com.chinarewards.qqgbvpn.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 
 /**
  * 
@@ -44,6 +48,17 @@ public class ReturnNoteDetail {
 	 * POS SIM Phone Number for this Delivery Note (copied from Pos Entity)
 	 */
 	String simPhoneNo;
+	
+	@Enumerated(EnumType.STRING)
+	PosDeliveryStatus dstatus;
+
+	public PosDeliveryStatus getDstatus() {
+		return dstatus;
+	}
+
+	public void setDstatus(PosDeliveryStatus dstatus) {
+		this.dstatus = dstatus;
+	}
 
 	public String getId() {
 		return id;

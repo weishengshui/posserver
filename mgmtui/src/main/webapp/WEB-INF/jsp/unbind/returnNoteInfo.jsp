@@ -52,6 +52,7 @@
 				<td class="td_title">厂商编号</td>
 				<td class="td_title">型号</td>
 				<td class="td_title">电机号码</td>
+				<td class="td_title">交付状态</td>
 			</tr>
 			<s:if test="rnInfo.rnDetailList!=null && rnInfo.rnDetailList.size()>0">
 			<s:iterator value="rnInfo.rnDetailList" id="list">
@@ -60,6 +61,14 @@
 				<td><s:property value="#list.model" /></td>
 				<td><s:property value="#list.sn" /></td>
 				<td><s:property value="#list.simPhoneNo" /></td>
+				<td>
+					<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
+						已交付
+					</s:if>
+					<s:elseif test="#list.dstatus != null && #list.dstatus.toString() == 'RETURNED'">
+						已回收
+					</s:elseif>	
+				</td>
 			</tr>
 			</s:iterator>
 			</s:if>

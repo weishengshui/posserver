@@ -31,7 +31,17 @@
 	<tr>
 		<td><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
-		<td><s:property value="#list.status" /></td>
+		<td>
+		<s:if test="#list.status != null && 'PRINTED' == #list.status.toString()">
+			已打印
+		</s:if>
+		<s:elseif test="#list.status != null && 'CONFIRMED' == #list.status.toString()">
+			已确认
+		</s:elseif>
+		<s:else>
+			草稿
+		</s:else>
+		</td>
 		<td><s:date name="#list.createDate" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	</s:iterator>

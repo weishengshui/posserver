@@ -321,6 +321,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						rnd.setModel(p.getModel());
 						rnd.setSimPhoneNo(p.getSimPhoneNo());
 						rnd.setSn(p.getSn());
+						rnd.setDstatus(p.getDstatus());
 						saveReturnNoteDetail(rnd);
 					}
 				}
@@ -369,6 +370,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						rnd.setModel(p.getModel());
 						rnd.setSimPhoneNo(p.getSimPhoneNo());
 						rnd.setSn(p.getSn());
+						rnd.setDstatus(p.getDstatus());
 						saveReturnNoteDetail(rnd);
 					}
 				}
