@@ -29,15 +29,25 @@
 	</s:if>
 	<s:else>
 	<tr>
-		<td width="77%"><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${rnId}" target="_blank">打印</a>　　<input type="submit" value="完成" id="searchBtn" /></td>
+		<td width="77%"><button type="button" onclick="goPrint('${rnId}')">打印</button>　　<input type="submit" value="完成" id="searchBtn" /></td>
 	</tr>
 	</s:else> 
 </table>
 </s:form>
 
+<s:form action="getReturnNoteInfo" namespace="/unbind" method="Get" id="printForm">
+<input type="hidden" id="rnId" name="rnId" />
+</s:form>
 <script type="text/javascript">
 	function closeWindow() {
 		window.close(); 
+	}
+	
+	function goPrint(rnId) {
+		document.getElementById("rnId").value = rnId;
+		var formObj = document.getElementById("printForm");
+		formObj.action = "${ctx}/unbind/getReturnNoteInfo";
+		formObj.submit();
 	}
 </script>
 </body>
