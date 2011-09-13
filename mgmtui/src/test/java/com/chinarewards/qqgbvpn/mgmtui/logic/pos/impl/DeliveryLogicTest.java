@@ -149,7 +149,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		getLogic().associateAgent(note.getId(), agent.getId());
 
 		try {
-			getLogic().delivery(note.getId());
+			getLogic().getAllDeliveryNoteDetailVOByUnInitPosStatus(note.getId());
 			fail("should not reach here.");
 		} catch (DeliveryNoteWithNoDetailException e) {
 		}
@@ -178,7 +178,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		getLogic().associateAgent(note.getId(), agent.getId());
 		getLogic().appendPosToNote(note.getId(), "MiaoLeGeMi");
 
-		List<DeliveryNoteDetailVO> detailList = getLogic().delivery(
+		List<DeliveryNoteDetailVO> detailList = getLogic().getAllDeliveryNoteDetailVOByUnInitPosStatus(
 				note.getId());
 		assertNotNull(detailList);
 		assertFalse(detailList.isEmpty());

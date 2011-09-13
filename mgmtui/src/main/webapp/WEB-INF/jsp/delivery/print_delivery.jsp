@@ -110,7 +110,8 @@
 <table align="center" width="800px" class="noprint">
 	<tr align="center">
 		<td>
-			<input type="button" value="打印" onClick="window.print();" />
+			<input type="button" value="打印" onclick="window.print();" />&nbsp;&nbsp;&nbsp;
+			<input type="button" value="返回列表" onclick="window.location.href='<s:url value="/delivery/searchDelivery.action"/>';" />
 		</td>
 	</tr>
 </table>

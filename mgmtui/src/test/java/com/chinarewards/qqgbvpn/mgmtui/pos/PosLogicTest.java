@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
+
+import org.hibernate.StaleObjectStateException;
 import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
@@ -40,6 +43,48 @@ public class PosLogicTest extends JPATestCase {
 		m.add(new DefaultJournalModule());
 		m.add(new SimpleDateTimeModule());
 		return m.toArray(new Module[0]);
+	}
+	
+	/**
+	 * description：测试Version
+	 * @throws Exception
+	 * @time 2011-9-13   下午03:52:22
+	 * @author Seek
+	 */
+	@Test
+	public void testOptimisticLock() throws Exception {
+		PosLogic posLogic = injector.getInstance(PosLogic.class);
+		PosVO posVO = new PosVO();
+		posVO.setPosId("pos_001");
+		posVO.setSimPhoneNo("13480009000");
+		PosVO posVO1 = posLogic.savePos(posVO);
+		
+		
+		System.out.println("ID:"+posVO1.getId());
+		System.out.println("Version:"+posVO1.getVersion());
+		
+		
+		PosVO posVO55 = posLogic.getPosById(posVO.getId());
+		PosVO posVO66 = posLogic.getPosById(posVO.getId());
+		
+		
+		System.out.println("Version:"+posVO55.getVersion());
+		System.out.println("Version:"+posVO66.getVersion());
+		
+		posVO55.setSimPhoneNo("18112345678");
+		posVO66.setSimPhoneNo("18112345677");
+		
+		try{
+			posLogic.updatePos(posVO55);
+			posLogic.updatePos(posVO66);
+		}catch(OptimisticLockException e){
+			assertTrue(true);
+		}
+		PosVO posVO77 = posLogic.getPosById(posVO.getId());
+		PosVO posVO88 = posLogic.getPosById(posVO.getId());
+		
+		System.out.println("Version:"+posVO77.getVersion());
+		System.out.println("Version:"+posVO88.getVersion());
 	}
 
 	@Test
