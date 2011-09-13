@@ -43,12 +43,14 @@
 
 <script type="text/javascript">
 	function sendURL(agentId, agentName, email) {
-		document.getElementById("agentId").value = agentId;
-		document.getElementById("agentName").value = agentName;
-		document.getElementById("agentEmail").value = email;
-		var formObj = document.getElementById("sendURLForm");
-		formObj.action = "${ctx}/unbind/createInvite";
-		formObj.submit();
+		if (confirm("确定要向\"" + agentName + "\"发送回收邀请吗？")) {
+			document.getElementById("agentId").value = agentId;
+			document.getElementById("agentName").value = agentName;
+			document.getElementById("agentEmail").value = email;
+			var formObj = document.getElementById("sendURLForm");
+			formObj.action = "${ctx}/unbind/createInvite";
+			formObj.submit();
+		}
 	}
 </script>
 </body>
