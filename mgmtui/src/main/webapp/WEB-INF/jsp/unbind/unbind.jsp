@@ -15,7 +15,6 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="posSearch" namespace="/unbind" method="Get" id="unbindForm">
-<s:token/>
 <s:hidden name="posId" id="posId" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>

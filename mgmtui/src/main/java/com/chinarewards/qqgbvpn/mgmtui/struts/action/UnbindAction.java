@@ -368,30 +368,13 @@ public class UnbindAction extends BaseAction {
 						
 					}
 					this.setIsAgent("true");
-					//getRequest().setAttribute("isAgent", "true");
 				}
-				/*getRequest().setAttribute("posCount", posList.size());
-				getRequest().setAttribute("rnId", rn.getId());
-				getRequest().setAttribute("rnNumber", rn.getRnNumber());
-				log.debug("create date: {}" , rn.getCreateDate());
-				getRequest().setAttribute("rnTime", rn.getCreateDate());*/
 				this.setPosCount(splitPosIds(posIds.trim()).size());
 				this.setRnId(rn.getId());
 				this.setRnNum(rn.getRnNumber());
 				this.setRnTime(rn.getCreateDate());
 				return SUCCESS;
-				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
-			} else if (!StringUtil.isEmptyString(errInfo)) { 
-				if (!StringUtil.isEmptyString(inviteCode)) {
-					getRequest().setAttribute("isAgent", "true");
-				}
-				getRequest().setAttribute("posCount", posList.size());
-				getRequest().setAttribute("rnId", errInfo.split(",")[0]);
-				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
-				log.debug("create date2222: {}" , errInfo.split(",")[2]);
-				getRequest().setAttribute("rnTime", errInfo.split(",")[2]);
-				return "fuck";
-			} else {
+			}else {
 				this.errorMsg = "第三方信息找不到!";
 			}
 		} else {
@@ -413,9 +396,6 @@ public class UnbindAction extends BaseAction {
 		if (!StringUtil.isEmptyString(agentId)) {
 			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
 			if (rnInfo != null) {
-				/*getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
-				getRequest().setAttribute("rnId", rnInfo.getRn().getId());
-				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());*/
 				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
 				this.setRnId(rnInfo.getRn().getId());
 				this.setRnNum(rnInfo.getRn().getRnNumber());
@@ -495,8 +475,6 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String sendURLSuccess() {
-		/*getRequest().setAttribute("agentName", agentName);
-		getRequest().setAttribute("sendTime", agentName);*/
 		return SUCCESS;
 	}
 	

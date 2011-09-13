@@ -9,7 +9,6 @@
 </head>
 <body>
 <s:form action="getReturnNoteList" namespace="/unbind" method="Get" id="listForm">
-<s:token/>
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">

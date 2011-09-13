@@ -12,7 +12,6 @@
 <b>${errorMsg}</b>
 </s:if>
 <s:form action="sendURL" namespace="/unbind" method="Get" id="sendURLForm">
-<s:token/>
 <input type="hidden" id="agentId" name="agentId"/>
 <input type="hidden" id="agentEmail" name="agentEmail"/>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
