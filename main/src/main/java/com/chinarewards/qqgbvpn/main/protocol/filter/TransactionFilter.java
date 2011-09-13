@@ -4,6 +4,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
@@ -35,20 +36,51 @@ public class TransactionFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		logger.debug("begin UnitOfWork");
-		uow.get().begin();
-		em.get().getTransaction().begin();
-		nextFilter.messageReceived(session, message);
+		UnitOfWork u = uow.get();
+		u.begin();
+		EntityManager e = em.get();
+		EntityTransaction t = e.getTransaction();
+		t.begin();
+		try {
+			nextFilter.messageReceived(session, message);
+		} finally {
+			logger.debug("end UnitOfWork");
+			if (t.isActive()) {
+				if (t.getRollbackOnly()) {
+					logger.info("ROLLBACK");
+					t.rollback();
+				} else {
+					t.commit();
+				}
+			}
+			u.end();
+		}
 	}
 
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		logger.debug("end UnitOfWork");
-		if(em.get().getTransaction().isActive()){
-			em.get().getTransaction().commit();
+
+		logger.debug("begin UnitOfWork");
+		UnitOfWork u = uow.get();
+		u.begin();
+		EntityManager e = em.get();
+		EntityTransaction t = e.getTransaction();
+		t.begin();
+		try {
+			nextFilter.messageSent(session, writeRequest);
+		} finally {
+			logger.debug("end UnitOfWork");
+			if (t.isActive()) {
+				if (t.getRollbackOnly()) {
+					logger.info("ROLLBACK");
+					t.rollback();
+				} else {
+					t.commit();
+				}
+			}
+			u.end();
 		}
-		uow.get().end();
-		nextFilter.messageSent(session, writeRequest);
 	}
 
 }
