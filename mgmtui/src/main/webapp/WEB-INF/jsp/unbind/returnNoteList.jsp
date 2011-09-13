@@ -8,7 +8,7 @@
 <title>回收单查询</title>
 </head>
 <body>
-<s:form action="getReturnNoteList" namespace="/unbind" method="Post" id="listForm">
+<s:form action="getReturnNoteList" namespace="/unbind" method="Get" id="listForm">
 <s:token/>
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />

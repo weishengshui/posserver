@@ -78,6 +78,8 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Agent> agentList;
 	
+	private String isAgent;
+	
 	private Date sendTime;
 	
 	private ReturnNoteInfo rnInfo;
@@ -107,6 +109,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setPosCount(Integer posCount) {
 		this.posCount = posCount;
+	}
+
+	public String getIsAgent() {
+		return isAgent;
+	}
+
+	public void setIsAgent(String isAgent) {
+		this.isAgent = isAgent;
 	}
 
 	public Date getRnTime() {
@@ -357,7 +367,8 @@ public class UnbindAction extends BaseAction {
 					} catch (Throwable e) {
 						
 					}
-					getRequest().setAttribute("isAgent", "true");
+					this.setIsAgent("true");
+					//getRequest().setAttribute("isAgent", "true");
 				}
 				/*getRequest().setAttribute("posCount", posList.size());
 				getRequest().setAttribute("rnId", rn.getId());
@@ -379,7 +390,7 @@ public class UnbindAction extends BaseAction {
 				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
 				log.debug("create date2222: {}" , errInfo.split(",")[2]);
 				getRequest().setAttribute("rnTime", errInfo.split(",")[2]);
-				return SUCCESS;
+				return "fuck";
 			} else {
 				this.errorMsg = "第三方信息找不到!";
 			}

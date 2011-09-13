@@ -114,10 +114,22 @@
 			method="request">
 			<result name="success">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
+		<action name="confirmSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="confirmSuccess">
+			<result name="success">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
+		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
-			<result name="success">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${rnTime}</param>
+				<param name="isAgent">${isAgent}</param>
+			</result>
 			<result name="error">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
 		<action name="goPage"

@@ -11,7 +11,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="sendURL" namespace="/unbind" method="Post" id="sendURLForm">
+<s:form action="sendURL" namespace="/unbind" method="Get" id="sendURLForm">
 <s:token/>
 <input type="hidden" id="agentId" name="agentId"/>
 <input type="hidden" id="agentEmail" name="agentEmail"/>
