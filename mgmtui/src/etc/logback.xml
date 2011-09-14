@@ -5,7 +5,7 @@
 		</layout>
 	</appender>
 	
-	<logger name="com.chinarewards" level="TRACE" />
+	<logger name="com.chinarewards" level="INFO" />
 	<logger name="org.hibernate" level="WARN" />
 	<logger name="freemarker" level="WARN" />
 	

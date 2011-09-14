@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.codehaus.jackson.JsonGenerationException;
 
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -67,13 +66,17 @@ public class GroupBuyingUnbindTest {
 		return properties;
 	}
 	
+	protected String getTxServerKey() {
+		return "JXTPOS";
+	}
+	
 	public void testGroupBuyingUnbind() {
 		
 		GroupBuyingUnbindManager gbm = injector.getInstance(GroupBuyingUnbindManager.class);
 		
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "REWARDS-000112"});
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");

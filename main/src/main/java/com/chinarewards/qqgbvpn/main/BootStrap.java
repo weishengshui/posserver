@@ -4,7 +4,6 @@
 package com.chinarewards.qqgbvpn.main;
 
 import java.net.InetSocketAddress;
-import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.chinarewards.qqgbvpn.config.ConfigReader;
-import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
