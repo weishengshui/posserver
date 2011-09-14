@@ -1,6 +1,8 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -70,6 +72,58 @@ public class BaseDaoImpl {
 	}
 	
 	/**
+	 * 分布查询
+	 * @author iori
+	 * @param sql
+	 * @param params 参数
+	 * @param pageInfo
+	 * @return
+	 */
+	protected PageInfo findPageInfo(String countSql, String searchSql, Map<String, Object> paramMap, PageInfo pageInfo) {
+		Query countQuery = em.get().createQuery(countSql);
+		Query searchQuery = em.get().createQuery(searchSql);
+		if (paramMap != null) {
+			//JPA参数下标从一开始
+			for (Entry<String, Object> entry : paramMap.entrySet()) {
+				countQuery.setParameter(entry.getKey(), entry.getValue());
+				searchQuery.setParameter(entry.getKey(), entry.getValue());
+			}
+		}
+		//记录总数
+		int count = getCountByCountQuery(countQuery);
+		int pageId = pageInfo.getPageId();
+        int pageSize = pageInfo.getPageSize();
+        //总页数
+        int pages = (count - 1) / pageSize + 1;
+        int newPageId = pageId > pages ? pages : pageId;
+        newPageId = newPageId < 1 ? 1 : newPageId;
+        //记录开始行数
+        int sIndex = (newPageId - 1) * pageSize + 1;
+        sIndex = sIndex > count ? count : sIndex;
+        //记录结束行数
+        int eIndex = sIndex + pageSize -1;
+        eIndex = eIndex > count ? count : eIndex;
+
+        PageInfo newPageInfo = new PageInfo();
+        newPageInfo.setPageId(newPageId);
+        newPageInfo.setStartIndex(sIndex);
+        newPageInfo.setEndIndex(eIndex);
+        newPageInfo.setPageCount(pages);
+        newPageInfo.setPageSize(pageSize);
+        newPageInfo.setRecordCount(count);
+        
+        if (count > 0) {
+        	searchQuery.setFirstResult(sIndex-1);
+        	searchQuery.setMaxResults(pageSize);
+        	//分布查询结果
+        	List items = searchQuery.getResultList();
+        	newPageInfo.setItems(items);
+        }
+        
+		return newPageInfo;
+	}
+	
+	/**
 	 * 取记录总数
 	 * @author iori
 	 * @param query
@@ -81,6 +135,17 @@ public class BaseDaoImpl {
 		if (list != null && !list.isEmpty()) {
 			count = list.size();
 		}
+		return count;
+	}
+	
+	/**
+	 * 取记录总数
+	 * @author iori
+	 * @param query
+	 * @return
+	 */
+	private int getCountByCountQuery(Query countQuery) {
+		int count = ((Long) countQuery.getSingleResult()).intValue();
 		return count;
 	}
 	
