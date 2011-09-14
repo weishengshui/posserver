@@ -48,7 +48,7 @@ public class LoginManagerImpl implements LoginManager {
 	JournalLogic journalLogic;
 
 	@Override
-	public InitResponseMessage init(InitRequestMessage req) {
+	public InitResponseMessage init(InitRequestMessage req, byte[] newChallenge) {
 		logger.debug("InitResponse() invoke");
 
 		InitResponseMessage resp = new InitResponseMessage();
@@ -59,8 +59,6 @@ public class LoginManagerImpl implements LoginManager {
 
 		Pos pos = null;
 		InitResult result = null;
-
-		byte[] challenge = ChallengeUtil.generateChallenge();
 
 		try {
 			
@@ -74,11 +72,10 @@ public class LoginManagerImpl implements LoginManager {
 			if (StringUtil.isEmptyString(pos.getSecret())) {
 				pos.setSecret(ChallengeUtil.generatePosSecret());
 			}
-
-			pos.setChallenge(challenge);
+			
 			posDao.get().merge(pos);
 			logger.debug("POS ID:{}, init challenge saved - {}", new Object[] {
-					req.getPosId(), Arrays.toString(challenge) });
+					req.getPosId(), Arrays.toString(newChallenge) });
 
 			switch (pos.getIstatus()) {
 			case INITED:
@@ -95,7 +92,7 @@ public class LoginManagerImpl implements LoginManager {
 			logger.warn("No usable POS machine found. POS ID not exists or not assigned.");
 			result = InitResult.OTHERS;
 		}
-		resp.setChallenge(challenge);
+		resp.setChallenge(newChallenge);
 		resp.setResult(result.getPosCode());
 
 		// Add journal.
@@ -115,24 +112,22 @@ public class LoginManagerImpl implements LoginManager {
 	}
 
 	@Override
-	public LoginResponseMessage login(LoginRequestMessage req) {
+	public LoginResponseMessage login(LoginRequestMessage req, byte[] newChallenge, byte[] oldChallenge) {
 		LoginResponseMessage resp = new LoginResponseMessage();
 
 		LoginResult result = null;
-		byte[] challenge = ChallengeUtil.generateChallenge();
 		String domainEvent = null;
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
 			logger.trace(
-					"Loaded from db: pos.posId:{}, pos.secret:{}, pos.challenge:{}",
+					"Loaded from db: pos.posId:{}, pos.secret:{}, oldChallenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
-							pos.getChallenge() });
+							oldChallenge });
 			boolean check = ChallengeUtil.checkChallenge(
 					req.getChallengeResponse(), pos.getSecret(),
-					pos.getChallenge());
+					oldChallenge);
 
-			logger.debug("new challenge for POS (POS ID):{}", challenge, pos.getPosId());
-			pos.setChallenge(challenge);
+			logger.debug("new challenge for POS (POS ID):{}", newChallenge, pos.getPosId());
 			posDao.get().merge(pos);
 
 			if (check) {
@@ -153,7 +148,7 @@ public class LoginManagerImpl implements LoginManager {
 			domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			result = LoginResult.POSID_NOT_EXIST;
 		}
-		resp.setChallenge(challenge);
+		resp.setChallenge(newChallenge);
 		resp.setResult(result.getPosCode());
 
 		// Add journal.
@@ -173,24 +168,22 @@ public class LoginManagerImpl implements LoginManager {
 	}
 
 	@Override
-	public LoginResponseMessage bind(LoginRequestMessage req) {
+	public LoginResponseMessage bind(LoginRequestMessage req, byte[] newChallenge, byte[] oldChallenge) {
 		LoginResponseMessage resp = new LoginResponseMessage();
 
 		LoginResult result = null;
-		byte[] challenge = ChallengeUtil.generateChallenge();
 		String domainEvent = null;
 		try {
 			Pos pos = posDao.get().fetchPos(req.getPosId(), null, null, null);
 			logger.trace(
-					"pos.posId:{}, pos.secret:{}, pos.challenge:{}",
+					"pos.posId:{}, pos.secret:{}, oldChallenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
-							pos.getChallenge() });
+							oldChallenge });
 			boolean check = ChallengeUtil.checkChallenge(
 					req.getChallengeResponse(), pos.getSecret(),
-					pos.getChallenge());
+					oldChallenge);
 
-			logger.debug("new challenge:{}", challenge);
-			pos.setChallenge(challenge);
+			logger.debug("new challenge:{}", newChallenge);
 			posDao.get().merge(pos);
 
 			if (check) {
@@ -212,7 +205,7 @@ public class LoginManagerImpl implements LoginManager {
 			domainEvent = DomainEvent.POS_INIT_FAILED.toString();
 			result = LoginResult.POSID_NOT_EXIST;
 		}
-		resp.setChallenge(challenge);
+		resp.setChallenge(newChallenge);
 		resp.setResult(result.getPosCode());
 
 		// Add journal.

@@ -1,14 +1,18 @@
 package com.chinarewards.qqgbvpn.qqapi.util;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -25,18 +29,16 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 
 public class GroupBuyingUtil {
-	
-	//private final static HttpClient client = new DefaultHttpClient();
-	
 	
 	/**
 	 * MD5加密字符串
@@ -138,24 +140,61 @@ public class GroupBuyingUtil {
 	 * @return
 	 * @throws ParseXMLException
 	 */
-	public static HashMap<String,Object> parseXML(InputStream in, String nodeDir, Class bean) throws ParseXMLException {
+	public static HashMap<String, Object> parseXML(InputStream in,
+			String nodeDir, Class bean) throws ParseXMLException {
+		
+		String charset = "GBK";
+		
 		try {
 			HashMap<String,Object> parseResult = new HashMap<String,Object>();
-			SAXReader reader = new SAXReader(); 
-			Document xmlDoc = reader.read(new InputStreamReader(in, "GBK"));
-			Element root = xmlDoc.getRootElement();
-			String resultCode = root.elementText("resultCode");
-			parseResult.put("resultCode", resultCode);
+			
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document xmlDoc = db.parse(in);
+			
+//			SAXReader reader = new SAXReader();
+//			Document xmlDoc = reader.read(new InputStreamReader(in, "GBK"));
+			
+			String resultCode = null;
+			
+			XPath xpath = XPathFactory.newInstance().newXPath();
+			Element root = xmlDoc.getDocumentElement();
+			Element rcEle = (Element)xpath.evaluate("resultCode", root, XPathConstants.NODE);
+			if (rcEle != null) {
+				resultCode = rcEle.getTextContent();
+				parseResult.put("resultCode", resultCode);
+			}
+			
+			
+			
+//			String resultCode = root.elementText("resultCode");
+//			parseResult.put("resultCode", resultCode);
+			
 			//0才有item
 			if ("0".equals(resultCode)) {
-				List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
+				
 				List itemList = new ArrayList();
-				for (Element ele : listRowSet) {
-					Object item = copyProperties(bean,ele);
+				
+				NodeList nodes = (NodeList)xpath.evaluate(nodeDir, root, XPathConstants.NODESET);
+				for (int i = 0, nodeCount = nodes.getLength(); i < nodeCount; i++) {
+					Node node = nodes.item(i);
+					Element ele = (Element)node;
+					Object item = copyProperties(bean, ele);
 					itemList.add(item);
 				}
 				parseResult.put("items", itemList);
 			}
+			
+			//0才有item
+//			if ("0".equals(resultCode)) {
+//				List<Element> listRowSet = xmlDoc.selectNodes(nodeDir);
+//				List itemList = new ArrayList();
+//				for (Element ele : listRowSet) {
+//					Object item = copyProperties(bean,ele);
+//					itemList.add(item);
+//				}
+//				parseResult.put("items", itemList);
+//			}
 			return parseResult;
 		} catch (Exception e) {
 			throw new ParseXMLException(e);
@@ -173,15 +212,22 @@ public class GroupBuyingUtil {
 	private static Object copyProperties(Class bean, Element ele) throws Exception {
 		Object obj = bean.newInstance();
 		//遍历第个item的子元素
-		for(Iterator<Element> it = ele.elementIterator();it.hasNext();){
-			Element element = (Element) it.next();
+		
+		NodeList elements = ele.getChildNodes();
+
+		for (int i=0, eleCount = elements.getLength(); i<eleCount; i++) {
+			
+			Node node = elements.item(i);
+		
+//		for (Iterator<Element> it = ele.getChildNodes() ; it.hasNext();) {
+//			Element element = (Element) it.next();
 			//遍历对象的所有方法
 			for (Method ms : bean.getMethods()) {
 				String name = ms.getName();
 				//是相应属性的set方法
-				if (name.startsWith("set") && name.substring(3).equalsIgnoreCase(element.getName())) {
+				if (name.startsWith("set") && name.substring(3).equalsIgnoreCase(node.getNodeName())) {
 					//属性值
-					String param = element.getText();
+					String param = node.getTextContent();
 					if (param != null) {
 						//调用set方法
 						ms.invoke(obj, new Object[] { param });
@@ -191,6 +237,26 @@ public class GroupBuyingUtil {
 				}
 			}
 		}
+
+		
+//		for (Iterator<Element> it = ele.elementIterator(); it.hasNext();) {
+//			Element element = (Element) it.next();
+//			//遍历对象的所有方法
+//			for (Method ms : bean.getMethods()) {
+//				String name = ms.getName();
+//				//是相应属性的set方法
+//				if (name.startsWith("set") && name.substring(3).equalsIgnoreCase(element.getName())) {
+//					//属性值
+//					String param = element.getText();
+//					if (param != null) {
+//						//调用set方法
+//						ms.invoke(obj, new Object[] { param });
+//					}
+//					//保存一个值只设置一次就OK
+//					break;
+//				}
+//			}
+//		}
 		return obj;
 	}
 	

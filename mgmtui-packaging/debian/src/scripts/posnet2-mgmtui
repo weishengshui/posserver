@@ -88,6 +88,9 @@ case "$1" in
   restart|force-reload)
     log_daemon_msg "Restarting $DESC" "$NAME"
     do_stop
+    # if we don't sleep, it is too quick for appserver to response to the
+    # filesystem change.
+    sleep 3
     do_start
     log_end_msg 0
     ;;

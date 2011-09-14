@@ -97,14 +97,16 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 
 		InitRequestMessage request = new InitRequestMessage();
 		request.setPosId("pos-0001");
-
-		InitResponseMessage response = getManager().init(request);
+		
+		byte[] newChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		
+		InitResponseMessage response = getManager().init(request, newChallenge);
 		assertNotNull(response.getChallenge());
 		assertEquals(InitResult.INIT.getPosCode(), response.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
-		assertNotNull(record.getChallenge());
+//		assertNotNull(record.getChallenge());
 		assertNotNull(record.getSecret());
 	}
 
@@ -119,8 +121,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
 
-		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
-		pos.setChallenge(challenge);
+//		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+//		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
@@ -129,15 +131,19 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
+		
+		
+		byte[] newChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		byte[] oldChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
 
-		LoginResponseMessage resp = getManager().login(req);
+		LoginResponseMessage resp = getManager().login(req, newChallenge, oldChallenge);
 
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.SUCCESS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
-		assertNotNull(record.getChallenge());
+//		assertNotNull(record.getChallenge());
 	}
 
 	@Test
@@ -151,8 +157,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setIstatus(PosInitializationStatus.UNINITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
 
-		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
-		pos.setChallenge(challenge);
+//		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+//		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
@@ -161,15 +167,18 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
+		
+		byte[] newChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		byte[] oldChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
 
-		LoginResponseMessage resp = getManager().login(req);
+		LoginResponseMessage resp = getManager().login(req, newChallenge, oldChallenge);
 
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.OTHERS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
-		assertNotNull(record.getChallenge());
+//		assertNotNull(record.getChallenge());
 	}
 
 	@Test
@@ -183,8 +192,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setIstatus(PosInitializationStatus.UNINITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
 
-		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
-		pos.setChallenge(challenge);
+//		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+//		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
@@ -193,15 +202,18 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
-
-		LoginResponseMessage resp = getManager().bind(req);
+		
+		
+		byte[] newChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		byte[] oldChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		LoginResponseMessage resp = getManager().bind(req, newChallenge, oldChallenge);
 
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.SUCCESS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
-		assertNotNull(record.getChallenge());
+//		assertNotNull(record.getChallenge());
 	}
 
 	@Test
@@ -215,8 +227,8 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		pos.setIstatus(PosInitializationStatus.INITED);
 		pos.setOstatus(PosOperationStatus.ALLOWED);
 
-		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
-		pos.setChallenge(challenge);
+//		byte[] challenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+//		pos.setChallenge(challenge);
 		getEm().persist(pos);
 		getEm().flush();
 
@@ -225,15 +237,18 @@ public class LoginManagerImplTest extends JpaGuiceTest {
 		byte[] challengeResponse = new byte[] { -64, 39, 8, -126, -57, -34,
 				102, -117, -68, -60, -126, 39, 109, -110, 36, 64 };
 		req.setChallengeResponse(challengeResponse);
-
-		LoginResponseMessage resp = getManager().bind(req);
+		
+		
+		byte[] newChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		byte[] oldChallenge = new byte[] { 120, 66, 116, 82, 89, 97, 80, 82 };
+		LoginResponseMessage resp = getManager().bind(req, newChallenge, oldChallenge);
 
 		assertNotNull(resp.getChallenge());
 		assertEquals(LoginResult.OTHERS.getPosCode(), resp.getResult());
 
 		Pos record = getEm().find(Pos.class, pos.getId());
 		assertNotNull(record);
-		assertNotNull(record.getChallenge());
+//		assertNotNull(record.getChallenge());
 	}
 
 	private LoginManager getManager() {
