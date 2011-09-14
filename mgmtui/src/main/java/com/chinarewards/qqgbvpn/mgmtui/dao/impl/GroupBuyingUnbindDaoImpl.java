@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -528,14 +529,18 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 查回收单列表
 	 */
 	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo) {
-		StringBuffer sql = new StringBuffer("select rn from ReturnNote rn where upper(rn.rnNumber) like ?1");
+		StringBuffer countSql = new StringBuffer("select count(rn.id) from ReturnNote rn where upper(rn.rnNumber) like :rnNumber");
+		StringBuffer searchSql = new StringBuffer("select rn from ReturnNote rn where upper(rn.rnNumber) like :rnNumber");
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("rnNumber", "%" + rnNumber.toUpperCase() + "%");
 		if (!Tools.isEmptyString(status)) {
-			sql.append(" and rn.status = '" + status + "'");
+			countSql.append(" and rn.status = :status");
+			searchSql.append(" and rn.status = :status");
+			paramMap.put("status", ReturnNoteStatus.valueOf(status));
 		}
-		sql.append(" order by rn.createDate desc");
-		List<Object> params = new ArrayList<Object>();
-		params.add("%" + rnNumber.toUpperCase() + "%");
-		pageInfo = this.findPageInfo(sql.toString(), params, pageInfo);
+		searchSql.append(" order by rn.createDate desc");
+		
+		pageInfo = this.findPageInfo(countSql.toString(),searchSql.toString(),paramMap,pageInfo);
 		return pageInfo;
 	}
 	
