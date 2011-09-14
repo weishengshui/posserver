@@ -13,8 +13,10 @@ public class HomeDirLocator {
 
 	String hardCodedDir;
 
+	String envKey = "POSNET_HOME";
+
 	/**
-	 * Specifies the directory which will be served as the final 
+	 * Specifies the directory which will be served as the final
 	 * 
 	 * @param hardCodedDir
 	 */
@@ -66,7 +68,11 @@ public class HomeDirLocator {
 	 * @return
 	 */
 	public String getHomeDirEnvName() {
-		return "POSNET_HOME";
+		return envKey;
+	}
+
+	public void setHomeDirEnvName(String envKey) {
+		this.envKey = envKey;
 	}
 
 }
