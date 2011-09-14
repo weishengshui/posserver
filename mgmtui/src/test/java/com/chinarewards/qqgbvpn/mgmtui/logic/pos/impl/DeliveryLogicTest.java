@@ -120,6 +120,7 @@ public class DeliveryLogicTest extends JPATestCase {
 		pos.setModel("miao");
 		pos.setSimPhoneNo("simSimSim");
 		pos.setSn("SnSnSnSn");
+		pos.setDstatus(PosDeliveryStatus.RETURNED);
 		em.persist(pos);
 		em.flush();
 
