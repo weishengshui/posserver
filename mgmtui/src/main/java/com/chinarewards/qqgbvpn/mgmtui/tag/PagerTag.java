@@ -21,7 +21,7 @@ public class PagerTag extends SimpleTagSupport {
 		super.doTag();
 		JspWriter out  = this.getJspContext().getOut();
 		out.print("页&nbsp;" + pageInfo.getPageId() + "/" + pageInfo.getPageCount() + "&nbsp;&nbsp;");
-		out.print("共&nbsp;" + pageInfo.getRecordCount() + "&nbsp;&nbsp;");
+		out.print("共&nbsp;" + pageInfo.getRecordCount() + "&nbsp;&nbsp;条&nbsp;&nbsp;");
 		if (pageInfo.getPageId() > 1) {
 			out.print("<a href='javascript:goPage(" + (pageInfo.getPageId() - 1) + ");'>上一页</a>&nbsp;&nbsp;");
 		}

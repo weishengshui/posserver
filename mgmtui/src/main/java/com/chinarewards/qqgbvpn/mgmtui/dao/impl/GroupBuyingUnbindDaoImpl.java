@@ -207,11 +207,13 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 回收单页面查询调用
 	 */
 	public PageInfo getPosByAgentId(PageInfo pageInfo, String agentId) {
-		String sql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1";
-		List params = new ArrayList();
-		params.add(agentId);
-		PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
-		return resultList;
+		String countSql = "select count(p.id) from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = :agentId";
+		String searchSql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = :agentId order by p.posId desc";
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("agentId", agentId);
+		
+		pageInfo = this.findPageInfo(countSql.toString(),searchSql.toString(),paramMap,pageInfo);
+		return pageInfo;
 	}
 	
 	private List<Pos> getPosByAgentId(String agentId) {
