@@ -3,10 +3,12 @@ package com.chinarewards.qqgbvpn.main.protocol.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
@@ -34,7 +36,12 @@ public class InitCommandHandler implements ServiceHandler {
 		
 		InitResponseMessage  initResponseMessage  = null;
 		try {
-			initResponseMessage = loginManager.init(bodyMessage);
+			//创建一个新的challenge
+			byte[] newChallenge = ChallengeUtil.generateChallenge();
+			initResponseMessage = loginManager.init(bodyMessage, newChallenge);
+			
+			//save to session
+			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			initResponseMessage = new InitResponseMessage();

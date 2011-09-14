@@ -6,11 +6,13 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
@@ -40,7 +42,15 @@ public class BindCommandHandler implements ServiceHandler {
 		log.debug("BindCommandHandler======execute==bodyMessage=:"+bodyMessage);
 		LoginResponseMessage loginResponseMessage  = null;
 		try{
-			loginResponseMessage  = loginManager.bind(bodyMessage);
+			//创建一个新的challenge
+			byte[] newChallenge = ChallengeUtil.generateChallenge();
+			//获取旧的challenge
+			byte[] oldChallenge = (byte[]) request.getSession().getAttribute(ServiceSession.CHALLENGE_SESSION_KEY);
+			
+			loginResponseMessage  = loginManager.bind(bodyMessage, newChallenge, oldChallenge);
+			
+			//save to session
+			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		}catch(Throwable e){
 			loginResponseMessage.setChallenge(new byte[ProtocolLengths.CHALLENGE_RESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();

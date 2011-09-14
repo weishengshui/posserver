@@ -58,13 +58,13 @@ public class Pos {
 	// POS 内置唯一标识。6位字符
 	String secret;
 	
-	// save the challenge code.
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	byte[] challenge;
+//	// save the challenge code.
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	byte[] challenge;
 	
 	@Version
     long version;	//2011-09-13   Seek
@@ -155,23 +155,23 @@ public class Pos {
 		this.secret = secret;
 	}
 
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public byte[] getChallenge() {
-		return challenge;
-	}
-
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public void setChallenge(byte[] challenge) {
-		this.challenge = challenge;
-	}
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public byte[] getChallenge() {
+//		return challenge;
+//	}
+//
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public void setChallenge(byte[] challenge) {
+//		this.challenge = challenge;
+//	}
 	
 	public long getVersion() {
 		return version;
@@ -186,8 +186,7 @@ public class Pos {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
 				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
 				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
-				+ ", secret=" + secret + ", challenge="
-				+ Arrays.toString(challenge) + "]";
+				+ ", secret=" + secret + "]";
 	}
 	
 }
