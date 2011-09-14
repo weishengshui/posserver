@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
+import java.util.Properties;
+
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.configuration.Configuration;
@@ -144,7 +146,16 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
 
 		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
-		builder.configModule(jpaModule, configuration, "db");
+		Properties jpaProp = builder.buildHibernateProperties(configuration, "db");
+		jpaModule.properties(jpaProp);
+		
+		if (log.isDebugEnabled()) {
+			log.debug("Database configurations:");
+			log.debug("- User    : {}", configuration.getProperty("db.user"));
+			//log.debug("- Password: {}", configuration.getProperty("db.password"));
+			log.debug("- Driver  : {}", configuration.getProperty("db.driver"));
+			log.debug("- URL     : {}", configuration.getProperty("db.url"));
+		}
 
 		return jpaModule;
 	}

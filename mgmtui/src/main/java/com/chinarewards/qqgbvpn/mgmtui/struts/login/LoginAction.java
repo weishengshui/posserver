@@ -53,6 +53,7 @@ public class LoginAction extends BaseAction {
 
 		LoginLogic loginLogic = super.getInstance(LoginLogic.class);
 
+		log.debug("User ({}) tries to login...", username);
 		boolean validePass = loginLogic.checkLogin(username, password);
 
 		if (validePass) {

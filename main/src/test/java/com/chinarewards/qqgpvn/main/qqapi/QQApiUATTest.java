@@ -13,10 +13,11 @@ import org.apache.commons.configuration.Configuration;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
-import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
+import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
@@ -39,11 +40,16 @@ public class QQApiUATTest extends JpaGuiceTest {
 
 	@Override
 	protected Module[] getModules() {
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+		Configuration configuration = confModule.getConfiguration();
+
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
+		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
+		builder.configModule(jpaModule,  configuration, "db");
+		
 		return new Module[] {
 				new AppModule(),
-				buildTestConfigModule(),
-				new JpaPersistModule("posnet")
-						.properties(new DatabaseProperties().getProperties()) };
+				confModule, jpaModule };
 	}
 
 	@Test

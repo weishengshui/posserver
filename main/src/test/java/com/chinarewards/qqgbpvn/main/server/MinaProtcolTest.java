@@ -4,9 +4,10 @@ import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
-import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.google.inject.Module;
@@ -18,11 +19,16 @@ public class MinaProtcolTest extends JpaGuiceTest {
 
 	@Override
 	protected Module[] getModules() {
+		
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+		Configuration configuration = confModule.getConfiguration();
+
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
+		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
+		builder.configModule(jpaModule,  configuration, "db");
+		
 		return new Module[] {
-				new AppModule(),
-				new JpaPersistModule("posnet")
-						.properties(new DatabaseProperties().getProperties()),
-				buildTestConfigModule() };
+				new AppModule(), jpaModule, confModule };
 	}
 
 	@Test

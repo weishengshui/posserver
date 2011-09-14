@@ -18,9 +18,11 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.config.DatabaseProperties;
+import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -47,18 +49,22 @@ import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
 public class QQApiTest extends JpaGuiceTest {
-	
+
 	private Server server = new Server(0);
 
 	@Override
 	protected Module[] getModules() {
-		return new Module[] {
-				buildTestConfigModule(), 
-				new AppModule(),
-				new JpaPersistModule("posnet")
-						.properties(new DatabaseProperties().getProperties()) };
+
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+		Configuration configuration = confModule.getConfiguration();
+
+		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
+		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
+		builder.configModule(jpaModule, configuration, "db");
+
+		return new Module[] { confModule, jpaModule, new AppModule() };
 	}
-	
+
 	protected Module buildTestConfigModule() {
 
 		Configuration conf = new BaseConfiguration();
@@ -84,23 +90,29 @@ public class QQApiTest extends JpaGuiceTest {
 		TestConfigModule confModule = new TestConfigModule(conf);
 		return confModule;
 	}
-	
-	
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		initTestServer();
 	}
-	
+
 	private void initTestServer() {
-		//build test server start
+		// build test server start
 		try {
-			//Server server = new Server(0);
+			// Server server = new Server(0);
 			if (!server.isStarted()) {
 				ServletHandler scHandler = new ServletHandler();
-				scHandler.addServletWithMapping(getInitGrouponCacheServletHolder(), "/initGrouponCache");
-				scHandler.addServletWithMapping(getGroupBuyingValidateServletHolder(), "/groupBuyingValidate");
-				scHandler.addServletWithMapping(getGroupBuyingUnbindServletHolder(), "/groupBuyingUnbind");
+				scHandler
+						.addServletWithMapping(
+								getInitGrouponCacheServletHolder(),
+								"/initGrouponCache");
+				scHandler.addServletWithMapping(
+						getGroupBuyingValidateServletHolder(),
+						"/groupBuyingValidate");
+				scHandler.addServletWithMapping(
+						getGroupBuyingUnbindServletHolder(),
+						"/groupBuyingUnbind");
 				// add handler to server
 				server.addHandler(scHandler);
 				server.getConnectors()[0].setPort(8086);
@@ -109,9 +121,9 @@ public class QQApiTest extends JpaGuiceTest {
 		} catch (Exception e) {
 			System.err.println("build test server failed");
 		}
-		//build test server end
+		// build test server end
 	}
-	
+
 	private ServletHolder getInitGrouponCacheServletHolder() throws Exception {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
@@ -144,17 +156,20 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
-		/*String servletPath = "/initGrouponCache";
-		ServletHandler scHandler = new ServletHandler();
-		scHandler.addServletWithMapping(h, servletPath);*/
+		/*
+		 * String servletPath = "/initGrouponCache"; ServletHandler scHandler =
+		 * new ServletHandler(); scHandler.addServletWithMapping(h,
+		 * servletPath);
+		 */
 		return h;
 	}
-	
-	private ServletHolder getGroupBuyingValidateServletHolder() throws Exception {
+
+	private ServletHolder getGroupBuyingValidateServletHolder()
+			throws Exception {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
 		StringBuffer sb = new StringBuffer();
@@ -179,16 +194,18 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
-		/*String servletPath = "/groupBuyingValidate";
-		ServletHandler scHandler = new ServletHandler();
-		scHandler.addServletWithMapping(h, servletPath);*/
+		/*
+		 * String servletPath = "/groupBuyingValidate"; ServletHandler scHandler
+		 * = new ServletHandler(); scHandler.addServletWithMapping(h,
+		 * servletPath);
+		 */
 		return h;
 	}
-	
+
 	private ServletHolder getGroupBuyingUnbindServletHolder() throws Exception {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
@@ -208,28 +225,29 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
-		/*String servletPath = "/groupBuyingUnbind";
-		ServletHandler scHandler = new ServletHandler();
-		scHandler.addServletWithMapping(h, servletPath);*/
+		/*
+		 * String servletPath = "/groupBuyingUnbind"; ServletHandler scHandler =
+		 * new ServletHandler(); scHandler.addServletWithMapping(h,
+		 * servletPath);
+		 */
 		return h;
 	}
 
 	@Test
 	public void testInitGrouponCache() {
-		
+
 		List<String> grouponIdList = new ArrayList<String>();
 		grouponIdList.add("132127");
 		grouponIdList.add("132123");
 		grouponIdList.add("132154");
-		
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
-		GroupBuyingDao dao = getInjector().getInstance(
-				GroupBuyingDao.class);
+		GroupBuyingDao dao = getInjector().getInstance(GroupBuyingDao.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "rewards-0001";
 		params.put("posId", posId);
@@ -238,23 +256,30 @@ public class QQApiTest extends JpaGuiceTest {
 		try {
 			String resultCode = gbm.initGrouponCache(params);
 			System.out.println("resultCode--> " + resultCode);
-			//search groupon cache
+			// search groupon cache
 			PageInfo<GrouponCache> pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(50);
-			List<GrouponCache> cacheList = dao.getGrouponCachePagination(pageInfo, posId).getItems();
+			List<GrouponCache> cacheList = dao.getGrouponCachePagination(
+					pageInfo, posId).getItems();
 			if (cacheList != null && cacheList.size() > 0) {
 				for (int i = 0; i < cacheList.size(); i++) {
-					System.out.println("GrouponId-->" + cacheList.get(i).getGrouponId());
-					System.out.println("GrouponName-->" + cacheList.get(i).getGrouponName());
-					System.out.println("MercName-->" + cacheList.get(i).getMercName());
-					System.out.println("ListName-->" + cacheList.get(i).getListName());
-					System.out.println("DetailName-->" + cacheList.get(i).getDetailName());
-					//验证排序是否正确
-					assertEquals(cacheList.get(i).getGrouponId(),grouponIdList.get(i));
+					System.out.println("GrouponId-->"
+							+ cacheList.get(i).getGrouponId());
+					System.out.println("GrouponName-->"
+							+ cacheList.get(i).getGrouponName());
+					System.out.println("MercName-->"
+							+ cacheList.get(i).getMercName());
+					System.out.println("ListName-->"
+							+ cacheList.get(i).getListName());
+					System.out.println("DetailName-->"
+							+ cacheList.get(i).getDetailName());
+					// 验证排序是否正确
+					assertEquals(cacheList.get(i).getGrouponId(),
+							grouponIdList.get(i));
 				}
 			}
-			//check cache
+			// check cache
 			Query jql = emp.get().createQuery(
 					"select j.eventDetail from Journal j where j.event = '"
 							+ DomainEvent.GROUPON_CACHE_INIT.toString()
@@ -287,7 +312,7 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingSearch() {
-		//init test data start
+		// init test data start
 		if (!this.emp.get().getTransaction().isActive()) {
 			this.emp.get().getTransaction().begin();
 		}
@@ -318,20 +343,21 @@ public class QQApiTest extends JpaGuiceTest {
 		gc3.setMercName("mercName3");
 		gc3.setDetailName("detailName3");
 		this.emp.get().persist(gc3);
-		//init test data end
-		
+		// init test data end
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "rewards-0001");
-		//params.put("key", "456789000");
+		// params.put("key", "456789000");
 		params.put("curpage", "2");
 		params.put("pageSize", "1");
 		try {
-			HashMap<String,Object> resultMap = gbm.groupBuyingSearch(params);
+			HashMap<String, Object> resultMap = gbm.groupBuyingSearch(params);
 			String resultCode = (String) resultMap.get("resultCode");
 			System.out.println("resultCode->" + resultCode);
-			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap.get("pageInfo");
+			PageInfo<GrouponCache> pageInfo = (PageInfo<GrouponCache>) resultMap
+					.get("pageInfo");
 			System.out.println("totalnum->" + pageInfo.getRecordCount());
 			if (pageInfo.getItems() != null) {
 				System.out.println("curnum->" + pageInfo.getItems().size());
@@ -343,7 +369,8 @@ public class QQApiTest extends JpaGuiceTest {
 			if (pageInfo.getItems() != null && pageInfo.getItems().size() > 0) {
 				for (GrouponCache item : pageInfo.getItems()) {
 					System.out.println("GrouponId-->" + item.getGrouponId());
-					System.out.println("GrouponName-->" + item.getGrouponName());
+					System.out
+							.println("GrouponName-->" + item.getGrouponName());
 					System.out.println("MercName-->" + item.getMercName());
 					System.out.println("ListName-->" + item.getListName());
 					System.out.println("DetailName-->" + item.getDetailName());
@@ -370,8 +397,8 @@ public class QQApiTest extends JpaGuiceTest {
 
 	@Test
 	public void testGroupBuyingValidate() {
-		
-		//init test data start
+
+		// init test data start
 		if (!this.emp.get().getTransaction().isActive()) {
 			this.emp.get().getTransaction().begin();
 		}
@@ -392,8 +419,8 @@ public class QQApiTest extends JpaGuiceTest {
 		pa.setAgent(agent);
 		pa.setPos(pos);
 		this.emp.get().persist(pa);
-		//init test data end
-		
+		// init test data end
+
 		GroupBuyingManager gbm = getInjector().getInstance(
 				GroupBuyingManager.class);
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -450,98 +477,53 @@ public class QQApiTest extends JpaGuiceTest {
 			e.printStackTrace();
 		}
 	}
-/*
-	@Test
-	public void testGroupBuyingUnbind() {
-		
-		//init test data start
-		if (!this.emp.get().getTransaction().isActive()) {
-			this.emp.get().getTransaction().begin();
-		}
-		Pos pos = new Pos();
-		pos.setPosId("rewards-0001");
-		pos.setModel("model");
-		pos.setSn("sn");
-		pos.setSimPhoneNo("simphoneno");
-		pos.setDstatus(PosDeliveryStatus.DELIVERED);
-		pos.setIstatus(PosInitializationStatus.INITED);
-		pos.setOstatus(PosOperationStatus.ALLOWED);
-		pos.setSecret("secret");
-		this.emp.get().persist(pos);
-		Pos pos2 = new Pos();
-		pos2.setPosId("rewards-0002");
-		pos2.setModel("model2");
-		pos2.setSn("sn2");
-		pos2.setSimPhoneNo("simphoneno2");
-		pos2.setDstatus(PosDeliveryStatus.DELIVERED);
-		pos2.setIstatus(PosInitializationStatus.INITED);
-		pos2.setOstatus(PosOperationStatus.ALLOWED);
-		pos2.setSecret("secret2");
-		this.emp.get().persist(pos2);
-		Agent agent = new Agent();
-		agent.setName("agent");
-		this.emp.get().persist(agent);
-		PosAssignment pa = new PosAssignment();
-		pa.setAgent(agent);
-		pa.setPos(pos);
-		this.emp.get().persist(pa);
-		PosAssignment pa2 = new PosAssignment();
-		pa2.setAgent(agent);
-		pa2.setPos(pos2);
-		this.emp.get().persist(pa2);
-		//init test data end
-		
-		GroupBuyingManager gbm = getInjector().getInstance(
-				GroupBuyingManager.class);
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("posId", new String[] { "rewards-0001", "rewards-0002"});
-		params.put("key", "JXTPOS");
-		try {
-			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
-			String resultCode = (String) result.get("resultCode");
-			System.out.println("resultCode->" + resultCode);
-			if ("0".equals(resultCode)) {
-				List<GroupBuyingUnbindVO> items = (List<GroupBuyingUnbindVO>) result
-						.get("items");
-				for (GroupBuyingUnbindVO item : items) {
-					System.out.println(item.getPosId());
-					System.out.println(item.getResultStatus());
-				}
-			} else {
-				switch (Integer.valueOf(resultCode)) {
-				case -1:
-					System.out.println("服务器繁忙");
-					break;
-				case -2:
-					System.out.println("md5校验失败");
-					break;
-				case -3:
-					System.out.println("没有权限");
-					break;
-				default:
-					System.out.println("未知错误");
-					break;
-				}
-			}
-		} catch (JsonGenerationException e) {
-			System.err.println("生成JSON对象出错");
-			e.printStackTrace();
-		} catch (MD5Exception e) {
-			System.err.println("生成MD5校验位出错");
-			e.printStackTrace();
-		} catch (ParseXMLException e) {
-			System.err.println("解析XML出错");
-			e.printStackTrace();
-		} catch (SendPostTimeOutException e) {
-			System.err.println("POST连接出错");
-			e.printStackTrace();
-		} catch (SaveDBException e) {
-			System.err.println("后台保存数据库出错");
-			System.out.println("具体异常信息：" + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	*/
+
+	/*
+	 * @Test public void testGroupBuyingUnbind() {
+	 * 
+	 * //init test data start if (!this.emp.get().getTransaction().isActive()) {
+	 * this.emp.get().getTransaction().begin(); } Pos pos = new Pos();
+	 * pos.setPosId("rewards-0001"); pos.setModel("model"); pos.setSn("sn");
+	 * pos.setSimPhoneNo("simphoneno");
+	 * pos.setDstatus(PosDeliveryStatus.DELIVERED);
+	 * pos.setIstatus(PosInitializationStatus.INITED);
+	 * pos.setOstatus(PosOperationStatus.ALLOWED); pos.setSecret("secret");
+	 * this.emp.get().persist(pos); Pos pos2 = new Pos();
+	 * pos2.setPosId("rewards-0002"); pos2.setModel("model2");
+	 * pos2.setSn("sn2"); pos2.setSimPhoneNo("simphoneno2");
+	 * pos2.setDstatus(PosDeliveryStatus.DELIVERED);
+	 * pos2.setIstatus(PosInitializationStatus.INITED);
+	 * pos2.setOstatus(PosOperationStatus.ALLOWED); pos2.setSecret("secret2");
+	 * this.emp.get().persist(pos2); Agent agent = new Agent();
+	 * agent.setName("agent"); this.emp.get().persist(agent); PosAssignment pa =
+	 * new PosAssignment(); pa.setAgent(agent); pa.setPos(pos);
+	 * this.emp.get().persist(pa); PosAssignment pa2 = new PosAssignment();
+	 * pa2.setAgent(agent); pa2.setPos(pos2); this.emp.get().persist(pa2);
+	 * //init test data end
+	 * 
+	 * GroupBuyingManager gbm = getInjector().getInstance(
+	 * GroupBuyingManager.class); HashMap<String, Object> params = new
+	 * HashMap<String, Object>(); params.put("posId", new String[] {
+	 * "rewards-0001", "rewards-0002"}); params.put("key", "JXTPOS"); try {
+	 * HashMap<String, Object> result = gbm.groupBuyingUnbind(params); String
+	 * resultCode = (String) result.get("resultCode");
+	 * System.out.println("resultCode->" + resultCode); if
+	 * ("0".equals(resultCode)) { List<GroupBuyingUnbindVO> items =
+	 * (List<GroupBuyingUnbindVO>) result .get("items"); for
+	 * (GroupBuyingUnbindVO item : items) { System.out.println(item.getPosId());
+	 * System.out.println(item.getResultStatus()); } } else { switch
+	 * (Integer.valueOf(resultCode)) { case -1: System.out.println("服务器繁忙");
+	 * break; case -2: System.out.println("md5校验失败"); break; case -3:
+	 * System.out.println("没有权限"); break; default: System.out.println("未知错误");
+	 * break; } } } catch (JsonGenerationException e) {
+	 * System.err.println("生成JSON对象出错"); e.printStackTrace(); } catch
+	 * (MD5Exception e) { System.err.println("生成MD5校验位出错"); e.printStackTrace();
+	 * } catch (ParseXMLException e) { System.err.println("解析XML出错");
+	 * e.printStackTrace(); } catch (SendPostTimeOutException e) {
+	 * System.err.println("POST连接出错"); e.printStackTrace(); } catch
+	 * (SaveDBException e) { System.err.println("后台保存数据库出错");
+	 * System.out.println("具体异常信息：" + e.getMessage()); e.printStackTrace(); } }
+	 */
 	@Test
 	public void testSendPostSuccess() throws Exception {
 		Server server = new Server(0);
@@ -549,27 +531,29 @@ public class QQApiTest extends JpaGuiceTest {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
 		s.setResponse("correct url");
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
 		server.start();
-		
-		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
+
+		String url = "http://localhost:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
 		GroupBuyingUtil.sendPost(url, null);
-		/*String url = "http://tuan-layenlin.qq.com/api/pos/query";
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		String posId = "REWARDS-0001";
-		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
-		
-		GroupBuyingUtil.sendPost(url, params);*/
+		/*
+		 * String url = "http://tuan-layenlin.qq.com/api/pos/query";
+		 * HashMap<String, Object> params = new HashMap<String, Object>();
+		 * String posId = "REWARDS-0001"; params.put("posId", posId);
+		 * params.put("key", new PosNetworkProperties().getTxServerKey());
+		 * 
+		 * GroupBuyingUtil.sendPost(url, params);
+		 */
 	}
 
 	@Test
@@ -579,20 +563,21 @@ public class QQApiTest extends JpaGuiceTest {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
 		s.setResponse("error url");
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
 		server.start();
-		
-		String url = "http://errorurl:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
+
+		String url = "http://errorurl:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
+
 		try {
 			GroupBuyingUtil.sendPost(url, null);
 		} catch (SendPostTimeOutException e) {
@@ -601,7 +586,7 @@ public class QQApiTest extends JpaGuiceTest {
 		}
 		throw new Exception();
 	}
-	
+
 	@Test
 	public void testErrorXML() throws Exception {
 		Server server = new Server(0);
@@ -628,20 +613,21 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("<detailName>400.01元套餐</detailName>");
 		sb.append("</item>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
 		server.start();
-		
-		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
+
+		String url = "http://localhost:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
+
 		try {
 			HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 					GroupBuyingUtil.sendPost(url, null), "//groupon/item",
@@ -679,9 +665,9 @@ public class QQApiTest extends JpaGuiceTest {
 			return;
 		}
 		throw new Exception();
-		
+
 	}
-	
+
 	@Test
 	public void testGroupBuyingSearchParseXML() throws Exception {
 		Server server = new Server(0);
@@ -710,20 +696,21 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
 		server.start();
-		
-		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
+
+		String url = "http://localhost:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, null), "//groupon/item",
 				GroupBuyingSearchListVO.class);
@@ -756,7 +743,7 @@ public class QQApiTest extends JpaGuiceTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testGroupBuyingValidateParseXML() throws Exception {
 		Server server = new Server(0);
@@ -783,23 +770,25 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
-		//server.getConnectors()[0].setPort(8087);
+		// server.getConnectors()[0].setPort(8087);
 		server.start();
-		
-		System.out.println("LocalPort: " + server.getConnectors()[0].getLocalPort());
-		
-		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
+
+		System.out.println("LocalPort: "
+				+ server.getConnectors()[0].getLocalPort());
+
+		String url = "http://localhost:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, null), "//groupon",
 				GroupBuyingValidateResultVO.class);
@@ -833,7 +822,7 @@ public class QQApiTest extends JpaGuiceTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testGroupBuyingUnbindParseXML() throws Exception {
 		Server server = new Server(0);
@@ -856,20 +845,21 @@ public class QQApiTest extends JpaGuiceTest {
 		sb.append("</groupon>");
 		sb.append("</tuan>");
 		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-		
+
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
 
 		String servletPath = "/qqapi";
 		ServletHandler scHandler = new ServletHandler();
 		scHandler.addServletWithMapping(h, servletPath);
-		
+
 		// add handler to server
 		server.addHandler(scHandler);
 		server.start();
-		
-		String url = "http://localhost:" + server.getConnectors()[0].getLocalPort() + servletPath;
-		
+
+		String url = "http://localhost:"
+				+ server.getConnectors()[0].getLocalPort() + servletPath;
+
 		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, null), "//groupon/item",
 				GroupBuyingUnbindVO.class);
