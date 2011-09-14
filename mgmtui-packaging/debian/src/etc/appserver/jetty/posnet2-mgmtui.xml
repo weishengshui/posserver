@@ -16,7 +16,7 @@
 				</Call>
 				<Call name="setProperty">
 					<Arg>POSNETMGMT_HOME</Arg>
-					<Arg>/usr/share/posnet2</Arg>
+					<Arg>/usr/share/posnet2-mgmt</Arg>
 				</Call>
 			</New>
 		</Arg>
