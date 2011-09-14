@@ -8,6 +8,7 @@ import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.google.inject.Inject;
@@ -88,6 +89,8 @@ public class ConfigReader {
 		// TODO extract this code.
 		if ("ini".equals(ext)) {
 			PropertiesConfiguration p = new PropertiesConfiguration(absFile.getAbsoluteFile());
+			p.setReloadingStrategy(new FileChangedReloadingStrategy());
+			p.setDelimiterParsingDisabled(true);	// no delimiter is used in the config value
 			return p;
 		}
 

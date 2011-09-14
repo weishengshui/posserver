@@ -39,6 +39,8 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	protected String rootConfigFilename = "posnet.ini";
 
 	Configuration configuration;
+	
+	public static final String HOME_DIR_ENV_KEY = "POSNETMGMT_HOME";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
@@ -116,6 +118,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		// check if the directory is given via command line.
 		String homedir = null; // we don't have default directory
 		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
+		homeDirLocator.setHomeDirEnvName(HOME_DIR_ENV_KEY);
 		ConfigReader cr = new ConfigReader(homeDirLocator);
 
 		log.info("Home directory: {}", homeDirLocator.getHomeDir());
@@ -128,7 +131,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 			// no configuration is found, throw exception
 			throw new RuntimeException(
 					"No configuration is found. Please specify "
-							+ "POSNET_HOME environment variable for the home directory.");
+							+ HOME_DIR_ENV_KEY + " environment variable for the home directory.");
 		}
 
 	}

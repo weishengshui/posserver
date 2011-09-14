@@ -96,29 +96,35 @@ public class QQApiTest extends JpaGuiceTest {
 		initTestServer();
 	}
 
-	private void initTestServer() {
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbpvn.main.test.JpaGuiceTest#tearDown()
+	 */
+	@Override
+	public void tearDown() throws Exception {
+		
+		// stop server
+		if (server.isStarted()) {
+			server.stop();
+		}
+		
+		super.tearDown();
+	}
+
+	private void initTestServer() throws Exception {
 		// build test server start
-		try {
-			// Server server = new Server(0);
-			if (!server.isStarted()) {
-				ServletHandler scHandler = new ServletHandler();
-				scHandler
-						.addServletWithMapping(
-								getInitGrouponCacheServletHolder(),
-								"/initGrouponCache");
-				scHandler.addServletWithMapping(
-						getGroupBuyingValidateServletHolder(),
-						"/groupBuyingValidate");
-				scHandler.addServletWithMapping(
-						getGroupBuyingUnbindServletHolder(),
-						"/groupBuyingUnbind");
-				// add handler to server
-				server.addHandler(scHandler);
-				server.getConnectors()[0].setPort(8086);
-				server.start();
-			}
-		} catch (Exception e) {
-			System.err.println("build test server failed");
+		if (!server.isStarted()) {
+			ServletHandler scHandler = new ServletHandler();
+			scHandler.addServletWithMapping(getInitGrouponCacheServletHolder(),
+					"/initGrouponCache");
+			scHandler.addServletWithMapping(
+					getGroupBuyingValidateServletHolder(),
+					"/groupBuyingValidate");
+			scHandler.addServletWithMapping(
+					getGroupBuyingUnbindServletHolder(), "/groupBuyingUnbind");
+			// add handler to server
+			server.addHandler(scHandler);
+			server.getConnectors()[0].setPort(8086);
+			server.start();
 		}
 		// build test server end
 	}

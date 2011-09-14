@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -20,7 +22,7 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 
 	final Configuration configuration;
 	
-	//Logger log = LoggerFactory.getLogger(getClass());
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 
