@@ -31,6 +31,17 @@ CREATE TABLE DeliveryNoteDetail (
   KEY FK3426CA179B101BF7 (dn_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE GroupBuyValidateResult (
+  id varchar(255) NOT NULL,
+  createAt datetime DEFAULT NULL,
+  grouponId varchar(255) DEFAULT NULL,
+  grouponVCode varchar(255) DEFAULT NULL,
+  modifyAt datetime DEFAULT NULL,
+  result varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 CREATE TABLE GrouponCache (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   createDate datetime DEFAULT NULL,
@@ -41,7 +52,7 @@ CREATE TABLE GrouponCache (
   mercName varchar(255) DEFAULT NULL,
   posId varchar(255) DEFAULT NULL,
   PRIMARY KEY (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE Journal (
   id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -51,7 +62,7 @@ CREATE TABLE Journal (
   eventDetail longtext,
   ts datetime DEFAULT NULL,
   PRIMARY KEY (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE Pos (
   id varchar(255) NOT NULL,
@@ -64,6 +75,7 @@ CREATE TABLE Pos (
   secret varchar(255) DEFAULT NULL,
   simPhoneNo varchar(255) DEFAULT NULL,
   sn varchar(255) DEFAULT NULL,
+  version bigint(20) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY posId (posId)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -85,6 +97,7 @@ CREATE TABLE ReturnNote (
   printDate datetime DEFAULT NULL,
   rnNumber varchar(255) DEFAULT NULL,
   `status` varchar(255) DEFAULT NULL,
+  token varchar(255) DEFAULT NULL,
   agent_id varchar(255) DEFAULT NULL,
   PRIMARY KEY (id),
   KEY FKC6832562EE9BB1B9 (agent_id)
@@ -92,6 +105,7 @@ CREATE TABLE ReturnNote (
 
 CREATE TABLE ReturnNoteDetail (
   id varchar(255) NOT NULL,
+  dstatus varchar(255) DEFAULT NULL,
   model varchar(255) DEFAULT NULL,
   posId varchar(255) DEFAULT NULL,
   simPhoneNo varchar(255) DEFAULT NULL,
@@ -99,6 +113,15 @@ CREATE TABLE ReturnNoteDetail (
   rn_id varchar(255) DEFAULT NULL,
   PRIMARY KEY (id),
   KEY FK98C518539B46D481 (rn_id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE ReturnNoteInvitation (
+  id varchar(255) NOT NULL,
+  requestDate datetime DEFAULT NULL,
+  token varchar(255) DEFAULT NULL,
+  agent_id varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY FK8A36A69BEE9BB1B9 (agent_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE SysUser (
