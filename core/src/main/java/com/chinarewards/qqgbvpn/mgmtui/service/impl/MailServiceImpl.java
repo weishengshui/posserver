@@ -1,17 +1,28 @@
 package com.chinarewards.qqgbvpn.mgmtui.service.impl;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.Date;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.chinarewards.qqgbvpn.core.mail.MailService;
 import com.google.inject.Inject;
@@ -23,7 +34,7 @@ public class MailServiceImpl implements MailService {
 	@Inject
 	protected Configuration configuration;
 
-	public void sendMail(String[] toAdds, String[] cc, String subject,
+	/*public void sendMail(String[] toAdds, String[] cc, String subject,
 			String content, File attachment) throws MessagingException,
 			UnsupportedEncodingException, javax.mail.MessagingException {
 		
@@ -60,6 +71,55 @@ public class MailServiceImpl implements MailService {
 		}
 		
 		javaMail.send(message);
+	}*/
+	
+	public void sendMail(String[] toAdds, String[] cc, String subject,
+			String tempPathAndName, String tempKey, Object[] params, File attachment) {
+		 // 获得邮件模板信息  
+        ResourceBundle mailTemplateRb = ResourceBundle.getBundle(tempPathAndName);  
+        MessageFormat formater = new MessageFormat("");  
+        formater.applyPattern(mailTemplateRb.getString(tempKey));
+        String messageText = formater.format(params);  
+        // 设置邮件的传输协议信息  
+        Properties transProp = System.getProperties();  
+        // 邮件服务器地址  
+        transProp.put("mail.smtp.host", configuration.getString("smtp.server"));  
+        // 邮件传输协议中的接收协议：smtp  
+        transProp.put("mail.transport.protocol", "smtp");  
+        // 是否通过验证  
+        transProp.put("mail.smtp.auth", "true");
+        // 服务器端口  
+        transProp.put("mail.smtp.port", "25");// 默认端口25  
+        Session mailSession = Session.getDefaultInstance(transProp,new Authenticator(){  
+            @Override  
+            protected PasswordAuthentication getPasswordAuthentication() {  
+                return new PasswordAuthentication(configuration.getString("smtp.username")
+                		,configuration.getString("smtp.password"));  
+            }  
+        });
+        Message mailMessage = new MimeMessage(mailSession);  
+        try {  
+            mailMessage.setFrom(new InternetAddress(configuration.getString("smtp.username")));
+            InternetAddress[] sendTo = new InternetAddress[toAdds.length];
+            for (int i = 0; i < toAdds.length; i++) {
+            	sendTo[i] = new InternetAddress(toAdds[i]);
+            } 
+            mailMessage.setRecipients(RecipientType.TO, sendTo);  
+            mailMessage.setSubject(subject);  
+            mailMessage.setSentDate(new Date());  
+              
+            Multipart mp = new MimeMultipart();  
+            MimeBodyPart mbp = new MimeBodyPart();  
+            mbp.setContent(messageText, "text/html;charset=GB2312");
+            log.debug("messageText : {}",messageText);
+            mp.addBodyPart(mbp);  
+            mailMessage.setContent(mp);  
+            Transport.send(mailMessage);  
+        } catch (AddressException e) {  
+            e.printStackTrace();  
+        } catch (MessagingException e) {  
+            e.printStackTrace();  
+        }  
 	}
 
 }
