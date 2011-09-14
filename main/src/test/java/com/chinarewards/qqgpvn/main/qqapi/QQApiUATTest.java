@@ -16,7 +16,6 @@ import org.junit.Test;
 import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -88,7 +87,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
 		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -167,7 +166,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		params.put("posId", "REWARDS-0001");
 		params.put("grouponId", "136453");
 		params.put("token", "4662451047");
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -224,11 +223,15 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
+	protected String getTxServerKey() {
+		return "JXTPOS";
+	}
+	
 	// @Test
 	public void testGroupBuyingUnbindParseXML() throws Exception {
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "REWARDS-0001", "REWARDS-0002" });
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		String[] posIds = (String[]) params.get("posId");
@@ -292,7 +295,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
 		params.put("posId", posId);
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		System.out.println("key-->" + params.get("key"));
 		try {
 			String resultCode = gbm.initGrouponCache(params);
@@ -412,7 +415,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		params.put("posId", "REWARDS-0001");
 		params.put("grouponId", "136453");
 		params.put("token", "6638856966");
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingValidate(params);
 			String resultCode = (String) result.get("resultCode");
@@ -473,7 +476,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 				GroupBuyingManager.class);
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("posId", new String[] { "rEWARDS-0001", "rEWARDS-0002" });
-		params.put("key", new PosNetworkProperties().getTxServerKey());
+		params.put("key", getTxServerKey());
 		try {
 			HashMap<String, Object> result = gbm.groupBuyingUnbind(params);
 			String resultCode = (String) result.get("resultCode");
