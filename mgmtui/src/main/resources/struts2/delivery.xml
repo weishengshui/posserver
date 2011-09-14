@@ -60,6 +60,11 @@
 		
 		<action name="showWaitPosInitDelivery" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showWaitPosInitDelivery">
 			<result name="success" type="tiles">delivery.showWaitPosInitDelivery</result>
+			<result name="input" type="redirectAction">
+				<param name="namespace">/delivery</param>
+				<param name="actionName">showDeliveryWaitConfirm</param>
+				<param name="deliveryId">${deliveryId}</param>
+			</result>
 		</action>
 		
 		<action name="showDeliveryWaitConfirm" class="com.chinarewards.qqgbvpn.mgmtui.struts.delivery.DeliveryAction" method="showDeliveryWaitConfirm">

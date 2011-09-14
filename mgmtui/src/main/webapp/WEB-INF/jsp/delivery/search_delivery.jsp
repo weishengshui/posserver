@@ -36,7 +36,7 @@
 <table align="center" width="800px">
 	<tr>
 		<td>
-			<s:form  namespace="/delivery" action="searchDelivery">
+			<s:form  namespace="/delivery" action="searchDelivery" method="GET">
 				交付单编号：
 				<input type="text" name="deliverySearchVO.dnNumber" value="<s:property value='#request.deliverySearchVO.dnNumber'/>"/>&nbsp;&nbsp;&nbsp;
 				交付单状态：
