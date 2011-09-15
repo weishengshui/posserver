@@ -39,7 +39,7 @@ public class FirmwareUpDoneHandler implements ServiceHandler {
 		
 		FirmwareUpDoneResponseMessage firmwareUpDoneResponseMessage = null;
 		try {
-			firmwareUpDoneResponseMessage = firmwareManager.upDoneRequest(bodyMessage);
+			firmwareUpDoneResponseMessage = firmwareManager.ackUpgradeCompleted(bodyMessage);
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
 			firmwareUpDoneResponseMessage = new FirmwareUpDoneResponseMessage();

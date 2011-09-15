@@ -256,7 +256,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 	}
 	
 	@Override
-	public FirmwareUpDoneResponseMessage upDoneRequest(
+	public FirmwareUpDoneResponseMessage ackUpgradeCompleted(
 			FirmwareUpDoneRequestMessage req) {
 		logger.debug("upDoneRequest() invoke");
 

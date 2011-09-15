@@ -105,7 +105,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		request.setPosId("pos-0001");
 		request.setCmdId(CmdConstant.FIRMWARE_UP_DONE_CMD_ID);
 		
-		FirmwareUpDoneResponseMessage response = getManager().upDoneRequest(request);
+		FirmwareUpDoneResponseMessage response = getManager().ackUpgradeCompleted(request);
 		
 		assertEquals(response.getResult(), FirmwareUpDoneResult.SUCCESS.getPosCode());
 		

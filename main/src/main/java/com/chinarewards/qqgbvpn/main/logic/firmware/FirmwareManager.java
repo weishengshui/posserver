@@ -33,7 +33,7 @@ public interface FirmwareManager {
 	 * <li>modify POS upgradeRequired.</li>
 	 * </ul>
 	 */
-	public FirmwareUpDoneResponseMessage upDoneRequest(
+	public FirmwareUpDoneResponseMessage ackUpgradeCompleted(
 			 FirmwareUpDoneRequestMessage req);
 	
 }
