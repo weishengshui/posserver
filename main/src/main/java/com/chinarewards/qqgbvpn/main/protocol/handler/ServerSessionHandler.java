@@ -106,13 +106,12 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		msg.setBodyMessage(responseMsgBody);
 		session.write(msg);
 
-		log.debug("Server written to client...");
 	}
 
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status)
 			throws Exception {
-		log.debug("Socket client idle ({} count: {})", status,
+		log.trace("Socket client idle ({} count: {})", status,
 				session.getIdleCount(status));
 	}
 
