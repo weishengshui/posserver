@@ -38,8 +38,6 @@ public class FirmwareUpgradeRequestCommandHandler implements ServiceHandler {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		fwResponseMessage
-				.setCmdId(CmdConstant.FIRMWARE_UPGRADE_CMD_ID_RESPONSE);
 		response.writeResponse(fwResponseMessage);
 	}
 

@@ -40,7 +40,6 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		in.get(posIdBuf);
 
 		// construct message
-		message.setCmdId(cmdId);
 		message.setPosId(Tools.byteToString(posIdBuf, charset));
 
 		log.debug(

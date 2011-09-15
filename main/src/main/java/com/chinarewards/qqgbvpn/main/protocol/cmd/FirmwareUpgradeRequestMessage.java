@@ -9,12 +9,10 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class FirmwareUpgradeRequestMessage implements ICommand {
 
-	private long cmdId;
-
 	private String posId;
 
 	public long getCmdId() {
-		return cmdId;
+		return CmdConstant.FIRMWARE_UPGRADE_CMD_ID;
 	}
 
 	public String getPosId() {
@@ -23,10 +21,6 @@ public class FirmwareUpgradeRequestMessage implements ICommand {
 
 	public void setPosId(String posId) {
 		this.posId = posId;
-	}
-
-	public void setCmdId(long cmdId) {
-		this.cmdId = cmdId;
 	}
 
 }
