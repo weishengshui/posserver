@@ -8,7 +8,7 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd.init;
  * 
  */
 public enum InitResult {
-	INIT(0), UNINIT(1), OTHERS(2);
+	INIT(0), UNINIT(1), FIRMWARE_UPGRADE_REQUIRED(2), OTHERS(3);
 
 	private int posCode;
 

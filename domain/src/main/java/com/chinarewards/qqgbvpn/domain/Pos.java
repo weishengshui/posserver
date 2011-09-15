@@ -1,7 +1,5 @@
 package com.chinarewards.qqgbvpn.domain;
 
-import java.util.Arrays;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -57,6 +55,10 @@ public class Pos {
 
 	// POS 内置唯一标识。6位字符
 	String secret;
+	
+	String firmware;
+	
+	Boolean upgradeRequired;
 	
 //	// save the challenge code.
 //	/**
@@ -155,6 +157,23 @@ public class Pos {
 		this.secret = secret;
 	}
 
+	public String getFirmware() {
+		return firmware;
+	}
+
+	public void setFirmware(String firmware) {
+		this.firmware = firmware;
+	}
+
+	public Boolean getUpgradeRequired() {
+		return upgradeRequired;
+	}
+
+	public void setUpgradeRequired(Boolean upgradeRequired) {
+		this.upgradeRequired = upgradeRequired;
+	}
+	
+
 //	/**
 //	 * FIXME should not use this. This is session specific.
 //	 * 
@@ -186,7 +205,8 @@ public class Pos {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
 				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
 				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
-				+ ", secret=" + secret + "]";
+				+ ", secret=" + secret + ", firmware=" + firmware
+				+ "upgradeRequired=" + upgradeRequired + "]";
 	}
-	
+
 }

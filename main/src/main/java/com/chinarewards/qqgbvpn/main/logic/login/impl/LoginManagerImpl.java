@@ -61,32 +61,43 @@ public class LoginManagerImpl implements LoginManager {
 		InitResult result = null;
 
 		try {
-			
-			// TODO reports better error code to distinguish between 
+
+			// TODO reports better error code to distinguish between
 			// POS ID not found or not assigned.
 
 			pos = posDao.get().fetchPos(req.getPosId(), null, null,
 					PosOperationStatus.ALLOWED);
 
-			// check pos.secret. When not existed, generate one.
-			if (StringUtil.isEmptyString(pos.getSecret())) {
-				pos.setSecret(ChallengeUtil.generatePosSecret());
-			}
-			
-			posDao.get().merge(pos);
-			logger.debug("POS ID:{}, init challenge saved - {}", new Object[] {
-					req.getPosId(), Arrays.toString(newChallenge) });
+			// upgrade should be checked first
+			if (pos.getUpgradeRequired() != null
+					&& pos.getUpgradeRequired().booleanValue()) {
+				
+				result = InitResult.FIRMWARE_UPGRADE_REQUIRED;
+				
+			} else {
 
-			switch (pos.getIstatus()) {
-			case INITED:
-				result = InitResult.INIT;
-				break;
-			case UNINITED:
-				result = InitResult.UNINIT;
-				break;
-			default:
-				result = InitResult.OTHERS;
-				break;
+				// check pos.secret. When not existed, generate one.
+				if (StringUtil.isEmptyString(pos.getSecret())) {
+					pos.setSecret(ChallengeUtil.generatePosSecret());
+				}
+
+				posDao.get().merge(pos);
+				logger.debug(
+						"POS ID:{}, init challenge saved - {}",
+						new Object[] { req.getPosId(),
+								Arrays.toString(newChallenge) });
+
+				switch (pos.getIstatus()) {
+				case INITED:
+					result = InitResult.INIT;
+					break;
+				case UNINITED:
+					result = InitResult.UNINIT;
+					break;
+				default:
+					result = InitResult.OTHERS;
+					break;
+				}
 			}
 		} catch (NoResultException e) {
 			logger.warn("No usable POS machine found. POS ID not exists or not assigned.");
