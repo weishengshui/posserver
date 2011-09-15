@@ -13,11 +13,12 @@ import javax.persistence.Version;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
+import com.chinarewards.qqgbvpn.domain.status.PosFirmwareUpgradeStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 
 /**
- * Represents a physical POS in the network.
+ * Represents a physical POS client in the network.
  * <p>
  * 
  * This entity should be created by management UI, used by POS server.
@@ -57,7 +58,7 @@ public class Pos {
 
 	// POS 内置唯一标识。6位字符
 	String secret;
-	
+
 	// save the challenge code.
 	/**
 	 * FIXME should not use this. This is session specific.
@@ -65,9 +66,21 @@ public class Pos {
 	 * @deprecated
 	 */
 	byte[] challenge;
-	
+
+	/**
+	 * 
+	 */
+	private PosFirmwareUpgradeStatus firmwareUpgradeFlag;
+
+	private String firmwareSource;
+
+	/**
+	 * 
+	 * @since 2011-09-13
+	 * @author seek
+	 */
 	@Version
-    long version;	//2011-09-13   Seek
+	long version;
 
 	public String getId() {
 		return id;
@@ -172,7 +185,49 @@ public class Pos {
 	public void setChallenge(byte[] challenge) {
 		this.challenge = challenge;
 	}
-	
+
+	/**
+	 * Return the firmware upgrade flag. This method never returns
+	 * <code>null</code>.
+	 * 
+	 * @return the firmwareUpgradeFlag
+	 */
+	public PosFirmwareUpgradeStatus getFirmwareUpgradeFlag() {
+		return firmwareUpgradeFlag;
+	}
+
+	/**
+	 * Sets the firmware upgrade flag. One should not set a <code>null</code>
+	 * value in it.
+	 * 
+	 * @param firmwareUpgradeFlag
+	 *            the firmwareUpgradeFlag to set
+	 */
+	public void setFirmwareUpgradeFlag(
+			PosFirmwareUpgradeStatus firmwareUpgradeFlag) {
+		this.firmwareUpgradeFlag = firmwareUpgradeFlag;
+	}
+
+	/**
+	 * Returns the source of the firmware. It is expected that it is in URL
+	 * format.
+	 * 
+	 * @return the firmwareSource
+	 */
+	public String getFirmwareSource() {
+		return firmwareSource;
+	}
+
+	/**
+	 * Sets the source of the firmware. It is expected that it is in URL format.
+	 * 
+	 * @param firmwareSource
+	 *            the firmwareSource to set
+	 */
+	public void setFirmwareSource(String firmwareSource) {
+		this.firmwareSource = firmwareSource;
+	}
+
 	public long getVersion() {
 		return version;
 	}
@@ -180,14 +235,21 @@ public class Pos {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
 				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
 				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
 				+ ", secret=" + secret + ", challenge="
-				+ Arrays.toString(challenge) + "]";
+				+ Arrays.toString(challenge) + ", firmwareUpgradeFlag="
+				+ firmwareUpgradeFlag + ", firmwareSource=" + firmwareSource
+				+ ", version=" + version + "]";
 	}
-	
+
 }
