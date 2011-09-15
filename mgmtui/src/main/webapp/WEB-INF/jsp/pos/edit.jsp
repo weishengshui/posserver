@@ -77,6 +77,20 @@
 				<s:textfield name="posVO.secret" label="secret" id="posVO.secret" readonly="true"/>
 			</td>
 		</tr>
+		<tr>
+			<td >
+				允许升级固件:
+			</td>
+			<td >
+				<s:radio name="posVO.upgradeRequired" value="posVO.upgradeRequired"  list="#{true:'允许',false:'禁止'}" listKey="key" listValue="value"  theme="simple" />
+			</td>
+			<td >
+				固件档案名称:
+			</td>
+			<td >
+				<s:textfield name="posVO.firmware" label="firmware"/>
+			</td>
+		</tr>
 		<s:if test="posVO.id != null ">
 			<s:if test="posVO.createAt != null">
 				<tr>
