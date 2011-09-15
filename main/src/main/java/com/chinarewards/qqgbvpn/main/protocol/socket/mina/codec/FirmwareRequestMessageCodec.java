@@ -16,9 +16,12 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
  * firmware request codec
+ * <p>
+ * 
+ * XXX should separate into two codec classes.
  * 
  * @author kmtong
- * 
+ * @since 0.1.0 2011-0915
  */
 public class FirmwareRequestMessageCodec implements ICommandCodec {
 

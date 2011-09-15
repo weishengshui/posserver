@@ -10,7 +10,6 @@
 	</appender>
 
 	<logger name="com.chinarewards" level="TRACE" />
-
 	<logger name="org.hibernate" level="WARN" />
 
 	<root level="debug">

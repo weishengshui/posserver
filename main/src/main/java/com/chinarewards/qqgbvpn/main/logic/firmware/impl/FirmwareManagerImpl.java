@@ -110,6 +110,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 				// make sure firmware is available for reading.
 				String filename = pos.getFirmware();
 				File firmwareFile = getFirmwareAbsPath(filename);
+				log.debug("Firmware for POS ID {} is {}", req.getPosId(), firmwareFile);
 
 				// make sure the file does exist.
 				if (!firmwareFile.exists()) {
