@@ -205,7 +205,7 @@
 				<input type="button" value="下一步" onclick="toNextPage();" />&nbsp;&nbsp;&nbsp;
 				<input type="button" value="删除" onclick="removeDelivery();" />&nbsp;&nbsp;&nbsp;
 			</s:else>
-			<input type="button" value="返回" onclick="history.back();" />
+			<input type="button" value="返回" onclick="window.location.href='<s:url value="/delivery/searchDelivery.action"/>';" />
 		</td>
 	</tr>
 </table>

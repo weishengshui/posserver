@@ -23,14 +23,14 @@ public interface LoginManager {
 	 * <li>Check POS secret code. If not existed, create it.</li>
 	 * </ul>
 	 */
-	public InitResponseMessage init(InitRequestMessage req);
+	public InitResponseMessage init(InitRequestMessage req, byte[] newChallenge);
 
 	/**
 	 * 
 	 * @param req
 	 * @return
 	 */
-	public LoginResponseMessage login(LoginRequestMessage req);
+	public LoginResponseMessage login(LoginRequestMessage req, byte[] newChallenge, byte[] oldChallenge);
 
 	/**
 	 * Bind POS. The Message will be the same with Login. So reuse LoginMessage.
@@ -38,6 +38,6 @@ public interface LoginManager {
 	 * @param req
 	 * @return
 	 */
-	LoginResponseMessage bind(LoginRequestMessage req);
+	LoginResponseMessage bind(LoginRequestMessage req, byte[] newChallenge, byte[] oldChallenge);
 
 }

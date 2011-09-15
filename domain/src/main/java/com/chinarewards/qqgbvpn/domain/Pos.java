@@ -1,7 +1,5 @@
 package com.chinarewards.qqgbvpn.domain;
 
-import java.util.Arrays;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,12 +11,11 @@ import javax.persistence.Version;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
-import com.chinarewards.qqgbvpn.domain.status.PosFirmwareUpgradeStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 
 /**
- * Represents a physical POS client in the network.
+ * Represents a physical POS in the network.
  * <p>
  * 
  * This entity should be created by management UI, used by POS server.
@@ -58,29 +55,21 @@ public class Pos {
 
 	// POS 内置唯一标识。6位字符
 	String secret;
-
-	// save the challenge code.
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	byte[] challenge;
-
-	/**
-	 * 
-	 */
-	private PosFirmwareUpgradeStatus firmwareUpgradeFlag;
-
-	private String firmwareSource;
-
-	/**
-	 * 
-	 * @since 2011-09-13
-	 * @author seek
-	 */
+	
+	String firmware;
+	
+	Boolean upgradeRequired;
+	
+//	// save the challenge code.
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	byte[] challenge;
+	
 	@Version
-	long version;
+    long version;	//2011-09-13   Seek
 
 	public String getId() {
 		return id;
@@ -168,66 +157,41 @@ public class Pos {
 		this.secret = secret;
 	}
 
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public byte[] getChallenge() {
-		return challenge;
+	public String getFirmware() {
+		return firmware;
 	}
 
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public void setChallenge(byte[] challenge) {
-		this.challenge = challenge;
+	public void setFirmware(String firmware) {
+		this.firmware = firmware;
 	}
 
-	/**
-	 * Return the firmware upgrade flag. This method never returns
-	 * <code>null</code>.
-	 * 
-	 * @return the firmwareUpgradeFlag
-	 */
-	public PosFirmwareUpgradeStatus getFirmwareUpgradeFlag() {
-		return firmwareUpgradeFlag;
+	public Boolean getUpgradeRequired() {
+		return upgradeRequired;
 	}
 
-	/**
-	 * Sets the firmware upgrade flag. One should not set a <code>null</code>
-	 * value in it.
-	 * 
-	 * @param firmwareUpgradeFlag
-	 *            the firmwareUpgradeFlag to set
-	 */
-	public void setFirmwareUpgradeFlag(
-			PosFirmwareUpgradeStatus firmwareUpgradeFlag) {
-		this.firmwareUpgradeFlag = firmwareUpgradeFlag;
+	public void setUpgradeRequired(Boolean upgradeRequired) {
+		this.upgradeRequired = upgradeRequired;
 	}
+	
 
-	/**
-	 * Returns the source of the firmware. It is expected that it is in URL
-	 * format.
-	 * 
-	 * @return the firmwareSource
-	 */
-	public String getFirmwareSource() {
-		return firmwareSource;
-	}
-
-	/**
-	 * Sets the source of the firmware. It is expected that it is in URL format.
-	 * 
-	 * @param firmwareSource
-	 *            the firmwareSource to set
-	 */
-	public void setFirmwareSource(String firmwareSource) {
-		this.firmwareSource = firmwareSource;
-	}
-
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public byte[] getChallenge() {
+//		return challenge;
+//	}
+//
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public void setChallenge(byte[] challenge) {
+//		this.challenge = challenge;
+//	}
+	
 	public long getVersion() {
 		return version;
 	}
@@ -235,21 +199,14 @@ public class Pos {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+	
 	@Override
 	public String toString() {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
 				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
 				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
-				+ ", secret=" + secret + ", challenge="
-				+ Arrays.toString(challenge) + ", firmwareUpgradeFlag="
-				+ firmwareUpgradeFlag + ", firmwareSource=" + firmwareSource
-				+ ", version=" + version + "]";
+				+ ", secret=" + secret + ", firmware=" + firmware
+				+ "upgradeRequired=" + upgradeRequired + "]";
 	}
 
 }

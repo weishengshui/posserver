@@ -356,8 +356,11 @@ public class UnbindAction extends BaseAction {
 				String path = getInviteEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
 				String subject = "邀请填写申请表";
-				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
-				getMailService().sendMail(toAdds, null, subject, content, null);
+				//String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
+				//getMailService().sendMail(toAdds, null, subject, content, null);
+				Object[] params = {path};
+				getMailService().sendMail(toAdds, null, subject, "/mailtemplate/createInviteMailTemplate"
+						, "createInvite", params, null);
 				this.setAgentName(this.getAgentName());
 				//this.setSendTime(new Date());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -390,10 +393,13 @@ public class UnbindAction extends BaseAction {
 					String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
 					String path = getRnDetailPath(rn.getId());
-					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。" +
-							"<br><a href='" + path + "'>请点击此链接查看回收单具体信息，谢谢。</a></body></html>";
+					/*String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。" +
+							"<br><a href='" + path + "'>请点击此链接查看回收单具体信息，谢谢。</a></body></html>";*/
+					Object[] params = {this.getAgentName(),posList.size(),path};
 					try {
-						getMailService().sendMail(toAdds, null, subject, content, null);
+						//getMailService().sendMail(toAdds, null, subject, content, null);
+						getMailService().sendMail(toAdds, null, subject, "/mailtemplate/confirmRnNumberMailTemplate"
+								, "confirmRnNumber", params, null);
 					} catch (Throwable e) {
 						
 					}

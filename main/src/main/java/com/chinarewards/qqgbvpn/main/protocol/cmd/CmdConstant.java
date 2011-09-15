@@ -27,6 +27,14 @@ public class CmdConstant {
 	 * 绑定回复
 	 */
 	public static final long BIND_CMD_ID_RESPONSE = 10;
+	/**
+	 * 固件更新请求
+	 */
+	public static final long FIRMWARE_UPGRADE_CMD_ID = 13;
+	/**
+	 * 顾健更新回复
+	 */
+	public static final long FIRMWARE_UPGRADE_CMD_ID_RESPONSE = 14;
 	
 	/**
 	 * 查询请求
