@@ -27,6 +27,14 @@ public class CmdConstant {
 	 * 绑定回复
 	 */
 	public static final long BIND_CMD_ID_RESPONSE = 10;
+	/**
+	 * 固件更新请求
+	 */
+	public static final long FIRMWARE_UPGRADE_CMD_ID = 13;
+	/**
+	 * 顾健更新回复
+	 */
+	public static final long FIRMWARE_UPGRADE_CMD_ID_RESPONSE = 14;
 	
 	/**
 	 * 查询请求
@@ -94,5 +102,16 @@ public class CmdConstant {
 	 * 验证回调应答
 	 */
 	public static final long VAL_CALLBACK_CMD_ID_RESPONSE = 12;
+	
+	
+	/**
+	 * Request firmware update by POS client.
+	 */
+	public static final long POS_REQUEST_FIRMWARE_UPDATE = 13;
+
+	/**
+	 * Response from {@link #POS_REQUEST_FIRMWARE_UPDATE}
+	 */
+	public static final long POS_REQUEST_FIRMWARE_RESPONSE = 14;
 
 }
