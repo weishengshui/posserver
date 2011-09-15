@@ -40,11 +40,13 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		GetFirmwareFragmentResponseMessage msg = (GetFirmwareFragmentResponseMessage) bodyMessage;
 
 		// prepare buffer
-		IoBuffer buf = IoBuffer.allocate(ProtocolLengths.COMMAND
-				+ ProtocolLengths.RESULT);
-		if (msg.getContent() != null && msg.getContent().length > 0) {
-			buf.expand(msg.getContent().length);
+		int bufLength = 0;
+		if (msg.getContent() != null) {
+			bufLength += msg.getContent().length;
 		}
+		
+		IoBuffer buf = IoBuffer.allocate(ProtocolLengths.COMMAND
+				+ ProtocolLengths.RESULT + bufLength);
 
 		// encode data
 		// command ID
@@ -52,7 +54,7 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		// result
 		buf.putShort((short) msg.getResult());
 		// content - optional
-		if (msg.getContent() != null) {
+		if (msg.getContent() != null && bufLength > 0) {
 			buf.put(msg.getContent());
 		}
 

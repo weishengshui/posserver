@@ -69,9 +69,11 @@ public class MessageEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
+		
 		log.debug("encode message start");
 		
 		log.debug("message========:"+message.getClass());
+		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
 		ICommand bodyMessage = msg.getBodyMessage();
@@ -86,12 +88,13 @@ public class MessageEncoder implements ProtocolEncoder {
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(), ProtocolLengths.COMMAND);
 		}else{
-//			String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
-//			if(cmdName == null || cmdName.length() == 0){
 //				throw new RuntimeException("cmd id is not exits,cmdId is :"+cmdId);
 //			}
 			//Dispatcher
 			//IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+			
+			// XXX handles the case no codec is found for the command ID.
+			
 			ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
 			log.trace("bodyMessageCoder = {}", bodyMessageCoder);
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
@@ -122,11 +125,10 @@ public class MessageEncoder implements ProtocolEncoder {
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
 		// debug print
-		log.debug("Outgoing byte content");
+		log.debug("Encoded byte content");
 		CodecUtil.debugRaw(log, result);
 
-		log.debug("result========length:({})",result.length);
-		log.debug("result========value:({})",Arrays.toString(result));
+		// write to Mina session
 		buf.put(result);
 		buf.flip();
 		out.write(buf);

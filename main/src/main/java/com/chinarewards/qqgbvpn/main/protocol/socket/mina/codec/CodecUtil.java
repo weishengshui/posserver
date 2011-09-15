@@ -25,6 +25,7 @@ public class CodecUtil {
 	public static final void debugRaw(Logger log, byte[] raw) {
 
 		if (log == null) return;
+		if (raw == null) return;
 		
 		if (log.isDebugEnabled()) {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -32,9 +33,9 @@ public class CodecUtil {
 			try {
 				HexDump.dump(raw, 0, os, 0);
 				String s = os.toString("UTF-8");
-				log.debug("Received bytes (hex)\n{}", s);
-			} catch (Exception e) {
-				log.warn("failed to dump hex raw bytes");
+				log.debug("bytes (hex) ({} bytes)\n{}\n", raw.length, s);
+			} catch (Throwable e) {
+				log.warn("Failed to dump hex raw bytes");
 			} finally {
 				try {
 					if (os != null)
