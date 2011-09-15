@@ -37,6 +37,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.FirmwareUpDoneRe
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.FirmwareUpDoneResponseCodec;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.CountingInputStream;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
@@ -143,7 +144,8 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		FirmwareManager api = getManager();
 		
 		// get the first 1000 bytes
-		GetFirmwareFragmentRequestMessage req = new GetFirmwareFragmentRequestMessage("POS-1", 0, 1000);
+		GetFirmwareFragmentRequestMessage req = new GetFirmwareFragmentRequestMessage(
+				"POS-1", fragmentOffset, fragmentLength);
 		GetFirmwareFragmentResponseMessage resp = api.getFirmwareFragment(req);
 		
 		//
@@ -218,7 +220,8 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		FirmwareManager api = getManager();
 		
 		// get the first 1000 bytes
-		GetFirmwareFragmentRequestMessage req = new GetFirmwareFragmentRequestMessage("POS-1", 0, 1000);
+		GetFirmwareFragmentRequestMessage req = new GetFirmwareFragmentRequestMessage(
+				"POS-1", fragmentOffset, fragmentLength);
 		GetFirmwareFragmentResponseMessage resp = api.getFirmwareFragment(req);
 		
 		//
@@ -234,10 +237,11 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		assertEquals("The returned fragment size is not correct",
 				3, resp.getContent().length);	// must be 3
 		// compare the byte content
-		is = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(firmwarePath);
-		byte[] expectedFragment = new byte[(int)fragmentLength];
-		ByteStreams.readFully(is, expectedFragment, 50 * 1024 - 3, 3);
+		is = new CountingInputStream(Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(firmwarePath));
+		is.skip(fragmentOffset);
+		byte[] expectedFragment = new byte[3];
+		ByteStreams.readFully(is, expectedFragment, 0, 3);
 		is.close();
 		// make sure they are equals
 		assertTrue(
