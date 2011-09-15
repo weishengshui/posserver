@@ -12,9 +12,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.Test;
 
-import com.chinarewards.qqgbpvn.core.test.JpaGuiceTest;
 import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.TestConfigModule;
+import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.Pos;
