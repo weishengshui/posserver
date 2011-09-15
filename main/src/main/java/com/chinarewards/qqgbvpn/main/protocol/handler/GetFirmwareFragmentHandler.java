@@ -7,10 +7,8 @@ import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
 import com.google.inject.Inject;
 
 /**
@@ -34,22 +32,18 @@ public class GetFirmwareFragmentHandler implements ServiceHandler {
 				.getParameter();
 
 		log.debug("execute(): request={}", msg);
-		
-		
 
-		ValCallbackResponseMessage valCallbackResponseMessage = new ValCallbackResponseMessage();
-		
-//		try {
-//			fwMgr.get().groupBuyValidateCallBack(bodyMessage.getGrouponId(),
-//					bodyMessage.getGrouponVCode());
-//			valCallbackResponseMessage.setResult(0);
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//			valCallbackResponseMessage.setResult(1);
-//		}
-		valCallbackResponseMessage
-				.setCmdId(CmdConstant.VAL_CALLBACK_CMD_ID_RESPONSE);
-		response.writeResponse(valCallbackResponseMessage);
+		GetFirmwareFragmentResponseMessage out = null;
+
+		try {
+			out = fwMgr.getFirmwareFragment(msg);
+		} catch (Throwable t) {
+			log.error("An unexpected error has occurred", t);
+			out = new GetFirmwareFragmentResponseMessage(
+					GetFirmwareFragmentResponseMessage.RESULT_OTHER_ERROR, null);
+		}
+
+		response.writeResponse(out);
 	}
 
 }

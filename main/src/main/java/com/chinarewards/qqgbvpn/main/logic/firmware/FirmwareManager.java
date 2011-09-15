@@ -34,6 +34,6 @@ public interface FirmwareManager {
 	 * </ul>
 	 */
 	public FirmwareUpDoneResponseMessage ackUpgradeCompleted(
-			 FirmwareUpDoneRequestMessage req);
-	
+			FirmwareUpDoneRequestMessage req);
+
 }

@@ -1,9 +1,6 @@
 package com.chinarewards.qqgbvpn.main.logic.firmware.impl;
 
-import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
@@ -26,7 +23,6 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponse
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.firmware.FirmwareUpDoneResult;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
 import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -36,12 +32,11 @@ import com.google.inject.Provider;
  * firmware files.
  * 
  * @author kmtong
- * 
+ * @author cyril
+ * @since 0.1.0 2011-09-15
  */
 public class FirmwareManagerImpl implements FirmwareManager {
 	
-	Logger logger = LoggerFactory.getLogger(getClass());
-
 	Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Inject
@@ -90,6 +85,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 		
 		Pos pos = null;
 		GetFirmwareFragmentResponseMessage resp = null;
+		byte[] fragment = null;
 		
 		short result = 0;
 		
@@ -107,7 +103,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 				return new GetFirmwareFragmentResponseMessage(result, null);
 			}
 			
-			// make sure firmware upgrade is availab.e
+			// make sure firmware upgrade is available.
 			if (pos.getUpgradeRequired() != null
 					&& pos.getUpgradeRequired().booleanValue()) {
 				
@@ -145,10 +141,13 @@ public class FirmwareManagerImpl implements FirmwareManager {
 					return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_FIRMWARE_IO_ERROR, null);
 				}
 				
-				/// read the fragment.
+				// read the whole fragment.
 				try {
-					byte[] fragment = this.readFile(firmwareFile, req.getOffset(), req.getLength());
+					
+					fragment = this.readFile(firmwareFile, req.getOffset(), req.getLength());
+					
 				} catch (IOException e) {
+					// strange error has occurred when reading firmware.
 					if (log.isDebugEnabled()) {
 						log.debug("An unexpected error has occurred when reading firmware '{}' for POS ID {}.", 
 								new Object[] { firmwareFile.getAbsoluteFile(), req.getPosId() });
@@ -168,13 +167,11 @@ public class FirmwareManagerImpl implements FirmwareManager {
 							+ req.getPosId(), e);
 			return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_FIRMWARE_IO_ERROR, null);
 		}
+
 		
 		// construct the response message.
-		
-		
-		
-		// TODO Auto-generated method stub
-		return null;
+		return new GetFirmwareFragmentResponseMessage(
+				GetFirmwareFragmentResponseMessage.RESULT_OK, fragment);
 	}
 	
 	/**
@@ -258,7 +255,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 	@Override
 	public FirmwareUpDoneResponseMessage ackUpgradeCompleted(
 			FirmwareUpDoneRequestMessage req) {
-		logger.debug("upDoneRequest() invoke");
+		log.debug("upDoneRequest() invoke");
 
 		FirmwareUpDoneResponseMessage resp = new FirmwareUpDoneResponseMessage();
 
@@ -276,12 +273,14 @@ public class FirmwareManagerImpl implements FirmwareManager {
 			pos = posDao.get().fetchPos(req.getPosId(), null, null,
 					PosOperationStatus.ALLOWED);
 			pos.setUpgradeRequired(false);
-			
+
 			posDao.get().merge(pos);
-			
+
 			result = FirmwareUpDoneResult.SUCCESS;
-		}catch(Throwable e){
-			logger.error(e.getMessage(), e);
+		} catch (Throwable e) {
+			log.warn(
+					"An error has occurred when acknowleding POS (ID="
+							+ req.getPosId() + ") firmware upgrade", e);
 			result = FirmwareUpDoneResult.PROCESS_ERROR;
 		}
 		resp.setResult(result.getPosCode());
