@@ -3,10 +3,12 @@
 /*--page分页--*/
 .page{ clear:both; padding:15px 0; text-align:center}
 .page a{ border:#ddd solid 1px; background:#fff; padding:4px 7px; color:#444;text-decoration:none;}
-.page a.home,.page a.up{font-size:11px; padding-bottom:4px!important;padding-bottom:2px}
+.page a.home,.page a.up{font-size:12px; padding-bottom:4px!important;padding-bottom:2px}
 .page a.link{ background:#929292; color:#fff; font-weight:bold;text-decoration:none}
 .page a:hover{ background:#E9E9E9; color:#444; text-decoration:none}
 .page a:visited{text-decoration:none;}
 .page a:active{text-decoration:none;}
+
+.page span{ border:#ddd solid 1px; background:#fff; padding:4px 7px; color:#444;text-decoration:none;font-size:12px; padding-bottom:4px!important;padding-bottom:2px}
 
 /*--End page分页--*/
