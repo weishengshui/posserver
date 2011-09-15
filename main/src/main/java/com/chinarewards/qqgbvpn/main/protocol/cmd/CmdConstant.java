@@ -102,5 +102,16 @@ public class CmdConstant {
 	 * 验证回调应答
 	 */
 	public static final long VAL_CALLBACK_CMD_ID_RESPONSE = 12;
-
+	
+	
+	/**
+	 * POS機更新固件成功请求
+	 */
+	public static final long FIRMWARE_UP_DONE_CMD_ID = 17;
+	
+	/**
+	 * POS機更新固件成功應答 
+	 */
+	public static final long FIRMWARE_UP_DONE_CMD_ID_RESPONSE = 18;
+	
 }
