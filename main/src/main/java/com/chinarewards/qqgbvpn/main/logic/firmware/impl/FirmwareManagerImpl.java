@@ -18,10 +18,16 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.firmware.FirmwareUpDoneResult;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
+import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -33,6 +39,8 @@ import com.google.inject.Provider;
  * 
  */
 public class FirmwareManagerImpl implements FirmwareManager {
+	
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -52,8 +60,9 @@ public class FirmwareManagerImpl implements FirmwareManager {
 			if (pos.getUpgradeRequired() != null
 					&& pos.getUpgradeRequired().booleanValue()) {
 
-				File firmwareFile = getFirmwareAbsPath(filename);
-				
+				String path = config.getString("firmware.location");
+
+				File firmwareFile = new File(path, filename);
 				if (firmwareFile.isFile() && firmwareFile.canRead()) {
 					resp.setFirmwareName(filename);
 					resp.setSize(firmwareFile.length());
@@ -66,9 +75,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 				resp.setResult(1);
 			}
 		} catch (Exception e) {
-			log.error(
-					"Unexpected error when handling request of firmware upgrade request for POS ID "
-							+ req.getPosId(), e);
+			e.printStackTrace();
 			resp.setResult(3);
 		}
 		return resp;
@@ -246,6 +253,40 @@ public class FirmwareManagerImpl implements FirmwareManager {
 		String path = config.getString("firmware.location");
 		File firmwareFile = new File(path, filename);
 		return firmwareFile;
+	}
+	
+	@Override
+	public FirmwareUpDoneResponseMessage upDoneRequest(
+			FirmwareUpDoneRequestMessage req) {
+		logger.debug("upDoneRequest() invoke");
+
+		FirmwareUpDoneResponseMessage resp = new FirmwareUpDoneResponseMessage();
+
+		if (StringUtil.isEmptyString(req.getPosId())) {
+			throw new IllegalArgumentException("POS ID is missing!");
+		}
+		if (CmdConstant.FIRMWARE_UP_DONE_CMD_ID != req.getCmdId()) {
+			throw new IllegalArgumentException("cmdId error!    cmdId != "+
+					CmdConstant.FIRMWARE_UP_DONE_CMD_ID+",cmdId = "+req.getCmdId()+"");
+		}
+		
+		Pos pos = null;
+		FirmwareUpDoneResult result = null;
+		try {
+			pos = posDao.get().fetchPos(req.getPosId(), null, null,
+					PosOperationStatus.ALLOWED);
+			pos.setUpgradeRequired(false);
+			
+			posDao.get().merge(pos);
+			
+			result = FirmwareUpDoneResult.SUCCESS;
+		}catch(Throwable e){
+			logger.error(e.getMessage(), e);
+			result = FirmwareUpDoneResult.PROCESS_ERROR;
+		}
+		resp.setResult(result.getPosCode());
+		
+		return resp;
 	}
 
 }
