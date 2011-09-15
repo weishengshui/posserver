@@ -47,7 +47,7 @@
 			document.getElementById("agentName").value = agentName;
 			document.getElementById("agentEmail").value = email;
 			var formObj = document.getElementById("sendURLForm");
-			formObj.action = "${ctx}/unbind/createInvite";
+			formObj.action = "${pageContext.request.contextPath}/unbind/createInvite";
 			formObj.submit();
 		}
 	}

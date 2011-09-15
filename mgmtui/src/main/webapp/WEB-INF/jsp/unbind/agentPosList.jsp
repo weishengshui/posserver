@@ -89,7 +89,7 @@
 		if (confirm("确定要回收以选中的POS机吗？")) {
 			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
 			var formObj = document.getElementById("confirmForm");
-			formObj.action = "${ctx}/returnnote/confirmRnNumber";
+			formObj.action = "${pageContext.request.contextPath}/returnnote/confirmRnNumber";
 			formObj.submit();
 		}
 	}
@@ -107,7 +107,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("confirmForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/returnnote/goPage";
+		formObj.action = "${pageContext.request.contextPath}/returnnote/goPage";
 		formObj.submit();
 	}
 	

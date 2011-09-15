@@ -88,7 +88,7 @@
 		if (confirm("确定要回收以选中的POS机吗？")) {
 			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
 			var formObj = document.getElementById("listForm");
-			formObj.action = "${ctx}/unbind/confirmRnNumber";
+			formObj.action = "${pageContext.request.contextPath}/unbind/confirmRnNumber";
 			formObj.submit();
 		}
 	}
@@ -96,7 +96,7 @@
 	function confirmAllRnNumber() {
 		if (confirm("确定要回收所有的POS机吗？")) {
 			var formObj = document.getElementById("listForm");
-			formObj.action = "${ctx}/unbind/confirmAllRnNumber";
+			formObj.action = "${pageContext.request.contextPath}/unbind/confirmAllRnNumber";
 			formObj.submit();
 		}
 	}
@@ -114,7 +114,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPage";
+		formObj.action = "${pageContext.request.contextPath}/unbind/goPage";
 		formObj.submit();
 	}
 	

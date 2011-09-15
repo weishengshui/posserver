@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -68,15 +69,13 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		try {
 			StringBuffer sb = new StringBuffer(
 					responseMessage.getFirmwareName());
-			sb.append(0);
 			buf.putString(sb, charset.newEncoder());
-			return buf.array();
+			buf.put((byte)0);
 		} catch (CharacterCodingException e) {
 			e.printStackTrace();
-			buf.putChar((char) 0);
+			buf.put((byte)0);
 		}
-
-		return buf.array();
+		return Arrays.copyOfRange(buf.array(), 0, buf.position());
 	}
 
 }

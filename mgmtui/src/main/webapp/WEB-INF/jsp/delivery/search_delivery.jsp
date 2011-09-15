@@ -130,7 +130,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("searchDelivery_FORM_ID");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/delivery/searchDelivery";
+		formObj.action = "${pageContext.request.contextPath}/delivery/searchDelivery";
 		formObj.submit();
 	}
 </script>
