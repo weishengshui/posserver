@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +10,7 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -32,7 +32,7 @@ import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuyingUnbindDao {
+public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbindDao {
 
 	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException {
 		String[] posIds = (String[]) params.get("posId");
@@ -64,7 +64,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 							if ("0".equals(resultCode)) {
 								log.debug("resultCode : {}", resultCode);
 								//删除绑定关系
-								em.get().remove(pa);
+								getEm().remove(pa);
 								//更新POS机交付状态
 								Pos p = pa.getPos();
 								log.debug("posId : {}", p.getPosId());
@@ -171,15 +171,15 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private void saveJournal(Journal journal) {
-		em.get().persist(journal);
+		getEm().persist(journal);
 	}
 	
 	private void savePos(Pos p) {
-		em.get().persist(p);
+		getEm().persist(p);
 	}
 	
 	private PosAssignment getPosAssignmentByIdPosId(String posId) {
-		Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
+		Query jql = getEm().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
 		jql.setParameter(1, posId);
 		List resultList = jql.getResultList();
 		PosAssignment pa = null;
@@ -217,7 +217,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private List<Pos> getPosByAgentId(String agentId) {
-		Query jql = em.get().createQuery("select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1");
+		Query jql = getEm().createQuery("select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1");
 		jql.setParameter(1, agentId);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
@@ -228,7 +228,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 发送URL页面查询调用
 	 */
 	public Agent getAgentByName(String agentName) {
-		Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
+		Query jql = getEm().createQuery("select a from Agent a where a.name = ?1");
 		jql.setParameter(1, agentName);
 		List resultList = jql.getResultList();
 		Agent agent = null;
@@ -239,7 +239,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	public List<Agent> getAgentLikeName(String agentName) {
-		Query jql = em.get().createQuery("select a from Agent a where upper(a.name) like ?1");
+		Query jql = getEm().createQuery("select a from Agent a where upper(a.name) like ?1");
 		jql.setParameter(1, "%" + agentName.toUpperCase() + "%");
 		List resultList = jql.getResultList();
 		return resultList;
@@ -250,7 +250,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 解绑页面查询调用
 	 */
 	public List<Pos> getPosByPosInfo(String info) {
-		Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
+		Query jql = getEm().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
 		jql.setParameter(1, info);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
@@ -414,25 +414,25 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private void saveReturnNote(ReturnNote rn) {
-		em.get().persist(rn);
+		getEm().persist(rn);
 	}
 	
 	private void saveReturnNoteDetail(ReturnNoteDetail rnd) {
-		em.get().persist(rnd);
+		getEm().persist(rnd);
 	}
 	
 	private void saveReturnNoteInvitation(ReturnNoteInvitation rni) {
-		em.get().persist(rni);
+		getEm().persist(rni);
 	}
 	
 	private ReturnNote getReturnNote(String rnId) {
-		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		ReturnNote rn = getEm().find(ReturnNote.class, rnId);
 		return rn;
 	}
 	
 	private ReturnNote getReturnNoteByToken(String token) {
 		log.debug("token: {}", token);
-		Query jql = em.get().createQuery("select rn from ReturnNote rn where rn.token = ?1");
+		Query jql = getEm().createQuery("select rn from ReturnNote rn where rn.token = ?1");
 		jql.setParameter(1, token);
 		List resultList = jql.getResultList();
 		ReturnNote rn = null;
@@ -444,20 +444,20 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private Agent getAgentById(String agentId) {
-		Agent a = em.get().find(Agent.class, agentId);
+		Agent a = getEm().find(Agent.class, agentId);
 		return a;
 	}
 	
 	private List<Pos> getPosListByIds(List<String> posIds) {
 		log.debug("posIds:{}", posIds);
-		Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
+		Query jql = getEm().createQuery("select p from Pos p where p.id in (?1)");
 		jql.setParameter(1, posIds);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
 	}
 	
 	public Agent getAgentByRnId(String rnId) {
-		Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
+		Query jql = getEm().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
 				+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
 		jql.setParameter(1, rnId);
 		List resultList = jql.getResultList();
@@ -469,7 +469,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	public Agent getAgentByInviteCode(String inviteCode) {
-		Query jql = em.get().createQuery("select a from Agent a,ReturnNoteInvitation rni where a.id = rni.agent.id and rni.token = ?1" +
+		Query jql = getEm().createQuery("select a from Agent a,ReturnNoteInvitation rni where a.id = rni.agent.id and rni.token = ?1" +
 				" and not EXISTS (select 1 from ReturnNote rn where rni.token = rn.token)");
 		jql.setParameter(1, inviteCode);
 		List resultList = jql.getResultList();
@@ -512,9 +512,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 */
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {
 		ReturnNoteInfo rnInfo = new ReturnNoteInfo();
-		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		ReturnNote rn = getEm().find(ReturnNote.class, rnId);
 		if (rn != null) {
-			Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = ?1");
+			Query jql = getEm().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = ?1");
 			jql.setParameter(1, rnId);
 			List<ReturnNoteDetail> rnDetailList = jql.getResultList();
 			
@@ -547,7 +547,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private List<ReturnNoteDetail> getReturnNoteDetailListByPosId(String posId) {
-		Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.dstatus = '" 
+		Query jql = getEm().createQuery("select rnd from ReturnNoteDetail rnd where rnd.dstatus = '" 
 					+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.posId = ?1");
 		jql.setParameter(1, posId);
 		return jql.getResultList();
@@ -555,7 +555,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	
 	private boolean isReadyToReturned(String rnId) {
 		log.debug("rnId : {}", rnId);
-		Query jql = em.get().createQuery("select count(rnd.id) from ReturnNoteDetail rnd where rnd.dstatus = '" 
+		Query jql = getEm().createQuery("select count(rnd.id) from ReturnNoteDetail rnd where rnd.dstatus = '" 
 				+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.rn.id = ?1");
 		jql.setParameter(1, rnId);
 		Long count = (Long) jql.getSingleResult();
