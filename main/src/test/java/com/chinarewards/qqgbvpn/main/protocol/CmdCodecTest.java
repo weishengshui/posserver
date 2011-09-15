@@ -114,6 +114,7 @@ public class CmdCodecTest extends GuiceTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		super.tearDown();
 	}
 
 	/**

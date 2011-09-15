@@ -50,7 +50,7 @@ public class BootStrap {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	private static final String APP_NAME = "POSv2 Server";
+	private static final String APP_NAME = "POSNet2 Server";
 
 	/**
 	 * Container for all dependency injection required objects.
@@ -114,7 +114,7 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out.println(APP_NAME + ": version " + appInfo.getVersionString()
-				+ "(build: " + appInfo.getBuildNumber() + ")");
+				+ " (build: " + appInfo.getBuildNumber() + ")");
 
 	}
 

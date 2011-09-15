@@ -54,7 +54,7 @@ public class LoginCommandHandler implements ServiceHandler {
 			//save to session
 			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.warn("An error occurred when handling command", e);
 			loginResponseMessage
 					.setChallenge(new byte[ProtocolLengths.CHALLENGE_RESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
@@ -65,9 +65,8 @@ public class LoginCommandHandler implements ServiceHandler {
 				.getPosCode()) {
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("posId", ((LoginRequestMessage) bodyMessage).getPosId());
-			
-			
-			
+
+			// initialize groupon cache after login.
 			String serverKey = configuration.getString("txserver.key");
 			log.debug("LoginCommandHandler======execute==serverKey=:"
 					+ serverKey);

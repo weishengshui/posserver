@@ -10,10 +10,6 @@
 		<action name="list" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction">
 			<result name="success" type="tiles">pos.list</result>
 		</action>
-		<action name="listCenter" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction" method="listCenter">
-			<result name="success">/WEB-INF/jsp/pos/posListCenter.jsp</result>
-			<result name="error">/error.jsp</result>
-		</action>
 		<action name="detail/*" class="com.chinarewards.qqgbvpn.mgmtui.struts.action.PosAction"
 			method="detail">
 			<param name="id">{1}</param>

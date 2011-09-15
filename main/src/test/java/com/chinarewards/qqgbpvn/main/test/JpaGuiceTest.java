@@ -61,6 +61,9 @@ public abstract class JpaGuiceTest extends GuiceTest {
 		if (getEm().getTransaction().isActive()) {
 			getEm().getTransaction().rollback();
 		}
+		
+		super.tearDown();
+		
 	}
 
 }

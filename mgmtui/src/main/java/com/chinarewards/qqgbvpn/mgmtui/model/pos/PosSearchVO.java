@@ -26,8 +26,28 @@ public class PosSearchVO implements java.io.Serializable{
 
 	// POS 内置唯一标识。6位字符
 	String secret;
+	
+	int page;
+	
+	int size;
 
 	//-------------------------------------------//
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
 
 	public String getPosId() {
 		return posId;

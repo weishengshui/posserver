@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.OptimisticLockException;
 
-import org.hibernate.StaleObjectStateException;
 import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
@@ -15,7 +14,6 @@ import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase;
 import com.google.inject.Module;
 
@@ -115,29 +113,27 @@ public class PosLogicTest extends JPATestCase {
 
 		// search
 		{
+			PosSearchVO posSearchVO = new PosSearchVO();
+			posSearchVO.setPosId("pos");
+			posSearchVO.setPage(1);
+			posSearchVO.setSize(2);
+			
 			for (int i = 0; i < 10; i++) {
 				PosVO posVOTmp = new PosVO();
 				posVOTmp.setPosId("pos_" + i);
 				posVOTmp.setSimPhoneNo("1348000910"+i);
 				posLogic.savePos(posVOTmp);
 			}
-			PageInfo<PosVO> pageInfo = posLogic.queryPos(null, null);
+			PageInfo<PosVO> pageInfo = posLogic.queryPos(posSearchVO);
 			assertNotNull(pageInfo);
 			assertEquals(pageInfo.getRecordCount(), 10);
-			assertEquals(pageInfo.getItems().size(), 10);
-
-			PaginationTools paginationTools = new PaginationTools();
-			paginationTools.setCountOnEachPage(6);
-			paginationTools.setStartIndex(0);
-			PosSearchVO posSearchVO = new PosSearchVO();
-			posSearchVO.setPosId("pos");
-			pageInfo = posLogic.queryPos(null, paginationTools);
+			assertEquals(pageInfo.getItems().size(), 2);
+			
+			pageInfo = posLogic.queryPos(posSearchVO);
 			assertEquals(pageInfo.getRecordCount(), 10);
-			assertEquals(pageInfo.getItems().size(), 6);
-
-			paginationTools.setCountOnEachPage(6);
-			paginationTools.setStartIndex(8);
-			pageInfo = posLogic.queryPos(null, paginationTools);
+			assertEquals(pageInfo.getItems().size(), 2);
+			
+			pageInfo = posLogic.queryPos(posSearchVO);
 			assertEquals(pageInfo.getRecordCount(), 10);
 			assertEquals(pageInfo.getItems().size(), 2);
 		}

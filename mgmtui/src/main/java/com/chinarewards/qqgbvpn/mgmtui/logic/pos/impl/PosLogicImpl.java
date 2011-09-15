@@ -38,9 +38,8 @@ public class PosLogicImpl implements PosLogic {
 	}
 
 	@Override
-	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO,
-			PaginationTools paginationTools) {
-		return posDao.get().queryPos(posSearchVO, paginationTools);
+	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO) {
+		return posDao.get().queryPos(posSearchVO);
 	}
 
 	@Transactional
