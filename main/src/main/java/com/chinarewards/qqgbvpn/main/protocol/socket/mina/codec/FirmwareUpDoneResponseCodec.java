@@ -26,7 +26,7 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-		return null;
+		throw new UnsupportedOperationException("Not implemented");
 	}
 
 	@Override

@@ -48,8 +48,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
-		// cause.printStackTrace();
-		log.error("An exception is detected in "
+		// XXX is this ok to handle this exception in this way?
+		log.error("An exception is caught in "
 				+ this.getClass().getSimpleName(), cause);
 	}
 
@@ -57,11 +57,11 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
 
-		log.debug("messageReceived() start");
-		
+		log.debug("messageReceived() from remote "
+				+ buildAddressPortString(session));
+
 		doDispatch(session, message);
 
-		log.debug("messageReceived() end");
 	}
 
 	/**
@@ -85,18 +85,20 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		long cmdId = msg.getBodyMessage().getCmdId();
 
 		// FIXME throw PackageException if no handler found for command ID
-		
+
 		// build a request (for dispatcher)
 		MinaSession serviceSession = new MinaSession(session);
-		ServiceRequestImpl request = new ServiceRequestImpl(msg.getBodyMessage(), serviceSession);
+		ServiceRequestImpl request = new ServiceRequestImpl(
+				msg.getBodyMessage(), serviceSession);
 		// build a response (for dispatcher)
 		ServiceResponseImpl response = new ServiceResponseImpl();
-		
+
 		// dispatch the command to the corresponding service handler.
 		try {
 			serviceDispatcher.dispatch(serviceMapping, request, response);
 		} catch (ServiceDispatcherException e) {
-			throw new PackageException("No mapping found for command ID " + cmdId, e);
+			throw new PackageException("No mapping found for command ID "
+					+ cmdId, e);
 		}
 
 		// grep the response, and write back to the channel.
@@ -117,20 +119,37 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		super.sessionOpened(session);
-		
+
 		printRemoteSocketAddress(session);
 	}
-	
+
+	/**
+	 * Prints the remote address and port information.
+	 * 
+	 * @param session
+	 *            the session to print.
+	 */
 	protected void printRemoteSocketAddress(IoSession session) {
+
 		SocketAddress addr = session.getRemoteAddress();
-		if (addr == null || ! (addr instanceof InetSocketAddress)) {
+		if (addr == null || !(addr instanceof InetSocketAddress)) {
 			return;
 		}
-		
+
 		// print it
-		InetSocketAddress sAddr = (InetSocketAddress)addr;
-		log.debug("Remote address: {}, port: {}", sAddr.getAddress()
-				.getHostAddress(), sAddr.getPort());
+		InetSocketAddress sAddr = (InetSocketAddress) addr;
+		log.info("Incoming connection from remote address: "
+				+ buildAddressPortString(session));
+	}
+
+	protected String buildAddressPortString(IoSession session) {
+		SocketAddress addr = session.getRemoteAddress();
+		if (addr == null || !(addr instanceof InetSocketAddress)) {
+			return null;
+		}
+
+		InetSocketAddress sAddr = (InetSocketAddress) addr;
+		return sAddr.getAddress().getHostAddress() + ":" + sAddr.getPort();
 	}
 
 }
