@@ -35,6 +35,7 @@ public class GetFirmwareFragmentHandler implements ServiceHandler {
 
 		GetFirmwareFragmentResponseMessage out = null;
 
+		// call the main logic.
 		try {
 			out = fwMgr.getFirmwareFragment(msg);
 		} catch (Throwable t) {

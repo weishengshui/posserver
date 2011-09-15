@@ -55,9 +55,8 @@ public class FirmwareManagerImpl implements FirmwareManager {
 			if (pos.getUpgradeRequired() != null
 					&& pos.getUpgradeRequired().booleanValue()) {
 
-				String path = config.getString("firmware.location");
-
-				File firmwareFile = new File(path, filename);
+				File firmwareFile = this.getFirmwareAbsPath(filename);
+				
 				if (firmwareFile.isFile() && firmwareFile.canRead()) {
 					resp.setFirmwareName(filename);
 					resp.setSize(firmwareFile.length());
@@ -84,13 +83,12 @@ public class FirmwareManagerImpl implements FirmwareManager {
 			GetFirmwareFragmentRequestMessage req) {
 		
 		Pos pos = null;
-		GetFirmwareFragmentResponseMessage resp = null;
+		// response data to be sent.
 		byte[] fragment = null;
-		
 		short result = 0;
 		
 		try {
-			// locate the POS machine
+			// locate the POS machine record.
 			try {
 				pos = posDao.get().fetchPos(req.getPosId(), null, null,
 						PosOperationStatus.ALLOWED);
@@ -107,7 +105,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 			if (pos.getUpgradeRequired() != null
 					&& pos.getUpgradeRequired().booleanValue()) {
 				
-				// upgrade allowed.
+				// upgrade is allowed.
 
 				// make sure firmware is available for reading.
 				String filename = pos.getFirmware();
