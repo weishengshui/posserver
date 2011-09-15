@@ -7,6 +7,8 @@
 </s:if>
 <s:form  namespace="/pos" action="edit" name="posForm" theme="simple" id="posForm" onsubmit="return checkPos();">
 <s:hidden name="posVO.id"/>
+<s:hidden name="posVO.version"/>
+
 <table align="center" width="600px">
 		<tr>
 			<td width="20%">

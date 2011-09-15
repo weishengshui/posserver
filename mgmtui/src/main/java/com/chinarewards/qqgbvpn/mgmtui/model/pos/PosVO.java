@@ -30,6 +30,20 @@ public class PosVO implements java.io.Serializable{
 	String istatus;
 
 	String ostatus;
+
+	// POS 内置唯一标识。6位字符
+	String secret;
+	
+	Date createAt;
+	
+	Date lastModifyAt;
+	
+	String firmware;
+	
+	Boolean upgradeRequired;
+
+	long version;
+	
 	
 	public PosVO(){}
 
@@ -55,19 +69,6 @@ public class PosVO implements java.io.Serializable{
 		this.upgradeRequired = upgradeRequired;
 		this.version = version;
 	}
-
-	// POS 内置唯一标识。6位字符
-	String secret;
-	
-	Date createAt;
-	
-	Date lastModifyAt;
-	
-	String firmware;
-	
-	Boolean upgradeRequired;
-
-	long version;
 
 	//-------------------------------------------//
 
