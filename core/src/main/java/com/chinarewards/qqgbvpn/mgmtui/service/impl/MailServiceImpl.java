@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.mgmtui.service.impl;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -74,7 +73,8 @@ public class MailServiceImpl implements MailService {
 	}*/
 	
 	public void sendMail(String[] toAdds, String[] cc, String subject,
-			String tempPathAndName, String tempKey, Object[] params, File attachment) {
+			String tempPathAndName, String tempKey, Object[] params)
+					throws AddressException, MessagingException {
 		 // 获得邮件模板信息  
         ResourceBundle mailTemplateRb = ResourceBundle.getBundle(tempPathAndName);  
         MessageFormat formater = new MessageFormat("");  
@@ -88,8 +88,6 @@ public class MailServiceImpl implements MailService {
         transProp.put("mail.transport.protocol", "smtp");  
         // 是否通过验证  
         transProp.put("mail.smtp.auth", "true");
-        // 服务器端口  
-        transProp.put("mail.smtp.port", "25");// 默认端口25  
         Session mailSession = Session.getDefaultInstance(transProp,new Authenticator(){  
             @Override  
             protected PasswordAuthentication getPasswordAuthentication() {  
@@ -98,28 +96,21 @@ public class MailServiceImpl implements MailService {
             }  
         });
         Message mailMessage = new MimeMessage(mailSession);  
-        try {  
-            mailMessage.setFrom(new InternetAddress(configuration.getString("smtp.username")));
-            InternetAddress[] sendTo = new InternetAddress[toAdds.length];
-            for (int i = 0; i < toAdds.length; i++) {
-            	sendTo[i] = new InternetAddress(toAdds[i]);
-            } 
-            mailMessage.setRecipients(RecipientType.TO, sendTo);  
-            mailMessage.setSubject(subject);  
-            mailMessage.setSentDate(new Date());  
-              
-            Multipart mp = new MimeMultipart();  
-            MimeBodyPart mbp = new MimeBodyPart();  
-            mbp.setContent(messageText, "text/html;charset=GB2312");
-            log.debug("messageText : {}",messageText);
-            mp.addBodyPart(mbp);  
-            mailMessage.setContent(mp);  
-            Transport.send(mailMessage);  
-        } catch (AddressException e) {  
-            e.printStackTrace();  
-        } catch (MessagingException e) {  
-            e.printStackTrace();  
-        }  
+        mailMessage.setFrom(new InternetAddress(configuration.getString("smtp.username")));
+        InternetAddress[] sendTo = new InternetAddress[toAdds.length];
+        for (int i = 0; i < toAdds.length; i++) {
+        	sendTo[i] = new InternetAddress(toAdds[i]);
+        } 
+        mailMessage.setRecipients(RecipientType.TO, sendTo);  
+        mailMessage.setSubject(subject);  
+        mailMessage.setSentDate(new Date());  
+        
+        Multipart mp = new MimeMultipart();  
+        MimeBodyPart mbp = new MimeBodyPart();  
+        mbp.setContent(messageText, "text/html;charset=UTF-8");
+        mp.addBodyPart(mbp);
+        mailMessage.setContent(mp);
+        Transport.send(mailMessage);  
 	}
 
 }
