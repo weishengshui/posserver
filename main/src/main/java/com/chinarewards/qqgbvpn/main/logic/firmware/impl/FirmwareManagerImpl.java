@@ -100,8 +100,6 @@ public class FirmwareManagerImpl implements FirmwareManager {
 				return new GetFirmwareFragmentResponseMessage(result, null);
 			}
 			
-			// TODO 
-
 			// make sure firmware upgrade is availab.e
 			if (pos.getUpgradeRequired() != null
 					&& pos.getUpgradeRequired().booleanValue()) {
@@ -140,23 +138,33 @@ public class FirmwareManagerImpl implements FirmwareManager {
 					return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_FIRMWARE_IO_ERROR, null);
 				}
 				
+				/// read the fragment.
+				try {
+					byte[] fragment = this.readFile(firmwareFile, req.getOffset(), req.getLength());
+				} catch (IOException e) {
+					if (log.isDebugEnabled()) {
+						log.debug("An unexpected error has occurred when reading firmware '{}' for POS ID {}.", 
+								new Object[] { firmwareFile.getAbsoluteFile(), req.getPosId() });
+					}
+					return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_FIRMWARE_IO_ERROR, null);
+				}
+				
 			} else {
 				// POS is not marked to allow firmware upgrade.
 				return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_NO_FIRMWARE_UPGRADE, null);
 			}
 			
 		} catch (Exception e) {
+			// any sort of unexpected error.
 			log.error(
 					"Unexpected error when handling request of retrieving firmware fragment for POS ID "
 							+ req.getPosId(), e);
-			//resp.setResult(GetFirmwareFragmentResponseMessage.RESULT_OTHER_ERROR);
+			return new GetFirmwareFragmentResponseMessage(GetFirmwareFragmentResponseMessage.RESULT_FIRMWARE_IO_ERROR, null);
 		}
 		
-		// seek to offset
+		// construct the response message.
 		
-		// read fragment
 		
-		// construct response.
 		
 		// TODO Auto-generated method stub
 		return null;
@@ -178,6 +186,7 @@ public class FirmwareManagerImpl implements FirmwareManager {
 		// open for reading only.
 		RandomAccessFile f = new RandomAccessFile(file, "r");
 		
+		// seek to the desired position.
 		f.seek(offset);
 		
 		// read now!
@@ -188,15 +197,19 @@ public class FirmwareManagerImpl implements FirmwareManager {
 		//
 		int defaultBlockSize = 4096;	// default block size to read.
 
+		// the read size shall be the same as defaultBlockSize, until
+		// the last block is reached or the required read length is exceed.
 		int read_size = (defaultBlockSize > length) ? defaultBlockSize : (int)length;
 		
-		while (remaining > 0) {
+		// read until the whole expected length is reached.
+		while (actualReadLength < length) {
 			
 			// don't read outside the specified length from method argument.
-			if (length - actualReadLength > read_size) {
+			if (length - actualReadLength < read_size) {
 				read_size = (int)length - actualReadLength;
 			}
 			
+			// read the stream!
 			int actual = f.read(buf, buf_pos, read_size);
 			
 			// stop condition: end of file reached.

@@ -45,13 +45,12 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		if (msg.getContent() != null && msg.getContent().length > 0) {
 			buf.expand(msg.getContent().length);
 		}
-		buf.position(0);
 
 		// encode data
 		// command ID
 		buf.putUnsignedInt(msg.getCmdId());
 		// result
-		buf.putShort((short)msg.getResult());
+		buf.putShort((short) msg.getResult());
 		// content - optional
 		if (msg.getContent() != null) {
 			buf.put(msg.getContent());
