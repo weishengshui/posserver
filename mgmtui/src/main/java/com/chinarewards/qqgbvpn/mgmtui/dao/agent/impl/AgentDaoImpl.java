@@ -92,9 +92,8 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			
 			getEm().persist(agent);
 			
-			agentVO.setId(agent.getId());
 			
-			
+			agentVO = entityToVO(agent);
 			//加入日志
 			addLog(agent, DomainEvent.USER_ADDED_AGENT.toString());
 			
@@ -121,9 +120,11 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			agent.setName(agentVO.getName());
 			agent.setEmail(agentVO.getEmail());
 			
+			
+			
 			getEm().merge(agent);
 			
-			agentVO.setId(agent.getId());
+			agentVO = entityToVO(agent);
 			
 			
 			//加入日志
@@ -164,16 +165,15 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 				return null;
 			}
 			
-			AgentVO agentVO = new AgentVO();
+			
 			Agent agent = getEm().find(Agent.class, agentId);
 			
 			if(agent == null){
 				return null;
 			}
 			
-			agentVO.setId(agent.getId());
-			agentVO.setName(agent.getName());
-			agentVO.setEmail(agent.getEmail());
+			AgentVO agentVO = entityToVO(agent);
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -232,14 +232,41 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 		
 		List<AgentVO> agentVOList = new ArrayList<AgentVO>();
 		for(Agent agent:agentList){
-			AgentVO agentVO = new AgentVO();
-			agentVO.setId(agent.getId());
-			agentVO.setName(agent.getName());
-			agentVO.setEmail(agent.getEmail());
+			AgentVO agentVO = entityToVO(agent);
 			agentVOList.add(agentVO);
 		}
 		
 		return agentVOList;
+	}
+	
+	/**
+	 * description：实体转VO
+	 * @param agent
+	 * @return
+	 * @time 2011-9-15   下午07:24:31
+	 * @author Seek
+	 */
+	private AgentVO entityToVO(Agent agent){
+		AgentVO agentVO = new AgentVO();
+		agentVO.setId(agent.getId());
+		agentVO.setName(agent.getName());
+		agentVO.setEmail(agent.getEmail());
+		return agentVO;
+	}
+	
+	/**
+	 * description：VO转实体
+	 * @param agentVO
+	 * @return
+	 * @time 2011-9-15   下午07:25:32
+	 * @author Seek
+	 */
+	private Agent voToEntity(AgentVO agentVO){
+		Agent agent = new Agent();
+		agent.setId(agentVO.getId());
+		agent.setName(agentVO.getName());
+		agent.setEmail(agentVO.getEmail());
+		return agent;
 	}
 	
 }
