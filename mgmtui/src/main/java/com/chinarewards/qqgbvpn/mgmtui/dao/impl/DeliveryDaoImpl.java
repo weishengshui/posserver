@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.DeliveryNote;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.DeliveryNoteStatus;
@@ -124,84 +125,67 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria) {
-		Query query = buildQuery(SEARCH, criteria);
-		List<DeliveryNote> list = query.getResultList();
-		return deliveryNoteAdapter.get().convertToVO(list);
-	}
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO searchVO) {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
 
-	@Override
-	public int countDeliverys(DeliverySearchVO criteria) {
-		Query query = buildQuery(COUNT, criteria);
-		return new Integer("" + query.getSingleResult());
-	}
+		StringBuffer searchSql = new StringBuffer();
+		StringBuffer countSql = new StringBuffer();
+		
+		searchSql.append("SELECT dn FROM DeliveryNote dn WHERE 1=1");
+		countSql.append("SELECT COUNT(dn.id) FROM DeliveryNote dn WHERE 1=1");
 
-	private Query buildQuery(String type, DeliverySearchVO criteria) {
-		Map<String, Object> param = new HashMap<String, Object>();
-
-		StringBuffer hql = new StringBuffer();
-		if (SEARCH.equals(type)) {
-			hql.append("SELECT dn FROM DeliveryNote dn WHERE 1=1");
-		} else if (COUNT.equals(type)) {
-			hql.append("SELECT COUNT(dn.id) FROM DeliveryNote dn WHERE 1=1");
-		}
-
-		if (!Tools.isEmptyString(criteria.getAgentName())) {
-			hql.append(" AND UPPER(dn.agentName) LIKE :agentName");
-			param.put("agentName", "%" + criteria.getAgentName().toUpperCase()
+		if (!Tools.isEmptyString(searchVO.getAgentName())) {
+			searchSql.append(" AND UPPER(dn.agentName) LIKE :agentName");
+			countSql.append(" AND UPPER(dn.agentName) LIKE :agentName");
+			paramMap.put("agentName", "%" + searchVO.getAgentName().toUpperCase()
 					+ "%");
 		}
-		if (!Tools.isEmptyString(criteria.getAgentId())) {
-			hql.append(" AND dn.agent.id=:agentId");
-			param.put("agentId", criteria.getAgentId());
+		if (!Tools.isEmptyString(searchVO.getAgentId())) {
+			searchSql.append(" AND dn.agent.id=:agentId");
+			countSql.append(" AND dn.agent.id=:agentId");
+			paramMap.put("agentId", searchVO.getAgentId());
 		}
-		if (criteria.getCreateDateFrom() != null) {
-			Calendar firstDate = getFirstDate(criteria.getCreateDateFrom());
-			hql.append(" AND dn.createDate > :createDateFrom");
-			param.put("createDateFrom", firstDate);
+		if (searchVO.getCreateDateFrom() != null) {
+			Calendar firstDate = getFirstDate(searchVO.getCreateDateFrom());
+			searchSql.append(" AND dn.createDate > :createDateFrom");
+			countSql.append(" AND dn.createDate > :createDateFrom");
+			paramMap.put("createDateFrom", firstDate);
 		}
-		if (criteria.getCreateDateTo() != null) {
-			Calendar lastDate = getLastDate(criteria.getCreateDateTo());
-			hql.append(" AND dn.createDate < :createDateTo");
-			param.put("createDateTo", lastDate);
+		if (searchVO.getCreateDateTo() != null) {
+			Calendar lastDate = getLastDate(searchVO.getCreateDateTo());
+			searchSql.append(" AND dn.createDate < :createDateTo");
+			countSql.append(" AND dn.createDate < :createDateTo");
+			paramMap.put("createDateTo", lastDate);
 		}
 
-		if (!Tools.isEmptyString(criteria.getDnNumber())) {
-			hql.append(" AND UPPER(dn.dnNumber) LIKE :dnNumber");
-			param.put("dnNumber", "%" + criteria.getDnNumber().toUpperCase()
+		if (!Tools.isEmptyString(searchVO.getDnNumber())) {
+			searchSql.append(" AND UPPER(dn.dnNumber) LIKE :dnNumber");
+			countSql.append(" AND UPPER(dn.dnNumber) LIKE :dnNumber");
+			paramMap.put("dnNumber", "%" + searchVO.getDnNumber().toUpperCase()
 					+ "%");
 		}
-		if (!Tools.isEmptyString(criteria.getStatus())) {
-			DeliveryNoteStatus status = DeliveryNoteStatus.valueOf(criteria
+		if (!Tools.isEmptyString(searchVO.getStatus())) {
+			DeliveryNoteStatus status = DeliveryNoteStatus.valueOf(searchVO
 					.getStatus());
-			hql.append(" AND dn.status=:status");
-			param.put("status", status);
+			searchSql.append(" AND dn.status=:status");
+			countSql.append(" AND dn.status=:status");
+			paramMap.put("status", status);
 		}
 
 		// order by create date
-		if (SEARCH.equals(type)) {
-			hql.append(" ORDER BY dn.createDate DESC");
-		}
-
-		// build query
-		Query query = getEm().createQuery(hql.toString());
-		if (!param.isEmpty()) {
-			for (String key : param.keySet()) {
-				query.setParameter(key, param.get(key));
-			}
-		}
-
-		if (SEARCH.equals(type)) {
-			if (criteria.getPagination() != null) {
-				int start = criteria.getPagination().getStartIndex();
-				int limit = criteria.getPagination().getCountOnEachPage();
-				log.debug("pagination: start - {}, limit - {}", new Object[] {
-						start, limit });
-				query.setFirstResult(start);
-				query.setMaxResults(limit);
-			}
-		}
-		return query;
+		searchSql.append(" ORDER BY dn.createDate DESC");
+		
+		PageInfo pageInfo = this.findPageInfo(countSql.toString(), searchSql.toString(), 
+				paramMap, searchVO.getPage(), searchVO.getSize());
+		
+		
+		List<DeliveryNote> list = pageInfo.getItems();
+		List<DeliveryNoteVO> voList = deliveryNoteAdapter.get().convertToVO(list);
+		
+		pageInfo.setItems(voList);
+		
+		
+		return pageInfo;
 	}
 
 	/**

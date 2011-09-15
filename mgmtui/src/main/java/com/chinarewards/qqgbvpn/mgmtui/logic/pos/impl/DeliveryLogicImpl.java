@@ -147,19 +147,11 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria) {
-		log.debug(" Process in method fetchDeliverys, criteria:{}",
-				criteria == null ? null : criteria.toString());
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO deliverySearchVO) {
+		PageInfo<DeliveryNoteVO> pageInfo = getDeliveryDao().fetchDeliverys(
+				deliverySearchVO);
 
-		List<DeliveryNoteVO> resultList = getDeliveryDao().fetchDeliverys(
-				criteria);
-		int count = getDeliveryDao().countDeliverys(criteria);
-
-		PageInfo<DeliveryNoteVO> page = new PageInfo<DeliveryNoteVO>();
-		page.setItems(resultList);
-		page.setRecordCount(count);
-
-		return page;
+		return pageInfo;
 	}
 
 	@Override

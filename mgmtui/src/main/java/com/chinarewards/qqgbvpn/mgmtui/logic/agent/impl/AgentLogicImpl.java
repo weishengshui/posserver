@@ -1,13 +1,15 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.agent.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -26,7 +28,7 @@ public class AgentLogicImpl implements AgentLogic {
 	Provider<AgentDao> agentDao;
 	
 	@Override
-	public AgentStore queryAgent(AgentSearchVO agentSearchVO)
+	public PageInfo<AgentVO> queryAgent(AgentSearchVO agentSearchVO)
 			throws ServiceException {
 		try{
 			return agentDao.get().queryAgent(agentSearchVO);
@@ -78,6 +80,15 @@ public class AgentLogicImpl implements AgentLogic {
 	public boolean agentIsExist(String id, String name) throws ServiceException {
 		try{
 			return agentDao.get().agentIsExist(id, name);
+		}catch(Throwable e){
+			throw new ServiceException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<AgentVO> findAllAgent() throws ServiceException {
+		try{
+			return agentDao.get().findAllAgent();
 		}catch(Throwable e){
 			throw new ServiceException(e.getMessage(), e);
 		}

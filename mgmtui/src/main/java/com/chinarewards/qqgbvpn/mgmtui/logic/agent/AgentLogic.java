@@ -1,8 +1,10 @@
 package com.chinarewards.qqgbvpn.mgmtui.logic.agent;
 
+import java.util.List;
+
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 
 /**
@@ -21,7 +23,16 @@ public interface AgentLogic {
 	 * @time 2011-9-5   下午02:29:32
 	 * @author Seek
 	 */
-	AgentStore queryAgent(AgentSearchVO agentSearchVO) throws ServiceException;
+	public PageInfo<AgentVO> queryAgent(AgentSearchVO agentSearchVO) throws ServiceException;
+	
+	/**
+	 * description：查询所有的第三方
+	 * @return
+	 * @throws ServiceException
+	 * @time 2011-9-15   下午06:07:32
+	 * @author Seek
+	 */
+	public List<AgentVO> findAllAgent() throws ServiceException;
 
 	/**
 	 * description：保存
