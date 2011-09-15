@@ -92,6 +92,8 @@
 			<td>初始化</td>
 			<td>运营状态</td>
 			<td>密钥</td>
+			<td >允许升级固件</td>
+			<td >固件档案名称</td>
 			<%--
 				<td>操作</td>
 			 --%>
@@ -141,6 +143,15 @@
 				</s:else>
 			</td>
 			<td><s:property value="#posTmp.secret" /></td>
+			<td>
+				<s:if test="#posTmp.upgradeRequired == true">
+					允许
+				</s:if>
+				<s:elseif test="#posTmp.upgradeRequired == false">
+					禁止
+				</s:elseif>
+			</td>
+			<td><s:property value="#posTmp.firmware" /></td>
 			<%--
 				<td>
 					<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>
