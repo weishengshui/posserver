@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.core.test.GuiceTest;
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
-import com.chinarewards.qqgbvpn.config.ConfigReader;
 
 /**
  * 
