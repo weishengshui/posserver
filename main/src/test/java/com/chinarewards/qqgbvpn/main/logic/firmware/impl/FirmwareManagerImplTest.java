@@ -97,9 +97,13 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 	
 	
 	
-	
+	/**
+	 * Test the most normal case: POS machine ready, firmware prepared.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
-	public void testGetFirmwareFragment() throws Exception {
+	public void testGetFirmwareFragment_OK() throws Exception {
 		
 		String firmwarePath = "test/firmware/50k.bin";
 		long fragmentOffset = 0;
@@ -152,7 +156,9 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		assertEquals("Unexpected result code",
 				GetFirmwareFragmentResponseMessage.RESULT_OK,
 				resp.getResult());
-		// compare the content
+		assertEquals("The returned fragment size is not correct",
+				fragmentLength, resp.getContent().length);
+		// compare the byte content
 		is = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(firmwarePath);
 		byte[] expectedFragment = new byte[(int)fragmentLength];
@@ -162,7 +168,81 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		assertTrue(
 				"The byte content returned by API is not equal to the origin file!",
 				Arrays.equals(expectedFragment, resp.getContent()));		
+
+	}
+	
+	/**
+	 * Test the case a read is performed on the last fragment of firmware which
+	 * has a size smaller than the requested length.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetFirmwareFragment_ReadLastNotCompleteFirmwareBlock() throws Exception {
 		
+		String firmwarePath = "test/firmware/50k.bin";	// 50 * 1024
+		long fragmentOffset = 50 * 1024 - 3;	// last 3 byte
+		long fragmentLength = 1000;
+		
+		// ----
+		
+		posDao = getInjector().getInstance(PosDao.class);
+
+		// create the firmware directory and fake firmware.
+		File firmwareDir = this.createTmpDir();
+		File firmware = this.reserveEmtpyTmpFile(firmwareDir);
+		log.debug("Fake firmware will be placed at {}", firmware);
+		InputStream is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(firmwarePath);
+		this.copyToFile(is, firmware);
+		is.close();
+		
+		// prepared POS data
+		Pos pos = new Pos();
+		pos.setPosId("POS-1");
+		pos.setDstatus(PosDeliveryStatus.DELIVERED);
+		pos.setIstatus(PosInitializationStatus.INITED);
+		pos.setOstatus(PosOperationStatus.ALLOWED);	// must be allowed
+		pos.setUpgradeRequired(true);	// trigger allowed upgrade
+		pos.setFirmware(firmware.getName());	// the fake firmware file
+		getEm().persist(pos);
+		getEm().flush();
+		
+		
+		// config the firmware directory.
+		Configuration conf = getInjector().getInstance(Configuration.class);
+		conf.setProperty("firmware.location", firmwareDir.getAbsoluteFile().toString());
+		
+		
+		// now test our API.
+		FirmwareManager api = getManager();
+		
+		// get the first 1000 bytes
+		GetFirmwareFragmentRequestMessage req = new GetFirmwareFragmentRequestMessage("POS-1", 0, 1000);
+		GetFirmwareFragmentResponseMessage resp = api.getFirmwareFragment(req);
+		
+		//
+		// Lots of validation
+		//
+		assertNotNull(resp);
+		assertEquals("Command ID not correct",
+				CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE,
+				resp.getCmdId());
+		assertEquals("Unexpected result code",
+				GetFirmwareFragmentResponseMessage.RESULT_OK,
+				resp.getResult());
+		assertEquals("The returned fragment size is not correct",
+				3, resp.getContent().length);	// must be 3
+		// compare the byte content
+		is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(firmwarePath);
+		byte[] expectedFragment = new byte[(int)fragmentLength];
+		ByteStreams.readFully(is, expectedFragment, 50 * 1024 - 3, 3);
+		is.close();
+		// make sure they are equals
+		assertTrue(
+				"The byte content returned by API is not equal to the origin file!",
+				Arrays.equals(expectedFragment, resp.getContent()));		
 
 	}
 	
