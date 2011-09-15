@@ -56,11 +56,11 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 	@Override
 	public PageInfo<AgentVO> queryAgent(AgentSearchVO agentSearchVO)
 			throws ServiceException {
-		PageInfo<AgentVO> pageInfo = null;
+		PageInfo pageInfo = null;
 		try{
 			//获取总数 以及 列表		
 			Map<String,Object> paramMap = new HashMap<String,Object>();
-			StringBuffer searchSql = new StringBuffer(" SELECT new com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO(ag.id, ag.name, ag.email) FROM Agent ag WHERE 1=1 ");
+			StringBuffer searchSql = new StringBuffer(" SELECT ag FROM Agent ag WHERE 1=1 ");
 			StringBuffer countSql = new StringBuffer(" SELECT COUNT(ag.id) FROM Agent ag WHERE 1=1 ");
 			
 			
@@ -72,6 +72,16 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			
 			pageInfo = this.findPageInfo(countSql.toString(), searchSql.toString(), paramMap, 
 					agentSearchVO.getPage(), agentSearchVO.getSize());
+			
+			List<Agent> agentList = pageInfo.getItems();
+			
+			List<AgentVO> agentVOList = new ArrayList<AgentVO>();
+			for(Agent agent:agentList){
+				AgentVO agentVO = entityToVO(agent);
+				agentVOList.add(agentVO);
+			}
+			
+			pageInfo.setItems(agentVOList);
 		}catch(Throwable e){
 			throw new ServiceException(e);
 		}
@@ -92,9 +102,8 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			
 			getEm().persist(agent);
 			
-			agentVO.setId(agent.getId());
 			
-			
+			agentVO = entityToVO(agent);
 			//加入日志
 			addLog(agent, DomainEvent.USER_ADDED_AGENT.toString());
 			
@@ -121,9 +130,11 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			agent.setName(agentVO.getName());
 			agent.setEmail(agentVO.getEmail());
 			
+			
+			
 			getEm().merge(agent);
 			
-			agentVO.setId(agent.getId());
+			agentVO = entityToVO(agent);
 			
 			
 			//加入日志
@@ -164,16 +175,15 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 				return null;
 			}
 			
-			AgentVO agentVO = new AgentVO();
+			
 			Agent agent = getEm().find(Agent.class, agentId);
 			
 			if(agent == null){
 				return null;
 			}
 			
-			agentVO.setId(agent.getId());
-			agentVO.setName(agent.getName());
-			agentVO.setEmail(agent.getEmail());
+			AgentVO agentVO = entityToVO(agent);
+			
 			return agentVO;
 		}catch(Throwable e){
 			throw new ServiceException(e);
@@ -232,14 +242,41 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 		
 		List<AgentVO> agentVOList = new ArrayList<AgentVO>();
 		for(Agent agent:agentList){
-			AgentVO agentVO = new AgentVO();
-			agentVO.setId(agent.getId());
-			agentVO.setName(agent.getName());
-			agentVO.setEmail(agent.getEmail());
+			AgentVO agentVO = entityToVO(agent);
 			agentVOList.add(agentVO);
 		}
 		
 		return agentVOList;
+	}
+	
+	/**
+	 * description：实体转VO
+	 * @param agent
+	 * @return
+	 * @time 2011-9-15   下午07:24:31
+	 * @author Seek
+	 */
+	private AgentVO entityToVO(Agent agent){
+		AgentVO agentVO = new AgentVO();
+		agentVO.setId(agent.getId());
+		agentVO.setName(agent.getName());
+		agentVO.setEmail(agent.getEmail());
+		return agentVO;
+	}
+	
+	/**
+	 * description：VO转实体
+	 * @param agentVO
+	 * @return
+	 * @time 2011-9-15   下午07:25:32
+	 * @author Seek
+	 */
+	private Agent voToEntity(AgentVO agentVO){
+		Agent agent = new Agent();
+		agent.setId(agentVO.getId());
+		agent.setName(agentVO.getName());
+		agent.setEmail(agentVO.getEmail());
+		return agent;
 	}
 	
 }
