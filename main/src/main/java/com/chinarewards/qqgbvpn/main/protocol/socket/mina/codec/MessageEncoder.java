@@ -69,9 +69,11 @@ public class MessageEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
+		
 		log.debug("encode message start");
 		
 		log.debug("message========:"+message.getClass());
+		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
 		ICommand bodyMessage = msg.getBodyMessage();
@@ -122,11 +124,10 @@ public class MessageEncoder implements ProtocolEncoder {
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
 		// debug print
-		log.debug("Outgoing byte content");
+		log.debug("Encoded byte content");
 		CodecUtil.debugRaw(log, result);
 
-		log.debug("result========length:({})",result.length);
-		log.debug("result========value:({})",Arrays.toString(result));
+		// write to Mina session
 		buf.put(result);
 		buf.flip();
 		out.write(buf);
