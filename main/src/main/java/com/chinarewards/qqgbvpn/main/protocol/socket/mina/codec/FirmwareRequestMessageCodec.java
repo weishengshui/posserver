@@ -65,8 +65,8 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		try {
 			StringBuffer sb = new StringBuffer(
 					responseMessage.getFirmwareName());
-			sb.append(0);
 			buf.putString(sb, charset.newEncoder());
+			buf.compact();
 			return buf.array();
 		} catch (CharacterCodingException e) {
 			e.printStackTrace();
