@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.core.mail;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;

@@ -1,14 +1,10 @@
 package com.chinarewards.qqgbvpn.mgmtui.service.impl;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -22,7 +18,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
