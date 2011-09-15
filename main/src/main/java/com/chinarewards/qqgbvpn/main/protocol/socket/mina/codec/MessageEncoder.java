@@ -88,12 +88,13 @@ public class MessageEncoder implements ProtocolEncoder {
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(), ProtocolLengths.COMMAND);
 		}else{
-//			String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
-//			if(cmdName == null || cmdName.length() == 0){
 //				throw new RuntimeException("cmd id is not exits,cmdId is :"+cmdId);
 //			}
 			//Dispatcher
 			//IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+			
+			// XXX handles the case no codec is found for the command ID.
+			
 			ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
 			log.trace("bodyMessageCoder = {}", bodyMessageCoder);
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
