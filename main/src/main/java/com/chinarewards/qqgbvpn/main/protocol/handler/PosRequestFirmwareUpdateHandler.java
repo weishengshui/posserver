@@ -36,20 +36,22 @@ public class PosRequestFirmwareUpdateHandler implements ServiceHandler {
 		
 		InitRequestMessage bodyMessage = (InitRequestMessage)request.getParameter();
 		
-		log.debug("InitCommandHandler======execute==bodyMessage=: {}", bodyMessage);
+		log.debug("PosRequestFirmwareUpdateHandler======execute==bodyMessage=: {}", bodyMessage);
 		
-		InitResponseMessage  initResponseMessage  = null;
-		try {
-			initResponseMessage = loginManager.init(bodyMessage);
-		} catch (Throwable e) {
-			e.printStackTrace();
-			initResponseMessage = new InitResponseMessage();
-			initResponseMessage
-					.setChallenge(new byte[ProtocolLengths.CHALLENGE]);
-			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
-		}
-		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
-		response.writeResponse(initResponseMessage);
+		throw new UnsupportedOperationException();
+		
+//		InitResponseMessage  initResponseMessage  = null;
+//		try {
+//			initResponseMessage = loginManager.init(req, newChallenge);
+//		} catch (Throwable e) {
+//			e.printStackTrace();
+//			initResponseMessage = new InitResponseMessage();
+//			initResponseMessage
+//					.setChallenge(new byte[ProtocolLengths.CHALLENGE]);
+//			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
+//		}
+//		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
+//		response.writeResponse(initResponseMessage);
 	}
 
 }
