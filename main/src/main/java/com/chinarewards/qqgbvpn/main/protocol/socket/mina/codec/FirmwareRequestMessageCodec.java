@@ -70,9 +70,10 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 			StringBuffer sb = new StringBuffer(
 					responseMessage.getFirmwareName());
 			buf.putString(sb, charset.newEncoder());
+			buf.put((byte)0);
 		} catch (CharacterCodingException e) {
 			e.printStackTrace();
-			buf.putChar((char) 0);
+			buf.put((byte)0);
 		}
 		return Arrays.copyOfRange(buf.array(), 0, buf.position());
 	}
