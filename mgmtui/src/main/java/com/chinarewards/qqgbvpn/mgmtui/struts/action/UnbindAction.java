@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
@@ -347,7 +349,7 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String createInvite() throws UnsupportedEncodingException, MessagingException{
+	public String createInvite() {
 		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
 			//生成邀请单
 			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
@@ -356,13 +358,18 @@ public class UnbindAction extends BaseAction {
 				String path = getInviteEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
 				String subject = "邀请填写申请表";
-				//String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
-				//getMailService().sendMail(toAdds, null, subject, content, null);
 				Object[] params = {path};
-				getMailService().sendMail(toAdds, null, subject, "/mailtemplate/createInviteMailTemplate"
-						, "createInvite", params, null);
+				try {
+					getMailService().sendMail(toAdds, null, subject, "/mailtemplate/createInviteMailTemplate"
+							, "createInvite", params);
+				} catch (AddressException e) {
+					this.errorMsg = "邮件地址为空，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				} catch (MessagingException e) {
+					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				}
 				this.setAgentName(this.getAgentName());
-				//this.setSendTime(new Date());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				this.setPassTime(sdf.format(new Date()));
 				return SUCCESS;
@@ -393,13 +400,10 @@ public class UnbindAction extends BaseAction {
 					String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
 					String path = getRnDetailPath(rn.getId());
-					/*String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。" +
-							"<br><a href='" + path + "'>请点击此链接查看回收单具体信息，谢谢。</a></body></html>";*/
 					Object[] params = {this.getAgentName(),posList.size(),path};
 					try {
-						//getMailService().sendMail(toAdds, null, subject, content, null);
 						getMailService().sendMail(toAdds, null, subject, "/mailtemplate/confirmRnNumberMailTemplate"
-								, "confirmRnNumber", params, null);
+								, "confirmRnNumber", params);
 					} catch (Throwable e) {
 						
 					}
@@ -410,7 +414,6 @@ public class UnbindAction extends BaseAction {
 				this.setRnNum(rn.getRnNumber());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				this.setPassTime(sdf.format(rn.getCreateDate()));
-				//this.setRnTime(rn.getCreateDate());
 				return SUCCESS;
 			}else {
 				this.errorMsg = "第三方信息找不到!";
@@ -437,7 +440,6 @@ public class UnbindAction extends BaseAction {
 				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
 				this.setRnId(rnInfo.getRn().getId());
 				this.setRnNum(rnInfo.getRn().getRnNumber());
-				//this.setRnTime(rnInfo.getRn().getCreateDate());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				this.setPassTime(sdf.format(rnInfo.getRn().getCreateDate()));
 				return SUCCESS;

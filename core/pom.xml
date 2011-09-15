@@ -87,11 +87,13 @@
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
-
+		-->
+		
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
