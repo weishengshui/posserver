@@ -67,7 +67,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("searchAgent_FORM_ID");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/agent/searchAgent";
+		formObj.action = "${pageContext.request.contextPath}/agent/searchAgent";
 		formObj.submit();
 	}
 </script>

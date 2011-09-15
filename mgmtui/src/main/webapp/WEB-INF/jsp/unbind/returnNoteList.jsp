@@ -31,7 +31,7 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
+		<td><a href="${pageContext.request.contextPath}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
 		<td>
 		<s:if test="#list.status != null && 'PRINTED' == #list.status.toString()">
@@ -60,9 +60,10 @@
 <script type="text/javascript">
 
 	function goPage(pageId) {
+		alert("${pageContext.request.contextPath}");
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPageForRnList";
+		formObj.action = "${pageContext.request.contextPath}/unbind/goPageForRnList";
 		formObj.submit();
 	}
 	

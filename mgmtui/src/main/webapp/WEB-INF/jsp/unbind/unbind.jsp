@@ -69,7 +69,7 @@
 		if (confirm("确定要解除POS机：\"" + posId + "\"的绑定关系吗？")) {
 			document.getElementById("posId").value = posId;
 			var formObj = document.getElementById("unbindForm");
-			formObj.action = "${ctx}/unbind/unbind";
+			formObj.action = "${pageContext.request.contextPath}/unbind/unbind";
 			formObj.submit();
 		}
 	}

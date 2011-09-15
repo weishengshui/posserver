@@ -169,7 +169,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("searchPosForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/pos/list";
+		formObj.action = "${pageContext.request.contextPath}/pos/list";
 		formObj.submit();
 	}
 </script>

@@ -46,7 +46,7 @@
 	function goPrint(rnId) {
 		document.getElementById("rnId").value = rnId;
 		var formObj = document.getElementById("printForm");
-		formObj.action = "${ctx}/unbind/getReturnNoteInfo";
+		formObj.action = "${pageContext.request.contextPath}/unbind/getReturnNoteInfo";
 		formObj.submit();
 	}
 </script>
