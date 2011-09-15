@@ -17,6 +17,16 @@ public class AgentVO implements java.io.Serializable {
 
 	String email;
 	
+	public AgentVO(){
+	}
+	
+	public AgentVO(String id, String name, String email) {
+		this.id = id;
+		this.name = name;
+		this.email = email;
+	}
+	
+
 	public String getId() {
 		return id;
 	}

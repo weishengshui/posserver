@@ -15,15 +15,16 @@ public class DeliverySearchVO {
 
 	String agentId;
 	String agentName;
-
-	PaginationTools pagination;
+	
+	int page;
+	int size;
 
 	@Override
 	public String toString() {
 		return "DeliverySearchVO [dnNumber=" + dnNumber + ", status=" + status
 				+ ", createDateFrom=" + createDateFrom + ", createDateTo="
 				+ createDateTo + ", agentId=" + agentId + ", agentName="
-				+ agentName + ", pagination=" + pagination + "]";
+				+ agentName + "]";
 	}
 
 	public String getDnNumber() {
@@ -74,12 +75,20 @@ public class DeliverySearchVO {
 		this.agentName = agentName;
 	}
 
-	public PaginationTools getPagination() {
-		return pagination;
+	public int getPage() {
+		return page;
 	}
 
-	public void setPagination(PaginationTools pagination) {
-		this.pagination = pagination;
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
 	}
 
 }

@@ -66,10 +66,9 @@ public interface PosLogic {
 	 * 查询Pos
 	 * 
 	 * @param posSearchVO
-	 * @param paginationTools
 	 * @return
 	 */
-	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO,PaginationTools paginationTools);
+	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO);
 
 	/**
 	 * 批量更新 Pos 状态为 {@link PosDeliveryStatus#DELIVERED} 和 {@link PosOperationStatus#ALLOWED}
