@@ -297,7 +297,7 @@ public class UnbindAction extends BaseAction {
 
 	public String search() {
 		posIds = "";
-		if (agentName != null && !"".equals(agentName.trim())) {
+		if (!StringUtil.isEmptyString(agentName)) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
 				pageInfo = new PageInfo();
@@ -316,7 +316,7 @@ public class UnbindAction extends BaseAction {
 	
 	public String request() {
 		posIds = "";
-		if (inviteCode != null && !"".equals(inviteCode.trim())) {
+		if (!StringUtil.isEmptyString(inviteCode)) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode.trim());
 			if (a != null) {
 				log.debug("a.getId() : {}",a.getId());
@@ -350,7 +350,7 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String createInvite() {
-		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
+		if (!StringUtil.isEmptyString(this.getAgentId())) {
 			//生成邀请单
 			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
 			if (inviteCode != null) {
@@ -450,7 +450,7 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String posSearch() {
-		if (posCondition != null && !"".equals(posCondition.trim())) {
+		if (!StringUtil.isEmptyString(posCondition)) {
 			posList = getGroupBuyingUnbindManager().getPosByPosInfo(posCondition.trim());
 			if (posList == null || posList.size() == 0) {
 				this.errorMsg = "POS机信息找不到!";
@@ -460,7 +460,7 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String unbind(){
-		if (posId != null && !"".equals(posId.trim())) {
+		if (!StringUtil.isEmptyString(posId)) {
 			HashMap<String, Object> params = new HashMap<String, Object>();
 			params.put("posId", new String[] { posId.trim() });
 			params.put("key", getConfiguration().getString("txserver.key"));
