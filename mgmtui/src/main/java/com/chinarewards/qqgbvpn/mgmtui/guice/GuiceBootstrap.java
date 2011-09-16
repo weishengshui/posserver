@@ -48,7 +48,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		Injector injector = (Injector) servletContextEvent.getServletContext()
 				.getAttribute(Injector.class.getName());
 		log.info("Shutting down persistence service");
-		injector.getInstance(PersistService.class).stop();
+		//injector.getInstance(PersistService.class).stop();
 		
 		// continue super class call.
 		super.contextDestroyed(servletContextEvent);
@@ -61,7 +61,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 				.getAttribute(Injector.class.getName());
 		
 		log.info("Starting persistence service");
-		injector.getInstance(PersistService.class).start();
+		//injector.getInstance(PersistService.class).start();
 	}
 
 	/*
