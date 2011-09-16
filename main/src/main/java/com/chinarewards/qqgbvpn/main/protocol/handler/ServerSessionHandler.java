@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
+import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -120,6 +121,9 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		super.sessionOpened(session);
 
 		printRemoteSocketAddress(session);
+		
+		
+		
 	}
 
 	/**
@@ -140,6 +144,19 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		log.info("Incoming connection from remote address: "
 				+ buildAddressPortString(session));
 	}
+
+	/**
+	 * Prints the number of managed session.
+	 * 
+	 * @param service
+	 */
+	protected void printManagedSessions(IoService service) {
+
+		log.info("Number of managed sessions: {}"
+				+ service.getManagedSessionCount());
+		
+	}
+
 
 	protected String buildAddressPortString(IoSession session) {
 		SocketAddress addr = session.getRemoteAddress();

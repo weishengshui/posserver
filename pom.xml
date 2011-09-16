@@ -20,15 +20,15 @@
 	</scm>
 	<inceptionYear>2011</inceptionYear>
 	<properties>
+		<apache.commonconfig.version>1.7</apache.commonconfig.version>
 		<guice.version>3.0</guice.version>
 		<guice-struts2>3.0</guice-struts2>
 		<hibernate.version>3.4.0</hibernate.version>
-		<junit.version>4.8.2</junit.version>
-		<slf4j.version>1.5.11</slf4j.version>
-		<logback.version>0.9.16</logback.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
-		<apache.commonconfig.version>1.6</apache.commonconfig.version>
 		<jackson.json.version>1.8.5</jackson.json.version>
+		<junit.version>4.8.2</junit.version>
+		<logback.version>0.9.16</logback.version>
+		<slf4j.version>1.5.11</slf4j.version>
 		<!-- project.version: this project's version -->
 		<project.version>0.1.0-SNAPSHOT</project.version>
 	</properties>

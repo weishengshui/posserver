@@ -33,7 +33,7 @@ public class CodecUtil {
 			try {
 				HexDump.dump(raw, 0, os, 0);
 				String s = os.toString("UTF-8");
-				log.debug("bytes (hex) ({} bytes)\n{}\n", raw.length, s);
+				log.trace("bytes (hex) ({} bytes)\n{}\n", raw.length, s);
 			} catch (Throwable e) {
 				log.warn("Failed to dump hex raw bytes");
 			} finally {
