@@ -6,6 +6,7 @@ import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
+import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
@@ -136,8 +137,7 @@ public class AgentAction extends BasePagingToolBarAction {
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		agentLogic = injector.getInstance(AgentLogic.class);
+		agentLogic = super.getInstance(AgentLogic.class);
 		return agentLogic;
 	}
 	

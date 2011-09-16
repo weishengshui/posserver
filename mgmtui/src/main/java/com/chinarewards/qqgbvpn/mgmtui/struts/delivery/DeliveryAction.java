@@ -349,14 +349,12 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		agentLogic = injector.getInstance(AgentLogic.class);
+		agentLogic = super.getInstance(AgentLogic.class);
 		return agentLogic;
 	}
 	
 	private DeliveryLogic getDeliveryLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		deliveryLogic = injector.getInstance(DeliveryLogic.class);
+		deliveryLogic = super.getInstance(DeliveryLogic.class);
 		return deliveryLogic;
 	}
 	

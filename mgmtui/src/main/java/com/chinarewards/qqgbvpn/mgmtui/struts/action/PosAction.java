@@ -87,7 +87,7 @@ public class PosAction extends BasePagingAction{
 			//默认已回收
 			posVO.setDstatus(PosDeliveryStatus.RETURNED.toString());
 			//默认允许
-			posVO.setUpgradeRequired(true);
+			posVO.setUpgradeRequired(false);
 		}
 		return SUCCESS;
 	}
