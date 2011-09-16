@@ -52,10 +52,7 @@ public class MessageEncoder implements ProtocolEncoder {
 	 */
 	@Override
 	public void dispose(IoSession session) throws Exception {
-		// TODO Auto-generated method stub
-
-		System.out.println("dispose()");
-
+		
 	}
 
 	/*
@@ -71,8 +68,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			ProtocolEncoderOutput out) throws Exception {
 		
 		log.debug("encode message start");
-		
-		log.debug("message========:"+message.getClass());
+		log.trace("session.getId()=======:" + session.getId());
 		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
@@ -82,12 +78,13 @@ public class MessageEncoder implements ProtocolEncoder {
 		byte[] bodyByte = null;
 		log.debug("cmdId is ({})", cmdId);
 		
-		if(bodyMessage instanceof ErrorBodyMessage){
+		if (bodyMessage instanceof ErrorBodyMessage) {
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
-			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage)bodyMessage;
+			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage) bodyMessage;
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
-			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(), ProtocolLengths.COMMAND);
-		}else{
+			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(),
+					ProtocolLengths.COMMAND);
+		} else {
 //				throw new RuntimeException("cmd id is not exits,cmdId is :"+cmdId);
 //			}
 			//Dispatcher
