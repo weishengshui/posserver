@@ -64,7 +64,7 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private PageInfo<DeliveryNoteVO> pageInfo;
 	
-	private static final int SIZE = 2;
+	private static final int SIZE = 10;
 	
 	@Override
 	public String execute(){
