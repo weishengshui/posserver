@@ -25,6 +25,15 @@ case "$1" in
     purge|remove)
 	# remove any symlinks to the war
 	rm -rf /usr/share/posnet2-mgmtui/lib/mgmtui*.war
+
+	if [ -L /usr/share/posnet2-mgmtui/conf ]; then
+		unlink /usr/share/posnet2-mgmtui/conf
+		ret=$?
+		if [ $ret -ne 0 ]; then
+			echo "Failed to remove link /usr/share/posnet2-mgmtui/conf"
+		fi
+	fi
+
     ;;
     
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

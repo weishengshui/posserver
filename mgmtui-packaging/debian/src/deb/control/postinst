@@ -32,6 +32,9 @@ case "$1" in
 
 	# restore the conf/ symlink
 	ln -sf /etc/posnet2-mgmtui /usr/share/posnet2-mgmtui/conf
+
+	# default firmware directory
+	mkdir -p /var/lib/posnet2-mgmtui/firmware
     
     ;;
 
