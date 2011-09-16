@@ -42,18 +42,18 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	protected boolean doDecode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 
-		log.debug("session.getId()=======:" + session.getId());
 		log.debug("MessageDecoder.doDecode invoked");
-		log.debug("in.remaining is {}", in.remaining());
+		log.trace("session.getId()=======:" + session.getId());
+		log.trace("in.remaining is {}", in.remaining());
 
 		// check length, it must greater than head length
 		if (in.remaining() > ProtocolLengths.HEAD) {
 
-			log.debug("Do processing");
+			log.trace("Do processing");
 			HeadMessage headMessage = new HeadMessage();
 			// read header
 			// read seq
-			log.debug("Read head");
+			log.trace("Read message head");
 			long seq = in.getUnsignedInt();
 			headMessage.setSeq(seq);
 
@@ -64,21 +64,21 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			// read flags
 			int flags = in.getUnsignedShort();
 			headMessage.setFlags(flags);
-			log.debug("in.remaining() = " + in.remaining());
+			log.trace("in.remaining() = " + in.remaining());
 
 			// read checksum
-			log.debug("read checksum");
+			log.trace("read checksum");
 			int checksum = in.getUnsignedShort();
-			log.debug("checksum========:" + checksum);
+			log.trace("checksum========:" + checksum);
 			headMessage.setChecksum(checksum);
-			log.debug("in.remaining() = " + in.remaining());
+			log.trace("in.remaining() = " + in.remaining());
 
 			// read message size
-			log.debug("read message size");
+			log.trace("read message size");
 			long messageSize = in.getUnsignedInt();
 			headMessage.setMessageSize(messageSize);
-			log.debug("in.remaining() = " + in.remaining());
-			log.debug("headMessage ====: {}", headMessage.toString());
+			log.trace("in.remaining() = " + in.remaining());
+			log.trace("headMessage ====: {}", headMessage.toString());
 
 			// check length
 			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
@@ -96,10 +96,10 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			in.get(byteTmp);
 			CodecUtil.debugRaw(log, byteTmp);
 			Tools.putUnsignedShort(byteTmp, 0, 10);
-			log.debug("byteTmp==msg==:" + Arrays.toString(byteTmp));
+			log.trace("byteTmp==msg==:" + Arrays.toString(byteTmp));
 
 			int checkSumTmp = Tools.checkSum(byteTmp, byteTmp.length);
-			log.debug("checkSumTmp========:" + checkSumTmp);
+			log.trace("heckSumTmp========:" + checkSumTmp);
 
 			// checksum
 
