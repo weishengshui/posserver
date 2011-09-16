@@ -21,6 +21,7 @@
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>mgmtui</artifactId>
 			<version>${project.version}</version>
+			<type>war</type>
 		</dependency>
 	</dependencies>
 	<build>
