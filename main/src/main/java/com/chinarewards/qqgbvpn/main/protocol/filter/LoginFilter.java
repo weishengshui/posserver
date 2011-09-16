@@ -116,6 +116,7 @@ public class LoginFilter extends IoFilterAdapter {
 		Long[] ids = new Long[] {
 				CmdConstant.INIT_CMD_ID,
 				CmdConstant.LOGIN_CMD_ID,
+				CmdConstant.BIND_CMD_ID,
 				CmdConstant.FIRMWARE_UPGRADE_CMD_ID,
 				CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID,
 				CmdConstant.FIRMWARE_UP_DONE_CMD_ID };
