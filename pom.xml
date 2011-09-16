@@ -29,8 +29,6 @@
 		<junit.version>4.8.2</junit.version>
 		<logback.version>0.9.16</logback.version>
 		<slf4j.version>1.5.11</slf4j.version>
-		<!-- project.version: this project's version -->
-		<project.version>0.1.0-SNAPSHOT</project.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
