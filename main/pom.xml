@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.0</version>
+		<version>0.1.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>main</artifactId>
@@ -13,12 +13,12 @@
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>config</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>domain</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1-SNAPSHOT</version>
 		</dependency>
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
