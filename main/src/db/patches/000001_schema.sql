@@ -66,7 +66,7 @@ CREATE TABLE Journal (
 
 CREATE TABLE Pos (
   id varchar(255) NOT NULL,
-  challenge tinyblob,
+  firmware VARCHAR(255) DEFAULT NULL;
   dstatus varchar(255) DEFAULT NULL,
   istatus varchar(255) DEFAULT NULL,
   model varchar(255) DEFAULT NULL,
@@ -76,6 +76,7 @@ CREATE TABLE Pos (
   simPhoneNo varchar(255) DEFAULT NULL,
   sn varchar(255) DEFAULT NULL,
   version bigint(20) NOT NULL,
+  upgradeRequired BIT,
   PRIMARY KEY (id),
   UNIQUE KEY posId (posId)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
