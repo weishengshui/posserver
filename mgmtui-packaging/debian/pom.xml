@@ -16,6 +16,7 @@
 		<pkgname>posnet2-mgmtui</pkgname>
 		<home.dir>/usr/share/posnet2-mgmtui</home.dir>
 	</properties>
+	<!-- 
 	<dependencies>
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
@@ -24,6 +25,7 @@
 			<type>war</type>
 		</dependency>
 	</dependencies>
+	 -->
 	<build>
 		<extensions>
 			<extension>

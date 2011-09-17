@@ -24,6 +24,10 @@ import com.chinarewards.utils.StringUtil;
 
 /**
  * Login filter.
+ * <p>
+ * 
+ * XXX serious refactoring is required. The implementation of this filter
+ * depends on too much about the knowledge of the commands.
  * 
  * @author cream
  * @since 1.0.0 2011-08-29

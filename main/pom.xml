@@ -135,8 +135,7 @@
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<!-- simple main, connect to hsqldb -->
-			<!-- <scope>test</scope> -->
+			<scope>test</scope>
 		</dependency>
 
 		<!-- For mocking live Servlet container -->
@@ -178,6 +177,7 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
+		
 		<!-- It works with JUnit's log output? -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
