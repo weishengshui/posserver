@@ -25,6 +25,7 @@ import com.chinarewards.qqgbpvn.main.test.BaseTest;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsg2;
 import com.chinarewards.qqgbvpn.main.protocol.socket.InitMsgResult;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.InitMsgSocketFactory;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 
@@ -296,6 +297,65 @@ public class ProtocolOnMinaTest extends BaseTest {
 		byte[] response = new byte[30];
 		int n = is.read(response);
 		System.out.println("Number of bytes read: " + n);
+		for (int i = 0; i < n; i++) {
+			String s = Integer.toHexString((byte) response[i]);
+			if (s.length() < 2)
+				s = "0" + s;
+			if (s.length() > 2)
+				s = s.substring(s.length() - 2);
+			System.out.print(s + " ");
+			if ((i + 1) % 8 == 0)
+				System.out.println("");
+		}
+
+		os.close();
+		socket.close();
+
+	}
+
+//	@Test
+	public void testSendFirmwareUpdateRequestViaJavaSocket() throws Exception {
+
+		Socket socket = new Socket("192.168.4.121", 1234);
+
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+
+		byte[] msg = new byte[] {
+				// SEQ
+				0, 0, 0, 24,
+				// ACK
+				0x20, 0, 0, 0x04,
+				// flags
+				0, 0,
+				// checksum (auto-calculated)
+				0, 0,
+				// message length
+				0, 0, 0, 0x20,
+				// command ID
+				0, 0, 0, 13,
+				// POS ID
+				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '1' };
+		
+		// calculate checksum
+		int checksum = Tools.checkSum(msg, msg.length);
+		Tools.putUnsignedShort(msg, checksum, 10);
+		
+		System.out.println("Packet size: " + msg.length);
+
+		long runForSeconds = 1;
+		// write response
+		log.info("Send request to server");
+		os.write(msg);
+		// session.write("Client First Message");
+		Thread.sleep(runForSeconds * 1000);
+		// read
+		log.info("Read response");
+		byte[] response = new byte[30];
+		int n = is.read(response);
+		System.out.println("Number of bytes read: " + n + "\n");
+		CodecUtil.debugRaw(log, response);
+		
 		for (int i = 0; i < n; i++) {
 			String s = Integer.toHexString((byte) response[i]);
 			if (s.length() < 2)
