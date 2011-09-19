@@ -106,8 +106,8 @@
 					<s:property value="#posTmp.posId" />
 				</a>
 			</td>
+			<td><s:property value="#posTmp.sn" /></td>	<%-- 厂商编号 --%>
 			<td><s:property value="#posTmp.model" /></td>
-			<td><s:property value="#posTmp.sn" /></td>
 			<td><s:property value="#posTmp.simPhoneNo" /></td>
 			<td>
 				<s:if test="#posTmp.dstatus == 'DELIVERED'">

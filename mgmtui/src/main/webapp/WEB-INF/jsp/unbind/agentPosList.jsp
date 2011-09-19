@@ -40,8 +40,8 @@
 	<tr>
 		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
 		<td><s:property value="#list.posId" /></td>
+		<td><s:property value="#list.sn" /></td>	<%-- 厂商编号 --%>
 		<td><s:property value="#list.model" /></td>
-		<td><s:property value="#list.sn" /></td>
 		<td><s:property value="#list.simPhoneNo" /></td>
 		<td>
 			<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
