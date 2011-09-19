@@ -118,8 +118,8 @@ case "$1" in
   status)
     running
     case "$?" in
-        0) log_daemon_msg "Indexer Running" ;;
-        1) log_daemon_msg "Indexer not running" ;;
+        0) log_daemon_msg "POSNet2 server Running" ;;
+        1) log_daemon_msg "POSNet2 server not running" ;;
     esac
     ;;
   *)
