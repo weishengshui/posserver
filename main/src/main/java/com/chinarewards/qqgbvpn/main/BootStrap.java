@@ -199,9 +199,7 @@ public class BootStrap {
 
 		// print version and quit.
 		if (cl.hasOption("version")) {
-			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println(BootStrap.APP_NAME + " version "
-					+ appInfo.getVersionString());
+			printAppVersion();
 			System.exit(0);
 		}
 
