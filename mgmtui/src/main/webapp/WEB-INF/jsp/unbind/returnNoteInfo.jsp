@@ -6,6 +6,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>回收单信息</title>
+<style>
+
+body {
+	font-size: 16px;
+}
+
+</style>
 </head>
 <body>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">

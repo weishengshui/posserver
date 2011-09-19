@@ -11,6 +11,13 @@
 	<meta http-equiv="expires" content="0" />
 	<script type="text/javascript" src="<s:url value='/js/jquery/jquery-latest.min.js' />"></script>
 	<link href="<s:url value='/styles/main.css'/>" rel="stylesheet" type="text/css" media="all"/>
+	<style>
+
+	body {
+		font-size: 16px;
+	}
+
+</style>
 </head>
 
 <body>
