@@ -13,7 +13,7 @@ import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 
-public class MinaProtcolTest extends JpaGuiceTest {
+public class MinaProtocolTest extends JpaGuiceTest {
 
 	PosDao posDao;
 
