@@ -66,7 +66,7 @@ CREATE TABLE Journal (
 
 CREATE TABLE Pos (
   id varchar(255) NOT NULL,
-  firmware VARCHAR(255) DEFAULT NULL;
+  firmware VARCHAR(255) DEFAULT NULL,
   dstatus varchar(255) DEFAULT NULL,
   istatus varchar(255) DEFAULT NULL,
   model varchar(255) DEFAULT NULL,
