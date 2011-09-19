@@ -2,6 +2,8 @@ package com.chinarewards.qqgpvn.main.qqapi;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,8 @@ import javax.persistence.Query;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.apache.http.HttpResponse;
+import org.apache.http.params.CoreProtocolPNames;
 import org.codehaus.jackson.JsonGenerationException;
 import org.junit.Test;
 
@@ -82,7 +86,7 @@ public class QQApiUATTest extends JpaGuiceTest {
 		return confModule;
 	}
 
-	// @Test
+//	@Test
 	public void testSendPostSuccess() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
@@ -105,10 +109,10 @@ public class QQApiUATTest extends JpaGuiceTest {
 
 		String url = "http://121.14.96.114/api/pos/query";
 
-		GroupBuyingUtil.sendPost(url, postParams);
+		GroupBuyingUtil.sendPost(url, postParams,"gbk");
 	}
 
-	//@Test
+//	@Test
 	public void testGroupBuyingSearchParseXML() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		String posId = "REWARDS-0001";
@@ -126,10 +130,18 @@ public class QQApiUATTest extends JpaGuiceTest {
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 
 		String url = "http://113.108.82.162/api/pos/query";
+		
+		HttpResponse httpResponse = GroupBuyingUtil.sendPost(url, postParams,"gbk");
+		String contentCharset = httpResponse.getParams().getParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
+		InputStream in = httpResponse.getEntity().getContent();
+		String str = GroupBuyingUtil.getStringByInputStream(in,contentCharset);
+		String xmlEncoding = GroupBuyingUtil.getXMLEncodingByString(str);
+		ByteArrayInputStream bin = new ByteArrayInputStream(str.getBytes(xmlEncoding));
+		HashMap<String, Object> result = GroupBuyingUtil.parseXML(bin, "//groupon/item",GroupBuyingSearchListVO.class);
 
-		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
+		/*HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
-				GroupBuyingSearchListVO.class);
+				GroupBuyingSearchListVO.class);*/
 		String resultCode = (String) result.get("resultCode");
 		System.out.println("resultCode->" + resultCode);
 		if ("0".equals(resultCode)) {
@@ -160,13 +172,13 @@ public class QQApiUATTest extends JpaGuiceTest {
 		}
 	}
 
-	// @Test
+//	@Test
 	public void testGroupBuyingValidateParseXML() throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("posId", "REWARDS-0001");
-		params.put("grouponId", "136453");
-		params.put("token", "4662451047");
-		params.put("key", getTxServerKey());
+		params.put("grouponId", "160697");
+		params.put("token", "8532606794");
+		params.put("key", "JXTPOS");
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
 		// post参数:posId
@@ -186,11 +198,19 @@ public class QQApiUATTest extends JpaGuiceTest {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 
-		String url = "http://121.14.96.114/api/pos/verify";
+		String url = "http://113.108.82.162/api/pos/verify";
 
-		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
+		HttpResponse httpResponse = GroupBuyingUtil.sendPost(url, postParams,"gbk");
+		String contentCharset = httpResponse.getParams().getParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
+		InputStream in = httpResponse.getEntity().getContent();
+		String str = GroupBuyingUtil.getStringByInputStream(in,contentCharset);
+		String xmlEncoding = GroupBuyingUtil.getXMLEncodingByString(str);
+		ByteArrayInputStream bin = new ByteArrayInputStream(str.getBytes(xmlEncoding));
+		HashMap<String, Object> result = GroupBuyingUtil.parseXML(bin, "//groupon",GroupBuyingValidateResultVO.class);
+		
+		/*HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon",
-				GroupBuyingValidateResultVO.class);
+				GroupBuyingValidateResultVO.class);*/
 		String resultCode = (String) result.get("resultCode");
 		System.out.println("resultCode->" + resultCode);
 		if ("0".equals(resultCode)) {
@@ -227,10 +247,10 @@ public class QQApiUATTest extends JpaGuiceTest {
 		return "JXTPOS";
 	}
 	
-	// @Test
+//	@Test
 	public void testGroupBuyingUnbindParseXML() throws Exception {
 		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("posId", new String[] { "REWARDS-0001", "REWARDS-0002" });
+		params.put("posId", new String[] { "REWARDS-0001323", "REWARDS-0002232" });
 		params.put("key", getTxServerKey());
 		// 根据QQ接口需要 ,封装POST参数
 		HashMap<String, Object> postParams = new HashMap<String, Object>();
@@ -254,11 +274,19 @@ public class QQApiUATTest extends JpaGuiceTest {
 		// post参数中,sign需要MD5加密
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 
-		String url = "http://121.14.96.114/api/pos/reset";
+		String url = "http://113.108.82.162/api/pos/reset";
+		
+		HttpResponse httpResponse = GroupBuyingUtil.sendPost(url, postParams,"gbk");
+		String contentCharset = httpResponse.getParams().getParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
+		InputStream in = httpResponse.getEntity().getContent();
+		String str = GroupBuyingUtil.getStringByInputStream(in,contentCharset);
+		String xmlEncoding = GroupBuyingUtil.getXMLEncodingByString(str);
+		ByteArrayInputStream bin = new ByteArrayInputStream(str.getBytes(xmlEncoding));
+		HashMap<String, Object> result = GroupBuyingUtil.parseXML(bin, "//groupon/item",GroupBuyingUnbindVO.class);
 
-		HashMap<String, Object> result = GroupBuyingUtil.parseXML(
+		/*HashMap<String, Object> result = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
-				GroupBuyingUnbindVO.class);
+				GroupBuyingUnbindVO.class);*/
 		String resultCode = (String) result.get("resultCode");
 		System.out.println("resultCode->" + resultCode);
 		if ("0".equals(resultCode)) {

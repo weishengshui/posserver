@@ -1,12 +1,17 @@
 package com.chinarewards.qqgbvpn.qqapi.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -86,14 +91,21 @@ public class GroupBuyingUtil {
 	 * @author iori
 	 * @param url
 	 * @param params POST参数
+	 * @param charset 设置处理请求的字符集
 	 * @return
 	 */
-	public static InputStream sendPost(String url, HashMap<String,Object> postParams) throws SendPostTimeOutException {
+	public static HttpResponse sendPost(String url, HashMap<String,Object> postParams, String charset) throws SendPostTimeOutException {
 		HttpPost post = null;
 		try {
 			HttpClient client = getThreadSafeClient();
 			client.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 			post = new HttpPost(url);
+			
+			//设置处理请求的字符集
+			if (charset != null && !"".equals(charset.trim())) {
+				post.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET,charset.trim());
+			}
+			
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			//设置post参数
 			if (postParams != null) {
@@ -117,10 +129,7 @@ public class GroupBuyingUtil {
 			HttpResponse httpResponse = client.execute(post);
 			//请求成功
 			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				HttpEntity entity = httpResponse.getEntity();
-				if (entity != null) {
-					return entity.getContent();
-				}
+				return httpResponse;
 			}
 			throw new Exception("send post error, status code: " + httpResponse.getStatusLine().getStatusCode());
 		} catch (Exception e) {
@@ -258,6 +267,66 @@ public class GroupBuyingUtil {
 //			}
 //		}
 		return obj;
+	}
+	
+	/**
+	 * 取类似encoding="utf-8"或encoding='utf-8'格式的XML字符串的编码
+	 * 默认为utf-8
+	 * @author iori
+	 * @param str
+	 * @return
+	 */
+	public static String getXMLEncodingByString(String str) {
+		//XML默认字符编码为utf-8
+		String xmlEncoding = "utf-8";
+		if (str != null && !"".equals(str.trim())) {
+			String regEx = "(?<=encoding=\"|')[\\S\\s]+(?=\"|')";
+			Pattern pattern = Pattern.compile(regEx);
+			Matcher m = pattern.matcher(str.trim());
+			if (m.find()) {
+				xmlEncoding = m.group() != null && !"".equals(m.group().trim()) ? m.group() : xmlEncoding;
+			}
+		}
+		return xmlEncoding;
+	}
+	
+	/**
+	 * 将输入流转为字符串
+	 * @author iori
+	 * @param in 输入流
+	 * @param contentCharset 字符编码
+	 * @return
+	 */
+	public static String getStringByInputStream(InputStream in, String contentCharset) {
+		StringBuilder sb = new StringBuilder("");
+		if (in != null) {
+			BufferedReader reader = null;
+			String line;
+			try {
+				if (contentCharset != null && !"".equals(contentCharset.trim())) {
+					reader = new BufferedReader(new InputStreamReader(in, contentCharset));
+				} else {
+					reader = new BufferedReader(new InputStreamReader(in));
+				}
+				while ((line = reader.readLine()) != null) {
+					sb.append(line.trim());
+				}
+			} catch (Throwable t) {
+				
+			} finally {
+				try {
+					if (reader != null) {
+						reader.close();
+					}
+					if (in != null) {
+						in.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return sb.toString().trim();
 	}
 	
 }
