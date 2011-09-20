@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.chinarewards.qqgbvpn.mgmtui.logic.login.LoginLogic;
@@ -26,9 +27,11 @@ import com.opensymphony.xwork2.ActionContext;
  * @author cream
  * @since 1.0.0 2011-09-02
  */
-public class LoginAction extends BaseAction {
+public class LoginAction extends BaseAction implements ServletRequestAware {
 
 	private static final long serialVersionUID = 6257809328181428130L;
+	
+	private HttpServletRequest servletRequest;
 
 	private String username;
 	private String password;
@@ -52,9 +55,10 @@ public class LoginAction extends BaseAction {
 	public String login() {
 
 		LoginLogic loginLogic = super.getInstance(LoginLogic.class);
+		String ip = servletRequest.getRemoteAddr();
 
-		log.debug("User ({}) tries to login...", username);
-		boolean validePass = loginLogic.checkLogin(username, password);
+		log.debug("User ({}) tries to login from {}...", username, ip);
+		boolean validePass = loginLogic.checkLogin(username, password, ip);
 
 		if (validePass) {
 			Map<String, Object> session = ActionContext.getContext()
@@ -121,5 +125,14 @@ public class LoginAction extends BaseAction {
 	public void setBackUrl(String backUrl) {
 		this.backUrl = backUrl;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.struts2.interceptor.ServletRequestAware#setServletRequest(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public void setServletRequest(HttpServletRequest servletRequest) {
+		this.servletRequest = servletRequest;
+	}
+	
 
 }

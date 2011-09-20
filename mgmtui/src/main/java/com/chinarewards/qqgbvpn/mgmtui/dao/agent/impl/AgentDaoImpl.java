@@ -49,6 +49,7 @@ public class AgentDaoImpl extends BaseDao implements AgentDao {
 			eventDetail = e.toString();
 		}
 
+		// TODO make it more clever such that it will log for true update. 
 		journalLogic.get().logEvent(processType,
 				DomainEntity.AGENT.toString(), agent.getId(), eventDetail);
 	}

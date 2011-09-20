@@ -84,6 +84,19 @@ public class DeliveryDaoImpl extends BaseDao implements DeliveryDao {
 	public DeliveryNoteVO create(DeliveryNoteVO vo) {
 		DeliveryNote dn = deliveryNoteAdapter.get().convertToEntity(vo);
 		getEm().persist(dn);
+		
+		// add journalLogic
+		try {
+			ObjectMapper map = new ObjectMapper();
+			String eventDetail;
+			eventDetail = map.writeValueAsString(dn);
+			journalLogic.get().logEvent(
+					DomainEvent.USER_ADDED_DNOTE,
+					DomainEntity.DELIVERY_NOTE, dn.getId(), eventDetail);
+		} catch (Exception e) {
+			log.error("Error in parse to JSON", e);
+		}
+		
 		return deliveryNoteAdapter.get().convertToVO(dn);
 	}
 
