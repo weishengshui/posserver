@@ -8,6 +8,9 @@
 <title>生成回收单成功</title>
 </head>
 <body>
+<s:if test="errorMsg!=null">
+<b>${errorMsg}</b>
+</s:if>
 <s:form action="list" namespace="/unbind" method="Get" id="successForm">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>

@@ -127,6 +127,7 @@
 				<param name="rnNum">${rnNum}</param>
 				<param name="rnTime">${passTime}</param>
 				<param name="isAgent">${isAgent}</param>
+				<param name="errorMsg">${errorMsg}</param>
 			</result>
 			<result name="error">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
