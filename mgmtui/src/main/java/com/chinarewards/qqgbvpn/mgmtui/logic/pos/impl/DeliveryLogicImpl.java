@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.logic.pos.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,15 +27,12 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
-import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
-import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
-import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
@@ -243,11 +241,18 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 							+ posVO.getDstatus());
 		}
 		
-		posVO.setDstatus(PosDeliveryStatus.LOCKED.toString());	//修改POS机的状态
-		try {
-			getPosDao().updatePos(posVO);
-		} catch (Throwable e) {
-			throw new PosWithWrongStatusException(e);
+//		posVO.setDstatus(PosDeliveryStatus.LOCKED.toString());	//修改POS机的状态
+//		try {
+//			getPosDao().updatePos(posVO);
+//		} catch (Throwable e) {
+//			throw new PosWithWrongStatusException(e);
+//		}
+		
+		//如果当前交付单 已经添加该POS机
+		DeliveryNoteDetailVO deliveryNoteDetailVO = getDetailDao().fetchByDeliveryIdPosId(deliveryNoteId, posNum);
+		if(deliveryNoteDetailVO != null){
+			throw new PosWithWrongStatusException(
+					"Pos already in this Delivery, POS num:"+posNum+" ,  delivery ID: "+deliveryNoteId+" ");
 		}
 		
 		DeliveryNoteDetailVO detail = getDetailDao().create(deliveryNoteId, posVO);
@@ -336,17 +341,38 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
 		List<String> posNums = new LinkedList<String>();
 		List<String> posIds = new LinkedList<String>();
+		
+		
+		Boolean b = false;
+		StringBuffer sbuff = new StringBuffer();
 		for (PosVO pos : posList) {
 			// check POS status.
-			if (!PosDeliveryStatus.LOCKED.toString().equals(pos.getDstatus())) {		//RETURNED -> LOCKED
-				throw new PosWithWrongStatusException(
-						"Pos dstatus should be PosDeliveryStatus.LOCKED, but now is:"
-								+ pos.getDstatus());
+			if (!PosDeliveryStatus.RETURNED.toString().equals(pos.getDstatus())) {		//RETURNED -> x
+				b = true;
+				AgentVO agentVO = null;
+				try {
+					agentVO = getPosDao().findAgentFromAssignmentByPosId(pos.getId());
+					
+					if(sbuff.length() > 0){
+						sbuff.append(",");
+					}
+					
+					sbuff.append("[" + "POS:"+pos.getPosId()+" 所在第三方："+agentVO.getName() + "]");
+				} catch (Throwable e) {
+					log.warn(e.getMessage(), e);
+				}
 			}
 
 			posNums.add(pos.getPosId());
 			posIds.add(pos.getId());
 		}
+		if(b){
+			PosWithWrongStatusException ex = new PosWithWrongStatusException();
+			ex.setErrorContent("以下POS机不是回收状态： "+sbuff);
+			throw ex;
+		}
+		
+		
 		log.debug("Try to update pos status, posIds:{}", posIds);
 		if (posIds == null || posIds.isEmpty()) {
 			throw new DeliveryNoteWithNoDetailException();

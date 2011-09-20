@@ -10,10 +10,5 @@ public enum PosDeliveryStatus {
 	/**
 	 * 已回收
 	 */
-	 RETURNED,
-	 
-	/**
-	 * 已锁定
-	 */
-	 LOCKED
+	 RETURNED
 }
