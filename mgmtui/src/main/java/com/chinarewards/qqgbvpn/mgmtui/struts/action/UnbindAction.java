@@ -405,7 +405,7 @@ public class UnbindAction extends BaseAction {
 						getMailService().sendMail(toAdds, null, subject, "/mailtemplate/confirmRnNumberMailTemplate"
 								, "confirmRnNumber", params);
 					} catch (Throwable e) {
-						
+						this.errorMsg = "恭喜您已成功填写申请表，但发送回馈邮件失败，麻烦您联系管理员，通知我司您已成功填写回收申请表，谢谢!";
 					}
 					this.setIsAgent("true");
 				}
