@@ -42,8 +42,8 @@
 					<tr>
 						<td>POS机编号</td>
 						<td>电话号码</td>
-						<td>制造厂商</td>
-						<td>机身编号</td>
+						<td>型号</td>
+						<td>厂商编号</td>
 					</tr>
 					<s:iterator id="deliveryNoteDetailVO" value="#request.deliveryNoteDetailVOList" status="i">
 						<tr>
@@ -57,7 +57,7 @@
 								<s:property value="#deliveryNoteDetailVO.model"/>
 							</td>
 							<td>
-								<s:property value="#deliveryNoteDetailVO.sn"/>
+								<s:property value="#deliveryNoteDetailVO.sn"/>	<%-- 厂商编号 --%>
 							</td>
 						</tr>		
 					</s:iterator>

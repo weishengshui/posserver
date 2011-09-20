@@ -28,7 +28,7 @@
 				厂商编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="model" label="model" id="model"/>
+				<s:textfield name="sn" label="Serial number" id="sn"/>		<%-- 厂商编号 --%>
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				型号:
 			</td>
 			<td >
-				<s:textfield name="sn" label="Serial number" id="sn"/>
+				<s:textfield name="model" label="model" id="model"/>
 			</td>
 			<td >
 				电机号码:
@@ -106,8 +106,8 @@
 					<s:property value="#posTmp.posId" />
 				</a>
 			</td>
+			<td><s:property value="#posTmp.sn" /></td>	<%-- 厂商编号 --%>
 			<td><s:property value="#posTmp.model" /></td>
-			<td><s:property value="#posTmp.sn" /></td>
 			<td><s:property value="#posTmp.simPhoneNo" /></td>
 			<td>
 				<s:if test="#posTmp.dstatus == 'DELIVERED'">

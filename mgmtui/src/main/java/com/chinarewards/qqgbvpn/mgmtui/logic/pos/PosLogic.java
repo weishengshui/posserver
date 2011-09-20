@@ -11,9 +11,9 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
+import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 
 /**
  * pos service
@@ -85,4 +85,15 @@ public interface PosLogic {
 	 * @throws PosNotExistException 
 	 */
 	void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException;
+	
+	/**
+	 * description：在Assignment中查询 Agent
+	 * @param pId
+	 * @return
+	 * @throws PosNotExistException
+	 * @time 2011-9-20   下午06:05:45
+	 * @author Seek
+	 */
+	AgentVO findAgentFromAssignmentByPosId(String pId) throws PosNotExistException, ParamsException;
+	
 }

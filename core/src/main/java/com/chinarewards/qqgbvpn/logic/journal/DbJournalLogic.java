@@ -8,6 +8,8 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 
 import com.chinarewards.qqgbvpn.common.DateTimeProvider;
+import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.logic.AbstractJpaLogic;
 import com.google.inject.Inject;
@@ -63,8 +65,27 @@ public class DbJournalLogic extends AbstractJpaLogic implements JournalLogic {
 
 		// close the new transaction
 
-//		throw new UnsupportedOperationException("implements me");
+	}
 
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbvpn.logic.journal.JournalLogic#logEvent(com.chinarewards.qqgbvpn.domain.event.DomainEvent, com.chinarewards.qqgbvpn.domain.event.DomainEntity, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void logEvent(DomainEvent event, DomainEntity entity,
+			String entityId, String eventDetail) {
+
+		String sEvent = null;
+		String sEntity = null;
+		
+		if (event != null) {
+			sEvent = event.name();
+		}
+		if (entity != null) {
+			sEntity = entity.name();
+		}
+		
+		this.logEvent(sEvent, sEntity, entityId, eventDetail);
+		
 	}
 
 }
