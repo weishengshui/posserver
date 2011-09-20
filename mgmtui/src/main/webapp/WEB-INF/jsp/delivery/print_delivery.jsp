@@ -71,7 +71,7 @@
 		<td>&nbsp;&nbsp;</td>
 		<td>POS机编号</td>
 		<td>电机号码</td>
-		<td>机身序列号</td>
+		<td>厂商编号</td>
 	</tr>
 	<s:if test="#request.deliveryNoteDetailVOList != null && #request.deliveryNoteDetailVOList.size()>0">
 		  <s:iterator  value="#request.deliveryNoteDetailVOList" id="deliveryNoteDetailVO" status="stat">
@@ -83,7 +83,7 @@
 						<s:property value="#deliveryNoteDetailVO.posId" />
 					</td>
 					<td><s:property value="#deliveryNoteDetailVO.simPhoneNo" /></td>
-					<td><s:property value="#deliveryNoteDetailVO.sn" /></td>
+					<td><s:property value="#deliveryNoteDetailVO.sn" /></td>	<%-- 厂商编号 --%>
 			  </tr>
 		  </s:iterator>
    </s:if> 

@@ -90,8 +90,8 @@
 					<tr>
 						<td>POS机编号</td>
 						<td>电话号码</td>
-						<td>制造厂商</td>
-						<td>机身编号</td>
+						<td>型号</td>
+						<td>厂商编号</td>
 						<td>初始化状态</td>
 						<td>密钥</td>
 					</tr>
@@ -107,7 +107,7 @@
 								<s:property value="#deliveryNoteDetailVO.model"/>
 							</td>
 							<td>
-								<s:property value="#deliveryNoteDetailVO.sn"/>
+								<s:property value="#deliveryNoteDetailVO.sn"/>	<%-- 厂商编号 --%>
 							</td>
 							<td>
 								<s:if test="#deliveryNoteDetailVO.istatus == 'UNINITED'">

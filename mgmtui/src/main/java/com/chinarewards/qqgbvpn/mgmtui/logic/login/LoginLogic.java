@@ -16,7 +16,8 @@ public interface LoginLogic {
 	 * 
 	 * @param username
 	 * @param password
+	 * @param ipAddr
 	 * @return
 	 */
-	public boolean checkLogin(String username, String password);
+	public boolean checkLogin(String username, String password, String ipAddr);
 }
