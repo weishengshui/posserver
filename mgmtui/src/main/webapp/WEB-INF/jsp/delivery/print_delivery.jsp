@@ -16,13 +16,19 @@
 	body {
 		font-size: 16px;
 	}
+	
+	.table_style{
+		padding:10px;
+		line-height:24px;
+		border:1px solid #202B31;
+	}
 
 </style>
 </head>
 
 <body>
 
-<table align="center" width="800px" >
+<table align="center" width="800px" class="table_style">
 	<tr align="center">
 		<td colspan="2">
 			<strong>POS机交付单</strong>
@@ -57,7 +63,7 @@
 </table>
 <br/>
 
-<table align="center" width="800px">
+<table align="center" width="800px" class="table_style">
 	<tr align="left">
 		<td colspan="4"><strong>POS机列表</strong></td>
 	</tr>
@@ -84,33 +90,19 @@
 </table>
 
 <table align="center" width="800px">
-	<tr align="left">
+	<tr align="left" style="line-height:64px;">
 		<td>
 			&nbsp;&nbsp;共 <s:property value="#request.deliveryNoteDetailVOList.size()"/> 台
 		</td>
 	</tr>
-	<tr style="height: 50px"></tr>
-	<tr align="left">
-		<td>
-			&nbsp;&nbsp;签收
-		</td>
+	<tr style="line-height:64px;">
+		<td>签收：_____________________</td>
 	</tr>
-	<tr style="height: 20px">
+	<tr style="line-height:64px;">
+		<td>　　　(姓名：______________)</td>
 	</tr>
-	<tr style="height: 30px">
-		<td style="margin-left: 20px">
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;___________
-		</td>
-	</tr>
-	<tr style="height: 30px">
-		<td>
-			&nbsp;&nbsp;&nbsp;&nbsp;(姓名:___________)
-		</td>
-	</tr>
-	<tr style="height: 30px">
-		<td>
-			&nbsp;&nbsp;&nbsp;&nbsp;日期:____________(年/月/日)
-		</td>
+	<tr style="line-height:64px;">
+		<td>日期：___________年_____月______日</td>
 	</tr>
 </table>
 

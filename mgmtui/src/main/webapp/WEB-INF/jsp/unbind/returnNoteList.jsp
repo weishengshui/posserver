@@ -60,7 +60,6 @@
 <script type="text/javascript">
 
 	function goPage(pageId) {
-		alert("${pageContext.request.contextPath}");
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
 		formObj.action = "${pageContext.request.contextPath}/unbind/goPageForRnList";

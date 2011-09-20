@@ -85,17 +85,17 @@ body {
 		</table>
 		</td>
 	</tr>
-	<tr>
+	<tr style="line-height:64px;">
 		<td>共<s:property value="rnInfo.rnDetailList.size()" />台</td>
 	</tr>
-	<tr>
+	<tr style="line-height:64px;">
 		<td>签收：_____________________</td>
 	</tr>
-	<tr>
+	<tr style="line-height:64px;">
 		<td>　　　(姓名：______________)</td>
 	</tr>
-	<tr>
-		<td>日期：______年_____月______</td>
+	<tr style="line-height:64px;">
+		<td>日期：___________年_____月______日</td>
 	</tr>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="noprint">
