@@ -20,6 +20,7 @@ public enum DomainEvent {
 	 * The following information should he logged:
 	 * <ol>
 	 * <li>Username (SysUser.username)</li>
+	 * <li>User ID (SysUser.id)</li>
 	 * <li>IP address (ip)</li>
 	 * </ol>
 	 */
