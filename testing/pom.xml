@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.chinarewards.qqgbvpn</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>testing</artifactId>
+	<name>POS Network Server 2 testing</name>
+	<description>Contains mock pos request test.</description>
+	<dependencies>
+
+		<!-- Self-related projects -->
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>config</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.chinarewards.qqgbvpn</groupId>
+			<artifactId>main</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Guice - dependency injection -->
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-multibindings</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-persist</artifactId>
+		</dependency>
+
+		<!-- Configuration -->
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<exclusions>
+				<!-- Use slf4j to exclude it -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- JavaMail -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- Test Scope STARTS -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<!-- simple main, connect to hsqldb -->
+			<scope>test</scope>
+		</dependency>
+
+		<!-- we need logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+</project>
