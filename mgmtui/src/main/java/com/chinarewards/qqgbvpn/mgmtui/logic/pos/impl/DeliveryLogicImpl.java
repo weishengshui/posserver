@@ -368,7 +368,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		}
 		if(b){
 			PosWithWrongStatusException ex = new PosWithWrongStatusException();
-			ex.setErrorContent("以下POS机不是回收状态： "+sbuff);
+			ex.setErrorContent("以下POS机不是已回收状态： "+sbuff);
 			throw ex;
 		}
 		
