@@ -193,6 +193,7 @@
 		</dependencies>
 	</dependencyManagement>
 	<modules>
+		<module>testing</module>
 		<module>config</module>
 		<module>core</module>
 		<module>domain</module>
