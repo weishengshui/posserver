@@ -304,6 +304,9 @@ public class UnbindAction extends BaseAction {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				if (!(pageInfo.getItems() != null && pageInfo.getItems().size() > 0)) {
+					this.errorMsg = a.getName() + "暂无任何可以回收的POS机!";
+				}
 				this.setAgentId(a.getId());
 				this.setAgent(a);
 			} else {
