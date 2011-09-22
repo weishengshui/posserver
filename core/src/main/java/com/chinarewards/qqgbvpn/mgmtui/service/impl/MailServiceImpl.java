@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -18,6 +19,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -101,8 +103,14 @@ public class MailServiceImpl implements MailService {
         for (int i = 0; i < toAdds.length; i++) {
         	sendTo[i] = new InternetAddress(toAdds[i]);
         } 
-        mailMessage.setRecipients(RecipientType.TO, sendTo);  
-        mailMessage.setSubject(subject);  
+        mailMessage.setRecipients(RecipientType.TO, sendTo);
+        String subject_mail = "";
+		try {
+			subject_mail = MimeUtility.encodeText(subject, "UTF-8", "B");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+        mailMessage.setSubject(subject_mail);
         mailMessage.setSentDate(new Date());  
         
         Multipart mp = new MimeMultipart();  
