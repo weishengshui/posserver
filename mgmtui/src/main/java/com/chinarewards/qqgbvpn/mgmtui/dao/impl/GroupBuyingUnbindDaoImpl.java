@@ -329,13 +329,23 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				
 				saveReturnNote(rn);
 				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+				journal_new.setEventDetail(gson.toJson(rn));
+				saveJournal(journal_new);
+				
 				Journal journal = new Journal();
 				journal.setTs(date);
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
 				journal.setEventDetail(gson.toJson(rn));
 				saveJournal(journal);
 				
@@ -379,13 +389,23 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				
 				saveReturnNote(rn);
 				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+				journal_new.setEventDetail(gson.toJson(rn));
+				saveJournal(journal_new);
+				
 				Journal journal = new Journal();
 				journal.setTs(date);
 				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
 				journal.setEventDetail(gson.toJson(rn));
 				saveJournal(journal);
 				
