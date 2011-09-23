@@ -389,9 +389,11 @@ public class UnbindAction extends BaseAction {
 				try {
 					getMailService().sendMailByVelocity(toAdds, null, subject, tempPath, "createInviteMailTemplate.vm", params);
 				} catch (AddressException e) {
+					e.printStackTrace();
 					this.errorMsg = "邮件地址为空，请确认地址是否正确后重试或联系管理员!";
 					return ERROR;
 				} catch (MessagingException e) {
+					e.printStackTrace();
 					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
 					return ERROR;
 				}
