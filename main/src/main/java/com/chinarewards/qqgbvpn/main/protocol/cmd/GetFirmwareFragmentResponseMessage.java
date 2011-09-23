@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
+import java.util.Arrays;
+
 /**
  * Defines the message of a firmware fragment retrieval response.
  * 
@@ -56,6 +58,12 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 	public GetFirmwareFragmentResponseMessage(short result, byte[] content) {
 		this.result = result;
 		this.content = content;
+	}
+
+	@Override
+	public String toString() {
+		return "GetFirmwareFragmentResponseMessage [cmdId=" + getCmdId() + ",result=" + result
+				+ ", content=" + Arrays.toString(content) + "]";
 	}
 
 	/**

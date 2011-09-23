@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseDetail;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
@@ -46,44 +47,30 @@ public class SearchBodyMessageCodec implements ICommandCodec {
 		log.debug("search message request:cmdId is ({}) , page is ({}), size is ({})",new Object[]{cmdId,page,size});
 		return message;
 	}
-
+	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("search message encode");
 
-		SearchResponseMessage responseMessage = (SearchResponseMessage) bodyMessage;
-		long cmdId = responseMessage.getCmdId();
-		int result = responseMessage.getResult();
-		int totalnum = responseMessage.getTotalnum();
-		int curnum = responseMessage.getCurnum();
-		int curpage = responseMessage.getCurpage();
-		int totalpage = responseMessage.getTotalpage();
-		List<SearchResponseDetail> detail = responseMessage.getDetail();
-		log.debug("search reault result is ({}), totalnum is ({}),curnum is ({}), curpage is ({}), totalpage is ({})detail size is ({})",
-				new Object[]{result,totalnum,curnum,curpage,totalpage,detail.size()});
-		
-		StringBuffer buffer = new StringBuffer();
-		for(SearchResponseDetail searchResponseDetail:detail){
-			buffer.append(searchResponseDetail.getGrouponId() == null?"":searchResponseDetail.getGrouponId()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getGrouponName()== null?"":searchResponseDetail.getGrouponName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getMercName()== null?"":searchResponseDetail.getMercName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getListName()== null?"":searchResponseDetail.getListName()).append(CmdConstant.SEPARATOR);
-			buffer.append(searchResponseDetail.getDetailName()== null?"":searchResponseDetail.getDetailName()).append(CmdConstant.SEPARATOR);
-		}
-		String tmpStr = buffer.toString();
-		log.debug("detail buffer is ({})",buffer);
-		tmpStr = tmpStr.replaceAll("\\\\r\\\\n", String.valueOf(CmdConstant.ENTER));
-		byte[] detailByte = tmpStr.getBytes(charset);
-		log.debug("detail src is ({})",tmpStr);
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND + 10 + detailByte.length];
-		
+		SearchRequestMessage requestMessage = (SearchRequestMessage) bodyMessage;
+		long cmdId = requestMessage.getCmdId();
+		int  page = requestMessage.getPage();
+		int  size = requestMessage.getSize();
+
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.PAGE
+		             		+ ProtocolLengths.SIZE];
+
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		Tools.putUnsignedShort(resultByte, totalnum, ProtocolLengths.COMMAND+2);
-		Tools.putUnsignedShort(resultByte, curnum, ProtocolLengths.COMMAND+4);
-		Tools.putUnsignedShort(resultByte, curpage, ProtocolLengths.COMMAND+6);
-		Tools.putUnsignedShort(resultByte, totalpage, ProtocolLengths.COMMAND+8);
-		Tools.putBytes(resultByte, detailByte, ProtocolLengths.COMMAND + 10);
+		Tools.putUnsignedShort(resultByte, page, ProtocolLengths.COMMAND);
+		Tools.putUnsignedShort(resultByte, size, ProtocolLengths.COMMAND + ProtocolLengths.PAGE);
 
 		return resultByte;
 	}

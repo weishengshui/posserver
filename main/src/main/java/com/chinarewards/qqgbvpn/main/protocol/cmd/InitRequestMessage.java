@@ -12,6 +12,11 @@ public class InitRequestMessage implements ICommand {
 
 	private String posId;
 
+	@Override
+	public String toString() {
+		return "InitRequestMessage [cmdId=" + cmdId + ", posId=" + posId + "]";
+	}
+
 	public long getCmdId() {
 		return cmdId;
 	}

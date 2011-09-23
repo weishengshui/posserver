@@ -11,6 +11,12 @@ public class FirmwareUpgradeRequestMessage implements ICommand {
 
 	private String posId;
 
+	@Override
+	public String toString() {
+		return "FirmwareUpDoneResponseMessage [cmdId=" + getCmdId() + ", posId="
+				+ posId + "]";
+	}
+
 	public long getCmdId() {
 		return CmdConstant.FIRMWARE_UPGRADE_CMD_ID;
 	}

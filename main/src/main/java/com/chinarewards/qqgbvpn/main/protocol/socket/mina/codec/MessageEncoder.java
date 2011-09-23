@@ -27,6 +27,8 @@ public class MessageEncoder implements ProtocolEncoder {
 
 	private Injector injector;
 	
+	private PackageHeadCodec packageHeadCodec;
+	
 	protected CmdCodecFactory cmdCodecFactory;
 
 	/**
@@ -41,6 +43,7 @@ public class MessageEncoder implements ProtocolEncoder {
 		this.charset = charset;
 		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.packageHeadCodec = new PackageHeadCodec();
 	}
 
 	/*
@@ -68,7 +71,9 @@ public class MessageEncoder implements ProtocolEncoder {
 			ProtocolEncoderOutput out) throws Exception {
 		
 		log.debug("encode message start");
-		log.trace("session.getId()=======:" + session.getId());
+		if (session != null) {
+			log.trace("session.getId()=======:" + session.getId());
+		}
 		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
@@ -99,20 +104,17 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		log.debug("bodyByte====return====:({})",Arrays.toString(bodyByte));
 		
-		byte[] headByte = new byte[ProtocolLengths.HEAD];
-
-		Tools.putUnsignedInt(headByte, headMessage.getSeq(), 0);
-		Tools.putUnsignedInt(headByte, headMessage.getAck(), 4);
-		Tools.putUnsignedShort(headByte, headMessage.getFlags(), 8);
-		Tools.putUnsignedShort(headByte, 0, 10);
-		Tools.putUnsignedInt(headByte, ProtocolLengths.HEAD + bodyByte.length,
-				12);
-
+		//head process
+		headMessage.setMessageSize(ProtocolLengths.HEAD + bodyByte.length);
+		byte[] headByte = packageHeadCodec.encode(headMessage);
+		
+		
 		byte[] result = new byte[ProtocolLengths.HEAD + bodyByte.length];
 
 		Tools.putBytes(result, headByte, 0);
 		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
 		
+		// make the 
 		int checkSumVal = Tools.checkSum(result, result.length);
 
 		Tools.putUnsignedShort(result, checkSumVal, 10);

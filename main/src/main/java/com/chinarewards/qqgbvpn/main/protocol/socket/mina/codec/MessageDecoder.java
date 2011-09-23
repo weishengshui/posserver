@@ -28,6 +28,8 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	private Charset charset;
 
 	private Injector injector;
+	
+	private PackageHeadCodec packageHeadCodec;
 
 	protected CmdCodecFactory cmdCodecFactory;
 
@@ -36,6 +38,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 		this.charset = charset;
 		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.packageHeadCodec = new PackageHeadCodec();
 	}
 
 	@Override
@@ -48,38 +51,13 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 		// check length, it must greater than head length
 		if (in.remaining() > ProtocolLengths.HEAD) {
-
-			log.trace("Do processing");
-			HeadMessage headMessage = new HeadMessage();
-			// read header
-			// read seq
-			log.trace("Read message head");
-			long seq = in.getUnsignedInt();
-			headMessage.setSeq(seq);
-
-			// read ack
-			long ack = in.getUnsignedInt();
-			headMessage.setAck(ack);
-
-			// read flags
-			int flags = in.getUnsignedShort();
-			headMessage.setFlags(flags);
-			log.trace("in.remaining() = " + in.remaining());
-
-			// read checksum
-			log.trace("read checksum");
-			int checksum = in.getUnsignedShort();
-			log.trace("checksum========:" + checksum);
-			headMessage.setChecksum(checksum);
-			log.trace("in.remaining() = " + in.remaining());
-
-			// read message size
-			log.trace("read message size");
-			long messageSize = in.getUnsignedInt();
-			headMessage.setMessageSize(messageSize);
-			log.trace("in.remaining() = " + in.remaining());
-			log.trace("headMessage ====: {}", headMessage.toString());
-
+			
+			//process package head message 
+			HeadMessage headMessage = packageHeadCodec.decode(in);
+			long messageSize = headMessage.getMessageSize();
+			int checksum = headMessage.getChecksum();
+			
+			
 			// check length
 			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();

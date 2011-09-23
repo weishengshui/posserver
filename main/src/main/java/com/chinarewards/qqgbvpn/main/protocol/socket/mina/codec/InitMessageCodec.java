@@ -26,7 +26,7 @@ public class InitMessageCodec implements ICommandCodec {
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-		log.debug("init message decode");
+		log.debug("init request message decode");
 		InitRequestMessage message = new InitRequestMessage();
 		log.debug("in.remaining()={}", in.remaining());
 		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
@@ -46,20 +46,27 @@ public class InitMessageCodec implements ICommandCodec {
 		log.debug("init message request:cmdId is ({}) , posid is ({})",new Object[]{cmdId,posid});
 		return message;
 	}
-
+	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		log.debug("init message encode");
-		InitResponseMessage responseMessage = (InitResponseMessage) bodyMessage;
-		long cmdId = responseMessage.getCmdId();
-		int result = responseMessage.getResult();
-		byte[] challeuge = responseMessage.getChallenge();
+		//...
+		log.debug("init request message encode");
+		InitRequestMessage initRequestMessage = (InitRequestMessage) bodyMessage;
+		long cmdId = initRequestMessage.getCmdId();
+		String posId = initRequestMessage.getPosId();
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLENGE];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.POS_ID];
 		
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
+		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
 		
 		return resultByte;
 	}

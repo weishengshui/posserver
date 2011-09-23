@@ -12,6 +12,12 @@ public class ValCallbackResponseMessage implements ICommand {
 	
 	private int result;
 
+	@Override
+	public String toString() {
+		return "ValCallbackResponseMessage [cmdId=" + cmdId + ", result="
+				+ result + "]";
+	}
+
 	//======================//
 	public long getCmdId() {
 		return cmdId;
