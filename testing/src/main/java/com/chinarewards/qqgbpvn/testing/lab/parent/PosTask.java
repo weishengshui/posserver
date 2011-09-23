@@ -1,11 +1,11 @@
 package com.chinarewards.qqgbpvn.testing.lab.parent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
@@ -36,7 +36,7 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	private static final int flags = 0x0000;
 	private static final int ack = 0x20000004;
 	
-	protected final Log logger = LogFactory.getLog(this.getClass());
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
 	/**
 	 * description：build package head bytes
