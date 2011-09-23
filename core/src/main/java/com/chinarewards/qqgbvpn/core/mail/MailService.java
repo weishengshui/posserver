@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.core.mail;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -25,5 +26,9 @@ public interface MailService {
 	
 	public void sendMail(String[] toAdds, String[] cc, String subject,
 			String tempPathAndName, String tempKey, Object[] params)
+					throws AddressException, MessagingException;
+	
+	public void sendMailByVelocity(String[] toAdds, String[] cc, String subject,
+			String tempPath, String tempName, Map<String,Object> params)
 					throws AddressException, MessagingException;
 }

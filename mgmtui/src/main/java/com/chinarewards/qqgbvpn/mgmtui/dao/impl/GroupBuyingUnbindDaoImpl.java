@@ -355,18 +355,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal_new.setEntityId(rn.getId());
 				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
-				//新增的回收单不写入POS机列表
-				journal_new.setEventDetail(gson.toJson(rn));
-				saveJournal(journal_new);
-				
-				Journal journal = new Journal();
-				journal.setTs(date);
-				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
-				journal.setEntityId(rn.getId());
-				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				
+
 				/*
-				 * 确认的回收单写入POS机列表，
+				 * 新增的回收单写入POS机列表，
 				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
 				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
 				 * 显示很乱，不容易识别
@@ -374,7 +365,16 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				ReturnNoteInfo rni = new ReturnNoteInfo();
 				rni.setRn(rn);
 				rni.setPosList(posList);
-				journal.setEventDetail(gson.toJson(rni));
+				journal_new.setEventDetail(gson.toJson(rni));
+				saveJournal(journal_new);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
 				saveJournal(journal);
 				
 			} catch (Exception e) {
@@ -425,8 +425,16 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
 				journal_new.setEntityId(rn.getId());
 				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
-				//新增的回收单不写入POS机列表
-				journal_new.setEventDetail(gson.toJson(rn));
+				/*
+				 * 新增的回收单写入POS机列表，
+				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
+				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
+				 * 显示很乱，不容易识别
+				*/
+				ReturnNoteInfo rni = new ReturnNoteInfo();
+				rni.setRn(rn);
+				rni.setPosList(posList);
+				journal_new.setEventDetail(gson.toJson(rni));
 				saveJournal(journal_new);
 				
 				Journal journal = new Journal();
@@ -435,16 +443,8 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				journal.setEntityId(rn.getId());
 				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
 
-				/*
-				 * 确认的回收单写入POS机列表，
-				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
-				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
-				 * 显示很乱，不容易识别
-				*/
-				ReturnNoteInfo rni = new ReturnNoteInfo();
-				rni.setRn(rn);
-				rni.setPosList(posList);
-				journal.setEventDetail(gson.toJson(rni));
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
 				saveJournal(journal);
 				
 			} catch (Exception e) {

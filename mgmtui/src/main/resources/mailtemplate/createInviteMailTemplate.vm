@@ -1,0 +1,6 @@
+<html>
+<body>
+本邮件来自于Velocity的模板
+<br><a href="${invitePath}">请点击此链接填写申请表，谢谢。</a>
+</body>
+</html>
