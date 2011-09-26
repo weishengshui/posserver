@@ -4,13 +4,18 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.charset.Charset;
 import java.util.Map;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
+import com.chinarewards.qqgbpvn.testing.exception.ReadCsvFileException;
 import com.chinarewards.qqgbpvn.testing.model.BasePosConfig;
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.chinarewards.qqgbvpn.config.ConfigReader;
@@ -19,7 +24,16 @@ import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
 
-public class ThreadGroupSetUp extends AbstractJavaSamplerClient {
+/**
+ * description：threadGroup setUp()
+ * @copyright binfen.cc
+ * @projectName testing
+ * @time 2011-9-26   上午10:19:30
+ * @author Seek
+ */
+public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
+	
+	private Logger logger = LoggerFactory.getLogger(ThreadGroupSetUp.class);
 	
 	private static final String CSV_FILE = "CSV_FILE";
 	private static final String POSNET_HOME = "POSNET_HOME";
@@ -27,7 +41,7 @@ public class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	private static final String POS_SERVER_IP = "POS_SERVER_IP";
 	private static final String POS_SERVER_PORT = "POS_SERVER_PORT";
 	
-	private static final String SEPARATOR = ",";
+	private static final String CSV_SEPARATOR = "CSV_SEPARATOR";
 	
 	@Override
 	public Arguments getDefaultParameters() {
@@ -36,62 +50,67 @@ public class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		arguments.addArgument(POSNET_HOME, "D:\\posnetv2\\conf");
 		arguments.addArgument(POS_SERVER_IP, "127.0.0.1");
 		arguments.addArgument(POS_SERVER_PORT, "1234");
+		arguments.addArgument(CSV_SEPARATOR, ",");
 		return arguments;
 	}
 	
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
-		System.out.println("ThreadGroupSetUp...");
+		logger.debug("ThreadGroupSetUp runTest() run...");
 		
 		String csvFileName = context.getParameter(CSV_FILE);
 		String posServerIp = context.getParameter(POS_SERVER_IP);
 		String posServerPort = context.getParameter(POS_SERVER_PORT);
 		String posnetHome = context.getParameter(POSNET_HOME);
+		String csvSeparator = context.getParameter(CSV_SEPARATOR);
 		
-		System.out.println("csvFileName:"+csvFileName);
-		System.out.println("posServerIp:"+posServerIp);
-		System.out.println("posServerPort:"+posServerPort);
-		System.out.println("posnetHome:"+posnetHome);
+		logger.debug("csvFileName:"+csvFileName);
+		logger.debug("posServerIp:"+posServerIp);
+		logger.debug("posServerPort:"+posServerPort);
+		logger.debug("posnetHome:"+posnetHome);
+		logger.debug("csvSeparator:"+csvSeparator);
 		try {
 			//setup posServer ip and port
 			TestContext.setPosServerIp(posServerIp);
 			TestContext.setPosServerPort(posServerPort);
 			
-			//setup charset
+			//setup charset  and  csvSeparator
 			TestContext.setCharset(Charset.forName("GB2312"));
+			TestContext.setCsvSeparator(csvSeparator);
 			
 			//setup {message head} and {message body}  Codec
 			buildSimpleCmdCodecFactory(posnetHome);
+			logger.debug("build a SimpleCmdCodecFactory!");
 			TestContext.setPackageHeadCodec(new PackageHeadCodec());
 			
 			//read csv data file to memory
 			readCsvToMap(csvFileName, TestContext.getPosMap());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		
 		return new SampleResult();
 	}
 	
 	/**
-	 * description：读取CSV到Map中
+	 * description：read data from csv File to map memory
 	 * @param fileName
 	 * @param map
 	 * @throws Exception
 	 * @time 2011-9-22   下午02:28:57
 	 * @author Seek
 	 */
-	private void readCsvToMap(String fileName, Map<String, BasePosConfig> map) throws Exception{
-		System.out.println("begin readCsvToMap");
+	private void readCsvToMap(String fileName, Map<String, BasePosConfig> map) throws Exception {
+		logger.debug("ThreadGroupSetUp readCsvToMap() run...");
 		BufferedReader buffRead = null;
 		try{
 			String tempLine;
 			buffRead = new BufferedReader(new FileReader(fileName));
 			while((tempLine = buffRead.readLine()) != null){
-				String arr[] = tempLine.split(SEPARATOR);
+				String arr[] = tempLine.split(TestContext.getCsvSeparator());
 				
 				if(arr != null && arr[0] != null){
-					System.out.println("put("+arr[0]+","+arr[1]+")");
+					logger.debug("put("+arr[0]+","+arr[1]+")");
 					
 					BasePosConfig basePosConfig = new BasePosConfig();
 					basePosConfig.setPosId(arr[1].trim());
@@ -101,20 +120,20 @@ public class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 				}
 			}
 		}catch(Throwable e){
-			throw new Exception(e);
+			throw new ReadCsvFileException(e.getMessage(), e);
 		}finally{
 			buffRead.close();
 		}
-		System.out.println("end readCsvToMap");
+		logger.debug("ThreadGroupSetUp run readCsvToMap() is over!");
 	}
 	
 	/**
-	 * description：创建一个SimpleCmdCodecFactory
+	 * description：build a SimpleCmdCodecFactory
 	 * @param posnetHome
 	 * @time 2011-9-23   上午11:46:45
 	 * @author Seek
 	 */
-	private void buildSimpleCmdCodecFactory(String posnetHome){
+	private void buildSimpleCmdCodecFactory(String posnetHome) {
 		// read POSNet server's configuration file.
 		Configuration configuration = null;
 		ConfigReader reader = new ConfigReader(new HomeDirLocator(posnetHome));
@@ -132,5 +151,5 @@ public class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		
 		TestContext.setCmdCodecFactory(cmdCodecFactory);
 	}
-
+	
 }

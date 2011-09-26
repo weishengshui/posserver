@@ -24,7 +24,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  * @time 2011-9-22   下午06:02:53
  * @author Seek
  */
-public class PosGetQQGroupBuyValidationTest extends PosTask {
+public final class PosGetQQGroupBuyValidationTest extends PosTask {
 	
 	private static final String GROUPON_VCODE = "grouponVCode";
 	
@@ -59,7 +59,10 @@ public class PosGetQQGroupBuyValidationTest extends PosTask {
 	protected byte[] buildBodyMessage(JavaSamplerContext context)
 			throws BuildBodyMessageException {
 		try{
+			logger.debug("PosGetQQGroupBuyValidationTest buildBodyMessage() run...");
+			
 			String grouponVCode = context.getParameter(GROUPON_VCODE);
+			logger.debug("grouponVCode="+grouponVCode);
 			
 			ValidateRequestMessage bodyMessage = new ValidateRequestMessage();
 			bodyMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID);
@@ -71,15 +74,18 @@ public class PosGetQQGroupBuyValidationTest extends PosTask {
 			//if the last request is get list, random get grouponId from list.  and set to threadLocal
 			//else from threadLocal
 			if(iCommand instanceof SearchResponseMessage){
+				logger.debug("getLastResponseBodyMessage() is SearchResponseMessage!");
 				SearchResponseMessage searchResponseMessage = (SearchResponseMessage)iCommand;
 				List<SearchResponseDetail> searchResponseDetailList = searchResponseMessage.getDetail();
 				
 				int randomIndex = (int)(Math.random()*searchResponseDetailList.size());
 				grouponId = searchResponseDetailList.get(randomIndex).getGrouponId();
+				logger.debug("random from list get grouponId = "+grouponId);
 				
 				TestContext.getBasePosConfig().setGrouponId(grouponId);
 			}else {
 				grouponId = TestContext.getBasePosConfig().getGrouponId();
+				logger.debug("grouponId from getBasePosConfig = "+grouponId);
 			}
 			
 			bodyMessage.setGrouponId(grouponId);

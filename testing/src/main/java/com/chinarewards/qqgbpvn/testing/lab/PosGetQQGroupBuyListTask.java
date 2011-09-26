@@ -22,7 +22,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  * @time 2011-9-22   下午06:02:53
  * @author Seek
  */
-public class PosGetQQGroupBuyListTask extends PosTask {
+public final class PosGetQQGroupBuyListTask extends PosTask {
 
 	@Override
 	protected SampleResult runTask(JavaSamplerContext context)
@@ -48,6 +48,7 @@ public class PosGetQQGroupBuyListTask extends PosTask {
 	protected byte[] buildBodyMessage(JavaSamplerContext context)
 			throws BuildBodyMessageException {
 		try{
+			logger.debug("PosGetQQGroupBuyListTask buildBodyMessage() run...");
 			SearchRequestMessage bodyMessage = new SearchRequestMessage();
 			bodyMessage.setCmdId(CmdConstant.SEARCH_CMD_ID);
 			
@@ -55,11 +56,14 @@ public class PosGetQQGroupBuyListTask extends PosTask {
 			final int size = 6;
 			ICommand iCommand = TestContext.getBasePosConfig().getLastResponseBodyMessage();
 			if(iCommand instanceof SearchResponseMessage){
+				logger.debug("getLastResponseBodyMessage() is SearchResponseMessage!");
 				SearchResponseMessage searchResponseMessage = (SearchResponseMessage)iCommand;
 				//page random scope {1 - totalPage}		default page = 1;
 				page = (int)(Math.random() * searchResponseMessage.getTotalpage()) + 1;	
 			}
 			
+			logger.debug("page="+page);
+			logger.debug("size="+size);
 			bodyMessage.setPage(page);
 			bodyMessage.setSize(size);
 			

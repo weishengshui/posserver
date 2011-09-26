@@ -6,6 +6,10 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.model.BasePosConfig;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
@@ -18,6 +22,8 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec
  * @author Seek
  */
 public class TestContext {
+	
+	private static Logger logger = LoggerFactory.getLogger(TestContext.class);
 	
 	private static final Map<String, BasePosConfig> POS_MAP = Collections.
 								synchronizedMap(new HashMap<String, BasePosConfig>());
@@ -37,6 +43,9 @@ public class TestContext {
 	//POS Server Port
 	private static String posServerPort;
 	
+	//csv file Separator
+	private static String csvSeparator;
+
 	private static SimpleCmdCodecFactory cmdCodecFactory;	//codec by cmdId
 	
 	private static PackageHeadCodec packageHeadCodec;
@@ -55,6 +64,7 @@ public class TestContext {
 		posServerPort = null;
 		cmdCodecFactory = null;
 		packageHeadCodec = null;
+		logger.debug("TestContext testDestroy() invoke!");
 	}
 	
 	/**
@@ -72,15 +82,18 @@ public class TestContext {
 			
 			tLocal.remove();
 		}
+		logger.debug("TestContext clearBasePosConfig() invoke!");
 	}
 	
 	/**
-	 * description：初始化一个pos 线程的基础内容
+	 * description：初始化一个pos 线程的基础内容		synchronized{because num}
 	 * @throws Exception
 	 * @time 2011-9-22   下午05:57:42
 	 * @author Seek
 	 */
 	public static final synchronized void initBasePosConfig() throws Exception{
+		logger.debug("TestContext initBasePosConfig() invoke!");
+		logger.debug("current num="+num);
 		if(num == maxPos){
 			return;
 		}
@@ -110,13 +123,17 @@ public class TestContext {
 	 * @author Seek
 	 */
 	public static final void incrementSequence(){
+		logger.debug("TestContext incrementSequence() invoke!");
+		logger.debug("current sequence="+tLocal.get().getSequence());
+		if(tLocal.get().getSequence() >= 999999){
+			tLocal.get().setSequence(0);
+		}
 		tLocal.get().setSequence(tLocal.get().getSequence() + 1);
 	}
 	
 	public static final BasePosConfig getBasePosConfig(){
 		return tLocal.get();
 	}
-	
 	
 	public static Map<String, BasePosConfig> getPosMap() {
 		return POS_MAP;
@@ -168,6 +185,14 @@ public class TestContext {
 
 	public static Charset getCharset() {
 		return charset;
+	}
+	
+	public static String getCsvSeparator() {
+		return csvSeparator;
+	}
+
+	public static void setCsvSeparator(String csvSeparator) {
+		TestContext.csvSeparator = csvSeparator;
 	}
 	
 }

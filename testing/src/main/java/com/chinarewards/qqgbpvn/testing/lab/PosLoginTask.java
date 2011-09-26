@@ -22,7 +22,7 @@ import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
  * @time 2011-9-22   下午06:02:53
  * @author Seek
  */
-public class PosLoginTask extends PosTask {
+public final class PosLoginTask extends PosTask {
 
 	@Override
 	protected SampleResult runTask(JavaSamplerContext context)
@@ -48,6 +48,7 @@ public class PosLoginTask extends PosTask {
 	protected byte[] buildBodyMessage(JavaSamplerContext context)
 			throws BuildBodyMessageException {
 		try{
+			logger.debug("PosLoginTask buildBodyMessage() run...");
 			LoginRequestMessage bodyMessage = new LoginRequestMessage();
 			bodyMessage.setCmdId(CmdConstant.LOGIN_CMD_ID);
 			bodyMessage.setPosId(TestContext.getBasePosConfig().getPosId());
@@ -58,8 +59,11 @@ public class PosLoginTask extends PosTask {
 							getBasePosConfig().getLastResponseBodyMessage();
 			
 			//build challengeResponse by challenge and secret
+			logger.debug("challenge="+initResponseMessage.getChallenge());
+			logger.debug("secret="+TestContext.getBasePosConfig().getSecret());
 			byte[] challengeResponse = HMAC_MD5.getSecretContent(initResponseMessage.getChallenge(), 
 							TestContext.getBasePosConfig().getSecret());
+			logger.debug("challengeResponse="+challengeResponse);
 			
 			bodyMessage.setChallengeResponse(challengeResponse);
 			

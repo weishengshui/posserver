@@ -24,8 +24,6 @@ public final class PosInitTask extends PosTask {
 	
 	@Override
 	public SampleResult runTask(JavaSamplerContext context) throws RunTaskException {
-		logger.debug("log is ok~");
-		
 		SampleResult res = new SampleResult();
 		res.sampleStart();	//开始任务
 		

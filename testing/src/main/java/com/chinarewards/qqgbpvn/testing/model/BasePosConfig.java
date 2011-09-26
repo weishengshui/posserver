@@ -4,7 +4,7 @@ import java.net.Socket;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 
-public class BasePosConfig {
+public final class BasePosConfig {
 	
 	private Long number;
 	

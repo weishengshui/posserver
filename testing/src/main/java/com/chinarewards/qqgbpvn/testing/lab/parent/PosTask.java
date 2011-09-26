@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbpvn.testing.lab.parent;
 
+import java.util.Arrays;
+
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -13,7 +15,7 @@ import com.chinarewards.qqgbpvn.testing.exception.BuildHeadMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.ParseResponseMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.exception.SendMessageException;
-import com.chinarewards.qqgbpvn.testing.util.SocketTools;
+import com.chinarewards.qqgbpvn.testing.util.SocketUtils;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
@@ -45,16 +47,27 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	 * @time 2011-9-23   下午02:22:19
 	 * @author Seek
 	 */
-	protected byte[] buildHeadMessage(JavaSamplerContext context, int bodySize) throws BuildHeadMessageException {
-		HeadMessage headMessage = new HeadMessage();
-		headMessage.setAck(ack);
-		headMessage.setChecksum(0);
-		headMessage.setFlags(flags);
-		headMessage.setMessageSize(ProtocolLengths.HEAD + bodySize);
-		headMessage.setSeq(TestContext.getBasePosConfig().getSequence());
-		
-		byte[] heads = TestContext.getPackageHeadCodec().encode(headMessage);
-		return heads;
+	protected byte[] buildHeadMessage(JavaSamplerContext context, int bodySize) 
+				throws BuildHeadMessageException {
+		try{
+			HeadMessage headMessage = new HeadMessage();
+			headMessage.setAck(ack);
+			headMessage.setChecksum(0);
+			headMessage.setFlags(flags);
+			headMessage.setMessageSize(ProtocolLengths.HEAD + bodySize);
+			headMessage.setSeq(TestContext.getBasePosConfig().getSequence());
+			
+			logger.debug("buildHeadMessage():");
+			logger.debug("messageSize:"+headMessage.getMessageSize());
+			logger.debug("sequence:"+headMessage.getSeq());
+			
+			byte[] heads = TestContext.getPackageHeadCodec().encode(headMessage);
+			
+			logger.debug("head bytes:"+Arrays.toString(heads));
+			return heads;
+		}catch(Throwable e){
+			throw new BuildHeadMessageException(e);
+		}	
 	}
 	
 	/**
@@ -70,10 +83,11 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 		try{
 			sampleResult = runTask(context);
 		}catch(Throwable e){
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}finally {
 			//自增流水号
 			TestContext.incrementSequence();
+			logger.debug("the sequence auto +1");
 		}
 		return sampleResult;
 	}
@@ -87,8 +101,11 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	 * @time 2011-9-23   下午05:54:59
 	 * @author Seek
 	 */
-	protected final Message sendMessage(JavaSamplerContext context, byte[] bodys) throws SendMessageException {
+	protected final Message sendMessage(JavaSamplerContext context, byte[] bodys) 
+				throws SendMessageException {
 		try{
+			logger.debug("sendMessage run...");
+			
 			StringBuffer packageContent = new StringBuffer();
 			byte[] heads = buildHeadMessage(context, bodys.length);
 			packageContent.append(heads);
@@ -97,15 +114,17 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			byte[] packageBytes = packageContent.toString().getBytes(TestContext.getCharset());
 			
 			//replace checkSum
+			logger.debug("src packageBytes:"+Arrays.toString(packageBytes));
 			int checkSumVal = Tools.checkSum(packageBytes, packageBytes.length);
+			logger.debug("request calculate Checksum=" + checkSumVal);
 			Tools.putUnsignedShort(packageBytes, checkSumVal, 10);
-			System.out.println("request calculate Checksum=" + checkSumVal);
+			logger.debug("add checkSum packageBytes:"+Arrays.toString(packageBytes));
 			
 			//发送包到pos server
-			byte[] posInitResponseBytes = SocketTools.sendPackageToServer(packageBytes);
-			
+			byte[] responseBytes = SocketUtils.sendPackageToServer(packageBytes);
+			logger.debug("responseBytes:"+Arrays.toString(responseBytes));
 			//将package解析并封装成Message
-			Message message = parseResponseMessage(posInitResponseBytes);
+			Message message = parseResponseMessage(responseBytes);
 			
 			//将当前的bodyMessage存入线程   以便下次请求使用
 			TestContext.getBasePosConfig().setLastResponseBodyMessage(message.getBodyMessage());
@@ -117,25 +136,33 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	
 	/**
 	 * description：解析接收内容
-	 * @param posInitResponseBytes 响应内容
+	 * @param responseBytes 响应内容
 	 * @return
 	 * @throws ParseResponseMessageException
 	 * @time 2011-9-23   下午03:25:23
 	 * @author Seek
 	 */
-	private Message parseResponseMessage(byte[] posInitResponseBytes) 
+	private Message parseResponseMessage(byte[] responseBytes) 
 				throws ParseResponseMessageException {
 		try{
+			logger.debug("parseResponseMessage run...");
+			
 			Message message = new Message();
-			IoBuffer ioBuff = IoBuffer.wrap(posInitResponseBytes);
+			IoBuffer ioBuff = IoBuffer.wrap(responseBytes);
 			//读取头部
+			logger.debug("decode packageHead...");
 			HeadMessage headMessage = TestContext.getPackageHeadCodec().decode(ioBuff);
 			
 			//check package checksum
 			int checksum = headMessage.getChecksum();
-			Tools.putUnsignedShort(posInitResponseBytes, 0, 10);
-			int checkSumTmp = Tools.checkSum(posInitResponseBytes, posInitResponseBytes.length);
+			logger.debug("get checksum="+checksum);
+			
+			Tools.putUnsignedShort(responseBytes, 0, 10);
+			logger.debug("replace responseBytes checksum = 0");
+			
+			int checkSumTmp = Tools.checkSum(responseBytes, responseBytes.length);
 			if(checksum != checkSumTmp){
+				logger.debug("server checksum != native checksum");
 				throw new ParseResponseMessageException(
 						"response checksum error!  receive Checksum="+checksum+", calculate Checksum="+checkSumTmp);
 			}
@@ -144,8 +171,11 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			ioBuff.position(ProtocolLengths.HEAD);		//skip message head
 			long commandId  = ioBuff.getUnsignedInt();	//读取commandId
 			ICommand bodyMessage = null;
+			logger.debug("read cmdId="+commandId);
 			if(CmdConstant.ERROR_CMD_ID == commandId){
+				logger.debug("cmdId is CmdConstant.ERROR_CMD_ID!");
 				long errorMessageCode = ioBuff.getUnsignedInt();		//读取errorCode
+				logger.debug("error message code:"+errorMessageCode);
 				
 				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
 				errorBodyMessage.setErrorCode(errorMessageCode);
@@ -161,8 +191,8 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			message.setHeadMessage(headMessage);
 			message.setBodyMessage(bodyMessage);
 			
-			System.out.println("headMessage:" + message.getHeadMessage());
-			System.out.println("bodyMessage:" + message.getBodyMessage());
+			logger.debug("headMessage:" + message.getHeadMessage());
+			logger.debug("bodyMessage:" + message.getBodyMessage());
 			return message;
 		}catch(Throwable e){
 			throw new ParseResponseMessageException(e);

@@ -3,9 +3,22 @@ package com.chinarewards.qqgbpvn.testing.util;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 
-public class SocketTools {
+/**
+ * description：a socket util
+ * @copyright binfen.cc
+ * @projectName testing
+ * @time 2011-9-26   上午10:34:32
+ * @author Seek
+ */
+public final class SocketUtils {
+	
+	private static Logger logger = LoggerFactory.getLogger(SocketUtils.class);
 	
 	/**
 	 * description：发送一个package，同时接收一个package
@@ -15,6 +28,8 @@ public class SocketTools {
 	 * @author Seek
 	 */
 	public static final byte[] sendPackageToServer(byte[] sendPackage){
+		logger.debug("SocketUtils sendPackageToServer() run...");
+		
 		Socket socket = null;
 		
 		StringBuffer responsStr = new StringBuffer();
@@ -35,7 +50,7 @@ public class SocketTools {
 			}
 			
 		}catch(Throwable e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}finally{
 			//socket.close();
 		}
