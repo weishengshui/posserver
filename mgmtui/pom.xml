@@ -323,7 +323,7 @@
 			<plugin>
 				<groupId>com.chinarewards.maven.plugins</groupId>
 				<artifactId>maven-appinfo-plugin</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<executions>
 					<execution>
 						<goals>
