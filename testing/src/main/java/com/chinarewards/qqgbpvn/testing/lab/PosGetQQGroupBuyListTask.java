@@ -10,7 +10,6 @@ import com.chinarewards.qqgbpvn.testing.lab.parent.PosTask;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
@@ -32,12 +31,12 @@ public final class PosGetQQGroupBuyListTask extends PosTask {
 		res.sampleStart();	//开始任务
 		try{
 			byte[] bodys =  buildBodyMessage(context);
-			Message message = super.sendMessage(context, bodys);
+			super.sendMessage(context, bodys);
 			
 			res.setSuccessful(true);
 		}catch(Throwable e){
 			res.setSuccessful(false);
-			e.printStackTrace();
+			throw new RunTaskException(e);
 		}finally{
 			res.sampleEnd();	//结束任务
 		}

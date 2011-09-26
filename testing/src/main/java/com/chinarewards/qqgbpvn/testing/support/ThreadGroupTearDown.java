@@ -21,7 +21,7 @@ public class ThreadGroupTearDown extends AbstractJavaSamplerClient {
 	
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
-		logger.debug("ThreadGroupTearDown...");		
+		logger.debug("threadGroup tearDown...");		
 		try{
 			TestContext.testDestroy();
 		}catch(Throwable e){

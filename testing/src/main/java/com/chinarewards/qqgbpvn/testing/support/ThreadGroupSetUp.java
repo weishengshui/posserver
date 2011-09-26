@@ -3,6 +3,7 @@ package com.chinarewards.qqgbpvn.testing.support;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
@@ -22,6 +23,7 @@ import com.chinarewards.qqgbvpn.config.ConfigReader;
 import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
 import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
 
 /**
@@ -47,7 +49,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	public Arguments getDefaultParameters() {
 		Arguments arguments = new Arguments();
 		arguments.addArgument(CSV_FILE, "D:\\pos_data.csv");
-		arguments.addArgument(POSNET_HOME, "D:\\posnetv2\\conf");
+		arguments.addArgument(POSNET_HOME, "D:\\posnetv2");
 		arguments.addArgument(POS_SERVER_IP, "127.0.0.1");
 		arguments.addArgument(POS_SERVER_PORT, "1234");
 		arguments.addArgument(CSV_SEPARATOR, ",");
@@ -56,7 +58,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
-		logger.debug("ThreadGroupSetUp runTest() run...");
+		logger.debug("threadGroup setUp...");
 		
 		String csvFileName = context.getParameter(CSV_FILE);
 		String posServerIp = context.getParameter(POS_SERVER_IP);
@@ -85,6 +87,9 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 			
 			//read csv data file to memory
 			readCsvToMap(csvFileName, TestContext.getPosMap());
+			
+			//set max pos
+			TestContext.setMaxPos((long)TestContext.getPosMap().size());
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -110,12 +115,11 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 				String arr[] = tempLine.split(TestContext.getCsvSeparator());
 				
 				if(arr != null && arr[0] != null){
-					logger.debug("put("+arr[0]+","+arr[1]+")");
-					
 					BasePosConfig basePosConfig = new BasePosConfig();
 					basePosConfig.setPosId(arr[1].trim());
 					basePosConfig.setSecret(arr[2].trim());
 					
+					logger.debug("put("+arr[0]+","+basePosConfig+")");
 					map.put(arr[0].trim(), basePosConfig);
 				}
 			}
@@ -142,14 +146,25 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		} catch (ConfigurationException e) {
 			throw new RuntimeException("Failed to read posnet.ini", e);
 		}
+		debugPrintConfig(configuration);
 		
 		// prepare the codec mapping
 		CodecMappingConfigBuilder builder = new CodecMappingConfigBuilder();
 		CmdMapping cmdMapping = builder.buildMapping(configuration);
+		logger.debug("cmdMapping:"+cmdMapping);
 		// and then the factory
 		SimpleCmdCodecFactory cmdCodecFactory = new SimpleCmdCodecFactory(cmdMapping);
 		
 		TestContext.setCmdCodecFactory(cmdCodecFactory);
+	}
+	
+	protected void debugPrintConfig(Configuration configuration) {
+		Iterator i = configuration.getKeys();
+		while (i.hasNext()) {
+			String key = (String)i.next();
+			Object value = configuration.getProperty(key);
+			logger.debug("- " + key + ": " + value);
+		}
 	}
 	
 }

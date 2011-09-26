@@ -9,7 +9,7 @@ public final class BasePosConfig {
 	private Long number;
 	
 	private String posId;
-	
+
 	/**
 	 * 流水号
 	 */
@@ -22,6 +22,14 @@ public final class BasePosConfig {
 	private String grouponId;	//为了解决选择一次， 重复验证的问题。
 	
 	private Socket socket;
+	
+	@Override
+	public String toString() {
+		return "BasePosConfig [number=" + number + ", posId=" + posId
+				+ ", sequence=" + sequence + ", secret=" + secret
+				+ ", lastResponseBodyMessage=" + lastResponseBodyMessage
+				+ ", grouponId=" + grouponId + ", socket=" + socket + "]";
+	}
 
 	public Socket getSocket() {
 		return socket;

@@ -21,6 +21,7 @@ public class ThreadTearDown extends AbstractJavaSamplerClient {
 	
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
+		logger.debug("a thread tearDown...");
 		try{
 			TestContext.clearBasePosConfig();
 		}catch(Throwable e){

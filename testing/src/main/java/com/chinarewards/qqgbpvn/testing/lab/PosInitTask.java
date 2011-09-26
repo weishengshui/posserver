@@ -10,8 +10,8 @@ import com.chinarewards.qqgbpvn.testing.lab.parent.PosTask;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.InitMessageCodec;
 
 /**
  * description：POS机Init
@@ -29,7 +29,7 @@ public final class PosInitTask extends PosTask {
 		
 		try{
 			byte[] bodys =  buildBodyMessage(context);
-			Message message = super.sendMessage(context, bodys);
+			super.sendMessage(context, bodys);
 			
 			res.setSuccessful(true);
 		}catch(Throwable e){

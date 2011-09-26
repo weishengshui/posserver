@@ -62,8 +62,6 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			logger.debug("sequence:"+headMessage.getSeq());
 			
 			byte[] heads = TestContext.getPackageHeadCodec().encode(headMessage);
-			
-			logger.debug("head bytes:"+Arrays.toString(heads));
 			return heads;
 		}catch(Throwable e){
 			throw new BuildHeadMessageException(e);
@@ -81,6 +79,10 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	public final SampleResult runTest(JavaSamplerContext context) {
 		SampleResult sampleResult = null;
 		try{
+			//如果没有init basePosConfig,那么不做
+			if(TestContext.getBasePosConfig() == null){
+				return null;
+			}
 			sampleResult = runTask(context);
 		}catch(Throwable e){
 			logger.error(e.getMessage(), e);
@@ -105,24 +107,28 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 				throws SendMessageException {
 		try{
 			logger.debug("sendMessage run...");
-			
-			StringBuffer packageContent = new StringBuffer();
+
 			byte[] heads = buildHeadMessage(context, bodys.length);
-			packageContent.append(heads);
-			packageContent.append(bodys);
+			logger.debug("heads bytes:"+Arrays.toString(heads) + ", length="+heads.length);
+			logger.debug("bodys bytes:"+Arrays.toString(bodys) + ", length="+bodys.length);
 			
-			byte[] packageBytes = packageContent.toString().getBytes(TestContext.getCharset());
+			byte[] requestBytes = new byte[heads.length + bodys.length];
+			System.arraycopy(heads, 0, requestBytes, 0, heads.length);
+			System.arraycopy(bodys, 0, requestBytes, heads.length, bodys.length);
 			
 			//replace checkSum
-			logger.debug("src packageBytes:"+Arrays.toString(packageBytes));
-			int checkSumVal = Tools.checkSum(packageBytes, packageBytes.length);
+			logger.debug("src requestBytes:"+Arrays.toString(requestBytes) + 
+					", length=" + requestBytes.length);
+			int checkSumVal = Tools.checkSum(requestBytes, requestBytes.length);
 			logger.debug("request calculate Checksum=" + checkSumVal);
-			Tools.putUnsignedShort(packageBytes, checkSumVal, 10);
-			logger.debug("add checkSum packageBytes:"+Arrays.toString(packageBytes));
+			Tools.putUnsignedShort(requestBytes, checkSumVal, 10);
+			logger.debug("add checkSum requestBytes:"+Arrays.toString(requestBytes) +
+					", length="+requestBytes.length);
 			
 			//发送包到pos server
-			byte[] responseBytes = SocketUtils.sendPackageToServer(packageBytes);
-			logger.debug("responseBytes:"+Arrays.toString(responseBytes));
+			byte[] responseBytes = SocketUtils.sendPackageToServer(requestBytes);
+			logger.debug("responseBytes:"+Arrays.toString(responseBytes) +
+					", length="+responseBytes.length);
 			//将package解析并封装成Message
 			Message message = parseResponseMessage(responseBytes);
 			
@@ -158,9 +164,9 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			logger.debug("get checksum="+checksum);
 			
 			Tools.putUnsignedShort(responseBytes, 0, 10);
-			logger.debug("replace responseBytes checksum = 0");
 			
 			int checkSumTmp = Tools.checkSum(responseBytes, responseBytes.length);
+			logger.debug("calculate Checksum="+checkSumTmp);
 			if(checksum != checkSumTmp){
 				logger.debug("server checksum != native checksum");
 				throw new ParseResponseMessageException(
