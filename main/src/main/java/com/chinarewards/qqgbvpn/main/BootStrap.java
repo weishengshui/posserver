@@ -115,7 +115,8 @@ public class BootStrap {
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out.println(APP_NAME + ": version " + appInfo.getVersionString()
 				+ " (build: " + appInfo.getBuildNumber() + ")");
-
+		System.out.println("Build: ID=" + appInfo.getBuildId() + ", Tag=" + appInfo.getBuildTag()
+				+ ", Job=" + appInfo.getBuildJobName() + ", Source Branch=" + appInfo.getBuildCvsBranch());
 	}
 
 	/**
