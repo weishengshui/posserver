@@ -22,13 +22,19 @@ public class ThreadSetUp extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
 		logger.debug("a thread setUp...");
+		SampleResult result = new SampleResult();
+		result.sampleStart();
+		
 		try {
 			TestContext.initBasePosConfig();
+			result.setSuccessful(true);
 		} catch (Throwable e) {
+			result.setSuccessful(false);
 			logger.error(e.getMessage(), e);
+		} finally {
+			result.sampleEnd();
 		}
-		
-		return new SampleResult();
+		return result;
 	}
 
 }

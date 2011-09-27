@@ -23,7 +23,6 @@ import com.chinarewards.qqgbvpn.config.ConfigReader;
 import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
 import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
 
 /**
@@ -59,6 +58,8 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
 		logger.debug("threadGroup setUp...");
+		SampleResult result = new SampleResult();
+		result.sampleStart();
 		
 		String csvFileName = context.getParameter(CSV_FILE);
 		String posServerIp = context.getParameter(POS_SERVER_IP);
@@ -90,11 +91,15 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 			
 			//set max pos
 			TestContext.setMaxPos((long)TestContext.getPosMap().size());
+			
+			result.setSuccessful(true);
 		} catch (Exception e) {
+			result.setSuccessful(false);
 			logger.error(e.getMessage(), e);
+		} finally {
+			result.sampleEnd();
 		}
-		
-		return new SampleResult();
+		return result;
 	}
 	
 	/**
@@ -158,6 +163,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		TestContext.setCmdCodecFactory(cmdCodecFactory);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	protected void debugPrintConfig(Configuration configuration) {
 		Iterator i = configuration.getKeys();
 		while (i.hasNext()) {

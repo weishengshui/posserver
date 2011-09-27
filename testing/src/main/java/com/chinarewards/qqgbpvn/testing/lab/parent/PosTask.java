@@ -65,7 +65,7 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			return heads;
 		}catch(Throwable e){
 			throw new BuildHeadMessageException(e);
-		}	
+		}
 	}
 	
 	/**
