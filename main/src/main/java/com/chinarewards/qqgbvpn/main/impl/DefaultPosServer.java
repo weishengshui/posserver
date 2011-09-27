@@ -184,7 +184,7 @@ public class DefaultPosServer implements PosServer {
 		LoggingFilter loggingFilter = new LoggingFilter();
 		loggingFilter.setMessageReceivedLogLevel(LogLevel.DEBUG);
 		loggingFilter.setMessageSentLogLevel(LogLevel.DEBUG);
-		loggingFilter.setSessionIdleLogLevel(LogLevel.DEBUG);
+		loggingFilter.setSessionIdleLogLevel(LogLevel.TRACE);
 		return loggingFilter;
 	}
 
