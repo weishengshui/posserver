@@ -69,7 +69,7 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	}
 	
 	/**
-	 * description：run a jmeter test	{is not allow overwrite}
+	 * description：run a jmeter test	{is not allow override}
 	 * @param context
 	 * @return
 	 * @time 2011-9-23   下午02:23:00
