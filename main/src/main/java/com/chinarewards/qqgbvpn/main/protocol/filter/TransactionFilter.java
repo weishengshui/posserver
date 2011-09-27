@@ -36,25 +36,32 @@ public class TransactionFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 
+		logger.trace("messageReceived() started");
+		
 		startTransaction();
 
 		try {
 			nextFilter.messageReceived(session, message);
 		} finally {
 			endTransaction();
+			logger.trace("messageReceived() done");
 		}
+		
 	}
 
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 
+		logger.trace("messageSent() started");
+		
 		startTransaction();
 
 		try {
 			nextFilter.messageSent(session, writeRequest);
 		} finally {
 			endTransaction();
+			logger.trace("messageSent() done");
 		}
 	}
 

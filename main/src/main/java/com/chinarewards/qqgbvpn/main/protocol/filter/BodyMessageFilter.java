@@ -22,6 +22,9 @@ public class BodyMessageFilter extends IoFilterAdapter {
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
+		
+		log.trace("messageReceived() started");
+		
 		ICommand msg = ((Message) message).getBodyMessage();
 		// return when IBodyMessage instanceof ErrorBodyMessage
 		if (msg instanceof ErrorBodyMessage) {
@@ -32,6 +35,7 @@ public class BodyMessageFilter extends IoFilterAdapter {
 			nextFilter.messageReceived(session, message);
 		}
 
+		log.trace("messageReceived() done");
 	}
 
 }

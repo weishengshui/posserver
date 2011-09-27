@@ -58,12 +58,15 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
+		
+		log.trace("messageReceived() started");
 
 		debugMessageReceived(session, message);
 		
 		// do the actual dispatch
 		doDispatch(session, message);
 
+		log.trace("messageReceived() done");
 	}
 
 	/**
