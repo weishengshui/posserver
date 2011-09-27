@@ -10,6 +10,7 @@ import java.util.Iterator;
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LogLevel;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
@@ -130,13 +131,14 @@ public class DefaultPosServer implements PosServer {
 	 * @throws PosServerException
 	 */
 	protected void startMinaService() throws PosServerException {
+		
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
 		// =============== server side ===================
 
 		acceptor = new NioSocketAcceptor();
-		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
+		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// not this
 		acceptor.getFilterChain().addLast(
@@ -170,6 +172,20 @@ public class DefaultPosServer implements PosServer {
 		} catch (IOException e) {
 			throw new PosServerException("Error binding server port", e);
 		}
+	}
+	
+	/**
+	 * Build an new instance of LoggingFilter with sane logging level. The
+	 * principle is to hide unnecessary logging under INFO level.
+	 * 
+	 * @return
+	 */
+	protected LoggingFilter buildLoggingFilter() {
+		LoggingFilter loggingFilter = new LoggingFilter();
+		loggingFilter.setMessageReceivedLogLevel(LogLevel.DEBUG);
+		loggingFilter.setMessageSentLogLevel(LogLevel.DEBUG);
+		loggingFilter.setSessionIdleLogLevel(LogLevel.DEBUG);
+		return loggingFilter;
 	}
 
 	/**
