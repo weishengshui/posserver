@@ -158,6 +158,7 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
+		// the handler class
 		acceptor.setHandler(new ServerSessionHandler(injector,
 				serviceDispatcher, mapping));
 		
