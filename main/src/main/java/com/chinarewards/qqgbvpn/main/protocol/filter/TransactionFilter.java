@@ -64,13 +64,15 @@ public class TransactionFilter extends IoFilterAdapter {
 	 */
 	protected void startTransaction() {
 		// start unit of work and transaction.
-		logger.trace("begin UnitOfWork");
+		logger.trace("begin UnitOfWork and transaction");
 		UnitOfWork u = uow.get();
 		u.begin();
 
 		EntityManager e = em.get();
 		EntityTransaction t = e.getTransaction();
 		t.begin();
+		
+		logger.trace("UnitOfWork and transaction begun");
 	}
 
 	/**
@@ -80,6 +82,8 @@ public class TransactionFilter extends IoFilterAdapter {
 	 */
 	protected void endTransaction() {
 
+		logger.trace("Going to end transaction and UnitOfWork");
+		
 		UnitOfWork u = uow.get();
 		EntityManager eMgr = em.get();
 		EntityTransaction t = eMgr.getTransaction();
@@ -105,7 +109,8 @@ public class TransactionFilter extends IoFilterAdapter {
 		} catch (Throwable e) {
 			logger.warn("Exception occurred when ending UnitOfWork", e);
 		}
-		logger.trace("UnitOfWork end");
+		
+		logger.trace("Transaction and UnitOfWork ended");
 
 	}
 
