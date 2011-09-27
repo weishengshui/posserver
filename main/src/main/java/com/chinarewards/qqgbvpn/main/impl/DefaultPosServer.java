@@ -27,7 +27,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.google.inject.Inject;
@@ -149,10 +148,6 @@ public class DefaultPosServer implements PosServer {
 		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
-
-		// Transaction filter.
-		acceptor.getFilterChain().addLast("transaction",
-				injector.getInstance(TransactionFilter.class));
 
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",
