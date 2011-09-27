@@ -177,6 +177,7 @@ public class DefaultPosServer implements PosServer {
 	 */
 	private void printConfigValues() {
 		// get system configuration
+		@SuppressWarnings("rawtypes")
 		Iterator iter = configuration.getKeys();
 		if (configuration.isEmpty()) {
 			log.debug("No configuration values");
