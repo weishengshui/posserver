@@ -81,6 +81,8 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			log.trace("headMessage ====: {}", headMessage.toString());
 
 			// check length
+			// XXX suspicious code, may lead to unwanted error code 3: invalid size
+			// XXX should wait until the whole package is received.
 			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
@@ -99,7 +101,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 			log.trace("byteTmp==msg==:" + Arrays.toString(byteTmp));
 
 			int checkSumTmp = Tools.checkSum(byteTmp, byteTmp.length);
-			log.trace("heckSumTmp========:" + checkSumTmp);
+			log.trace("checkSumTmp========:" + checkSumTmp);
 
 			// checksum
 
