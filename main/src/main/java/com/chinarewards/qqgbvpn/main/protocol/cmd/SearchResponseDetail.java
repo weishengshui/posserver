@@ -12,6 +12,13 @@ public class SearchResponseDetail {
 	
 	private String detailName;
 
+	@Override
+	public String toString() {
+		return "SearchResponseDetail [grouponId=" + grouponId
+				+ ", grouponName=" + grouponName + ", mercName=" + mercName
+				+ ", listName=" + listName + ", detailName=" + detailName + "]";
+	}
+
 	//--------------------------------------------------//
 	public String getGrouponId() {
 		return grouponId;
