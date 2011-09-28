@@ -137,18 +137,25 @@ public class DefaultPosServer implements PosServer {
 
 		// =============== server side ===================
 
+		// Programmers: You MUST consult your team before rearranging the 
+		// order of the following Mina filters, as the ordering may affects
+		// the behaviour of the application which may lead to unpredictable
+		// result.
+		
 		acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
-		// not this
+		// decode message
 		acceptor.getFilterChain().addLast(
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(injector,
 						cmdCodecFactory)));
 
-		// bodyMessage filter
+		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
+		
+		acceptor.getFilterChain().addLast("bizLogger", new LoggingFilter());
 
 		// Transaction filter.
 		acceptor.getFilterChain().addLast("transaction",
