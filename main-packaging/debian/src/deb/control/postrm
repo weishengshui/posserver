@@ -24,7 +24,13 @@ ETC_DIR=/etc/posnet2
  
 case "$1" in
     purge|remove)
-	 rm -rf /usr/share/posnet2/conf
+	rm -rf /usr/share/posnet2/conf
+	
+	# remove the link
+	if [ -L /usr/share/posnet2/log ]; then
+		rm -rf /usr/share/posnet2/log
+	fi
+	
     ;;
     
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
