@@ -6,10 +6,8 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.chinarewards.qqgbpvn.testing.model.BasePosConfig;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
@@ -41,7 +39,7 @@ public class TestContext {
 	private static String posServerIp;
 	
 	//POS Server Port
-	private static String posServerPort;
+	private static Integer posServerPort;
 	
 	//csv file Separator
 	private static String csvSeparator;
@@ -49,6 +47,8 @@ public class TestContext {
 	private static SimpleCmdCodecFactory cmdCodecFactory;	//codec by cmdId
 	
 	private static PackageHeadCodec packageHeadCodec;
+	
+	private static long timestampRange;		//thread invoke timestamp range, unit of time: second
 	
 	/**
 	 * description：销毁test系统级的数据
@@ -109,7 +109,7 @@ public class TestContext {
 			basePosConfig.setNumber(num);
 			basePosConfig.setPosId(tempBasePosConfig.getPosId());
 			basePosConfig.setSecret(tempBasePosConfig.getSecret());
-			basePosConfig.setSocket(new Socket(getPosServerIp(), Integer.parseInt(getPosServerPort())));
+			basePosConfig.setSocket(new Socket(getPosServerIp(), getPosServerPort()));
 			basePosConfig.setSequence(1);
 			tLocal.set(basePosConfig);
 			
@@ -155,11 +155,11 @@ public class TestContext {
 		TestContext.posServerIp = posServerIp;
 	}
 
-	public static String getPosServerPort() {
+	public static Integer getPosServerPort() {
 		return posServerPort;
 	}
 
-	public static void setPosServerPort(String posServerPort) {
+	public static void setPosServerPort(Integer posServerPort) {
 		TestContext.posServerPort = posServerPort;
 	}
 	
@@ -193,6 +193,14 @@ public class TestContext {
 
 	public static void setCsvSeparator(String csvSeparator) {
 		TestContext.csvSeparator = csvSeparator;
+	}
+	
+	public static long getTimestampRange() {
+		return timestampRange;
+	}
+
+	public static void setTimestampRange(long timestampRange) {
+		TestContext.timestampRange = timestampRange;
 	}
 	
 }

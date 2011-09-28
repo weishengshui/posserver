@@ -23,7 +23,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  * @time 2011-9-22   下午06:02:53
  * @author Seek
  */
-public final class PosGetQQGroupBuyValidationTest extends PosTask {
+public final class PosGetQQGroupBuyValidationTask extends PosTask {
 	
 	private static final String GROUPON_VCODE = "grouponVCode";
 	

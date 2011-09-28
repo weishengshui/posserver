@@ -29,7 +29,7 @@ public final class SocketUtils {
 	 * @time 2011-9-22   下午05:59:41
 	 * @author Seek
 	 */
-	public static final byte[] sendPackageToServer(byte[] sendPackage){
+	public static final byte[] sendPackageToServer(Socket outerSocket, byte[] sendPackage){
 		logger.debug("SocketUtils sendPackageToServer() run...");
 		
 		Socket socket = null;
@@ -38,7 +38,7 @@ public final class SocketUtils {
 		
 		byte[] result = new byte[0];
 		try{
-			socket = TestContext.getBasePosConfig().getSocket();
+			socket = outerSocket;
 			os = socket.getOutputStream();
 			is = socket.getInputStream();
 			

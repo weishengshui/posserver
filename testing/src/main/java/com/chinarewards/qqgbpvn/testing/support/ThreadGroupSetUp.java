@@ -43,15 +43,19 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	private static final String POS_SERVER_PORT = "POS_SERVER_PORT";
 	
 	private static final String CSV_SEPARATOR = "CSV_SEPARATOR";
+	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE";
 	
 	@Override
 	public Arguments getDefaultParameters() {
 		Arguments arguments = new Arguments();
-		arguments.addArgument(CSV_FILE, "D:\\pos_data.csv");
 		arguments.addArgument(POSNET_HOME, "D:\\posnetv2");
+		arguments.addArgument(CSV_FILE, "D:\\pos_data.csv");
+		arguments.addArgument(CSV_SEPARATOR, ",");
+		
 		arguments.addArgument(POS_SERVER_IP, "127.0.0.1");
 		arguments.addArgument(POS_SERVER_PORT, "1234");
-		arguments.addArgument(CSV_SEPARATOR, ",");
+		
+		arguments.addArgument(TIMESTAMP_RANGE, "0");
 		return arguments;
 	}
 	
@@ -63,9 +67,10 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		
 		String csvFileName = context.getParameter(CSV_FILE);
 		String posServerIp = context.getParameter(POS_SERVER_IP);
-		String posServerPort = context.getParameter(POS_SERVER_PORT);
+		Integer posServerPort = Integer.parseInt(context.getParameter(POS_SERVER_PORT));
 		String posnetHome = context.getParameter(POSNET_HOME);
 		String csvSeparator = context.getParameter(CSV_SEPARATOR);
+		Long timestampRange = Long.parseLong(context.getParameter(TIMESTAMP_RANGE));
 		
 		logger.debug("csvFileName:"+csvFileName);
 		logger.debug("posServerIp:"+posServerIp);
@@ -91,6 +96,9 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 			
 			//set max pos
 			TestContext.setMaxPos((long)TestContext.getPosMap().size());
+			
+			//set thread timestamp
+			TestContext.setTimestampRange(timestampRange);
 			
 			result.setSuccessful(true);
 		} catch (Exception e) {

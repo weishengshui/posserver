@@ -83,6 +83,11 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			if(TestContext.getBasePosConfig() == null){
 				return null;
 			}
+			
+			//sleep
+			long randomTime = (long)(Math.random() * TestContext.getTimestampRange());
+			Thread.sleep(randomTime * 60 * 1000);
+			
 			sampleResult = runTask(context);
 		}catch(Throwable e){
 			logger.error(e.getMessage(), e);
@@ -126,7 +131,8 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 					", length="+requestBytes.length);
 			
 			//发送包到pos server
-			byte[] responseBytes = SocketUtils.sendPackageToServer(requestBytes);
+			byte[] responseBytes = SocketUtils.sendPackageToServer(
+					TestContext.getBasePosConfig().getSocket(), requestBytes);
 			logger.debug("responseBytes:"+Arrays.toString(responseBytes) +
 					", length="+responseBytes.length);
 			//将package解析并封装成Message
