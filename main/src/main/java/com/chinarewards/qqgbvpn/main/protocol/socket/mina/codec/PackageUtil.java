@@ -98,7 +98,7 @@ public final class PackageUtil {
 	 * @time 2011-9-23   下午02:22:19
 	 * @author Seek
 	 */
-	public final byte[] formatPackageMessage(long currentSequence, byte[] bodys) 
+	public final byte[] formatPackageContent(long currentSequence, byte[] bodys) 
 				throws FormatPackageContentException {
 		try{
 			byte[] heads = this.formatHeadContent(currentSequence, bodys);
