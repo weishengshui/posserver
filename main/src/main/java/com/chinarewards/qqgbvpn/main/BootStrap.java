@@ -4,6 +4,7 @@
 package com.chinarewards.qqgbvpn.main;
 
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -137,6 +138,8 @@ public class BootStrap {
 
 		// build the configuration object.
 		buildConfiguration();
+		
+		printConfigValues(configuration);
 
 		// print some text.
 		log.info("Bootstrapping...");
@@ -236,6 +239,26 @@ public class BootStrap {
 							+ "POSNET_HOME environment variable for the home directory, or -d <home_dir> ");
 		}
 
+	}
+
+	/**
+	 * Print configuration.
+	 */
+	private void printConfigValues(Configuration configuration) {
+		// get system configuration
+		@SuppressWarnings("rawtypes")
+		Iterator iter = configuration.getKeys();
+		if (configuration.isEmpty()) {
+			log.warn("No configuration values, it is weired!");
+		} else {
+			log.debug("System configuration:");
+			while (iter.hasNext()) {
+				String key = (String) iter.next();
+				log.debug("- {}: {}", key, configuration.getProperty(key));
+			}
+		}
+
+		// TODO print command mapping
 	}
 
 	@SuppressWarnings("static-access")

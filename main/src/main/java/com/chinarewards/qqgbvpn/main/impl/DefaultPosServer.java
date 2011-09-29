@@ -99,8 +99,6 @@ public class DefaultPosServer implements PosServer {
 	@Override
 	public void start() throws PosServerException {
 
-		printConfigValues();
-
 		buildCodecMapping();
 
 		// start the JPA persistence service
@@ -188,26 +186,6 @@ public class DefaultPosServer implements PosServer {
 		loggingFilter.setMessageSentLogLevel(LogLevel.DEBUG);
 		loggingFilter.setSessionIdleLogLevel(LogLevel.TRACE);
 		return loggingFilter;
-	}
-
-	/**
-	 * Print configuration.
-	 */
-	private void printConfigValues() {
-		// get system configuration
-		@SuppressWarnings("rawtypes")
-		Iterator iter = configuration.getKeys();
-		if (configuration.isEmpty()) {
-			log.debug("No configuration values");
-		} else {
-			log.debug("System configuration:");
-			while (iter.hasNext()) {
-				String key = (String) iter.next();
-				log.debug("- {}: {}", key, configuration.getProperty(key));
-			}
-		}
-
-		// TODO print command mapping
 	}
 
 	protected void startPersistenceService() {
