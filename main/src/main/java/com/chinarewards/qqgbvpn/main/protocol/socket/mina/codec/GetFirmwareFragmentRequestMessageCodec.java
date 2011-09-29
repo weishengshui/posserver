@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -47,13 +48,35 @@ public class GetFirmwareFragmentRequestMessageCodec implements ICommandCodec {
 
 		return message;
 	}
-
+	
 	/**
-	 * TODO implements encoding function.
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
 	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		throw new UnsupportedOperationException(
-				"Message encoding not supported");
+		//...
+		log.debug("get firmware fragment request message encode");
+		GetFirmwareFragmentRequestMessage requestMessage = (GetFirmwareFragmentRequestMessage) bodyMessage;
+		long cmdId = requestMessage.getCmdId();
+		String posId = requestMessage.getPosId();
+		long offset = requestMessage.getOffset();
+		long length = requestMessage.getLength();
+		
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.POS_ID + 
+		                         ProtocolLengths.FIRMWARE_OFFSET + ProtocolLengths.FIRMWARE_LENTH];
+		
+		Tools.putUnsignedInt(resultByte, cmdId, 0);
+		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
+		Tools.putUnsignedInt(resultByte, offset, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID);
+		Tools.putUnsignedInt(resultByte, length, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID 
+				+ ProtocolLengths.FIRMWARE_OFFSET);
+		
+		return resultByte;
 	}
+	
 }

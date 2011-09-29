@@ -1,10 +1,14 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -19,16 +23,36 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
  */
 public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 
-	// private Logger log = LoggerFactory.getLogger(getClass());
-
+	private Logger log = LoggerFactory.getLogger(getClass());
+	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-
-		throw new UnsupportedOperationException(
-				"Message decoding not supported");
+		log.debug("get firmware fragment response message encode");
+		
+		
+		long cmdId = in.getUnsignedInt();
+		short result = in.getShort();
+		
+		//获取
+		byte content[] = new byte[in.capacity()-in.position()];
+		in.get(content);
+		
+		GetFirmwareFragmentResponseMessage message = new GetFirmwareFragmentResponseMessage(result, content);
+		
+		log.debug("get firmware fragment message response:cmdId is ({}) , result is ({}), content is ({})" , 
+				new Object[]{cmdId, result, Arrays.toString(content)});
+		return message;
 	}
-
+	
 	/**
 	 * TODO implements encoding function.
 	 */
@@ -59,4 +83,5 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		// return result
 		return buf.array();
 	}
+	
 }
