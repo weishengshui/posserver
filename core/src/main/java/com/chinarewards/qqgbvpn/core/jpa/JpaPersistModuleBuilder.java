@@ -54,12 +54,13 @@ public class JpaPersistModuleBuilder {
 		}
 
 		// set the hibernate properties first
-		Configuration hibernateConfig = dbConfig.subset("hibernate");
+		Configuration hibernateConfig = dbConfig.subset(getExtensionPath());
 		@SuppressWarnings("rawtypes")
 		Iterator iter = hibernateConfig.getKeys();
 		while (iter.hasNext()) {
 			String key = (String) iter.next();
-			prop.put("hibernate." + key, hibernateConfig.getProperty(key));
+			//prop.put("hibernate." + key, hibernateConfig.getProperty(key));
+			prop.put(key, hibernateConfig.getProperty(key));
 		}
 		
 		// translate important hibernate attribute(s). This will override any hibernate specific attributes.
@@ -83,6 +84,16 @@ public class JpaPersistModuleBuilder {
 		
 		return prop;
 
+	}
+	
+	/**
+	 * Returns the path which distinguish between standard and extension 
+	 * configuration keys.
+	 * 
+	 * @return
+	 */
+	protected String getExtensionPath() {
+		return "ext";
 	}
 
 }
