@@ -27,6 +27,7 @@ public class ValidationCallbackHandler implements ServiceHandler{
 		
 		log.debug("ValidationCallbackHandler======execute==bodyMessage=:"+bodyMessage);
 		
+		// FIXME what the ****? should report error if groupon ID and / or code does not exist.
 		ValCallbackResponseMessage  valCallbackResponseMessage  = new ValCallbackResponseMessage();
 		log.debug("ValidationCallbackHandler======execute==grouponId({})=====grouponVcode({})=:",new Object[]{bodyMessage.getGrouponId(),bodyMessage.getGrouponVCode()});
 		try {
