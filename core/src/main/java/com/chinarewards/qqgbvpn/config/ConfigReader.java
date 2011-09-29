@@ -59,9 +59,13 @@ public class ConfigReader {
 			log.debug("Configuration subdirectory is set to {}", getConfSubdirectory());
 			f = new File(dir, getConfSubdirectory());
 		}
+		
+		log.debug("Configuration directory is set to {}", f);
 
 		// get the target config file.
-		Configuration conf = buildConfigObject(new File(f, filename));
+		File confFile = new File(f, filename);
+		log.debug("Config file: {}", confFile);
+		Configuration conf = buildConfigObject(confFile);
 
 		return conf;
 
