@@ -13,11 +13,11 @@ public class BodyMessageFilter extends IoFilterAdapter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	@Override
-	public void exceptionCaught(NextFilter nextFilter, IoSession session,
-			Throwable cause) throws Exception {
-		log.debug("ErrorBodyMessage exception:({})", cause);
-	}
+//	@Override
+//	public void exceptionCaught(NextFilter nextFilter, IoSession session,
+//			Throwable cause) throws Exception {
+//		log.error("BodyMessageFilter caught an exception", cause);
+//	}
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,

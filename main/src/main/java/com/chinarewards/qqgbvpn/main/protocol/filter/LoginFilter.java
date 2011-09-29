@@ -138,6 +138,9 @@ public class LoginFilter extends IoFilterAdapter {
 		
 		log.trace("messageSent() started");
 		
+		// XXX completely wrong implementation, should be set inside
+		// the command handler.
+		
 		ICommand msg = ((Message) writeRequest.getMessage())
 				.getBodyMessage();
 		long cmdId = msg.getCmdId();
