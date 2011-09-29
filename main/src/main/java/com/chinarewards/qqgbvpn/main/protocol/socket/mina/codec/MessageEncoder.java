@@ -17,15 +17,12 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.google.inject.Injector;
 
 public class MessageEncoder implements ProtocolEncoder {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Charset charset;
-
-	private Injector injector;
 	
 	protected CmdCodecFactory cmdCodecFactory;
 
@@ -36,10 +33,8 @@ public class MessageEncoder implements ProtocolEncoder {
 	 * @param injector
 	 * @param cmdCodecFactory
 	 */
-	public MessageEncoder(Charset charset, Injector injector,
-			CmdCodecFactory cmdCodecFactory) {
+	public MessageEncoder(Charset charset, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
-		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
 	}
 

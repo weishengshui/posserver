@@ -147,8 +147,7 @@ public class DefaultPosServer implements PosServer {
 		// decode message
 		acceptor.getFilterChain().addLast(
 				"codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(injector,
-						cmdCodecFactory)));
+				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
@@ -161,8 +160,8 @@ public class DefaultPosServer implements PosServer {
 				injector.getInstance(LoginFilter.class));
 
 		// the handler class
-		acceptor.setHandler(new ServerSessionHandler(injector,
-				serviceDispatcher, mapping));
+		acceptor.setHandler(new ServerSessionHandler(serviceDispatcher,
+				mapping, configuration));
 		
 		// additional configuration
 		acceptor.setCloseOnDeactivation(true);

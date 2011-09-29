@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IdleStatus;
@@ -13,6 +14,7 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
@@ -23,7 +25,6 @@ import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
-import com.google.inject.Injector;
 
 /**
  * Server handler.
@@ -37,6 +38,11 @@ import com.google.inject.Injector;
  * @since 0.1.0
  */
 public class ServerSessionHandler extends IoHandlerAdapter {
+	
+	/**
+	 * Default service handler thread pool size.
+	 */
+	public static final int DEFAULT_SERVICE_HANDLER_THREAD_POOL_SIZE = 20;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -45,14 +51,21 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	protected final ServiceMapping serviceMapping;
 
 	protected final ExecutorService exec;
+	
+	protected final Configuration configuration;
 
-	public ServerSessionHandler(Injector injector,
-			ServiceDispatcher serviceDispatcher, ServiceMapping serviceMapping) {
+	public ServerSessionHandler(ServiceDispatcher serviceDispatcher,
+			ServiceMapping serviceMapping, Configuration configuration) {
+		
 		this.serviceDispatcher = serviceDispatcher;
 		this.serviceMapping = serviceMapping;
+		this.configuration = configuration;
 
-		// XXX configurable option for thread size
-		exec = Executors.newFixedThreadPool(20);
+		int poolSize = configuration.getInt(
+				ConfigKey.SERVER_SERVICEHANDLER_THREADPOOLSIZE,
+				DEFAULT_SERVICE_HANDLER_THREAD_POOL_SIZE);
+		
+		exec = Executors.newFixedThreadPool(poolSize);
 	}
 
 	@Override
@@ -139,8 +152,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 				long cmdId = msg.getBodyMessage().getCmdId();
 
-				// FIXME throw PackageException if no handler found for command
-				// ID
+				// FIXME throw PackageException if no handler found for command ID
 
 				// build a request (for dispatcher)
 				MinaSession serviceSession = new MinaSession(session);
@@ -175,14 +187,23 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionIdle(IoSession session, IdleStatus status)
 			throws Exception {
-		log.trace("Socket client idle ({} count: {})", status,
-				session.getIdleCount(status));
+		if (log.isTraceEnabled()) {
+			int idleCount = session.getIdleCount(status);
+			// print the client information.
+			// TODO add POS ID
+			if (idleCount % 10 == 0) {
+				log.trace("Socket client {} idle ({} idle count: {})",
+						new Object[] { buildAddressPortString(session), status,
+						session.getIdleCount(status) });
+			}
+		}
 	}
 
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		super.sessionOpened(session);
 
+		// just print the client's address.
 		printRemoteSocketAddress(session);
 
 	}
@@ -217,6 +238,12 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 	}
 
+	/**
+	 * Format the remote address and port in the format of &lt;ip&gt;:&lt;port&gt;.
+	 * 
+	 * @param session
+	 * @return
+	 */
 	protected String buildAddressPortString(IoSession session) {
 		SocketAddress addr = session.getRemoteAddress();
 		if (addr == null || !(addr instanceof InetSocketAddress)) {
