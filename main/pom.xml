@@ -12,25 +12,18 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<description>Server for POS Network Server version 2</description>
 	<dependencies>
-		<dependency>
-			<groupId>com.chinarewards.qqgbvpn</groupId>
-			<artifactId>config</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.chinarewards.qqgbvpn</groupId>
-			<artifactId>domain</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
+	
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-multibindings</artifactId>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-persist</artifactId>
@@ -59,6 +52,7 @@
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-c3p0</artifactId>
 		    <version>3.6.7.Final</version>
+		    <scope>runtime</scope>
 		</dependency>
 
 		<!-- MYSQL -->
@@ -134,6 +128,13 @@
 			<version>2.2.0</version>
 		</dependency>
 
+		<!-- Logging -->
+		<!-- Concrete (and native) implementation of SLF4J -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
 		<!-- Test Scope STARTS -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -172,18 +173,13 @@
 			<version>6.1.16</version>
 			<scope>test</scope>
 		</dependency>
-
+		
+		<!-- Contains handy API -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>r09</version>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- Logging -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
 		</dependency>
 
 		<!-- It works with JUnit's log output? -->
