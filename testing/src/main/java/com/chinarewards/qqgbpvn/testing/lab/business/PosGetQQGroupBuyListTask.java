@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.lab;
+package com.chinarewards.qqgbpvn.testing.lab.business;
 
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -6,10 +6,12 @@ import org.apache.jmeter.samplers.SampleResult;
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
-import com.chinarewards.qqgbpvn.testing.lab.parent.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.PosTask;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
@@ -31,9 +33,13 @@ public final class PosGetQQGroupBuyListTask extends PosTask {
 		res.sampleStart();	//开始任务
 		try{
 			byte[] bodys =  buildBodyMessage(context);
-			super.sendMessage(context, bodys);
+			Message message = super.sendMessage(context, bodys);
 			
-			res.setSuccessful(true);
+			if(message.getBodyMessage() instanceof ErrorBodyMessage){
+				res.setSuccessful(false);
+			}else{
+				res.setSuccessful(true);
+			}
 		}catch(Throwable e){
 			res.setSuccessful(false);
 			throw new RunTaskException(e);

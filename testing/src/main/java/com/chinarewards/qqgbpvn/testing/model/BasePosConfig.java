@@ -23,12 +23,20 @@ public final class BasePosConfig {
 	
 	private Socket socket;
 	
+	private long firmwareSize;		//文件大小
+	
+	private String firmwareName;	//文件名
+	
+	private long firmwareOffset = 0;	//文件偏移量
+	
 	@Override
 	public String toString() {
 		return "BasePosConfig [number=" + number + ", posId=" + posId
 				+ ", sequence=" + sequence + ", secret=" + secret
 				+ ", lastResponseBodyMessage=" + lastResponseBodyMessage
-				+ ", grouponId=" + grouponId + ", socket=" + socket + "]";
+				+ ", grouponId=" + grouponId + ", socket=" + socket
+				+ ", firmwareSize=" + firmwareSize + ", firmwareName="
+				+ firmwareName + ", firmwareOffset=" + firmwareOffset + "]";
 	}
 
 	public Socket getSocket() {
@@ -85,6 +93,30 @@ public final class BasePosConfig {
 
 	public void setGrouponId(String grouponId) {
 		this.grouponId = grouponId;
+	}
+	
+	public long getFirmwareSize() {
+		return firmwareSize;
+	}
+
+	public void setFirmwareSize(long firmwareSize) {
+		this.firmwareSize = firmwareSize;
+	}
+
+	public String getFirmwareName() {
+		return firmwareName;
+	}
+
+	public void setFirmwareName(String firmwareName) {
+		this.firmwareName = firmwareName;
+	}
+
+	public long getFirmwareOffset() {
+		return firmwareOffset;
+	}
+
+	public void setFirmwareOffset(long firmwareOffset) {
+		this.firmwareOffset = firmwareOffset;
 	}
 	
 }

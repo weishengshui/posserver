@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.other;
+package com.chinarewards.qqgbpvn.testing.lab.other;
 
 import java.net.Socket;
 
@@ -10,24 +10,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
-import com.chinarewards.qqgbpvn.testing.support.ThreadGroupSetUp;
-import com.chinarewards.qqgbpvn.testing.util.SocketUtils;
+import com.chinarewards.qqgbpvn.testing.lab.support.ThreadGroupSetUp;
+import com.chinarewards.qqgbpvn.testing.util.SocketUtil;
 
 /**
- * description：非常规的bytes
+ * description：非常规的bytes	{other: is not extends PosTask, because it not a pos, it is Abnormal}
  * @copyright binfen.cc
  * @projectName testing
  * @time 2011-9-28   下午04:32:54
  * @author Seek
  */
-public class AbnormalTask extends AbstractJavaSamplerClient {
+public class AbnormalTest extends AbstractJavaSamplerClient {
 	
 	private Logger logger = LoggerFactory.getLogger(ThreadGroupSetUp.class);
 	
 	private static final String POS_SERVER_IP = "POS_SERVER_IP";
 	private static final String POS_SERVER_PORT = "POS_SERVER_PORT";
 	
-	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE";
+	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE(unit of time:Second)";
 	
 	@Override
 	public Arguments getDefaultParameters() {
@@ -55,24 +55,29 @@ public class AbnormalTask extends AbstractJavaSamplerClient {
 
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
-		SampleResult res = new SampleResult();
-		res.sampleStart();	//开始任务
-		
+		//不影响SampleResult报表
 		try{
 			//unit of time: second
 			long timestampRange = Long.parseLong(context.getParameter(TIMESTAMP_RANGE));
-			String posServerIp = context.getParameter(POS_SERVER_IP);
-			Integer posServerPort = Integer.parseInt(context.getParameter(POS_SERVER_PORT));
-			
 			//sleep
 			long randomTime = (long)(Math.random() * timestampRange);
 			Thread.sleep(randomTime * 1000);
-			
+		}catch(Throwable e){
+			logger.error(e.getMessage(), e);
+		}
+		
+		SampleResult res = new SampleResult();
+		res.sampleStart();	//开始任务
+		try{
+			String posServerIp = context.getParameter(POS_SERVER_IP);
+			Integer posServerPort = Integer.parseInt(context.getParameter(POS_SERVER_PORT));
 			byte[] bodys =  randomBytes(context);
 			
 			//socket send message
 			Socket socket = new Socket(posServerIp, posServerPort);
-			SocketUtils.sendPackageToServer(socket, bodys);
+			
+			//only do write, not do read...
+			SocketUtil.writeFromOutputStream(socket.getOutputStream(), bodys);
 			
 			res.setSuccessful(true);
 		}catch(Throwable e){

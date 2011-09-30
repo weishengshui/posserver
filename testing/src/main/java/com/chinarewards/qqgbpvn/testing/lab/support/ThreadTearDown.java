@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.support;
+package com.chinarewards.qqgbpvn.testing.lab.support;
 
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;

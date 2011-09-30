@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.lab;
+package com.chinarewards.qqgbpvn.testing.lab.firmware;
 
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -6,21 +6,22 @@ import org.apache.jmeter.samplers.SampleResult;
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
-import com.chinarewards.qqgbpvn.testing.lab.parent.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.PosTask;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.InitMessageCodec;
 
 /**
- * description：POS机Init
+ * description：POS机请求升级
  * @copyright binfen.cc
  * @projectName testing
- * @time 2011-9-22   下午06:02:53
+ * @time 2011-9-29   下午05:36:57
  * @author Seek
  */
-public final class PosInitTask extends PosTask {
+public final class PosRequestUpgradeTask extends PosTask {
 	
 	@Override
 	public SampleResult runTask(JavaSamplerContext context) throws RunTaskException {
@@ -29,9 +30,19 @@ public final class PosInitTask extends PosTask {
 		
 		try{
 			byte[] bodys =  buildBodyMessage(context);
-			super.sendMessage(context, bodys);
+			Message message = super.sendMessage(context, bodys);
 			
-			res.setSuccessful(true);
+			if(message.getBodyMessage() instanceof ErrorBodyMessage){
+				res.setSuccessful(false);
+			}else{
+				FirmwareUpgradeRequestResponseMessage bodyMessage = (FirmwareUpgradeRequestResponseMessage) message.getBodyMessage();
+				TestContext.getBasePosConfig().setFirmwareSize(bodyMessage.getSize());
+				TestContext.getBasePosConfig().setFirmwareName(bodyMessage.getFirmwareName());
+				
+				logger.debug("save firmware size:"+bodyMessage.getSize());
+				logger.debug("save firmware name:"+bodyMessage.getFirmwareName());
+				res.setSuccessful(true);
+			}
 		}catch(Throwable e){
 			res.setSuccessful(false);
 			throw new RunTaskException(e);
@@ -44,8 +55,7 @@ public final class PosInitTask extends PosTask {
 	@Override
 	protected byte[] buildBodyMessage(JavaSamplerContext context) throws BuildBodyMessageException {
 		try{
-			InitRequestMessage bodyMessage = new InitRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.INIT_CMD_ID);
+			FirmwareUpgradeRequestMessage bodyMessage = new FirmwareUpgradeRequestMessage();
 			bodyMessage.setPosId(TestContext.getBasePosConfig().getPosId());
 			
 			SimpleCmdCodecFactory cmdCodecFactory = TestContext.getCmdCodecFactory();

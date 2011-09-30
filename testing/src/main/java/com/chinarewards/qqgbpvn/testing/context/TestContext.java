@@ -6,11 +6,14 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.model.BasePosConfig;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageUtil;
 
 /**
  * description：基础环境配置
@@ -47,6 +50,8 @@ public class TestContext {
 	private static SimpleCmdCodecFactory cmdCodecFactory;	//codec by cmdId
 	
 	private static PackageHeadCodec packageHeadCodec;
+	
+	private static PackageUtil packageUtil;
 	
 	private static long timestampRange;		//thread invoke timestamp range, unit of time: second
 	
@@ -201,6 +206,14 @@ public class TestContext {
 
 	public static void setTimestampRange(long timestampRange) {
 		TestContext.timestampRange = timestampRange;
+	}
+	
+	public static PackageUtil getPackageUtil() {
+		return packageUtil;
+	}
+
+	public static void setPackageUtil(PackageUtil packageUtil) {
+		TestContext.packageUtil = packageUtil;
 	}
 	
 }

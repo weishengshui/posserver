@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.support;
+package com.chinarewards.qqgbpvn.testing.lab.support;
 
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -9,32 +9,32 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 
 /**
- * description：tear down a threadGroup
+ * description：set up a thread
  * @copyright binfen.cc
  * @projectName testing
- * @time 2011-9-26   上午10:32:32
+ * @time 2011-9-26   上午10:32:24
  * @author Seek
  */
-public class ThreadGroupTearDown extends AbstractJavaSamplerClient {
+public class ThreadSetUp extends AbstractJavaSamplerClient {
 	
-	private Logger logger = LoggerFactory.getLogger(ThreadGroupTearDown.class);
+	private Logger logger = LoggerFactory.getLogger(ThreadSetUp.class);
 	
 	@Override
 	public SampleResult runTest(JavaSamplerContext context) {
-		logger.debug("threadGroup tearDown...");
+		logger.debug("a thread setUp...");
 		SampleResult result = new SampleResult();
 		result.sampleStart();
 		
-		try{
-			TestContext.testDestroy();
+		try {
+			TestContext.initBasePosConfig();
 			result.setSuccessful(true);
-		}catch(Throwable e){
+		} catch (Throwable e) {
 			result.setSuccessful(false);
 			logger.error(e.getMessage(), e);
-		}finally{
+		} finally {
 			result.sampleEnd();
 		}
 		return result;
 	}
-
+	
 }

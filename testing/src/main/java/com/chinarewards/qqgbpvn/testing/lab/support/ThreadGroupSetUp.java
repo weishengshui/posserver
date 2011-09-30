@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.support;
+package com.chinarewards.qqgbpvn.testing.lab.support;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -24,6 +24,7 @@ import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
 import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageHeadCodec;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.PackageUtil;
 
 /**
  * description：threadGroup setUp()
@@ -43,7 +44,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	private static final String POS_SERVER_PORT = "POS_SERVER_PORT";
 	
 	private static final String CSV_SEPARATOR = "CSV_SEPARATOR";
-	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE";
+	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE(unit of time:minute)";
 	
 	@Override
 	public Arguments getDefaultParameters() {
@@ -99,6 +100,10 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 			
 			//set thread timestamp
 			TestContext.setTimestampRange(timestampRange);
+			
+			//set a packageUtil
+			TestContext.setPackageUtil(new PackageUtil(TestContext.getPackageHeadCodec(), 
+					TestContext.getCmdCodecFactory()));
 			
 			result.setSuccessful(true);
 		} catch (Exception e) {

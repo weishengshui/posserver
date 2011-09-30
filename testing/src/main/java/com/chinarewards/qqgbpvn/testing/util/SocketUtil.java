@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbvpn.common.Tools;
 
 /**
@@ -16,39 +15,27 @@ import com.chinarewards.qqgbvpn.common.Tools;
  * @time 2011-9-26   上午10:34:32
  * @author Seek
  */
-public final class SocketUtils {
+public final class SocketUtil {
 	
-	private static Logger logger = LoggerFactory.getLogger(SocketUtils.class);
+	private static Logger logger = LoggerFactory.getLogger(SocketUtil.class);
 	
 	private static final int BUFF_SIZE = 1024;
 	
 	/**
-	 * description：发送一个package，同时接收一个package
-	 * @param sendPackage
+	 * description：read bytes from inputStream	
+	 * 				{restraint qq group buy pos message protocol}
+	 * @param is a InputStream
 	 * @return
-	 * @time 2011-9-22   下午05:59:41
+	 * @time 2011-9-30   下午03:10:05
 	 * @author Seek
 	 */
-	public static final byte[] sendPackageToServer(Socket outerSocket, byte[] sendPackage){
-		logger.debug("SocketUtils sendPackageToServer() run...");
-		
-		Socket socket = null;
-		OutputStream os = null;
-		InputStream is = null;
+	public static final byte[] readFromInputStream(InputStream is){
+		logger.debug("SocketUtils readFromInputStream() run...");
 		
 		byte[] result = new byte[0];
 		try{
-			socket = outerSocket;
-			os = socket.getOutputStream();
-			is = socket.getInputStream();
-			
-			os.write(sendPackage);
-			os.flush();
-			
-			
 			byte[] transit = new byte[BUFF_SIZE];
 			int amt = -1;
-			
 			while(true){
 				amt = is.read(transit);
 				logger.debug("read bytes amt:"+amt);
@@ -68,15 +55,35 @@ public final class SocketUtils {
 					}
 				}
 			}
-		}catch(Throwable e) {
+		}catch(Throwable e){
 			logger.error(e.getMessage(), e);
-		}finally{
-			//socket.close();
 		}
 		
-		logger.debug("socket I/O end!");
+		logger.debug("read bytes from socket:"+Arrays.toString(result)+
+				", length="+result.length);
 		return result;
 	}
+	
+	/**
+	 * description：write bytes to Socket
+	 * @param os a OutputStream
+	 * @param sendPackage
+	 * @time 2011-9-30   下午03:10:28
+	 * @author Seek
+	 */
+	public static final void writeFromOutputStream(OutputStream os, byte[] sendPackage){
+		logger.debug("SocketUtils writeFromOutputStream() run...");
+		try{
+			logger.debug("write bytes to socket:"+Arrays.toString(sendPackage) +
+					", length="+sendPackage.length);
+			os.write(sendPackage);
+			os.flush();
+		}catch(Throwable e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+
 	
 	public static void main(String[] args) throws Exception{
 		Socket s = new Socket("127.0.0.1", 1234);
