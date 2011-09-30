@@ -41,6 +41,7 @@ import com.chinarewards.qqgbvpn.main.protocol.filter.ManageConnectCountFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
+import com.chinarewards.qqgbvpn.main.rmi.RMIRegistry;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
@@ -79,6 +80,11 @@ public class DefaultPosServer implements PosServer {
 	 * The configured port to use.
 	 */
 	protected int port;
+	
+	/**
+	 * The configured jmx moniter server port to use.
+	 */
+	protected int jmxMoniterPort;
 
 	/**
 	 * Whether the PersistService of Guice has been initialized, i.e. the
@@ -288,8 +294,8 @@ public class DefaultPosServer implements PosServer {
 	}
 	
 	public void addMonitor()throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
-		String port = configuration.getString("monitor.port");
-		log.debug(" monitor port ={}",port);
+		jmxMoniterPort = configuration.getInt("monitor.port", 9999);
+		log.debug(" monitor port ={}",jmxMoniterPort);
 		//jmx----------------------code start--------------------------
 		//jmx  服务器
 		MBeanServer mbs=MBeanServerFactory.createMBeanServer();
@@ -298,7 +304,7 @@ public class DefaultPosServer implements PosServer {
 		//注册需要被管理的MBean
 		mbs.registerMBean(manageConnectCountFilter, new ObjectName("ManageConnectCountFilter:name=ManageConnectCount"));
 		
-		String jmxServiceURL="service:jmx:rmi:///jndi/rmi://localhost:"+port+"/jmxrmi";
+		String jmxServiceURL="service:jmx:rmi:///jndi/rmi://localhost:"+jmxMoniterPort+"/jmxrmi";
 		// Create an RMI connector and start it
         JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
         
@@ -316,8 +322,10 @@ public class DefaultPosServer implements PosServer {
 
 	@Override
 	public void setMonitorEnable(boolean isMonitorEnable) throws IOException {
-      if(cs != null && isMonitorEnable)
-			cs.start(); 			
+      if(cs != null && isMonitorEnable){
+    	  RMIRegistry.RegistryRMI(jmxMoniterPort);
+    	  cs.start(); 			
+      }
 	}
 
 }
