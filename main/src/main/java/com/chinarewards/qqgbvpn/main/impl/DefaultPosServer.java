@@ -7,6 +7,17 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -26,6 +37,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.ManageConnectCountFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
@@ -57,6 +69,7 @@ public class DefaultPosServer implements PosServer {
 
 	protected final ServiceDispatcher serviceDispatcher;
 
+	protected JMXConnectorServer cs;
 	/**
 	 * socket server address
 	 */
@@ -97,7 +110,7 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#start()
 	 */
 	@Override
-	public void start() throws PosServerException {
+	public void start() throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
 
 		printConfigValues();
 
@@ -109,6 +122,8 @@ public class DefaultPosServer implements PosServer {
 		// setup Apache Mina server.
 		startMinaService();
 
+		//TODO jmx agent  connector.start();
+		
 		log.info("Server running, listening on {}", getLocalPort());
 
 	}
@@ -128,14 +143,24 @@ public class DefaultPosServer implements PosServer {
 	 * Start the Apache Mina service.
 	 * 
 	 * @throws PosServerException
+	 * @throws NullPointerException 
+	 * @throws MalformedObjectNameException 
+	 * @throws NotCompliantMBeanException 
+	 * @throws MBeanRegistrationException 
+	 * @throws InstanceAlreadyExistsException 
+	 * @throws IOException 
 	 */
-	protected void startMinaService() throws PosServerException {
+	protected void startMinaService() throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
 		// =============== server side ===================
-
+		
 		acceptor = new NioSocketAcceptor();
+		
+		// add  jmx  monitor
+		addMonitor();
+		
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
 		// not this
@@ -144,6 +169,7 @@ public class DefaultPosServer implements PosServer {
 				new ProtocolCodecFilter(new MessageCoderFactory(injector,
 						cmdCodecFactory)));
 
+		
 		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
@@ -210,10 +236,12 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#stop()
 	 */
 	@Override
-	public void stop() {
-
+	public void stop() throws IOException {
+		//TODO jmx agent  connector.stop();
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
+		if(cs !=null && cs.isActive())
+			cs.stop();
 
 	}
 
@@ -257,6 +285,39 @@ public class DefaultPosServer implements PosServer {
 		}
 
 		return port;
+	}
+	
+	public void addMonitor()throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
+		String port = configuration.getString("monitor.port");
+		log.debug(" monitor port ={}",port);
+		//jmx----------------------code start--------------------------
+		//jmx  服务器
+		MBeanServer mbs=MBeanServerFactory.createMBeanServer();
+		//管理连接状态数目工具Filter
+		ManageConnectCountFilter manageConnectCountFilter=new ManageConnectCountFilter();
+		//注册需要被管理的MBean
+		mbs.registerMBean(manageConnectCountFilter, new ObjectName("ManageConnectCountFilter:name=ManageConnectCount"));
+		
+		String jmxServiceURL="service:jmx:rmi:///jndi/rmi://localhost:"+port+"/jmxrmi";
+		// Create an RMI connector and start it
+        JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
+        
+        log.debug(" JMXServiceURL ={}",jmxServiceURL);
+        
+        cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
+        
+     // manage connect count filter
+		acceptor.getFilterChain().addLast("manageConnect",
+				manageConnectCountFilter);
+		
+       
+        //jmx----------------------code end--------------------------
+	} 
+
+	@Override
+	public void setMonitorEnable(boolean isMonitorEnable) throws IOException {
+      if(cs != null && isMonitorEnable)
+			cs.start(); 			
 	}
 
 }

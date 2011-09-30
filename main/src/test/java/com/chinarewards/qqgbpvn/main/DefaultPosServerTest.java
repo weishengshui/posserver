@@ -118,6 +118,9 @@ public class DefaultPosServerTest extends GuiceTest {
 		//
 		// start it!
 		server.start();
+		
+		server.setMonitorEnable(false);
+		
 		int runningPort = server.getLocalPort();
 		// stop it.
 		server.stop();
