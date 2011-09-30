@@ -130,7 +130,8 @@ public class DefaultPosServer implements PosServer {
 	 */
 	protected void startMinaService() throws PosServerException {
 		
-		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME);
+		//defualt  1800 seconds
+		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,1800);
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
