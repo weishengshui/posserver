@@ -18,9 +18,9 @@ public class FinanceReportVO implements Serializable {
 	
 	private Integer baseAmount;
 	
-	private Integer actuallyValCount;
+	private Long actuallyValCount;
 	
-	private Integer beyondValCount;
+	private Long beyondValCount;
 	
 	private Double unitPrice;
 	
@@ -31,8 +31,8 @@ public class FinanceReportVO implements Serializable {
 	public FinanceReportVO(){}
 
 	public FinanceReportVO(String reportMonth, String agentName, String posId,
-			Integer baseAmount, Integer actuallyValCount,
-			Integer beyondValCount, Double unitPrice,
+			Integer baseAmount, Long actuallyValCount,
+			Long beyondValCount, Double unitPrice,
 			Double beyondAmount, Double amount) {
 		super();
 		this.reportMonth = reportMonth;
@@ -45,7 +45,7 @@ public class FinanceReportVO implements Serializable {
 		this.beyondAmount = beyondAmount;
 		this.amount = amount;
 	}
-
+	
 	public String getReportMonth() {
 		return reportMonth;
 	}
@@ -78,19 +78,19 @@ public class FinanceReportVO implements Serializable {
 		this.baseAmount = baseAmount;
 	}
 
-	public Integer getActuallyValCount() {
+	public Long getActuallyValCount() {
 		return actuallyValCount;
 	}
 
-	public void setActuallyValCount(Integer actuallyValCount) {
+	public void setActuallyValCount(Long actuallyValCount) {
 		this.actuallyValCount = actuallyValCount;
 	}
 
-	public Integer getBeyondValCount() {
+	public Long getBeyondValCount() {
 		return beyondValCount;
 	}
 
-	public void setBeyondValCount(Integer beyondValCount) {
+	public void setBeyondValCount(Long beyondValCount) {
 		this.beyondValCount = beyondValCount;
 	}
 

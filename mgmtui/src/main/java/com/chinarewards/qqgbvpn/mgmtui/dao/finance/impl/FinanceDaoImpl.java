@@ -22,16 +22,16 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 		String hql = "select new com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO(" +
 				"DATE_FORMAT(v.ts, '%Y-%m'),v.agentName,v.posId," +
 				FinanceReportVO.BASE_AMOUNT + " AS baseAmount" +
-				",COUNT(1) AS actuallyValCount" +
-				", (CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
+				",COUNT(v.id) AS actuallyValCount" +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
 				", " + FinanceReportVO.UNIT_PRICE + " AS unitPrice" +
-				", (CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
 								"* " + FinanceReportVO.UNIT_PRICE + " AS beyondAmount" +
 				", (" + FinanceReportVO.BASE_AMOUNT +
-						" + ((CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-								"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
 										"* " + FinanceReportVO.UNIT_PRICE + ")) AS amount" +
 				") " +
 				"from Validation v " +
@@ -61,46 +61,51 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 	
 	public PageInfo<FinanceReportVO> searchFinanceReport(FinanceReportSearchVO searchVO, PageInfo pageInfo) {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
+		Map<String, Object> countParamMap = new HashMap<String, Object>();
 		String searchSql = "select new com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO(" +
 				"DATE_FORMAT(v.ts, '%Y-%m'),v.agentName,v.posId," +
 				FinanceReportVO.BASE_AMOUNT + " AS baseAmount" +
-				",COUNT(1) AS actuallyValCount" +
-				", (CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
+				",COUNT(v.id) AS actuallyValCount" +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
 				", " + FinanceReportVO.UNIT_PRICE + " AS unitPrice" +
-				", (CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
 								"* " + FinanceReportVO.UNIT_PRICE + " AS beyondAmount" +
 				", (" + FinanceReportVO.BASE_AMOUNT +
-						" + ((CASE WHEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-								"THEN (COUNT(1) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
+								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
 										"* " + FinanceReportVO.UNIT_PRICE + ")) AS amount" +
 				") " +
 				"from Validation v " +
 				"where v.status = :status ";
 		String countSql = "SELECT COUNT(1) FROM (SELECT 1 from Validation v where v.status = :status ";
 		paramMap.put("status", ValidationStatus.SUCCESS);
+		countParamMap.put("status", ValidationStatus.SUCCESS.toString());
 		if (searchVO != null) {
 			if (!StringUtil.isEmptyString(searchVO.getAgentId())) {
 				searchSql += " and v.agentId = :agentId";
 				countSql += " and v.agentId = :agentId";
 				paramMap.put("agentId", searchVO.getAgentId());
+				countParamMap.put("agentId", searchVO.getAgentId());
 			}
 			if (searchVO.getStartDate() != null) {
 				searchSql += " and v.ts >= :startDate";
 				countSql += " and v.ts >= :startDate";
 				paramMap.put("startDate", searchVO.getStartDate());
+				countParamMap.put("startDate", searchVO.getStartDate());
 			}
 			if (searchVO.getEndDate() != null) {
 				searchSql += " and v.ts <= :endDate";
 				countSql += " and v.ts <= :endDate";
 				paramMap.put("endDate", searchVO.getEndDate());
+				countParamMap.put("endDate", searchVO.getEndDate());
 			}
 		}
-		searchSql += "group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
-		searchSql += "order by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
-		countSql += "group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
-		PageInfo<FinanceReportVO> result = this.findPageInfo(countSql, searchSql, paramMap, pageInfo);
+		searchSql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId ";
+		searchSql += " order by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId ";
+		countSql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId) a ";
+		PageInfo<FinanceReportVO> result = this.findPageInfoByNativeQuery(countSql, searchSql, countParamMap, paramMap, pageInfo);
 		return result;
 	}
 	
