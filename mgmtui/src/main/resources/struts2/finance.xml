@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+	"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+	<package name="finance" extends="default" namespace="/finance">
+		<default-interceptor-ref name="secureStack" />
+		<!-- find all album -->
+		<action name="search_bill"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction">
+			<result name="success" type="tiles">/WEB-INF/jsp/finance/search_bill.jsp</result>
+		</action>
+	</package>
+</struts>
