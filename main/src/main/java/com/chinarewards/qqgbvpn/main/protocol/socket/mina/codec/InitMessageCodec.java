@@ -29,7 +29,7 @@ public class InitMessageCodec implements ICommandCodec {
 		log.debug("init message decode");
 		InitRequestMessage message = new InitRequestMessage();
 		log.debug("in.remaining()={}", in.remaining());
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);
 		}

@@ -28,4 +28,13 @@ public class InitRequestMessage implements ICommand {
 		this.cmdId = cmdId;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "cmdId=" + cmdId + ", posId=" + posId;
+	}
+	
+
 }

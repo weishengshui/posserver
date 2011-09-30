@@ -34,9 +34,12 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	protected boolean doDecode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 
-		log.debug("MessageDecoder.doDecode invoked");
-		log.trace("session.getId()=======:" + session.getId());
+		log.debug("MessageDecoder.doDecode() invoked");
+		log.trace("Mina session ID: " + session.getId());
 
+		// TODO make the '96' be configurable.
+		CodecUtil.hexDumpForLogging(log, in, 96);
+		
 		ProtocolMessageDecoder decoder = new ProtocolMessageDecoder(
 				cmdCodecFactory);
 		ProtocolMessageDecoder.Result result = decoder.decode(in, charset);
@@ -44,17 +47,20 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 		// act according to the result.
 		if (!result.isMoreDataRequired()) {
 			Object parsedMessage = result.getMessage();
+			log.trace("Number of bytes remained in buffer after parsing one message: {}", in.remaining());
 			if (parsedMessage == null) {
 				log.warn(
 						"Internal error: No message is returned by {} even it reports a message is parsed",
 						decoder.getClass());
 				return true;
 			} else {
+				log.debug("Message decoded successful. Message: {}", parsedMessage);
 				// write the data.
 				out.write(parsedMessage);
 				return true;
 			}
 		} else {
+			log.trace("More raw data is required to decode");
 			// we do not have sufficient bytes to parse the message, return
 			// 'false' to request Mina to do more.
 			return false;

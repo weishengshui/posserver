@@ -4,6 +4,8 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.codec.binary.Hex;
+
 /**
  * byte tools
  * 
@@ -165,6 +167,10 @@ public abstract class Tools {
 		sum = ~sum;
 		sum = sum & 0xFFFF;
 		return sum;
+	}
+	
+	public static final String byteToHexString(byte[] src) {
+		return new String(Hex.encodeHex(src));
 	}
 
 	public static void main(String[] args) {

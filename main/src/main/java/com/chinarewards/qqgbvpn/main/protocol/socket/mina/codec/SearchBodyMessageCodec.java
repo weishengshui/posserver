@@ -31,7 +31,7 @@ public class SearchBodyMessageCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("search message decode");
 		SearchRequestMessage message = new SearchRequestMessage();
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.PAGE
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.PAGE
 				+ ProtocolLengths.SIZE) {
 			throw new PackageException(
 					"search packge message body error, body message is :" + in);

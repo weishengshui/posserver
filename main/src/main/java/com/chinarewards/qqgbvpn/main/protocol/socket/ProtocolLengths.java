@@ -14,11 +14,6 @@ public abstract class ProtocolLengths {
 	/**
 	 * 
 	 */
-	public static final int HEADER = 2;
-
-	/**
-	 * 
-	 */
 	public static final int PACKET = 4;
 
 	/**

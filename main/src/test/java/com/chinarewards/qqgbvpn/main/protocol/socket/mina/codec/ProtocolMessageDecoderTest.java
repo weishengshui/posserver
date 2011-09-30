@@ -45,7 +45,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 	
 	private static final String CHARSET_TO_TEST = "GB2312";
 	
-	private static final String POS_ID_TO_TEST = CHARSET_TO_TEST;
+	private static final String POS_ID_TO_TEST = "POS-123";
 	
 	/*
 	 * (non-Javadoc)

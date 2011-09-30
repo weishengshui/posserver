@@ -32,7 +32,7 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("FirmwareRequest message decode");
 		FirmwareUpgradeRequestMessage message = new FirmwareUpgradeRequestMessage();
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
 			throw new PackageException(
 					"FirmwareRequest packge message body error, body message is :"
 							+ in);
@@ -47,7 +47,7 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		message.setPosId(Tools.byteToString(posIdBuf, charset));
 
 		log.debug(
-				"FirmwareRequest message request:cmdId is ({}) , posid is ({})",
+				"FirmwareRequest message request: cmdId is ({}) , posid is ({})",
 				new Object[] { cmdId, posIdBuf });
 		return message;
 	}

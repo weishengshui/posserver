@@ -5,7 +5,6 @@ package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
@@ -140,6 +139,14 @@ public class DefaultPosServer implements PosServer {
 		// result.
 		
 		acceptor = new NioSocketAcceptor();
+		
+		// our logging filter
+		acceptor.getFilterChain()
+				.addLast(
+						"cr-logger",
+						new com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter());
+		
+		// Mina's logging filter
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// decode message
@@ -151,8 +158,6 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
 		
-		acceptor.getFilterChain().addLast("bizLogger", new LoggingFilter());
-
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));

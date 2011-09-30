@@ -45,11 +45,11 @@ public class ProtocolMessageDecoder {
 
 		/**
 		 * 
-		 * @param parsed
+		 * @param moreDataRequired
 		 * @param message
 		 */
-		public Result(boolean parsed, Object message) {
-			this.moreDataRequired = parsed;
+		public Result(boolean moreDataRequired, Object message) {
+			this.moreDataRequired = moreDataRequired;
 			this.message = message;
 		}
 
@@ -95,99 +95,84 @@ public class ProtocolMessageDecoder {
 	 */
 	public Result decode(IoBuffer in, Charset charset) throws Exception {
 
-		log.trace("IoBuffer.remaining() = {}", in.remaining());
+		log.trace("IoBuffer remaining bytes: {}, current position: {}", in.remaining(), in.position());
 
 		// check length, it must greater than head length
-		if (in.remaining() > ProtocolLengths.HEAD) {
-
-			log.trace("Do message processing");
-			HeadMessage headMessage = new HeadMessage();
-			// read header
-			// read seq
-			log.trace("Read message header");
-			long seq = in.getUnsignedInt();
-			headMessage.setSeq(seq);
-
-			// read ack
-			long ack = in.getUnsignedInt();
-			headMessage.setAck(ack);
-
-			// read flags
-			int flags = in.getUnsignedShort();
-			headMessage.setFlags(flags);
-			log.trace("- IoBuffer.remaining(): " + in.remaining());
-
-			// read checksum
-			log.trace("Read message checksum");
-			int checksum = in.getUnsignedShort();
-			log.trace("- Message checksum: {}", checksum);
-			headMessage.setChecksum(checksum);
-			log.trace("- IoBuffer.remaining(): " + in.remaining());
-
-			// read message size
-			log.trace("read message size");
-			long messageSize = in.getUnsignedInt();
-			headMessage.setMessageSize(messageSize);
-			log.trace("- IoBuffer.remaining(): " + in.remaining());
+		if (in.remaining() >= ProtocolLengths.HEAD) {
+			
+			int start = in.position();
+			
+			// parse message header
+			log.trace("Parsing message header..");
+			PackageHeadCodec headCodec = new PackageHeadCodec();
+			HeadMessage headMessage = headCodec.decode(in);
 			log.trace("- message header: {}", headMessage.toString());
+			log.trace("- IoBuffer remaining (body): {}", in.remaining());
 
 			// check length
 			// XXX suspicious code, may lead to unwanted error code 3: invalid
 			// size
 			// XXX should wait until the whole package is received.
-			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
-				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
-//				Message message = new Message(headMessage, bodyMessage);
+//			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
+//				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+//				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
+//				return new Result(true, null);
+//			}
+			if (ProtocolLengths.HEAD + in.remaining() < headMessage.getMessageSize()) {
+				// more data is required.
+				log.trace("More bytes are required to parse the complete message (still need {} bytes)",
+						headMessage.getMessageSize() - ProtocolLengths.HEAD + in.remaining());
+				in.position(start);	// restore the original position.
 				return new Result(true, null);
 			}
-			int position = in.position();
 
+			//
+			// validate the checksum.
+			//
+			
 			// byteTmp: raw bytes
-			in.position(0);
-			byte[] byteTmp = new byte[in.remaining()];
-			in.get(byteTmp);
-			CodecUtil.debugRaw(log, byteTmp);
-			Tools.putUnsignedShort(byteTmp, 0, 10);
-			log.trace("- byteTmp==msg==:" + Arrays.toString(byteTmp));
-
-			int calculatedChceksum = Tools.checkSum(byteTmp, byteTmp.length);
-			log.trace("- calculated checksum: "+ calculatedChceksum);
+			int calculatedChecksum = 0;
+			{
+				in.position(start);
+				byte[] byteTmp = new byte[in.remaining()];
+				in.get(byteTmp);
+				CodecUtil.debugRaw(log, byteTmp);
+				Tools.putUnsignedShort(byteTmp, 0, 10);
+				log.trace("- byteTmp==msg==:" + Arrays.toString(byteTmp));
+	
+				calculatedChecksum = Tools.checkSum(byteTmp, byteTmp.length);
+				log.trace("- calculated checksum: "+ calculatedChecksum);
+			}
 
 			// validate the checksum. if not correct, return an error response.
-			if (calculatedChceksum != checksum) {
+			if (calculatedChecksum != headMessage.getChecksum()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
 				Message message = new Message(headMessage, bodyMessage);
-				return new Result(false, message);
+				return new Result(true, message);
 			}
 
 			// really decode the command message.
-			in.position(position);
+			in.position(start + ProtocolLengths.HEAD);
 			ICommand bodyMessage = null;
 			try {
 				bodyMessage = this.decodeMessageBody(in, charset);
+				// a message is completely decoded.
+				Message message = new Message(headMessage, bodyMessage);
+				return new Result(false, message);
 			} catch (Throwable e) {
 				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
 				errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
 				Message message = new Message(headMessage, errorBodyMessage);
-				return new Result(false, message);
+				return new Result(true, message);
 			}
-			Message message = new Message(headMessage, bodyMessage);
-			return new Result(false, message);
 
 		} else {
 			
+			log.trace("More bytes are required to parse the header message (still need {} bytes)",
+					ProtocolLengths.HEAD - in.remaining());
 			return new Result(true, null);
 			
-//			HeadMessage headMessage = new HeadMessage();
-//			ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
-//			errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
-//			Message message = new Message(headMessage, errorBodyMessage);
-//			byte[] tmp = new byte[in.remaining()];
-//			in.get(tmp);
-//
-//			return new Result(false, message);
 		}
 
 	}
@@ -198,9 +183,8 @@ public class ProtocolMessageDecoder {
 		// get cmdId and process it
 		int position = in.position();
 		long cmdId = in.getUnsignedInt();
-		log.debug("IoBuffer.position()========:" + position);
 		in.position(position);
-		log.debug("cmdId========:" + cmdId);
+		log.debug("cmdId: {}", cmdId);
 
 		// get the message codec for this command ID.
 		ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
