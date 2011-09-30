@@ -1,10 +1,12 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
+import com.chinarewards.qqgbvpn.common.Tools;
+
 /**
  * head message
  * 
  * @author huangwei
- * 
+ * @since 0.1.0
  */
 public class HeadMessage {
 
@@ -62,10 +64,11 @@ public class HeadMessage {
 	@Override
 	public String toString() {
 		StringBuffer sbr = new StringBuffer();
-		sbr.append("seq:{").append(seq).append("} ack:{").append(ack).append(
-				"} flags:{").append(flags).append("} checksum:{").append(
-				checksum).append("} messageSize:{").append(messageSize).append(
-				"}");
+		sbr.append("seq:{0x").append(Long.toHexString(seq)).append("} ack:{0x")
+				.append(Long.toHexString(ack)).append("} flags:{0x")
+				.append(Integer.toHexString(flags)).append("} checksum:{0x")
+				.append(Integer.toHexString(checksum))
+				.append("} messageSize:{0x").append(Long.toHexString(messageSize)).append("}");
 		return sbr.toString();
 	}
 

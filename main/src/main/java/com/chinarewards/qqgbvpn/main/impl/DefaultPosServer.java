@@ -131,9 +131,6 @@ public class DefaultPosServer implements PosServer {
 	protected void startMinaService() throws PosServerException {
 		
 		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME);
-		
-		log.trace(" idle_time ======================= {}",idleTime);
-		
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -150,6 +147,12 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
 				new IdleConnectionKillerFilter());
 		
+		// our logging filter
+		acceptor.getFilterChain()
+				.addLast(
+						"cr-logger",
+						new com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter());
+		
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// decode message
@@ -157,15 +160,10 @@ public class DefaultPosServer implements PosServer {
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
-		
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
 		
-
-		
-		acceptor.getFilterChain().addLast("bizLogger", new LoggingFilter());
-
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));

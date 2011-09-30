@@ -28,7 +28,7 @@ public class LoginMessageCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("login/bind message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
 				+ ProtocolLengths.CHALLENGE_RESPONSE) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);

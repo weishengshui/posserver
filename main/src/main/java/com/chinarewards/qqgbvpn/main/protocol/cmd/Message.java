@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
-
 /**
  * message
  * 
@@ -37,6 +36,16 @@ public class Message {
 
 	public void setHeadMessage(HeadMessage headMessage) {
 		this.headMessage = headMessage;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "header=" + headMessage + ", body=" + bodyMessage;
 	}
 
 }

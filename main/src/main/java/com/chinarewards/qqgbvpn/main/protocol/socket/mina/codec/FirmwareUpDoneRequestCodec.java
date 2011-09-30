@@ -30,7 +30,7 @@ public class FirmwareUpDoneRequestCodec implements ICommandCodec {
 		log.debug("FirmwareUpDone message decode");
 		FirmwareUpDoneRequestMessage message = new FirmwareUpDoneRequestMessage();
 		
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POS_ID) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);
 		}

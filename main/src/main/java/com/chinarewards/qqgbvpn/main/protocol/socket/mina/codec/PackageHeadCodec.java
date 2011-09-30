@@ -31,12 +31,19 @@ public class PackageHeadCodec {
 		return headByte;
 	}
 	
-	public HeadMessage decode(IoBuffer in){
-		log.trace("Do processing");
+	/**
+	 * Decode head message from the IoBuffer. This method will <code>not</code>
+	 * reset IoBuffer's original position.
+	 * 
+	 * @param in
+	 * @return
+	 */
+	public HeadMessage decode(IoBuffer in) {
+		
 		HeadMessage headMessage = new HeadMessage();
+		
 		// read header
 		// read seq
-		log.trace("Read message head");
 		long seq = in.getUnsignedInt();
 		headMessage.setSeq(seq);
 
@@ -47,21 +54,14 @@ public class PackageHeadCodec {
 		// read flags
 		int flags = in.getUnsignedShort();
 		headMessage.setFlags(flags);
-		log.trace("in.remaining() = " + in.remaining());
 
 		// read checksum
-		log.trace("read checksum");
 		int checksum = in.getUnsignedShort();
-		log.trace("checksum========:" + checksum);
 		headMessage.setChecksum(checksum);
-		log.trace("in.remaining() = " + in.remaining());
 
 		// read message size
-		log.trace("read message size");
 		long messageSize = in.getUnsignedInt();
 		headMessage.setMessageSize(messageSize);
-		log.trace("in.remaining() = " + in.remaining());
-		log.trace("headMessage ====: {}", headMessage.toString());
 		
 		return headMessage;
 	}
