@@ -22,10 +22,13 @@ public class IdleConnectionKillerFilter extends IoFilterAdapter {
 	public void sessionIdle(NextFilter nextFilter, IoSession session,
 			IdleStatus status) throws Exception {
 
-		log.debug(
-				"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {}",
-				new Object[] { MinaUtil.buildAddressPortString(session),
-						session.getId(), MinaUtil.getPosIdFromSession(session) });
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {}",
+					new Object[] { MinaUtil.buildAddressPortString(session),
+							session.getId(),
+							MinaUtil.getPosIdFromSession(session) });
+		}
 
 		session.close(true);
 
