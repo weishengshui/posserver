@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.service.IoService;
-import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,8 +104,10 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		String posId = getLoggedInPosId(session);
 
 		// debug print the remote address (IP, port and POS ID)
-		log.debug("messageReceived() from remote {}, identified POS ID: {}",
-				buildAddressPortString(session), posId);
+		if (log.isDebugEnabled()) {
+			log.debug("messageReceived() from remote {}, Mina session ID: {}, identified POS ID: {}",
+					new Object[] { buildAddressPortString(session), session.getId(), posId });
+		}
 
 	}
 
@@ -185,21 +186,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	}
 
 	@Override
-	public void sessionIdle(IoSession session, IdleStatus status)
-			throws Exception {
-		if (log.isTraceEnabled()) {
-			int idleCount = session.getIdleCount(status);
-			// print the client information.
-			// TODO add POS ID
-			if (idleCount % 10 == 0) {
-				log.trace("Socket client {} idle ({} idle count: {})",
-						new Object[] { buildAddressPortString(session), status,
-						session.getIdleCount(status) });
-			}
-		}
-	}
-
-	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		super.sessionOpened(session);
 
@@ -222,8 +208,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		}
 
 		// print it
-		log.info("Incoming connection from remote address: "
-				+ buildAddressPortString(session));
+		log.info("Incoming connection from remote address: {}, Mina session ID: {}"
+				,buildAddressPortString(session), session.getId());
 	}
 
 	/**

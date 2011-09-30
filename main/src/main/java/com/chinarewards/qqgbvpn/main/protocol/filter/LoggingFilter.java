@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * Provides better business-oriented logging.
@@ -95,10 +96,12 @@ public class LoggingFilter extends IoFilterAdapter {
 		String addr = buildAddressPortString(session);
 		String posId = getPosIdFromSession(session);
 
-		log.debug(
-				"An exception is caught when handling command. Detailed information: "
-						+ " client address={}:{}, POS ID={}", new Object[] {
-						addr, posId });
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"An exception is caught when handling command. Detailed information: "
+							+ " client address={}:{}, Mina session ID={}, POS ID={}", new Object[] {
+							addr, session.getId(), posId });
+		}
 
 	}
 
@@ -108,10 +111,21 @@ public class LoggingFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 
+		printMessageReceivedFrom(session);
 		doHexDump(message, getMaxHexDumpLength());
 
 		nextFilter.messageReceived(session, message);
 
+	}
+	
+	protected void printMessageReceivedFrom(IoSession session) {
+		String addr = buildAddressPortString(session);
+		String posId = getPosIdFromSession(session);
+		if (log.isTraceEnabled()) {
+			log.trace(
+					"Message received from address {}:{}, Mina session ID={}, POS ID={}",
+					new Object[] { addr, session.getId(), posId });
+		}
 	}
 
 	protected void doHexDump(Object message, int maxLength) {
@@ -169,20 +183,11 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		if (session.containsAttribute(LoginFilter.POS_ID)) {
-			return (String) session.getAttribute(LoginFilter.POS_ID);
-		}
-		return null;
+		return MinaUtil.getPosIdFromSession(session);
 	}
 
 	protected String buildAddressPortString(IoSession session) {
-		SocketAddress addr = session.getRemoteAddress();
-		if (addr == null || !(addr instanceof InetSocketAddress)) {
-			return null;
-		}
-
-		InetSocketAddress sAddr = (InetSocketAddress) addr;
-		return sAddr.getAddress().getHostAddress() + ":" + sAddr.getPort();
+		return MinaUtil.buildAddressPortString(session);
 	}
 
 }
