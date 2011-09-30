@@ -24,7 +24,7 @@ public class IdleConnectionKillerFilter extends IoFilterAdapter {
 
 		if (log.isDebugEnabled()) {
 			log.debug(
-					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {}",
+					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {})",
 					new Object[] { MinaUtil.buildAddressPortString(session),
 							session.getId(),
 							MinaUtil.getPosIdFromSession(session) });
