@@ -16,6 +16,7 @@
  --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ page import="com.chinarewards.qqgbvpn.mgmtui.struts.SessionConstant"%>
 <div class="menu">
 <ul>
 
@@ -67,7 +68,18 @@
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
 	<!-- POS回收 ENDS -->
-	
+	<s:if test="#session.<%=SessionConstant.USER_SESSION %>.user.userName != null && #session.<%=SessionConstant.USER_SESSION %>.user.userName == 'finance'">
+	<!-- 财务报表 START -->
+	<li><a href="#">财务报表 <!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td><![endif]-->
+		<ul>
+		<li><a href="<s:url action="search_bill" namespace="/finance" />">邀请第三方填写申请表</a></li>
+		<li><a href="<s:url action="search_bill_history" namespace="/finance" />">我方生成回收单</a></li>
+		</ul>
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+	<!-- 财务报表END -->
+	</s:if>
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
 	<!-- Home ENDS  -->

@@ -20,17 +20,15 @@
 
 	<table align="center" width="800px">
 		<tr>
-			<td><s:form id="search_bill" namespace="/finance" action="search_bill" method="GET">
-					<!--  
+			<td><s:form id="search_bill" namespace="/finance" action="search_bill_paging" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-				-->
 				代理商：
-					<input type="text" name="" />&nbsp;&nbsp;
+					<s:select name="searchVO.agentId" list="agent" />&nbsp;&nbsp;
 				开始时间：
-					<input type="text" name="dateFrom" cssClass="date" id="dateFrom"/>&nbsp;&nbsp;
+					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;&nbsp;
 				结束时间：
-					<input type="text" name="dateTo" cssClass="date" id="dateTo"/>&nbsp;
+					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate"/>&nbsp;
 				<input type="submit" value="查询" />
 				</s:form></td>
 		</tr>
@@ -55,27 +53,30 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="billVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td><s:property value="" />
+									<td><s:property value="#billVO.reportMonth" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.agentName" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.posId" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.baseAmount" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.actuallyValCount" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.beyondValCount" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.unitPrice" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.beyondAmount" />
 									</td>
-									<td><s:property value="" />
+									<td><s:property value="#billVO.amount" />
 									</td>
 								</tr>
 							</s:iterator>
 						</s:if>
+						<tr>
+							<td colspan="9" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
+						</tr>
 					</table>
 				</div></td>
 		</tr>
@@ -85,7 +86,7 @@
 		</tr>
 	</table>
 	<script type="text/javascript">
-	initializeDatepicker("dateFrom","dateTo");
+	initializeDatepicker("startDate","endDate");
 	function initializeDatepicker(idFrom, idTo) {
 		var dates = $('#' + idFrom + ', ' + '#' + idTo).datepicker({
 			showAnim: "",
@@ -100,6 +101,14 @@
 			}
 		});
 	}
+	
+	function goPage(pageId) {
+		var formObj = document.getElementById("search_bill");
+		document.getElementById("pageInfo.pageId").value = pageId;
+		formObj.action = "${pageContext.request.contextPath}/finance/search_bill_paging";
+		formObj.submit();
+	}
+	
 	</script>
 </body>
 </html>
