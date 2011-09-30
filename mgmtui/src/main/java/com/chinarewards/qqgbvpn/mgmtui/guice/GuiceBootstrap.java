@@ -98,6 +98,8 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		Module[] modules = new Module[] { new QqgbvpnServletModule(),
 				new Struts2GuicePluginModule(), new QqgbvpnServiceModule(),
 				new QQApiModule(), new DefaultJournalModule(),
+				//finance
+				new FinanceModule(),
 				new SimpleDateTimeModule(),
 				// configuration
 				getConfigModule(),
