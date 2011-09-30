@@ -16,7 +16,6 @@
  --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
-<%@ page import="com.chinarewards.qqgbvpn.mgmtui.struts.SessionConstant"%>
 <div class="menu">
 <ul>
 
@@ -24,6 +23,7 @@
 	<li><a href="<s:url value="/"/>">首页</a></li>
 	<!-- Home ENDS  -->
 	
+	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName == 'admin'">
 	<!-- POS manager STARTS -->
 	<li><a href="#">POS管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
@@ -68,7 +68,9 @@
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
 	<!-- POS回收 ENDS -->
-	<s:if test="#session.<%=SessionConstant.USER_SESSION %>.user.userName != null && #session.<%=SessionConstant.USER_SESSION %>.user.userName == 'finance'">
+	</s:if>
+	
+	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName == 'finance'">
 	<!-- 财务报表 START -->
 	<li><a href="#">财务报表 <!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
@@ -80,10 +82,13 @@
 	</li>
 	<!-- 财务报表END -->
 	</s:if>
+	
+	<s:if test="#session._userSession.user != null">
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
 	<!-- Home ENDS  -->
 	<li><a href="<s:url action="logout" namespace="/" />">退出</a></li>
-
+	</s:if>
+	
 </ul>
 </div>
