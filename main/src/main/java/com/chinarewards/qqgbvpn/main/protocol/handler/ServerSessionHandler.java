@@ -208,8 +208,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		}
 
 		// print it
-		log.info("Incoming connection from remote address: "
-				+ buildAddressPortString(session));
+		log.info("Incoming connection from remote address: {}, Mina session ID: {}"
+				,buildAddressPortString(session), session.getId());
 	}
 
 	/**
