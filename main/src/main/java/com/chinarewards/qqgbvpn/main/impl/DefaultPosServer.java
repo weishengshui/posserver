@@ -5,7 +5,6 @@ package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
@@ -16,6 +15,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
@@ -27,6 +27,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.google.inject.Inject;
@@ -129,6 +130,10 @@ public class DefaultPosServer implements PosServer {
 	 */
 	protected void startMinaService() throws PosServerException {
 		
+		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME);
+		
+		log.trace(" idle_time ======================= {}",idleTime);
+		
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -140,6 +145,11 @@ public class DefaultPosServer implements PosServer {
 		// result.
 		
 		acceptor = new NioSocketAcceptor();
+		
+		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
+		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
+				new IdleConnectionKillerFilter());
+		
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// decode message
@@ -147,9 +157,12 @@ public class DefaultPosServer implements PosServer {
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
+		
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
+		
+
 		
 		acceptor.getFilterChain().addLast("bizLogger", new LoggingFilter());
 
@@ -166,7 +179,7 @@ public class DefaultPosServer implements PosServer {
 		acceptor.setReuseAddress(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {

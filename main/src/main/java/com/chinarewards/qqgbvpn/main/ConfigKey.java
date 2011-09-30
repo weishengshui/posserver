@@ -19,4 +19,12 @@ public abstract class ConfigKey {
 	 */
 	public static final String SERVER_SERVICEHANDLER_THREADPOOLSIZE = "server.service_handler.thread_pool_size";
 
+	/**
+	 * The thread pool size which defines the number of threads created for
+	 * handling client commands.
+	 * 
+	 * @since 0.1.0
+	 */
+	public static final String SERVER_CLIENTMAXIDLETIME = "server.client_max_idle_time";
+
 }
