@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.service.IoService;
-import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,21 +183,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 		exec.submit(callable);
 
-	}
-
-	@Override
-	public void sessionIdle(IoSession session, IdleStatus status)
-			throws Exception {
-		if (log.isTraceEnabled()) {
-			int idleCount = session.getIdleCount(status);
-			// print the client information.
-			// TODO add POS ID
-			if (idleCount % 10 == 0) {
-				log.trace("Socket client {} idle ({} idle count: {})",
-						new Object[] { buildAddressPortString(session), status,
-						session.getIdleCount(status) });
-			}
-		}
 	}
 
 	@Override
