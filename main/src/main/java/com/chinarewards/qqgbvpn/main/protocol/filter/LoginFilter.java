@@ -155,8 +155,7 @@ public class LoginFilter extends IoFilterAdapter {
 			}
 		}
 		
-		// XXX missing nextFilter.messageSent(session, writeRequest); !?!
-
+		nextFilter.messageSent(session, writeRequest);
 		
 		log.trace("messageSent() done");
 	}
