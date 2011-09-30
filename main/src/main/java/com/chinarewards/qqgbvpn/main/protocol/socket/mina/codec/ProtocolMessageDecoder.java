@@ -95,7 +95,8 @@ public class ProtocolMessageDecoder {
 	 */
 	public Result decode(IoBuffer in, Charset charset) throws Exception {
 
-		log.trace("IoBuffer remaining bytes: {}, current position: {}", in.remaining(), in.position());
+		log.trace("IoBuffer remaining bytes: {}, current position: {}",
+				in.remaining(), in.position());
 
 		// check length, it must greater than head length
 		if (in.remaining() >= ProtocolLengths.HEAD) {
@@ -133,13 +134,15 @@ public class ProtocolMessageDecoder {
 			// byteTmp: raw bytes
 			int calculatedChecksum = 0;
 			{
+				// reset to original position;
 				in.position(start);
-				byte[] byteTmp = new byte[in.remaining()];
+				byte[] byteTmp = new byte[(int)headMessage.getMessageSize()];	// XXX possible truncation
+				// important! just consume the required number of bytes
 				in.get(byteTmp);
-				CodecUtil.debugRaw(log, byteTmp);
+				CodecUtil.debugRaw(log, byteTmp);	// some debug output
 				Tools.putUnsignedShort(byteTmp, 0, 10);
-				log.trace("- byteTmp==msg==:" + Arrays.toString(byteTmp));
-	
+
+				// calculate the checksum
 				calculatedChecksum = Tools.checkSum(byteTmp, byteTmp.length);
 				log.trace("- calculated checksum: "+ calculatedChecksum);
 			}

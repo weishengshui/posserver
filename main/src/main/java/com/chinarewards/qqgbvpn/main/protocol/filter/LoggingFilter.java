@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * Provides better business-oriented logging.
@@ -182,20 +183,11 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		if (session.containsAttribute(LoginFilter.POS_ID)) {
-			return (String) session.getAttribute(LoginFilter.POS_ID);
-		}
-		return null;
+		return MinaUtil.getPosIdFromSession(session);
 	}
 
 	protected String buildAddressPortString(IoSession session) {
-		SocketAddress addr = session.getRemoteAddress();
-		if (addr == null || !(addr instanceof InetSocketAddress)) {
-			return null;
-		}
-
-		InetSocketAddress sAddr = (InetSocketAddress) addr;
-		return sAddr.getAddress().getHostAddress() + ":" + sAddr.getPort();
+		return MinaUtil.buildAddressPortString(session);
 	}
 
 }

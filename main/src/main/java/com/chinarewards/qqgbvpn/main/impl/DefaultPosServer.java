@@ -178,6 +178,8 @@ public class DefaultPosServer implements PosServer {
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
+		
+		// start the acceptor and listen to incomming connection!
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
