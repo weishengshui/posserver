@@ -105,8 +105,10 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		String posId = getLoggedInPosId(session);
 
 		// debug print the remote address (IP, port and POS ID)
-		log.debug("messageReceived() from remote {}, identified POS ID: {}",
-				buildAddressPortString(session), posId);
+		if (log.isDebugEnabled()) {
+			log.debug("messageReceived() from remote {}, Mina session ID: {}, identified POS ID: {}",
+					new Object[] { buildAddressPortString(session), session.getId(), posId });
+		}
 
 	}
 

@@ -95,10 +95,12 @@ public class LoggingFilter extends IoFilterAdapter {
 		String addr = buildAddressPortString(session);
 		String posId = getPosIdFromSession(session);
 
-		log.debug(
-				"An exception is caught when handling command. Detailed information: "
-						+ " client address={}:{}, POS ID={}", new Object[] {
-						addr, posId });
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"An exception is caught when handling command. Detailed information: "
+							+ " client address={}:{}, Mina session ID={}, POS ID={}", new Object[] {
+							addr, session.getId(), posId });
+		}
 
 	}
 
@@ -108,10 +110,21 @@ public class LoggingFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 
+		printMessageReceivedFrom(session);
 		doHexDump(message, getMaxHexDumpLength());
 
 		nextFilter.messageReceived(session, message);
 
+	}
+	
+	protected void printMessageReceivedFrom(IoSession session) {
+		String addr = buildAddressPortString(session);
+		String posId = getPosIdFromSession(session);
+		if (log.isTraceEnabled()) {
+			log.trace(
+					"Message received from address {}:{}, Mina session ID={}, POS ID={}",
+					new Object[] { addr, session.getId(), posId });
+		}
 	}
 
 	protected void doHexDump(Object message, int maxLength) {
