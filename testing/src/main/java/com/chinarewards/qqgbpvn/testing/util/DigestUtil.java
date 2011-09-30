@@ -1,10 +1,11 @@
 package com.chinarewards.qqgbpvn.testing.util;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbpvn.testing.exception.CompareDigestException;
 
 /**
  * description：a digest util
@@ -29,7 +30,8 @@ public final class DigestUtil {
 	 * @time 2011-9-30   上午09:48:15
 	 * @author Seek
 	 */
-	public final static boolean compareDigest(byte[] b1, byte[] b2, String algorithm) {
+	public final static boolean compareDigest(byte[] b1, byte[] b2, String algorithm) 
+				throws CompareDigestException {
 		boolean result = false;
 		try {
 			MessageDigest digest1 = MessageDigest.getInstance(algorithm);
@@ -43,8 +45,8 @@ public final class DigestUtil {
 			result = MessageDigest.isEqual(digest1Bytes, digest2.digest());
 			
 			logger.debug("bytes1 and bytes2 compareDigest = " + result);
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("algorithm is ERROR!", e);
+		} catch (Throwable e) {
+			throw new CompareDigestException("algorithm is ERROR!", e);
 		}
 		return result;
 	}

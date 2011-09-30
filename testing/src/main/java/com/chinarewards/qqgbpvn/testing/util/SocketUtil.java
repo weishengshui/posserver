@@ -4,8 +4,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbpvn.testing.exception.ReadBytesFromPosServerException;
+import com.chinarewards.qqgbpvn.testing.exception.WriteBytesToPosServerException;
 import com.chinarewards.qqgbvpn.common.Tools;
 
 /**
@@ -29,7 +33,8 @@ public final class SocketUtil {
 	 * @time 2011-9-30   下午03:10:05
 	 * @author Seek
 	 */
-	public static final byte[] readFromInputStream(InputStream is){
+	public static final byte[] readFromInputStream(InputStream is) 
+				throws ReadBytesFromPosServerException {
 		logger.debug("SocketUtils readFromInputStream() run...");
 		
 		byte[] result = new byte[0];
@@ -56,7 +61,7 @@ public final class SocketUtil {
 				}
 			}
 		}catch(Throwable e){
-			logger.error(e.getMessage(), e);
+			throw new ReadBytesFromPosServerException(e);
 		}
 		
 		logger.debug("read bytes from socket:"+Arrays.toString(result)+
@@ -71,7 +76,8 @@ public final class SocketUtil {
 	 * @time 2011-9-30   下午03:10:28
 	 * @author Seek
 	 */
-	public static final void writeFromOutputStream(OutputStream os, byte[] sendPackage){
+	public static final void writeFromOutputStream(OutputStream os, byte[] sendPackage) 
+			throws WriteBytesToPosServerException {
 		logger.debug("SocketUtils writeFromOutputStream() run...");
 		try{
 			logger.debug("write bytes to socket:"+Arrays.toString(sendPackage) +
@@ -79,11 +85,9 @@ public final class SocketUtil {
 			os.write(sendPackage);
 			os.flush();
 		}catch(Throwable e) {
-			logger.error(e.getMessage(), e);
+			throw new WriteBytesToPosServerException(e);
 		}
 	}
-	
-
 	
 	public static void main(String[] args) throws Exception{
 		Socket s = new Socket("127.0.0.1", 1234);

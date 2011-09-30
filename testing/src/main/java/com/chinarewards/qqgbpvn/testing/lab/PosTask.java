@@ -4,16 +4,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.ParseResponseMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.exception.SendMessageException;
+import com.chinarewards.qqgbpvn.testing.exception.SocketProcessException;
 import com.chinarewards.qqgbpvn.testing.util.SocketUtil;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.exception.FormatPackageContentException;
@@ -143,7 +146,8 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	 * @time 2011-9-22   下午05:59:41
 	 * @author Seek
 	 */
-	protected byte[] sendPackageToServer(Socket outerSocket, byte[] sendPackage){
+	protected byte[] sendPackageToServer(Socket outerSocket, byte[] sendPackage) 
+				throws SocketProcessException {
 		logger.debug("sendPackageToServer() run...");
 		Socket socket = null;
 		OutputStream os = null;
@@ -160,7 +164,7 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 			//read bytes from socket
 			responseBytes = SocketUtil.readFromInputStream(is);
 		}catch(Throwable e) {
-			logger.error(e.getMessage(), e);
+			throw new SocketProcessException(e);
 		}finally{
 			//socket.close();
 		}

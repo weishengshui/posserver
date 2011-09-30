@@ -46,6 +46,8 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 	private static final String CSV_SEPARATOR = "CSV_SEPARATOR";
 	private static final String TIMESTAMP_RANGE = "TIMESTAMP_RANGE(unit of time:minute)";
 	
+	private static final String CHARSET = "CHARSET";
+	
 	@Override
 	public Arguments getDefaultParameters() {
 		Arguments arguments = new Arguments();
@@ -57,6 +59,8 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		arguments.addArgument(POS_SERVER_PORT, "1234");
 		
 		arguments.addArgument(TIMESTAMP_RANGE, "0");
+		
+		arguments.addArgument(CHARSET, "GB2312");
 		return arguments;
 	}
 	
@@ -72,6 +76,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 		String posnetHome = context.getParameter(POSNET_HOME);
 		String csvSeparator = context.getParameter(CSV_SEPARATOR);
 		Long timestampRange = Long.parseLong(context.getParameter(TIMESTAMP_RANGE));
+		String charset = context.getParameter(CHARSET);
 		
 		logger.debug("csvFileName:"+csvFileName);
 		logger.debug("posServerIp:"+posServerIp);
@@ -84,7 +89,7 @@ public final class ThreadGroupSetUp extends AbstractJavaSamplerClient {
 			TestContext.setPosServerPort(posServerPort);
 			
 			//setup charset  and  csvSeparator
-			TestContext.setCharset(Charset.forName("GB2312"));
+			TestContext.setCharset(Charset.forName(charset));
 			TestContext.setCsvSeparator(csvSeparator);
 			
 			//setup {message head} and {message body}  Codec

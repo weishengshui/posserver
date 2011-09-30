@@ -86,8 +86,8 @@ public final class PosGetFirmwareFragmentTask extends PosTask {
 						res.setSuccessful(false);
 					}
 					
-					logger.debug("loop break...");
-					res.setStopThread(true);	//TODO thread stop???
+					logger.info("loop break...");
+					res.setStopThread(true);	//it can stop current thread{loop, xxx}...
 				}
 			}
 		}catch(Throwable e){

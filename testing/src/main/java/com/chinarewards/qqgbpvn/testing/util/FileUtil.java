@@ -11,6 +11,8 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbpvn.testing.exception.FileProcessException;
+
 public final class FileUtil {
 	
 	private static Logger logger = LoggerFactory.getLogger(SocketUtil.class);
@@ -27,7 +29,8 @@ public final class FileUtil {
 	 * @time 2011-9-30   上午09:24:54
 	 * @author Seek
 	 */
-	public final static File writeBytesToFile(byte[] bytes, File aFile, boolean isAppend) {
+	public final static File writeBytesToFile(byte[] bytes, File aFile, boolean isAppend) 
+				throws FileProcessException {
 		BufferedOutputStream stream = null;
 		File file = null;
 		try {
@@ -40,14 +43,14 @@ public final class FileUtil {
 			stream = new BufferedOutputStream(fstream);
 			stream.write(bytes);
 			logger.debug("write bytes("+Arrays.toString(bytes)+") to "+file.getAbsolutePath()+" !");
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+		} catch (Throwable e) {
+			throw new FileProcessException(e);
 		} finally {
 			if (stream != null) {
 				try {
 					stream.close();
 				} catch (IOException e1) {
-					logger.error(e1.getMessage(), e1);
+					throw new FileProcessException(e1);
 				}
 			}
 		}
@@ -58,7 +61,7 @@ public final class FileUtil {
 	 * 获得文件byte
 	 * @param file
 	 */
-	public static final byte[] getBytesFromFile(File file) {
+	public static final byte[] getBytesFromFile(File file) throws FileProcessException {
 		if (file == null) {
 			return null;
 		}
@@ -72,9 +75,14 @@ public final class FileUtil {
 			while ((n = stream.read(b)) != -1) {
 				out.write(b, 0, n);
 			}
-			return out.toByteArray();
-		} catch (IOException e) {
-			logger.error("get file bytes error" + e);
+			
+			byte[] result = out.toByteArray();
+			logger.debug("read bytes("+Arrays.toString(result)+") from "+
+					file.getAbsolutePath()+" !");
+			
+			return result;
+		} catch (Throwable e) {
+			throw new FileProcessException(e);
 		} finally {
 			try {
 				if (stream != null) {
@@ -84,10 +92,9 @@ public final class FileUtil {
 					out.close();
 				}
 			} catch (IOException e) {
-				logger.error("close file stream fail" + e);
+				throw new FileProcessException(e);
 			}
 		}
-		return null;
 	}
 	
 }
