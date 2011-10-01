@@ -4,7 +4,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -139,12 +138,11 @@ public class ProtocolMessageDecoder {
 				byte[] byteTmp = new byte[(int)headMessage.getMessageSize()];	// XXX possible truncation
 				// important! just consume the required number of bytes
 				in.get(byteTmp);
-				CodecUtil.debugRaw(log, byteTmp);	// some debug output
+//				CodecUtil.debugRaw(log, byteTmp);	// some debug output
 				Tools.putUnsignedShort(byteTmp, 0, 10);
 
 				// calculate the checksum
 				calculatedChecksum = Tools.checkSum(byteTmp, byteTmp.length);
-				log.trace("- calculated checksum: "+ calculatedChecksum);
 			}
 
 			// validate the checksum. if not correct, return an error response.
@@ -152,7 +150,11 @@ public class ProtocolMessageDecoder {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
 				Message message = new Message(headMessage, bodyMessage);
-				return new Result(true, message);
+				log.trace(
+						"Received message has invalid checksum (calc: 0x{}, actual: 0x{})",
+						Integer.toHexString(calculatedChecksum),
+						Integer.toHexString(headMessage.getChecksum()));
+				return new Result(false, message);
 			}
 
 			// really decode the command message.
@@ -164,10 +166,11 @@ public class ProtocolMessageDecoder {
 				Message message = new Message(headMessage, bodyMessage);
 				return new Result(false, message);
 			} catch (Throwable e) {
+				log.trace("Unexpected error when decoding message", e);
 				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
 				errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
 				Message message = new Message(headMessage, errorBodyMessage);
-				return new Result(true, message);
+				return new Result(false, message);
 			}
 
 		} else {

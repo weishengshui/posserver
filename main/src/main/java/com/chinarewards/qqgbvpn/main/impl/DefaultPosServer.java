@@ -26,8 +26,9 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
-import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.ErrorConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.google.inject.Inject;
@@ -41,6 +42,11 @@ import com.google.inject.persist.PersistService;
  * @since 0.1.0
  */
 public class DefaultPosServer implements PosServer {
+	
+	/**
+	 * Default timeout, in seconds, which the server will disconnect a client.
+	 */
+	public static final int DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
 
 	protected final Configuration configuration;
 
@@ -130,7 +136,9 @@ public class DefaultPosServer implements PosServer {
 	 */
 	protected void startMinaService() throws PosServerException {
 		
-		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME);
+		// default  1800 seconds
+		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,
+				DEFAULT_SERVER_CLIENTMAXIDLETIME);
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -160,6 +168,10 @@ public class DefaultPosServer implements PosServer {
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
+		// kills error connection if too many.
+		acceptor.getFilterChain().addLast("errorConnectionKiller",
+				new ErrorConnectionKillerFilter());
+
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
@@ -177,6 +189,12 @@ public class DefaultPosServer implements PosServer {
 		acceptor.setReuseAddress(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
+		if (idleTime > 0) {
+			log.info("Client idle timeout set to {} seconds", idleTime);
+		} else {
+			log.info("Client idle timeout set to {} seconds, will be disabled",
+					idleTime);
+		}
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
 		
 		// start the acceptor and listen to incomming connection!

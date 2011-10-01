@@ -151,7 +151,7 @@ public class CodecUtil {
 
 			// use hex dump to output
 			if (log.isTraceEnabled()) {
-				log.trace("Received raw bytes: (Printing {} of {} bytes, {} omitted)\n{}",
+				log.trace("Raw bytes: (Printing {} of {} bytes, {} omitted)\n{}",
 						new Object[] { partLength, remaining, omitted, hexDump });
 			}
 

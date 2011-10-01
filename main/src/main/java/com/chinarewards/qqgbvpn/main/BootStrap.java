@@ -314,7 +314,7 @@ public class BootStrap {
 		Module serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
-		log.debug("Bootstraping Guice injector...");
+		log.debug("Creating Guice injector...");
 		injector = Guice.createInjector(new AppModule(), new ServerModule(),
 				new HardCodedConfigModule(configuration), jpaModule, serviceHandlerModule);
 
