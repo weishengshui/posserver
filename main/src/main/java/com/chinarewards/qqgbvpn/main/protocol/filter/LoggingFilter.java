@@ -1,8 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
@@ -68,8 +65,9 @@ public class LoggingFilter extends IoFilterAdapter {
 			Throwable cause) throws Exception {
 
 		logError(session, cause);
+		
+		nextFilter.exceptionCaught(session, cause);
 
-		exceptionCaught(nextFilter, session, cause);
 	}
 
 	/**
@@ -91,6 +89,10 @@ public class LoggingFilter extends IoFilterAdapter {
 		// return immediately if insufficient level is given.
 		if (!log.isDebugEnabled())
 			return;
+		
+		if (!session.isConnected()) {
+			return;
+		}
 
 		// prepare the logging data
 		String addr = buildAddressPortString(session);
@@ -99,7 +101,7 @@ public class LoggingFilter extends IoFilterAdapter {
 		if (log.isDebugEnabled()) {
 			log.debug(
 					"An exception is caught when handling command. Detailed information: "
-							+ " client address={}:{}, Mina session ID={}, POS ID={}", new Object[] {
+							+ " client address={}, Mina session ID={}, POS ID={}", new Object[] {
 							addr, session.getId(), posId });
 		}
 
@@ -123,7 +125,7 @@ public class LoggingFilter extends IoFilterAdapter {
 		String posId = getPosIdFromSession(session);
 		if (log.isTraceEnabled()) {
 			log.trace(
-					"Message received from address {}:{}, Mina session ID={}, POS ID={}",
+					"Message received from address {}, Mina session ID={}, POS ID={}",
 					new Object[] { addr, session.getId(), posId });
 		}
 	}
@@ -159,9 +161,8 @@ public class LoggingFilter extends IoFilterAdapter {
 
 			// use hex dump to output
 			if (log.isTraceEnabled()) {
-				log.trace("Received raw bytes: ({} of {} bytes, {} omitted)",
-						new Object[] { partLength, remaining, omitted });
-				log.trace("[{}]", hexDump);
+				log.trace("Received raw bytes from client: (Showing {} of {} bytes, {} omitted)\n{}",
+						new Object[] { partLength, remaining, omitted, hexDump });
 			}
 
 		} finally {

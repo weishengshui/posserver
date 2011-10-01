@@ -63,7 +63,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			ProtocolEncoderOutput out) throws Exception {
 		
 		log.debug("encode message start");
-		log.trace("session.getId()=======:" + session.getId());
+		log.trace("Mina session ID: {}", session.getId());
 		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
@@ -71,7 +71,7 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;
-		log.debug("cmdId is ({})", cmdId);
+		log.debug("cmdId to send: ({})", cmdId);
 		
 		if (bodyMessage instanceof ErrorBodyMessage) {
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
@@ -92,7 +92,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		log.debug("bodyByte====return====:({})",Arrays.toString(bodyByte));
+		log.debug("bodyByte====return====:({})", Arrays.toString(bodyByte));
 		
 		byte[] headByte = new byte[ProtocolLengths.HEAD];
 

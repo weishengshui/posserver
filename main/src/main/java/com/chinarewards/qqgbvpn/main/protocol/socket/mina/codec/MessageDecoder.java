@@ -54,7 +54,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 						decoder.getClass());
 				return true;
 			} else {
-				log.debug("Message decoded successful. Message: {}", parsedMessage);
+				log.debug("Message processed completed. Message: {}", parsedMessage);
 				// write the data.
 				out.write(parsedMessage);
 				return true;

@@ -84,6 +84,7 @@ public class CmdConstant {
 	 * checksum 错误
 	 */
 	public static final long ERROR_CHECKSUM_CODE = 2;
+	
 	/**
 	 * message size 错误
 	 */
