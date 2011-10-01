@@ -39,19 +39,38 @@ public class ProtocolMessageDecoder {
 	public static class Result {
 
 		private final boolean moreDataRequired;
+		
+		private final long oweLength;
 
 		private final Object message;
+		
+		private final HeadMessage header;
 
 		/**
 		 * 
 		 * @param moreDataRequired
+		 * @param oweLength
+		 * @param headMessage
 		 * @param message
 		 */
-		public Result(boolean moreDataRequired, Object message) {
+		public Result(boolean moreDataRequired, long oweLength,
+				HeadMessage headMessage, Object message) {
 			this.moreDataRequired = moreDataRequired;
+			this.oweLength = oweLength;
 			this.message = message;
+			this.header = headMessage;
 		}
 
+		/**
+		 * Returns parsed header, if parsed, no matter the header is correct
+		 * or not.
+		 * 
+		 * @return
+		 */
+		public HeadMessage getHeader() {
+			return header;
+		}
+		
 		/**
 		 * Returns whether more data is required in order to parse the raw
 		 * stream.
@@ -61,6 +80,16 @@ public class ProtocolMessageDecoder {
 		 */
 		public boolean isMoreDataRequired() {
 			return moreDataRequired;
+		}
+
+		/**
+		 * Returns the expected length. The value is valid only if 
+		 * {@link #isMoreDataRequired()} returns <code>true</code>.
+		 * 
+		 * @return the expectedLength
+		 */
+		public long getOweLength() {
+			return oweLength;
 		}
 
 		/**
@@ -92,7 +121,7 @@ public class ProtocolMessageDecoder {
 	 * @param in
 	 * @param charset
 	 */
-	public Result decode(IoBuffer in, Charset charset) throws Exception {
+	public Result decode(IoBuffer in, Charset charset) {
 
 		log.trace("IoBuffer remaining bytes: {}, current position: {}",
 				in.remaining(), in.position());
@@ -105,9 +134,9 @@ public class ProtocolMessageDecoder {
 			// parse message header
 			log.trace("Parsing message header..");
 			PackageHeadCodec headCodec = new PackageHeadCodec();
-			HeadMessage headMessage = headCodec.decode(in);
-			log.trace("- message header: {}", headMessage.toString());
-			log.trace("- IoBuffer remaining (body): {}", in.remaining());
+			HeadMessage header = headCodec.decode(in);	// parse
+			log.trace("- message header: {}", header);
+			log.trace("- IoBuffer remaining (for body): {}", in.remaining());
 
 			// check length
 			// XXX suspicious code, may lead to unwanted error code 3: invalid
@@ -118,12 +147,13 @@ public class ProtocolMessageDecoder {
 //				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
 //				return new Result(true, null);
 //			}
-			if (ProtocolLengths.HEAD + in.remaining() < headMessage.getMessageSize()) {
+			if (ProtocolLengths.HEAD + in.remaining() < header.getMessageSize()) {
 				// more data is required.
+				long owe = header.getMessageSize() - ProtocolLengths.HEAD + in.remaining();
 				log.trace("More bytes are required to parse the complete message (still need {} bytes)",
-						headMessage.getMessageSize() - ProtocolLengths.HEAD + in.remaining());
+						header.getMessageSize() - ProtocolLengths.HEAD + in.remaining());
 				in.position(start);	// restore the original position.
-				return new Result(true, null);
+				return new Result(true, owe, header, null);
 			}
 
 			//
@@ -135,7 +165,7 @@ public class ProtocolMessageDecoder {
 			{
 				// reset to original position;
 				in.position(start);
-				byte[] byteTmp = new byte[(int)headMessage.getMessageSize()];	// XXX possible truncation
+				byte[] byteTmp = new byte[(int)header.getMessageSize()];	// XXX possible truncation
 				// important! just consume the required number of bytes
 				in.get(byteTmp);
 //				CodecUtil.debugRaw(log, byteTmp);	// some debug output
@@ -146,15 +176,15 @@ public class ProtocolMessageDecoder {
 			}
 
 			// validate the checksum. if not correct, return an error response.
-			if (calculatedChecksum != headMessage.getChecksum()) {
+			if (calculatedChecksum != header.getChecksum()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
-				Message message = new Message(headMessage, bodyMessage);
+				Message message = new Message(header, bodyMessage);
 				log.trace(
 						"Received message has invalid checksum (calc: 0x{}, actual: 0x{})",
 						Integer.toHexString(calculatedChecksum),
-						Integer.toHexString(headMessage.getChecksum()));
-				return new Result(false, message);
+						Integer.toHexString(header.getChecksum()));
+				return new Result(false, 0, header, message);
 			}
 
 			// really decode the command message.
@@ -163,21 +193,22 @@ public class ProtocolMessageDecoder {
 			try {
 				bodyMessage = this.decodeMessageBody(in, charset);
 				// a message is completely decoded.
-				Message message = new Message(headMessage, bodyMessage);
-				return new Result(false, message);
+				Message message = new Message(header, bodyMessage);
+				return new Result(false, 0, header, message);
 			} catch (Throwable e) {
 				log.trace("Unexpected error when decoding message", e);
 				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
 				errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
-				Message message = new Message(headMessage, errorBodyMessage);
-				return new Result(false, message);
+				Message message = new Message(header, errorBodyMessage);
+				return new Result(false, 0, header, message);
 			}
 
 		} else {
 			
+			long owe = ProtocolLengths.HEAD - in.remaining();
 			log.trace("More bytes are required to parse the header message (still need {} bytes)",
-					ProtocolLengths.HEAD - in.remaining());
-			return new Result(true, null);
+					owe);
+			return new Result(true, owe, null, null);
 			
 		}
 

@@ -164,6 +164,7 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// decode message
+		// TODO config MessageCoderFactory to allow setting the maximum message size 
 		acceptor.getFilterChain().addLast(
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
