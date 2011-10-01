@@ -313,7 +313,7 @@ public class ProtocolOnMinaTest extends BaseTest {
 
 	}
 
-	@Test
+//	@Test
 	public void testSendViaJavaSocket_FreeToChangeThisCode() throws Exception {
 
 		Socket socket = new Socket("localhost", 1234);
