@@ -314,7 +314,7 @@ public class BootStrap {
 		Module serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
-		log.debug("Creating Guice injector...");
+		log.info("Creating Guice injector. If it is stucked, there is a chance the database is down.");
 		injector = Guice.createInjector(new AppModule(), new ServerModule(),
 				new HardCodedConfigModule(configuration), jpaModule, serviceHandlerModule);
 
@@ -326,7 +326,8 @@ public class BootStrap {
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
 		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
 		
-		return Modules.override(new ServiceHandlerModule(configuration)).with(new ServiceHandlerGuiceModule(mapping));
+		return Modules.override(new ServiceHandlerModule(configuration)).with(
+				new ServiceHandlerGuiceModule(mapping));
 		
 	}
 

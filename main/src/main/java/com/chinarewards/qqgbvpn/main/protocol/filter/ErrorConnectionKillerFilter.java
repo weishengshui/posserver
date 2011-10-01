@@ -90,7 +90,21 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 				nextFilter.messageReceived(session, message);
 			}
 			
-		} else {
+		} else {	// not error message, reset the stat if needed.
+
+			resetErrorCount(session);
+			
+			// continue the filter chain
+			nextFilter.messageReceived(session, message);
+		}
+
+	}
+
+	protected void resetErrorCount(IoSession session) {
+		
+		// reset only if needed.
+		int oldCount = getErrorCount(session);
+		if (oldCount > 0) {
 			if (log.isTraceEnabled()) {
 				log.trace("Reset error message counter to zero for connection  (addr={}, "
 									+ "Mina session ID {}, POS ID={}), closing connection.",
@@ -99,14 +113,14 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 									session.getId(),
 									MinaUtil.getPosIdFromSession(session) });
 			}
-			resetErrorCount(session);
-			nextFilter.messageReceived(session, message);
 		}
-
+		session.setAttribute(getSessionKey(), 0);
+		
 	}
 
-	protected void resetErrorCount(IoSession session) {
-		session.setAttribute(getSessionKey(), 0);
+	protected int getErrorCount(IoSession session) {
+		Integer count = (Integer)session.getAttribute(getSessionKey());
+		return (count == null ? 0 : count);
 	}
 
 	protected int incrementErrorCount(IoSession session) {

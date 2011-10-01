@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.filterchain.IoFilter.NextFilter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
@@ -120,6 +121,21 @@ public class LoggingFilter extends IoFilterAdapter {
 
 	}
 	
+	@Override
+	public void sessionCreated(NextFilter nextFilter, IoSession session)
+			throws Exception {
+		
+		printTotalOpenedSessions(session);
+		
+		nextFilter.sessionCreated(session);
+		
+	}
+	
+	protected void printTotalOpenedSessions(IoSession session) {
+		log.trace("Currently managed session count: {}", session.getService()
+				.getManagedSessionCount());
+	}
+
 	protected void printMessageReceivedFrom(IoSession session) {
 		String addr = buildAddressPortString(session);
 		String posId = getPosIdFromSession(session);

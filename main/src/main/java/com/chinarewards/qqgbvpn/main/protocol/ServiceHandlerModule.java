@@ -27,6 +27,8 @@ public class ServiceHandlerModule extends AbstractModule {
 	protected final Configuration configuration;
 
 	protected ServiceMapping mapping;
+	
+	protected static final Logger log = LoggerFactory.getLogger(ServiceHandlerModule.class);
 
 	public ServiceHandlerModule(Configuration configuration) {
 		this.configuration = configuration;
@@ -59,6 +61,9 @@ public class ServiceHandlerModule extends AbstractModule {
 		requestInjection(uowIntercept);
 		bindInterceptor(Matchers.subclassesOf(ServiceDispatcher.class),
 				Matchers.any(), uowIntercept);
+		
+		
+		log.debug("Finished configuration");
 	}
 
 	private static class ServiceMappingProvider implements
