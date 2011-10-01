@@ -69,7 +69,8 @@ public class LoggingFilter extends IoFilterAdapter {
 
 		logError(session, cause);
 
-		exceptionCaught(nextFilter, session, cause);
+		nextFilter.exceptionCaught(session, cause);
+		
 	}
 
 	/**
