@@ -53,12 +53,19 @@ public class LoginAction extends BaseAction implements ServletRequestAware {
 	}
 
 	public String login() {
-
 		LoginLogic loginLogic = super.getInstance(LoginLogic.class);
 		String ip = servletRequest.getRemoteAddr();
 
 		log.debug("User ({}) tries to login from {}...", username, ip);
-		boolean validePass = loginLogic.checkLogin(username, password, ip);
+		
+		boolean validePass;
+		try{
+			validePass = loginLogic.checkLogin(username, password, ip);
+		}catch(Throwable e){
+			addFieldError("loginError", "登录失败!");
+			log.debug("login failed");
+			return INPUT;
+		}
 
 		if (validePass) {
 			Map<String, Object> session = ActionContext.getContext()
@@ -98,6 +105,8 @@ public class LoginAction extends BaseAction implements ServletRequestAware {
 		Map<String, Object> session = ActionContext.getContext()
 		.getSession();
 		session.remove(SessionConstant.USER_SESSION);
+		
+		log.debug("logout is success!");
 		return SUCCESS;
 	}
 

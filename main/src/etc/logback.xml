@@ -45,6 +45,7 @@
 		Logger configurations 
 	 -->
 
+	<!-- Lower this level to view more POS server related log. -->
 	<logger name="com.chinarewards" level="INFO" />
 	
 	<!-- Since hibernate produce too much INFO level information -->

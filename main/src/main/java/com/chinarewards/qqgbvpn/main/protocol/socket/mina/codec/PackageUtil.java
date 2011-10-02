@@ -33,7 +33,7 @@ public final class PackageUtil {
 	private static final int flags = 0x0000;
 	
 	/**
-	 * Should be 0x00000000.
+	 * TODO: Should be 0x00000000.
 	 */
 	private static final int ack = 0x20000004;
 	
@@ -104,13 +104,14 @@ public final class PackageUtil {
 	 */
 	public final static byte[] formatPackageContent(long currentSequence, byte[] content) 
 				throws FormatPackageContentException {
-		try{
+		try {
 			byte[] heads = formatHeadContent(currentSequence, content);
 			byte[] packagebytes = new byte[heads.length + content.length];
 			System.arraycopy(heads, 0, packagebytes, 0, heads.length);
-			System.arraycopy(content, 0, packagebytes, heads.length, content.length);
+			System.arraycopy(content, 0, packagebytes, heads.length,
+					content.length);
 			return packagebytes;
-		}catch(Throwable e){
+		} catch (Throwable e) {
 			throw new FormatPackageContentException(e);
 		}
 	}
@@ -123,59 +124,61 @@ public final class PackageUtil {
 	 * @time 2011-9-23   下午03:25:23
 	 * @author Seek
 	 */
-	public final Message parseResponseContent(byte[] responseBytes, Charset charset) 
-				throws ParseResponseContentException {
-		try{
+	public final Message parseResponseContent(byte[] responseBytes,
+			Charset charset) throws ParseResponseContentException {
+		try {
 			logger.debug("parseResponseMessage run...");
-			
+
 			Message message = new Message();
 			IoBuffer ioBuff = IoBuffer.wrap(responseBytes);
-			//读取头部
+			// 读取头部
 			logger.debug("decode packageHead...");
 			HeadMessage headMessage = packageHeadCodec.decode(ioBuff);
-			
-			//check package checksum
+
+			// check package checksum
 			int checksum = headMessage.getChecksum();
-			logger.debug("get checksum="+checksum);
-			
+			logger.debug("get checksum=" + checksum);
+
 			Tools.putUnsignedShort(responseBytes, 0, 10);
-			
-			int checkSumTmp = Tools.checkSum(responseBytes, responseBytes.length);
-			logger.debug("calculate Checksum="+checkSumTmp);
-			if(checksum != checkSumTmp){
+
+			int checkSumTmp = Tools.checkSum(responseBytes,
+					responseBytes.length);
+			logger.debug("calculate Checksum=" + checkSumTmp);
+			if (checksum != checkSumTmp) {
 				logger.debug("server checksum != native checksum");
 				throw new ParseResponseContentException(
-						"response checksum error!  receive Checksum="+checksum+
-						", calculate Checksum="+checkSumTmp);
+						"response checksum error!  receive Checksum="
+								+ checksum + ", calculate Checksum="
+								+ checkSumTmp);
 			}
-			
+
 			// read commandId
-			ioBuff.position(ProtocolLengths.HEAD);		//skip message head
-			long commandId  = ioBuff.getUnsignedInt();	//读取commandId
+			ioBuff.position(ProtocolLengths.HEAD); // skip message head
+			long commandId = ioBuff.getUnsignedInt(); // 读取commandId
 			ICommand bodyMessage = null;
-			logger.debug("read cmdId="+commandId);
-			if(CmdConstant.ERROR_CMD_ID == commandId){
+			logger.debug("read cmdId=" + commandId);
+			if (CmdConstant.ERROR_CMD_ID == commandId) {
 				logger.debug("cmdId is CmdConstant.ERROR_CMD_ID!");
-				long errorMessageCode = ioBuff.getUnsignedInt();		//读取errorCode
-				logger.debug("error message code:"+errorMessageCode);
-				
+				long errorMessageCode = ioBuff.getUnsignedInt(); // 读取errorCode
+				logger.debug("error message code:" + errorMessageCode);
+
 				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
 				errorBodyMessage.setErrorCode(errorMessageCode);
 				bodyMessage = errorBodyMessage;
-			}else {
+			} else {
 				ICommandCodec codec = cmdCodecFactory.getCodec(commandId);
-				
-				ioBuff.position(ProtocolLengths.HEAD);		//skip message head
+
+				ioBuff.position(ProtocolLengths.HEAD); // skip message head
 				bodyMessage = codec.decode(ioBuff, charset);
 			}
-			
+
 			message.setHeadMessage(headMessage);
 			message.setBodyMessage(bodyMessage);
-			
+
 			logger.debug("headMessage:" + message.getHeadMessage());
 			logger.debug("bodyMessage:" + message.getBodyMessage());
 			return message;
-		}catch(Throwable e){
+		} catch (Throwable e) {
 			throw new ParseResponseContentException(e);
 		}
 	}

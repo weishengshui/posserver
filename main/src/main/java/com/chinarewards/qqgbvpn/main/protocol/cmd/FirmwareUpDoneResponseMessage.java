@@ -13,6 +13,12 @@ public class FirmwareUpDoneResponseMessage implements ICommand {
 	
 	private short result;
 	
+	@Override
+	public String toString() {
+		return "FirmwareUpDoneResponseMessage [cmdId=" + cmdId + ", result="
+				+ result + "]";
+	}
+
 	//-------------------------------------------------//
 	public long getCmdId() {
 		return cmdId;

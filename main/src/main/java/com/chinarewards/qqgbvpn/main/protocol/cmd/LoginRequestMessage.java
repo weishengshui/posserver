@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
+import java.util.Arrays;
+
 
 /**
  * login request message body
@@ -14,6 +16,13 @@ public class LoginRequestMessage implements ICommand {
 	private String posId;
 
 	private byte[] challengeResponse;
+
+	@Override
+	public String toString() {
+		return "LoginRequestMessage [cmdId=" + cmdId + ", posId=" + posId
+				+ ", challengeResponse=" + Arrays.toString(challengeResponse)
+				+ "]";
+	}
 
 	public long getCmdId() {
 		return cmdId;

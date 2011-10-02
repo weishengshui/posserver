@@ -35,6 +35,5 @@ public class InitRequestMessage implements ICommand {
 	public String toString() {
 		return "cmdId=" + cmdId + ", posId=" + posId;
 	}
-	
 
 }

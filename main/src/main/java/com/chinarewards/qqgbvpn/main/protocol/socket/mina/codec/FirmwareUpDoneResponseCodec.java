@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -36,19 +37,20 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 		log.debug("FirmwareUpDoneResponse message decode");
 		FirmwareUpDoneResponseMessage message = new FirmwareUpDoneResponseMessage();
 		log.debug("in.remaining()={}", in.remaining());
-		if (in.remaining() < ProtocolLengths.COMMAND+ProtocolLengths.RESULT+ProtocolLengths.CHALLENGE) {
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.RESULT
+				+ ProtocolLengths.CHALLENGE) {
 			throw new PackageException(
-					"login packge message body error, body message is :" + in);
+					"login packge message body error, body message is: " + in);
 		}
 		long cmdId = in.getUnsignedInt();
 		short result = in.getShort();
-		
+
 		// reconstruct message.
 		message.setCmdId(cmdId);
 		message.setResult(result);
-		
+
 		log.debug("init message request:cmdId is ({}) , result is ({}) ",
-					new Object[]{cmdId, result});
+				cmdId, result);
 		return message;
 	}
 
