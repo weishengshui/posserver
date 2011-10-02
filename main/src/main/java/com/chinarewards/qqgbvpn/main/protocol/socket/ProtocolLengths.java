@@ -39,5 +39,9 @@ public abstract class ProtocolLengths {
 	public static final int PAGE = 2;
 	
 	public static final int SIZE = 2;
+	
+	public static final int FIRMWARE_OFFSET = 4;
+	
+	public static final int FIRMWARE_LENTH = 4;
 
 }

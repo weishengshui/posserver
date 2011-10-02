@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
+import java.util.Arrays;
+
 
 /**
  * init response message
@@ -14,8 +16,13 @@ public class InitResponseMessage implements ICommand {
 	private int result;
 	
 	private byte[] challenge;
-
 	
+	@Override
+	public String toString() {
+		return "InitResponseMessage [cmdId=" + cmdId + ", result=" + result
+				+ ", challenge=" + Arrays.toString(challenge) + "]";
+	}
+
 	//-------------------------------------------------//
 	public long getCmdId() {
 		return cmdId;

@@ -13,6 +13,12 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 	private final long offset;
 
 	private final long length;
+	
+	@Override
+	public String toString() {
+		return "GetFirmwareFragmentRequestMessage [cmdId=" + getCmdId()+ ",posId=" + posId
+				+ ", offset=" + offset + ", length=" + length + "]";
+	}
 
 	public GetFirmwareFragmentRequestMessage(String posId, long offset,
 			long length) {
@@ -51,15 +57,5 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 	public long getLength() {
 		return length;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "posId=" + posId + ", offset=" + offset + ", length=" + length;
-	}
-
+	
 }
