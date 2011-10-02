@@ -104,7 +104,10 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 		// debug print the remote address (IP, port and POS ID)
 		if (log.isDebugEnabled()) {
-			log.debug("A message is sent from client at " + MinaUtil.buildCommonClientAddressText(session));
+			log.debug(
+					"A message is sent from client at "
+							+ MinaUtil.buildCommonClientAddressText(session)
+							+ ", message: {}", message);
 		}
 
 	}

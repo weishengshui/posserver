@@ -98,6 +98,7 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 			nextFilter.messageReceived(session, message);
 		}
 
+		log.trace("messageReceived() done");
 	}
 
 	protected void resetErrorCount(IoSession session) {

@@ -127,6 +127,7 @@ public class LoggingFilter extends IoFilterAdapter {
 
 		nextFilter.messageReceived(session, message);
 
+		log.trace("messageReceived() done");
 	}
 
 	/**

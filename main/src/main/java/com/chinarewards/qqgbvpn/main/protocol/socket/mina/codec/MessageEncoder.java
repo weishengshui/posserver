@@ -109,13 +109,14 @@ public class MessageEncoder implements ProtocolEncoder {
 		// make the 
 		int checkSumVal = Tools.checkSum(result, result.length);
 		Tools.putUnsignedShort(result, checkSumVal, 10);
-		log.debug("Encoded message checkum: 0x{})", Integer.toHexString(checkSumVal));
+		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
 		
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
 		// debug print
 		log.debug("Encoded byte content");
-		CodecUtil.debugRaw(log, result);
+		// TODO make the '96' be configurable.
+		CodecUtil.hexDumpForLogging(log, result, 96);
 
 		// write to Mina session
 		buf.put(result);
