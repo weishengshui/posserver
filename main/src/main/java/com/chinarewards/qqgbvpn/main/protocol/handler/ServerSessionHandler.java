@@ -24,6 +24,7 @@ import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * Server handler.
@@ -101,12 +102,9 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		if (!log.isDebugEnabled())
 			return;
 
-		String posId = getLoggedInPosId(session);
-
 		// debug print the remote address (IP, port and POS ID)
 		if (log.isDebugEnabled()) {
-			log.debug("messageReceived() from remote {}, Mina session ID: {}, identified POS ID: {}",
-					new Object[] { buildAddressPortString(session), session.getId(), posId });
+			log.debug("A message is sent from client at " + MinaUtil.buildCommonClientAddressText(session));
 		}
 
 	}
@@ -183,33 +181,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 		exec.submit(callable);
 
-	}
-
-	@Override
-	public void sessionOpened(IoSession session) throws Exception {
-		super.sessionOpened(session);
-
-		// just print the client's address.
-		printRemoteSocketAddress(session);
-
-	}
-
-	/**
-	 * Prints the remote address and port information.
-	 * 
-	 * @param session
-	 *            the session to print.
-	 */
-	protected void printRemoteSocketAddress(IoSession session) {
-
-		SocketAddress addr = session.getRemoteAddress();
-		if (addr == null || !(addr instanceof InetSocketAddress)) {
-			return;
-		}
-
-		// print it
-		log.info("Incoming connection from remote address: {}, Mina session ID: {}"
-				,buildAddressPortString(session), session.getId());
 	}
 
 	/**
