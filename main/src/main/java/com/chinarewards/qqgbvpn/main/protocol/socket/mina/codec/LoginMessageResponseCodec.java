@@ -36,7 +36,7 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("login/bind message decode");
 		LoginResponseMessage responseMessage = new LoginResponseMessage();
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.RESULT
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.RESULT
 				+ ProtocolLengths.CHALLENGE) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);
@@ -45,16 +45,16 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		// read from buffer
 		long cmdId = in.getUnsignedInt();
 		int result = in.getUnsignedShort();
-		byte[] challeuge = new byte[ProtocolLengths.CHALLENGE];
-		in.get(challeuge);
+		byte[] challenge = new byte[ProtocolLengths.CHALLENGE];
+		in.get(challenge);
 		
 		// construct message
 		responseMessage.setCmdId(cmdId);
 		responseMessage.setResult(result);
-		responseMessage.setChallenge(challeuge);
+		responseMessage.setChallenge(challenge);
 		
 		log.debug("login/bind message request:cmdId is ({}) , result is ({}) ,challeuge is ({})",
-				new Object[]{cmdId, result, challeuge});
+				new Object[]{cmdId, result, challenge});
 		return responseMessage;
 	}
 
