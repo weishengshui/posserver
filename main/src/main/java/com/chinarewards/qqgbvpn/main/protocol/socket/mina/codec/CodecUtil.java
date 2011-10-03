@@ -139,7 +139,7 @@ public class CodecUtil {
 			// copy the target bytes to print
 			byte[] part = new byte[partLength];
 			System.arraycopy(buf, 0, part, 0, partLength);
-			int omitted = partLength - remaining;
+			int omitted = buf.length - partLength;
 			
 			String hexDump = CodecUtil.hexDumpAsString(part);
 
