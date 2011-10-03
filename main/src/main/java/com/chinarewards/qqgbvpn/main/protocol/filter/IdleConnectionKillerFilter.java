@@ -34,7 +34,7 @@ public class IdleConnectionKillerFilter extends IoFilterAdapter {
 
 		nextFilter.sessionIdle(session, status);
 		
-		log.trace("messageReceived() done");
+		log.trace("sessionIdle() done");
 	}
 
 }

@@ -122,6 +122,45 @@ public class CodecUtil {
 	 * @param message
 	 * @param maxHexDumpLength
 	 */
+	public static final void hexDumpForLogging(Logger log, byte[] buf,
+			int maxHexDumpLength) {
+		
+		// do nothing if no need to print.
+		if (maxHexDumpLength <= 0)
+			return;
+
+		// number of available bytes to read.
+		int remaining = buf.length;
+		// the actual length to read.
+		int partLength = remaining < maxHexDumpLength ? remaining
+				: maxHexDumpLength;
+
+		try {
+			// copy the target bytes to print
+			byte[] part = new byte[partLength];
+			System.arraycopy(buf, 0, part, 0, partLength);
+			int omitted = partLength - remaining;
+			
+			String hexDump = CodecUtil.hexDumpAsString(part);
+
+			// use hex dump to output
+			if (log.isTraceEnabled()) {
+				log.trace("Raw bytes: (Printing {} of {} bytes, {} omitted)\n{}",
+						new Object[] { partLength, remaining, omitted, hexDump });
+			}
+
+		} finally {
+		}
+
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param log
+	 * @param message
+	 * @param maxHexDumpLength
+	 */
 	public static final void hexDumpForLogging(Logger log, IoBuffer buffer,
 			int maxHexDumpLength) {
 		
