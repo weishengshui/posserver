@@ -122,22 +122,22 @@ public class ValidateCommandHandler implements ServiceHandler {
 			}
 			
 		} catch (JsonGenerationException e) {
-			log.error("error=========:生成JSON对象出错");
+			log.error("error=========:生成JSON对象出错", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (MD5Exception e) {
-			log.error("error=========:生成MD5校验位出错");
+			log.error("error=========:生成MD5校验位出错", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (ParseXMLException e) {
-			log.error("error=========:解析XML出错");
+			log.error("error=========:解析XML出错", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (SendPostTimeOutException e) {
-			log.error("error=========:POST连接出错");
+			log.error("error=========:POST连接出错", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		} catch (SaveDBException e) {
-			log.error("error=========:后台保存数据库出错 "+e.getMessage());
+			log.error("error=========:后台保存数据库出错 ", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		}catch (Throwable e) {
-			log.error("error========= "+e.getMessage());
+			log.error("error=========:", e);
 			validateResponseMessage.setResult(ERROR_CODE_THER);
 		}
 		
