@@ -12,6 +12,11 @@ import com.chinarewards.utils.StringUtil;
 
 public class CreateFinanceReport extends Thread {
 	
+	/**
+	 * 默认超时时间10分钟
+	 */
+	private long timeout = 600000;
+	
 	private FinanceManager financeMgr;
 	
 	private FinanceReportSearchVO searchVO;
@@ -38,14 +43,25 @@ public class CreateFinanceReport extends Thread {
 		this.searchVO = searchVO;
 		this.financeReportId = financeReportId;
 	}
+	
+	public CreateFinanceReport(FinanceManager financeMgr,
+			FinanceReportSearchVO searchVO,
+			String financeReportId, long timeout) {
+		super();
+		this.financeMgr = financeMgr;
+		this.searchVO = searchVO;
+		this.financeReportId = financeReportId;
+		this.timeout = timeout;
+	}
 
 	public void run() {
 		if (!StringUtil.isEmptyString(financeReportId)) {
-			//TODO 根据ID找到FinanceReportHistory
 			FinanceReportHistory history = financeMgr.getFinanceReportHistoryById(financeReportId);
 			if (history != null ) {
 				StringBuffer sb = new StringBuffer("");
+				TimeoutDaemonThread daemonThread = new TimeoutDaemonThread(timeout);
 				try {
+					daemonThread.start();
 					sb.append(this.getReportTitle());
 					List<FinanceReportVO> financeReportVOList = financeMgr.searchFinanceReport(searchVO);
 					if (financeReportVOList != null && financeReportVOList.size() > 0) {
@@ -55,12 +71,16 @@ public class CreateFinanceReport extends Thread {
 					history.setReportDetail(sb.toString());
 					history.setModifyDate(new Date());
 					history.setStatus(FinanceReportHistoryStatus.COMPLETION);
+					daemonThread.cancel();
 				} catch (Throwable t) {
 					history.setReportDetail(t.getMessage());
 					history.setModifyDate(new Date());
 					history.setStatus(FinanceReportHistoryStatus.FAILED);
+				} finally {
+					if (!daemonThread.getIsCanceled()) {
+						daemonThread.cancel();
+					}
 				}
-				//TODO 保存FinanceReportHistory
 				financeMgr.saveFinanceReportHistory(history);
 			}
 		}
