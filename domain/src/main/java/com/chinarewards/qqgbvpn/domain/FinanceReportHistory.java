@@ -27,8 +27,6 @@ public class FinanceReportHistory {
 	@GenericGenerator(name = "system-uuid", strategy = "uuid")
 	String id;
 
-	String rnNumber;
-
 	/**
 	 * search condition, Copy of the agent id (for redundancy)
 	 */
@@ -65,14 +63,6 @@ public class FinanceReportHistory {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getRnNumber() {
-		return rnNumber;
-	}
-
-	public void setRnNumber(String rnNumber) {
-		this.rnNumber = rnNumber;
 	}
 
 	public String getAgentId() {
