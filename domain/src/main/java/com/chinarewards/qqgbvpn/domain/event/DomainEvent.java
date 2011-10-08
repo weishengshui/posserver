@@ -295,5 +295,15 @@ public enum DomainEvent {
 
 	GROUPON_CACHE_SEARCH,
 
-	GROUPON_CACHE_DELETE
+	GROUPON_CACHE_DELETE,
+	
+	/**
+	 * create FinanceReportHistory
+	 */
+	FINANCE_REPORT_HISTORY_CREATE,
+	
+	/**
+	 * modify FinanceReportHistory
+	 */
+	FINANCE_REPORT_HISTORY_MODIFY
 }

@@ -64,6 +64,11 @@ public enum DomainEntity {
 	/**
 	 * GrouponCache. The entity ID should be <code>Pos.getPosId()</code>
 	 */
-	GROUPON_CACHE
+	GROUPON_CACHE,
+	
+	/**
+	 * FinanceReportHistory. The entity ID should be <code>FinanceReportHistory.getId</code>
+	 */
+	FINANCE_REPORT_HISTORY
 
 }
