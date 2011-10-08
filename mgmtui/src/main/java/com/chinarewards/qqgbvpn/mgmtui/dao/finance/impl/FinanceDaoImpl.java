@@ -34,8 +34,8 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
 										"* " + FinanceReportVO.UNIT_PRICE + ")) AS amount" +
 				") " +
-				"from Validation v " +
-				"where v.status = :status ";
+				" from Validation v " +
+				" where v.status = :status ";
 		paramMap.put("status", ValidationStatus.SUCCESS);
 		if (searchVO != null) {
 			if (!StringUtil.isEmptyString(searchVO.getAgentId())) {
@@ -51,7 +51,7 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 				paramMap.put("endDate", searchVO.getEndDate());
 			}
 		}
-		hql += "group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
+		hql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
 		Query jql = getEm().createQuery(hql);
 		for (Entry<String, Object> entry : paramMap.entrySet()) {
 			jql.setParameter(entry.getKey(), entry.getValue());
