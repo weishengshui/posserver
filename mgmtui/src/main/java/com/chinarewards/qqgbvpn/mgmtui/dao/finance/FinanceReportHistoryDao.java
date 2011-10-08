@@ -9,5 +9,9 @@ public interface FinanceReportHistoryDao {
 	public FinanceReportHistory createFinanceReportHistory(FinanceReportSearchVO searchVO);
 	
 	public PageInfo<FinanceReportHistory> searchFinanceReportHistory(FinanceReportSearchVO searchVO, PageInfo pageInfo);
+	
+	public FinanceReportHistory getFinanceReportHistoryById(String id);
+	
+	public FinanceReportHistory saveFinanceReportHistory(FinanceReportHistory financeReportHistory);
 
 }

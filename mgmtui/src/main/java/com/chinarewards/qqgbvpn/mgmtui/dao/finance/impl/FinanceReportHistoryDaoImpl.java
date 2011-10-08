@@ -51,4 +51,16 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 		return f;
 	}
 
+	@Override
+	public FinanceReportHistory getFinanceReportHistoryById(String id) {
+		return getEm().find(FinanceReportHistory.class, id);
+	}
+
+	@Override
+	public FinanceReportHistory saveFinanceReportHistory(
+			FinanceReportHistory financeReportHistory) {
+		getEm().persist(financeReportHistory);
+		return financeReportHistory;
+	}
+
 }
