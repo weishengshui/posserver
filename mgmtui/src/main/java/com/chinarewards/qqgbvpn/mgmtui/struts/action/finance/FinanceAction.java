@@ -4,12 +4,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
+import com.chinarewards.qqgbvpn.mgmtui.thread.CreateFinanceReport;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
 
 /**
@@ -70,7 +72,9 @@ public class FinanceAction extends BaseAction {
 	}
 	
 	public String generateExcel(){
-		getFinanceManager().createFinanceReportHistory(searchVO);
+		FinanceReportHistory history = getFinanceManager().createFinanceReportHistory(searchVO);
+		Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId());
+		createReport.start();
 		return SUCCESS;
 	}
 	

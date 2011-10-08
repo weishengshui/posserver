@@ -40,7 +40,16 @@
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
 									<td>
-									<s:property value="#excelVO.startDate" />
+									<s:if test="#excelVO.startDate == null">
+										截止于
+									</s:if>
+									<s:elseif test="#excelVO.endDate == null">
+										起始于
+									</s:elseif>
+									<s:else>
+										<s:property value="#excelVO.startDate" />
+									</s:else>
+									
 									</td>
 									<td><s:property value="#excelVO.agentId" />
 									</td>
