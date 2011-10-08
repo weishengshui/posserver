@@ -19,9 +19,11 @@
 <body>
 
 	<table align="center" width="800px">
+	<s:form action="generate_excel" namespace="/finance" method="Get" id="generateexcel" theme="simple">
 		<s:hidden name="searchVO.agentId" id="searchVO.agentId"/>
 		<s:hidden name="searchVO.startDate" id="searchVO.startDate"/>
 		<s:hidden name="searchVO.endDate" id="searchVO.endDate"/>
+	</s:form>
 		<tr>
 			<td><s:form id="search_bill" namespace="/finance" action="search_bill_paging" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
@@ -115,13 +117,15 @@
 	}
 	
 	function generate_excel(){
-		var agent_id = document.getElementById("searchVO.agentId").value;
+		/* var agent_id = document.getElementById("searchVO.agentId").value;
 		var start_date = document.getElementById("searchVO.startDate").value;
 		var end_date = document.getElementById("searchVO.endDate").value;
 		var pageInfo_pageId = document.getElementById("pageInfo.pageId").value;
 		var pageInfo_pageSize = document.getElementById("pageInfo.pageSize").value;
 		window.location.href="${pageContext.request.contextPath}/finance/generate_excel?searchVO.agentId="+agent_id+
-				"&searchVO.startDate="+start_date+"&searchVO.endDate="+end_date+"&pageInfo.pageId="+pageInfo_pageId+"&pageInfo.pageSize="+pageInfo_pageSize;
+				"&searchVO.startDate="+start_date+"&searchVO.endDate="+end_date+"&pageInfo.pageId="+pageInfo_pageId+"&pageInfo.pageSize="+pageInfo_pageSize; */
+		var formObj = document.getElementById("generateexcel");
+		formObj.submit();
 	}
 	</script>
 </body>

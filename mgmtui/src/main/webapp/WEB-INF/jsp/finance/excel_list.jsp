@@ -39,13 +39,14 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td><s:property value="#excelVO.reportMonth" />
+									<td>
+									<s:property value="#excelVO.startDate" />
 									</td>
-									<td><s:property value="#excelVO.agentName" />
+									<td><s:property value="#excelVO.agentId" />
 									</td>
-									<td><s:property value="#excelVO.posId" />
+									<td><s:property value="#excelVO.status" />
 									</td>
-									<td><s:property value="#excelVO.baseAmount" />
+									<td><input type="button" value="下载"/>
 									</td>
 								</tr>
 							</s:iterator>
@@ -57,7 +58,7 @@
 				</div></td>
 		</tr>
 		<tr>
-			<td align="left"><input type="button" onclick="generate_excel();" value="生成Excel" >
+			<td align="left"><input type="button" onclick="" value="生成Excel" >
 			</td>
 		</tr>
 	</table>

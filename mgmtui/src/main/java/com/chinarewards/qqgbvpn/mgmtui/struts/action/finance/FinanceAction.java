@@ -69,8 +69,16 @@ public class FinanceAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String generateExel(){
-		
+	public String generateExcel(){
+		getFinanceManager().createFinanceReportHistory(searchVO);
+		return SUCCESS;
+	}
+	
+	public String searchExcel(){
+		pageInfo = new PageInfo();
+		pageInfo.setPageId(1);
+		pageInfo.setPageSize(INITPAGESIZE);
+		pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
 		return SUCCESS;
 	}
 	
