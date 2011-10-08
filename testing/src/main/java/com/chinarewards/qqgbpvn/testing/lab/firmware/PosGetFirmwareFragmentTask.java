@@ -1,6 +1,9 @@
 package com.chinarewards.qqgbpvn.testing.lab.firmware;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -8,6 +11,9 @@ import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.lab.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbpvn.testing.util.DigestUtil;
 import com.chinarewards.qqgbpvn.testing.util.FileUtil;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
@@ -26,9 +32,9 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  */
 public final class PosGetFirmwareFragmentTask extends PosTask {
 	
-	private static final String GET_FIRMWARE_FRAGMENT_LENGTH = "GET_FIRMWARE_FRAGMENT_LENGTH";
-	private static final String PUT_FIRMWARE_PATH = "PUT_FIRMWARE_PATH";
-	private static final String NATIVE_FIRMWARE_FILE = "NITIVE_FIRMWARE_FILE";
+	public static final String GET_FIRMWARE_FRAGMENT_LENGTH = "GET_FIRMWARE_FRAGMENT_LENGTH";
+	public static final String PUT_FIRMWARE_PATH = "PUT_FIRMWARE_PATH";
+	public static final String NATIVE_FIRMWARE_FILE = "NITIVE_FIRMWARE_FILE";
 	
 	@Override
 	public Arguments getDefaultParameters() {
@@ -98,24 +104,19 @@ public final class PosGetFirmwareFragmentTask extends PosTask {
 		}
 		return res;
 	}
-	
+
 	@Override
-	protected byte[] buildBodyMessage(JavaSamplerContext context) throws BuildBodyMessageException {
-		try{
-			String posId = TestContext.getBasePosConfig().getPosId();
-			long offset = TestContext.getBasePosConfig().getFirmwareOffset();
-			long length = Long.parseLong(context.getParameter(GET_FIRMWARE_FRAGMENT_LENGTH));
-			GetFirmwareFragmentRequestMessage bodyMessage = new 
-					GetFirmwareFragmentRequestMessage(posId, offset, length);
-			
-			SimpleCmdCodecFactory cmdCodecFactory = TestContext.getCmdCodecFactory();
-			ICommandCodec codec = cmdCodecFactory.getCodec(bodyMessage.getCmdId());
-			
-			byte[] bodys = codec.encode(bodyMessage, TestContext.getCharset());
-			return bodys;
-		}catch(Throwable e){
-			throw new BuildBodyMessageException(e);
-		}
+	protected byte[] buildBodyMessage(JavaSamplerContext context)
+			throws BuildBodyMessageException {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(NATIVE_FIRMWARE_FILE, context.getParameter(NATIVE_FIRMWARE_FILE));
+		map.put(PUT_FIRMWARE_PATH, context.getParameter(PUT_FIRMWARE_PATH));
+		map.put(GET_FIRMWARE_FRAGMENT_LENGTH, context.getParameter(GET_FIRMWARE_FRAGMENT_LENGTH));
+		
+		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosGetFirmwareFragment);
+		return buildMessage.buildBodyMessage(map);
 	}
+	
+
 	
 }
