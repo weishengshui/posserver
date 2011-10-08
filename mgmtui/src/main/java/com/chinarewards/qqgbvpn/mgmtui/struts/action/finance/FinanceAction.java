@@ -1,15 +1,16 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action.finance;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
+import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
 
 /**
  * finance action
@@ -25,6 +26,8 @@ public class FinanceAction extends BaseAction {
 	
 	private FinanceManager financeManager;
 	
+	private AgentLogic agentLogic;
+	
 	private PageInfo pageInfo;
 
 	private Map<String,String> agent = new LinkedHashMap<String,String>();
@@ -35,11 +38,18 @@ public class FinanceAction extends BaseAction {
 		
 	}
 	
-	private void preparedata(){
+	private void prepareData(){
 		agent.put("","无");
-		agent.put("40e6bda2-d37b-11e0-b051-f0095cb162d9","代理商A");
-		agent.put("40eec751-d37b-11e0-b051-f0095cb162d9","代理商B");
-		agent.put("40f37641-d37b-11e0-b051-f0095cb162d9","代理商C");
+		try {
+			List<AgentVO> list = getAgentLogic().findAllAgent();
+			if (list != null) {
+				for(AgentVO v:list){
+					agent.put(v.getId(), v.getName());
+				}
+			}
+		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -49,13 +59,17 @@ public class FinanceAction extends BaseAction {
 		pageInfo.setPageSize(INITPAGESIZE);
 		pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
 		
-		preparedata();
+		prepareData();
 		return SUCCESS;
 	}
 
 	public String searchBill(){
 		pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
-		preparedata();
+		prepareData();
+		return SUCCESS;
+	}
+	
+	public String generateExel(){
 		return SUCCESS;
 	}
 	
@@ -70,6 +84,11 @@ public class FinanceAction extends BaseAction {
 	public FinanceManager getFinanceManager() {
 		financeManager = super.getInstance(FinanceManager.class);
 		return financeManager;
+	}
+
+	public AgentLogic getAgentLogic() {
+		agentLogic = super.getInstance(AgentLogic.class);
+		return agentLogic;
 	}
 
 	public Map<String, String> getAgent() {

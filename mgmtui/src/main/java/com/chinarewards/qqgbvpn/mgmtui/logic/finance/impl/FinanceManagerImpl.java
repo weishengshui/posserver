@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.mgmtui.logic.finance.impl;
 
 import java.util.List;
 
+import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.finance.FinanceDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
@@ -22,4 +23,13 @@ public class FinanceManagerImpl implements FinanceManager {
 	public PageInfo<FinanceReportVO> searchFinanceReport(FinanceReportSearchVO searchVO, PageInfo pageInfo) {
 		return dao.get().searchFinanceReport(searchVO, pageInfo);
 	}
+
+	@Override
+	public PageInfo<FinanceReportHistory> searchFinanceReportHistory(
+			FinanceReportSearchVO searchVO, PageInfo pageInfo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 }
