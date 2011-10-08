@@ -38,7 +38,7 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 	}
 
 	@Override
-	public void createFinanceReportHistory(
+	public FinanceReportHistory createFinanceReportHistory(
 			FinanceReportSearchVO searchVO) {
 		FinanceReportHistory f = new FinanceReportHistory();
 		f.setAgentId(searchVO.getAgentId());
@@ -47,6 +47,8 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 		f.setCreateDate(new Date());
 		f.setStatus(FinanceReportHistoryStatus.CREATING);
 		getEm().persist(f);
+		
+		return f;
 	}
 
 }

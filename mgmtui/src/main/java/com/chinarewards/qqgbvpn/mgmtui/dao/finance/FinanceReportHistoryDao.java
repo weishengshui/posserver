@@ -6,7 +6,7 @@ import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
 
 public interface FinanceReportHistoryDao {
 	
-	public void createFinanceReportHistory(FinanceReportSearchVO searchVO);
+	public FinanceReportHistory createFinanceReportHistory(FinanceReportSearchVO searchVO);
 	
 	public PageInfo<FinanceReportHistory> searchFinanceReportHistory(FinanceReportSearchVO searchVO, PageInfo pageInfo);
 

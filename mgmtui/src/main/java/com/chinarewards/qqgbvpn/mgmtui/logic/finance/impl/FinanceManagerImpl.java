@@ -5,6 +5,7 @@ import java.util.List;
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.finance.FinanceDao;
+import com.chinarewards.qqgbvpn.mgmtui.dao.finance.FinanceReportHistoryDao;
 import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
@@ -15,6 +16,9 @@ public class FinanceManagerImpl implements FinanceManager {
 	
 	@Inject
 	private Provider<FinanceDao> dao;
+	
+	@Inject
+	private Provider<FinanceReportHistoryDao> hdao;
 	
 	public List<FinanceReportVO> searchFinanceReport(FinanceReportSearchVO searchVO) {
 		return dao.get().searchFinanceReport(searchVO);
@@ -27,8 +31,13 @@ public class FinanceManagerImpl implements FinanceManager {
 	@Override
 	public PageInfo<FinanceReportHistory> searchFinanceReportHistory(
 			FinanceReportSearchVO searchVO, PageInfo pageInfo) {
-		// TODO Auto-generated method stub
-		return null;
+		return hdao.get().searchFinanceReportHistory(searchVO, pageInfo);
+	}
+
+	@Override
+	public FinanceReportHistory createFinanceReportHistory(
+			FinanceReportSearchVO searchVO) {
+		return hdao.get().createFinanceReportHistory(searchVO);
 	}
 	
 	

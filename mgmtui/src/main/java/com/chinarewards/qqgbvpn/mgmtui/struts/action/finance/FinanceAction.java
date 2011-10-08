@@ -70,6 +70,7 @@ public class FinanceAction extends BaseAction {
 	}
 	
 	public String generateExel(){
+		
 		return SUCCESS;
 	}
 	

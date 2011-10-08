@@ -34,4 +34,5 @@ public interface FinanceManager {
 	 */
 	public PageInfo<FinanceReportHistory> searchFinanceReportHistory(FinanceReportSearchVO searchVO, PageInfo pageInfo);
 	
+	public FinanceReportHistory createFinanceReportHistory(FinanceReportSearchVO searchVO);
 }
