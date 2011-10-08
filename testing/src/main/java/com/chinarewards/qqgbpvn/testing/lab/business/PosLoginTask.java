@@ -1,6 +1,8 @@
 package com.chinarewards.qqgbpvn.testing.lab.business;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -9,6 +11,9 @@ import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.lab.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
@@ -54,36 +59,9 @@ public final class PosLoginTask extends PosTask {
 	@Override
 	protected byte[] buildBodyMessage(JavaSamplerContext context)
 			throws BuildBodyMessageException {
-		try{
-			logger.debug("PosLoginTask buildBodyMessage() run...");
-			LoginRequestMessage bodyMessage = new LoginRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.LOGIN_CMD_ID);
-			bodyMessage.setPosId(TestContext.getBasePosConfig().getPosId());
-			
-			
-			//get init response challenge value
-			InitResponseMessage initResponseMessage = (InitResponseMessage) TestContext.
-							getBasePosConfig().getLastResponseBodyMessage();
-			
-			//build challengeResponse by challenge and secret
-			logger.debug("challenge="+Arrays.toString(initResponseMessage.getChallenge())+
-						", length="+initResponseMessage.getChallenge().length);
-			logger.debug("secret="+TestContext.getBasePosConfig().getSecret());
-			byte[] challengeResponse = HMAC_MD5.getSecretContent(initResponseMessage.getChallenge(), 
-							TestContext.getBasePosConfig().getSecret());
-			logger.debug("challengeResponse="+Arrays.toString(challengeResponse)+
-					", length="+challengeResponse.length);
-			
-			bodyMessage.setChallengeResponse(challengeResponse);
-			
-			SimpleCmdCodecFactory cmdCodecFactory = TestContext.getCmdCodecFactory();
-			ICommandCodec codec = cmdCodecFactory.getCodec(bodyMessage.getCmdId());
-			
-			byte[] bodys = codec.encode(bodyMessage, TestContext.getCharset());
-			return bodys;
-		}catch(Throwable e){
-			throw new BuildBodyMessageException(e);
-		}
+		Map<String, String> map = new HashMap<String, String>();
+		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosLogin);
+		return buildMessage.buildBodyMessage(map);
 	}
 	
 }

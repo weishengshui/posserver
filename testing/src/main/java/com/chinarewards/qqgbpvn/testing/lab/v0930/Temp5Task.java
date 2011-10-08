@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbpvn.testing.lab.other;
+package com.chinarewards.qqgbpvn.testing.lab.v0930;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,21 +7,16 @@ import java.util.Map;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
-import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.exception.SendMessageException;
 import com.chinarewards.qqgbpvn.testing.lab.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.business.PosGetQQGroupBuyValidationTask;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbpvn.testing.util.SocketUtil;
-import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * description：分次发的的package
@@ -30,19 +25,21 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  * @time 2011-9-29   上午10:30:53
  * @author Seek
  */
-public class SlowTask extends PosTask {
+public class Temp5Task extends PosTask {
 	
 	private static final String SEND_TIMESTAMP = "SEND_TIMESTAMP(unit of time:Second)";
-	
-	private static final Integer TAIL_BYTES_LEN = 2;
+	private static final String FORE_BYTES_LEN = "FORE_BYTES_LEN";
 	
 	@Override
 	public Arguments getDefaultParameters() {
 		Arguments arguments = new Arguments();
-		arguments.addArgument(SEND_TIMESTAMP, "5");
+		arguments.addArgument(SEND_TIMESTAMP, "10");
+		arguments.addArgument(FORE_BYTES_LEN, "18");
+		
+		arguments.addArgument(PosGetQQGroupBuyValidationTask.GROUPON_VCODE, "12345678");
 		return arguments;
 	}
-
+	
 	@Override
 	protected SampleResult runTask(JavaSamplerContext context)
 			throws RunTaskException {
@@ -50,8 +47,7 @@ public class SlowTask extends PosTask {
 		res.sampleStart();	//开始任务
 		
 		try{
-			byte[] bodys =  buildBodyMessage(context);
-			sendMessage(context, bodys);
+			sendMessage(context);
 			
 			res.setSuccessful(true);
 		}catch(Throwable e){
@@ -63,61 +59,70 @@ public class SlowTask extends PosTask {
 		return res;
 	}
 	
-	/**
-	 * description：only do init request
-	 * @param context
-	 * @return
-	 * @throws BuildBodyMessageException
-	 * @time 2011-9-29   上午10:55:31
-	 * @author Seek
-	 */
-	@Override
-	protected byte[] buildBodyMessage(JavaSamplerContext context)
-			throws BuildBodyMessageException {
-		Map<String, String> map = new HashMap<String, String>();
-		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosInit);
-		return buildMessage.buildBodyMessage(map);
-	}
-	
-	@Override
-	protected Message sendMessage(JavaSamplerContext context, byte[] bodys)
-			throws SendMessageException {
+	private Message sendMessage(JavaSamplerContext context) throws SendMessageException {
 		try{
-			logger.debug("sendMessage run...");
+			//build body Message
+			Map<String, String> map = new HashMap<String, String>();
+			BuildMessage getGroupBuyListBuildMessage = MessageFactory.getBuildMessage(
+					BusinessType.PosGetQQGroupBuyList);
+			byte[] bodys = getGroupBuyListBuildMessage.buildBodyMessage(map);
 			
+			//format package content
 			byte[] requestBytes = formatPackageContent(context, bodys);
 			
-			/***************************************************************************/
-			byte[] foreBytes = new byte[requestBytes.length - TAIL_BYTES_LEN];
-			byte[] tailBytes = new byte[TAIL_BYTES_LEN];
 			
-			System.arraycopy(requestBytes, 0, foreBytes, 0, foreBytes.length);
-			System.arraycopy(requestBytes, foreBytes.length, tailBytes, 0, tailBytes.length);
+			//自增流水号
+			TestContext.incrementSequence();
 			
-			//发送包到pos server
-			logger.debug("send fore bytes...");
+			
+			//build get qq group buy validation body Message
+			map.clear();
+			map.put(PosGetQQGroupBuyValidationTask.GROUPON_VCODE, context.
+					getParameter(PosGetQQGroupBuyValidationTask.GROUPON_VCODE));
+			
+			BuildMessage getGroupBuyValidationBuildMessage = MessageFactory.getBuildMessage(
+					BusinessType.PosGetQQGroupBuyValidation);
+			byte[] tailBodys = getGroupBuyValidationBuildMessage.buildBodyMessage(map);
+			
+			//format package content
+			byte[] requestBytes2 = formatPackageContent(context, tailBodys);
+			
+			
+			/****************************************************************************/
+			int foreBytesLen = Integer.parseInt(context.getParameter(FORE_BYTES_LEN));
+			
+			byte[] foreRequestBytes = new byte[requestBytes.length + foreBytesLen];
+			
+			System.arraycopy(requestBytes, 0, foreRequestBytes, 0, requestBytes.length);
+			System.arraycopy(requestBytes2, 0, foreRequestBytes, requestBytes.length, foreBytesLen);
+			
 			SocketUtil.writeFromOutputStream(TestContext.getBasePosConfig().getSocket().
-					getOutputStream(), foreBytes);
+					getOutputStream(), foreRequestBytes);
 			
+			//sleep
 			Long sendTimestamp = Long.parseLong(context.getParameter(SEND_TIMESTAMP));
 			logger.debug("sleep "+sendTimestamp+" Second...");
 			Thread.sleep(sendTimestamp * 1000);
 			
-			logger.debug("send tail bytes...");
+			//tail bytes
+			byte[] tailRequestBytes = new byte[requestBytes2.length - foreBytesLen];
+			System.arraycopy(requestBytes2, foreBytesLen, tailRequestBytes, 0, tailRequestBytes.length);
+			
 			SocketUtil.writeFromOutputStream(TestContext.getBasePosConfig().getSocket().
-					getOutputStream(), tailBytes);
+					getOutputStream(), tailRequestBytes);
+			/****************************************************************************/
 			
 			byte[] responseBytes = SocketUtil.readFromInputStream(TestContext.
 					getBasePosConfig().getSocket().getInputStream());
-			/***************************************************************************/
+			
+			logger.debug("responseBytes:"+Arrays.toString(responseBytes) +
+					", length="+responseBytes.length);
 			
 			logger.debug("responseBytes:"+Arrays.toString(responseBytes) +
 					", length="+responseBytes.length);
 			//将package解析并封装成Message
 			Message message = super.parseResponseContent(context, responseBytes);
 			
-			//将当前的bodyMessage存入线程   以便下次请求使用
-			TestContext.getBasePosConfig().setLastResponseBodyMessage(message.getBodyMessage());
 			return message;
 		}catch(Throwable e){
 			throw new SendMessageException(e);

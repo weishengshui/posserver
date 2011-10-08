@@ -1,5 +1,8 @@
 package com.chinarewards.qqgbpvn.testing.lab.business;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
@@ -7,6 +10,9 @@ import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.lab.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
@@ -45,22 +51,13 @@ public final class PosInitTask extends PosTask {
 		}
 		return res;
 	}
-	
+
 	@Override
-	protected byte[] buildBodyMessage(JavaSamplerContext context) throws BuildBodyMessageException {
-		try{
-			InitRequestMessage bodyMessage = new InitRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.INIT_CMD_ID);
-			bodyMessage.setPosId(TestContext.getBasePosConfig().getPosId());
-			
-			SimpleCmdCodecFactory cmdCodecFactory = TestContext.getCmdCodecFactory();
-			ICommandCodec codec = cmdCodecFactory.getCodec(bodyMessage.getCmdId());
-			
-			byte[] bodys = codec.encode(bodyMessage, TestContext.getCharset());
-			return bodys;
-		}catch(Throwable e){
-			throw new BuildBodyMessageException(e);
-		}
+	protected byte[] buildBodyMessage(JavaSamplerContext context)
+			throws BuildBodyMessageException {
+		Map<String, String> map = new HashMap<String, String>();
+		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosInit);
+		return buildMessage.buildBodyMessage(map);
 	}
 	
 }

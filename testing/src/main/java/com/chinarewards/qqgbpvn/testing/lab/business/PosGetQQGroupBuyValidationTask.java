@@ -1,6 +1,8 @@
 package com.chinarewards.qqgbpvn.testing.lab.business;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -10,6 +12,9 @@ import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
 import com.chinarewards.qqgbpvn.testing.lab.PosTask;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
+import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
@@ -29,7 +34,7 @@ import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
  */
 public final class PosGetQQGroupBuyValidationTask extends PosTask {
 	
-	private static final String GROUPON_VCODE = "grouponVCode";
+	public static final String GROUPON_VCODE = "grouponVCode";
 	
 	@Override
 	public Arguments getDefaultParameters() {
@@ -61,51 +66,15 @@ public final class PosGetQQGroupBuyValidationTask extends PosTask {
 		}
 		return res;
 	}
-	
+
 	@Override
 	protected byte[] buildBodyMessage(JavaSamplerContext context)
 			throws BuildBodyMessageException {
-		try{
-			logger.debug("PosGetQQGroupBuyValidationTest buildBodyMessage() run...");
-			
-			String grouponVCode = context.getParameter(GROUPON_VCODE);
-			logger.debug("grouponVCode="+grouponVCode);
-			
-			ValidateRequestMessage bodyMessage = new ValidateRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID);
-			
-			
-			String grouponId = null;
-			ICommand iCommand = TestContext.getBasePosConfig().getLastResponseBodyMessage();
-			
-			//if the last request is get list, random get grouponId from list.  and set to threadLocal
-			//else from threadLocal
-			if(iCommand instanceof SearchResponseMessage){
-				logger.debug("getLastResponseBodyMessage() is SearchResponseMessage!");
-				SearchResponseMessage searchResponseMessage = (SearchResponseMessage)iCommand;
-				List<SearchResponseDetail> searchResponseDetailList = searchResponseMessage.getDetail();
-				
-				int randomIndex = (int)(Math.random()*searchResponseDetailList.size());
-				grouponId = searchResponseDetailList.get(randomIndex).getGrouponId();
-				logger.debug("random from list get grouponId = "+grouponId);
-				
-				TestContext.getBasePosConfig().setGrouponId(grouponId);
-			}else {
-				grouponId = TestContext.getBasePosConfig().getGrouponId();
-				logger.debug("grouponId from getBasePosConfig = "+grouponId);
-			}
-			
-			bodyMessage.setGrouponId(grouponId);
-			bodyMessage.setGrouponVCode(grouponVCode);
-			
-			SimpleCmdCodecFactory cmdCodecFactory = TestContext.getCmdCodecFactory();
-			ICommandCodec codec = cmdCodecFactory.getCodec(bodyMessage.getCmdId());
-			
-			byte[] bodys = codec.encode(bodyMessage, TestContext.getCharset());
-			return bodys;
-		}catch(Throwable e){
-			throw new BuildBodyMessageException(e);
-		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put(GROUPON_VCODE, context.getParameter(GROUPON_VCODE));
+		
+		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosGetQQGroupBuyValidation);
+		return buildMessage.buildBodyMessage(map);
 	}
 	
 }
