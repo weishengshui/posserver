@@ -30,7 +30,6 @@ import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
@@ -416,35 +415,6 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 			pa.setAgent(agent);
 			pa.setPos(pos);
 			getEm().persist(pa);
-		}
-	}
-
-	@Override
-	public AgentVO findAgentFromAssignmentByPosId(String pId)
-			throws PosNotExistException,ParamsException {
-		log.trace("calling findAgentFromAssignmentByPosId start and params is {}", pId);
-		if (Tools.isEmptyString(pId)) {
-			throw new ParamsException("pos id is null");
-		}
-		
-		Agent agent = null;
-		try{
-			agent = (Agent) getEm().createQuery("SELECT pa.agent FROM PosAssignment pa WHERE pa.pos.id = :pId")
-					.setParameter("pId", pId)
-					.getSingleResult();
-		}catch (NoResultException e) {
-			throw new PosNotExistException("POS(pos id =" + pId + ") not existed!");
-		}
-		
-		
-		if (agent != null) {
-			AgentVO agentVO = new AgentVO();
-			agentVO.setId(agent.getId());
-			agentVO.setName(agent.getName());
-			agentVO.setEmail(agent.getEmail());
-			return agentVO;
-		} else {
-			return null;
 		}
 	}
 

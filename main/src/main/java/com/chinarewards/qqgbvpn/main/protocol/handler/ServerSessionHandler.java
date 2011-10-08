@@ -15,6 +15,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
+import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
@@ -49,7 +50,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
-		// XXX is this ok to handle this exception in this way?
+		// XXX is this OK to handle this exception in this way?
 		log.error("An exception is caught in "
 				+ this.getClass().getSimpleName(), cause);
 	}
@@ -57,12 +58,51 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	@Override
 	public void messageReceived(IoSession session, Object message)
 			throws Exception {
+		
+		log.trace("messageReceived() started");
 
-		log.debug("messageReceived() from remote "
-				+ buildAddressPortString(session));
-
+		debugMessageReceived(session, message);
+		
+		// do the actual dispatch
 		doDispatch(session, message);
 
+		log.trace("messageReceived() done");
+	}
+
+	/**
+	 * Print the debug information of any message received event. If logging
+	 * is not configured at DEBUG level or lower, no task will be executed.
+	 * 
+	 * @param session
+	 * @param message
+	 */
+	protected void debugMessageReceived(IoSession session, Object message) {
+		
+		if (!log.isDebugEnabled()) return;
+		
+		String posId = getLoggedInPosId(session);
+
+		// debug print the remote address (IP, port and POS ID)
+		log.debug(
+				"messageReceived() from remote {}, identified POS ID: {}",
+				buildAddressPortString(session), posId);
+
+	}
+	
+	/**
+	 * Returns the logged in POS ID, muting all exception.
+	 * 
+	 * @param session
+	 * @return
+	 */
+	protected String getLoggedInPosId(IoSession session) {
+		try {
+			String posId = (String)session.getAttribute(LoginFilter.POS_ID);
+			return posId;
+		} catch (Throwable t) {
+			log.error("Internal program error: POS ID in Mina session cannot be retrieved", t);
+		}
+		return null;
 	}
 
 	/**
@@ -140,7 +180,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		}
 
 		// print it
-		InetSocketAddress sAddr = (InetSocketAddress) addr;
 		log.info("Incoming connection from remote address: "
 				+ buildAddressPortString(session));
 	}

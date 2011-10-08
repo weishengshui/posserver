@@ -14,7 +14,6 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -76,12 +75,6 @@ public class PosLogicImpl implements PosLogic {
 	@Override
 	public PosVO getPosByPosNum(String posNum) throws ParamsException,PosNotExistException {
 		return posDao.get().getPosByPosNum(posNum);
-	}
-
-	@Override
-	public AgentVO findAgentFromAssignmentByPosId(String pId)
-			throws PosNotExistException, ParamsException {
-		return posDao.get().findAgentFromAssignmentByPosId(pId);
 	}
 
 }

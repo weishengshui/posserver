@@ -10,6 +10,7 @@ import java.util.Iterator;
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LogLevel;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
@@ -130,23 +131,31 @@ public class DefaultPosServer implements PosServer {
 	 * @throws PosServerException
 	 */
 	protected void startMinaService() throws PosServerException {
+		
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
 		// =============== server side ===================
 
+		// Programmers: You MUST consult your team before rearranging the 
+		// order of the following Mina filters, as the ordering may affects
+		// the behaviour of the application which may lead to unpredictable
+		// result.
+		
 		acceptor = new NioSocketAcceptor();
-		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
+		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
-		// not this
+		// decode message
 		acceptor.getFilterChain().addLast(
 				"codec",
 				new ProtocolCodecFilter(new MessageCoderFactory(injector,
 						cmdCodecFactory)));
 
-		// bodyMessage filter
+		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
+		
+		acceptor.getFilterChain().addLast("bizLogger", new LoggingFilter());
 
 		// Transaction filter.
 		acceptor.getFilterChain().addLast("transaction",
@@ -156,6 +165,7 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
+		// the handler class
 		acceptor.setHandler(new ServerSessionHandler(injector,
 				serviceDispatcher, mapping));
 		
@@ -171,12 +181,27 @@ public class DefaultPosServer implements PosServer {
 			throw new PosServerException("Error binding server port", e);
 		}
 	}
+	
+	/**
+	 * Build an new instance of LoggingFilter with sane logging level. The
+	 * principle is to hide unnecessary logging under INFO level.
+	 * 
+	 * @return
+	 */
+	protected LoggingFilter buildLoggingFilter() {
+		LoggingFilter loggingFilter = new LoggingFilter();
+		loggingFilter.setMessageReceivedLogLevel(LogLevel.DEBUG);
+		loggingFilter.setMessageSentLogLevel(LogLevel.DEBUG);
+		loggingFilter.setSessionIdleLogLevel(LogLevel.TRACE);
+		return loggingFilter;
+	}
 
 	/**
 	 * Print configuration.
 	 */
 	private void printConfigValues() {
 		// get system configuration
+		@SuppressWarnings("rawtypes")
 		Iterator iter = configuration.getKeys();
 		if (configuration.isEmpty()) {
 			log.debug("No configuration values");

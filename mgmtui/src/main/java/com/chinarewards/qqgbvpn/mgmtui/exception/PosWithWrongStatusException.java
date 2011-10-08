@@ -18,16 +18,6 @@ package com.chinarewards.qqgbvpn.mgmtui.exception;
 public class PosWithWrongStatusException extends Exception {
 
 	private static final long serialVersionUID = -3821601313180634376L;
-	
-	private String errorContent;	//错误内容
-
-	public String getErrorContent() {
-		return errorContent;
-	}
-
-	public void setErrorContent(String errorContent) {
-		this.errorContent = errorContent;
-	}
 
 	public PosWithWrongStatusException() {
 	}

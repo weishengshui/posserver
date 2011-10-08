@@ -1,12 +1,12 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -304,6 +304,9 @@ public class UnbindAction extends BaseAction {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				if (!(pageInfo.getItems() != null && pageInfo.getItems().size() > 0)) {
+					this.errorMsg = a.getName() + "暂无任何可以回收的POS机!";
+				}
 				this.setAgentId(a.getId());
 				this.setAgent(a);
 			} else {
@@ -355,7 +358,7 @@ public class UnbindAction extends BaseAction {
 			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
 			if (inviteCode != null) {
 				//发送邮件
-				String path = getInviteEmailPath(inviteCode);
+				/*String path = getInviteEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
 				String subject = "邀请填写申请表";
 				Object[] params = {path};
@@ -368,7 +371,34 @@ public class UnbindAction extends BaseAction {
 				} catch (MessagingException e) {
 					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
 					return ERROR;
+				}*/
+				
+				//volelocity mail start
+				String path = getInviteEmailPath(inviteCode);
+				String[] toAdds = {this.getAgentEmail()};
+				String subject = "邀请填写申请表";
+				Map<String,Object> params = new HashMap<String,Object>();
+				params.put("invitePath", path);
+				String tempPath;
+				try {
+					tempPath = getClass().getResource("/mailtemplate").toURI().getPath();
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+					tempPath = "";
 				}
+				try {
+					getMailService().sendMailByVelocity(toAdds, null, subject, tempPath, "createInviteMailTemplate.vm", params);
+				} catch (AddressException e) {
+					e.printStackTrace();
+					this.errorMsg = "邮件地址为空，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				} catch (MessagingException e) {
+					e.printStackTrace();
+					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				}
+				//volelocity mail end
+				
 				this.setAgentName(this.getAgentName());
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				this.setPassTime(sdf.format(new Date()));
@@ -397,7 +427,7 @@ public class UnbindAction extends BaseAction {
 			if (rn != null) {
 				//受邀者填写完后发邮件给我方
 				if (!StringUtil.isEmptyString(inviteCode)) {
-					String[] toAdds = {getConfiguration().getString("company.email")};
+					/*String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
 					String path = getRnDetailPath(rn.getId());
 					Object[] params = {this.getAgentName(),posList.size(),path};
@@ -406,7 +436,30 @@ public class UnbindAction extends BaseAction {
 								, "confirmRnNumber", params);
 					} catch (Throwable e) {
 						this.errorMsg = "恭喜您已成功填写申请表，但发送回馈邮件失败，麻烦您联系管理员，通知我司您已成功填写回收申请表，谢谢!";
+					}*/
+					
+					//volelocity mail start
+					String[] toAdds = {getConfiguration().getString("company.email")};
+					String subject = "第三方成功填写申请表";
+					String path = getRnDetailPath(rn.getId());
+					Map<String,Object> params = new HashMap<String,Object>();
+					params.put("agentName", this.getAgentName());
+					params.put("posCount", posList.size());
+					params.put("confirmPath", path);
+					String tempPath;
+					try {
+						tempPath = getClass().getResource("/mailtemplate").toURI().getPath();
+					} catch (URISyntaxException e1) {
+						e1.printStackTrace();
+						tempPath = "";
 					}
+					try {
+						getMailService().sendMailByVelocity(toAdds, null, subject, tempPath, "confirmRnNumberMailTemplate.vm", params);
+					} catch (Throwable e) {
+						this.errorMsg = "恭喜您已成功填写申请表，但发送回馈邮件失败，麻烦您联系管理员，通知我司您已成功填写回收申请表，谢谢!";
+					}
+					//volelocity mail end
+					
 					this.setIsAgent("true");
 				}
 				this.setPosCount(splitPosIds(posIds.trim()).size());

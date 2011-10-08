@@ -26,8 +26,14 @@ public class TransactionFilter extends IoFilterAdapter {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
+	/**
+	 * It is not Provider<UnitOfWork>, refer to the implementation of
+	 * <code>PersistFilter</code> for how it is injected, as well as
+	 * <code>JpaPersistModule</code> on how the <code>UnitOfWork</code> is
+	 * binded.
+	 */
 	@Inject
-	Provider<UnitOfWork> uow;
+	UnitOfWork uow;
 
 	@Inject
 	Provider<EntityManager> em;
@@ -36,18 +42,24 @@ public class TransactionFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 
+		logger.trace("messageReceived() started");
+
 		startTransaction();
 
 		try {
 			nextFilter.messageReceived(session, message);
 		} finally {
 			endTransaction();
+			logger.trace("messageReceived() done");
 		}
+
 	}
 
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
+
+		logger.trace("messageSent() started");
 
 		startTransaction();
 
@@ -55,6 +67,7 @@ public class TransactionFilter extends IoFilterAdapter {
 			nextFilter.messageSent(session, writeRequest);
 		} finally {
 			endTransaction();
+			logger.trace("messageSent() done");
 		}
 	}
 
@@ -64,13 +77,14 @@ public class TransactionFilter extends IoFilterAdapter {
 	 */
 	protected void startTransaction() {
 		// start unit of work and transaction.
-		logger.trace("begin UnitOfWork");
-		UnitOfWork u = uow.get();
-		u.begin();
+		logger.trace("begin UnitOfWork and transaction");
+		uow.begin();
 
 		EntityManager e = em.get();
 		EntityTransaction t = e.getTransaction();
 		t.begin();
+
+		logger.trace("UnitOfWork and transaction begun");
 	}
 
 	/**
@@ -80,32 +94,39 @@ public class TransactionFilter extends IoFilterAdapter {
 	 */
 	protected void endTransaction() {
 
-		UnitOfWork u = uow.get();
+		logger.trace("Going to end transaction and UnitOfWork");
+
 		EntityManager eMgr = em.get();
 		EntityTransaction t = eMgr.getTransaction();
 
 		// finish the transaction
-		if (t.isActive()) {
-			try {
-				if (t.getRollbackOnly()) {
-					logger.debug("Transaction is marked for ROLLBACK, so we rollback it.");
-					t.rollback();
-				} else {
-					// otherwise, commit it.
-					t.commit();
+		try {
+			if (t.isActive()) {
+				try {
+					if (t.getRollbackOnly()) {
+						logger.debug("Transaction is marked for ROLLBACK, so we rollback it.");
+						t.rollback();
+					} else {
+						// otherwise, commit it.
+						t.commit();
+					}
+				} catch (Throwable e) {
+					logger.warn(
+							"Exception occurred when finishing transaction", e);
 				}
-			} catch (Throwable e) {
-				logger.warn("Exception occurred when finishing transaction", e);
 			}
+		} catch (Throwable e) {
+			logger.warn("An error has occurred when ending transaction", e);
 		}
 
 		// ... and unit of work.
 		try {
-			u.end();
+			uow.end();
 		} catch (Throwable e) {
 			logger.warn("Exception occurred when ending UnitOfWork", e);
 		}
-		logger.trace("UnitOfWork end");
+
+		logger.trace("Transaction and UnitOfWork ended");
 
 	}
 

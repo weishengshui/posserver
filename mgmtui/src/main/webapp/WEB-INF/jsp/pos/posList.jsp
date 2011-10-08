@@ -28,7 +28,7 @@
 				厂商编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="sn" label="Serial number" id="sn"/>		<%-- 厂商编号 --%>
+				<s:textfield name="model" label="model" id="model"/>
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				型号:
 			</td>
 			<td >
-				<s:textfield name="model" label="model" id="model"/>
+				<s:textfield name="sn" label="Serial number" id="sn"/>
 			</td>
 			<td >
 				电机号码:

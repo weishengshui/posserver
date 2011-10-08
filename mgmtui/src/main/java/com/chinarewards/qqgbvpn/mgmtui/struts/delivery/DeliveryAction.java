@@ -287,14 +287,6 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			log.error(e.getMessage(), e);
 			errorMsg = "无效的第三方关联";
 			return ERROR;
-		}catch(DeliveryNoteWithNoDetailException e){
-			log.error(e.getMessage(), e);
-			errorMsg = "没有添加POS机";
-			return ERROR;
-		}catch(PosWithWrongStatusException e){
-			log.error(e.getMessage(), e);
-			errorMsg = e.getErrorContent()==null?"POS状态错误":e.getErrorContent();
-			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;

@@ -13,15 +13,18 @@ public class BodyMessageFilter extends IoFilterAdapter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	@Override
-	public void exceptionCaught(NextFilter nextFilter, IoSession session,
-			Throwable cause) throws Exception {
-		log.debug("ErrorBodyMessage exception:({})", cause);
-	}
+//	@Override
+//	public void exceptionCaught(NextFilter nextFilter, IoSession session,
+//			Throwable cause) throws Exception {
+//		log.error("BodyMessageFilter caught an exception", cause);
+//	}
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
+		
+		log.trace("messageReceived() started");
+		
 		ICommand msg = ((Message) message).getBodyMessage();
 		// return when IBodyMessage instanceof ErrorBodyMessage
 		if (msg instanceof ErrorBodyMessage) {
@@ -32,6 +35,7 @@ public class BodyMessageFilter extends IoFilterAdapter {
 			nextFilter.messageReceived(session, message);
 		}
 
+		log.trace("messageReceived() done");
 	}
 
 }

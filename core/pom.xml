@@ -76,6 +76,14 @@
 			<artifactId>mail</artifactId>
 		</dependency>
 		
+		<!-- Velocity -->
+	    <dependency>
+		    <groupId>velocity</groupId>
+		    <artifactId>velocity-dep</artifactId>
+		    <version>1.4</version>
+		</dependency>
+	    <!-- Velocity -->
+		
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -329,16 +330,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				
 				saveReturnNote(rn);
 				
-				Journal journal = new Journal();
-				journal.setTs(date);
-				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
-				journal.setEntityId(rn.getId());
-				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
-				journal.setEventDetail(gson.toJson(rn));
-				saveJournal(journal);
-				
 				List<Pos> posList = getPosListByIds(posIds);
 				
 				if (posList != null && posList.size() > 0) {
@@ -354,6 +345,37 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 						saveReturnNoteDetail(rnd);
 					}
 				}
+				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+
+				/*
+				 * 新增的回收单写入POS机列表，
+				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
+				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
+				 * 显示很乱，不容易识别
+				*/
+				ReturnNoteInfo rni = new ReturnNoteInfo();
+				rni.setRn(rn);
+				rni.setPosList(posList);
+				journal_new.setEventDetail(gson.toJson(rni));
+				saveJournal(journal_new);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
+				saveJournal(journal);
 				
 			} catch (Exception e) {
 				throw new SaveDBException(e);
@@ -379,16 +401,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 				
 				saveReturnNote(rn);
 				
-				Journal journal = new Journal();
-				journal.setTs(date);
-				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
-				journal.setEntityId(rn.getId());
-				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
-				journal.setEventDetail(gson.toJson(rn));
-				saveJournal(journal);
-				
 				posList = getPosByAgentId(agentId);
 				
 				if (posList != null && posList.size() > 0) {
@@ -403,6 +415,37 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 						saveReturnNoteDetail(rnd);
 					}
 				}
+				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+				/*
+				 * 新增的回收单写入POS机列表，
+				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
+				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
+				 * 显示很乱，不容易识别
+				*/
+				ReturnNoteInfo rni = new ReturnNoteInfo();
+				rni.setRn(rn);
+				rni.setPosList(posList);
+				journal_new.setEventDetail(gson.toJson(rni));
+				saveJournal(journal_new);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
+				saveJournal(journal);
 				
 			} catch (Exception e) {
 				throw new SaveDBException(e);

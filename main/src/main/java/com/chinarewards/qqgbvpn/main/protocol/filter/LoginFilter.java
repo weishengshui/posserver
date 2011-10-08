@@ -43,6 +43,8 @@ public class LoginFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		
+		log.trace("messageReceived() started");
+		
 		Boolean isLogin = (Boolean) session.getAttribute(IS_LOGIN);
 		
 		// Check whether the command ID is LOGIN
@@ -95,6 +97,8 @@ public class LoginFilter extends IoFilterAdapter {
 			}
 		}
 
+		log.trace("messageReceived() done, pass on next filter");
+		
 		// pass the chain when
 		// case 1: cmdId is INIT or LOGIN.
 		// case 2: had login
@@ -131,6 +135,12 @@ public class LoginFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
+		
+		log.trace("messageSent() started");
+		
+		// XXX completely wrong implementation, should be set inside
+		// the command handler.
+		
 		ICommand msg = ((Message) writeRequest.getMessage())
 				.getBodyMessage();
 		long cmdId = msg.getCmdId();
@@ -144,6 +154,11 @@ public class LoginFilter extends IoFilterAdapter {
 				session.setAttribute(IS_LOGIN, true);
 			}
 		}
+		
+		// XXX missing nextFilter.messageSent(session, writeRequest); !?!
+
+		
+		log.trace("messageSent() done");
 	}
 
 }
