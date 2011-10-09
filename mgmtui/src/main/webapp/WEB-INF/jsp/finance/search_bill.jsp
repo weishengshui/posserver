@@ -28,7 +28,6 @@
 			<td><s:form id="search_bill" namespace="/finance" action="search_bill_paging" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-				<input type="hidden" name="searchVO.agentName" id="agentName"/>
 				
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" id="agent_select"/>&nbsp;&nbsp;
@@ -159,12 +158,6 @@
 	});
 	$("#endDate").change(function (){
 		check_end_date();
-	});
-	
-	$("#agent_select").change(function(){
-		 $("#agent_select option:selected").each(function () {
-             $("#agentName").val($(this).text());
-           });
 	});
 	</script>
 </body>

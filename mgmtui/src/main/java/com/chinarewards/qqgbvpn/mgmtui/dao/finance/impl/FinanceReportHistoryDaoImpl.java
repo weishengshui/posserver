@@ -7,6 +7,7 @@ import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.chinarewards.qqgbvpn.core.BaseDao;
+import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
@@ -41,6 +42,11 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 				countHql.append(" and f.createDate <= :endDate");
 				paramMap.put("endDate", searchVO.getEndDate());
 			}
+			if (!StringUtil.isEmptyString(searchVO.getFinanceReportHistoryStatus())) {
+				hql.append(" and f.status = :status");
+				countHql.append(" and f.status = :status");
+				paramMap.put("status", FinanceReportHistoryStatus.valueOf(searchVO.getFinanceReportHistoryStatus()));
+			}
 		}
 		hql.append(" order by f.createDate desc");
 		pageInfo = this.findPageInfo(countHql.toString(), hql.toString(), paramMap, pageInfo);
@@ -51,8 +57,13 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 	public FinanceReportHistory createFinanceReportHistory(
 			FinanceReportSearchVO searchVO) {
 		FinanceReportHistory f = new FinanceReportHistory();
-		f.setAgentId(searchVO.getAgentId());
-		f.setAgentName(searchVO.getAgentName());
+		if (!StringUtil.isEmptyString(searchVO.getAgentId())) {
+			Agent agent = getEm().find(Agent.class, searchVO.getAgentId());
+			if (agent != null) {
+				f.setAgentId(agent.getId());
+				f.setAgentName(agent.getName());
+			}
+		}
 		f.setStartDate(searchVO.getStartDate());
 		if(searchVO.getEndDate() == null){
 			f.setEndDate(new Date());
@@ -62,6 +73,22 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 		f.setCreateDate(new Date());
 		f.setStatus(FinanceReportHistoryStatus.CREATING);
 		getEm().persist(f);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(f);
+		} catch (Exception e) {
+			e.printStackTrace();
+			eventDetail = e.toString();
+		}
+		Journal journal = new Journal();
+		journal.setTs(new Date());
+		journal.setEntity(DomainEntity.FINANCE_REPORT_HISTORY.toString());
+		journal.setEntityId(f.getId());
+		journal.setEvent(DomainEvent.FINANCE_REPORT_HISTORY_CREATE.toString());
+		journal.setEventDetail(eventDetail);
+		getEm().persist(journal);
 		
 		return f;
 	}
@@ -81,7 +108,7 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 			eventDetail = mapper.writeValueAsString(financeReportHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
-			eventDetail = e.getMessage();
+			eventDetail = e.toString();
 		}
 		Journal journal = new Journal();
 		journal.setTs(new Date());

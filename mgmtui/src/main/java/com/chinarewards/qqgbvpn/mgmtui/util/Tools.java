@@ -90,4 +90,21 @@ public class Tools {
 		sdf.format(new Date());
 		return sdf.format(new Date());
 	}
+	
+	/**
+	 * 将变量src中的特殊字符进行转义，使其在页面上正确显示。
+	 * @author iori
+	 */
+	public static String charConversion(String src) {
+		if (src == null || "".equals(src))
+			return "";
+
+		src = src.replaceAll("'", "&#39;");
+		src = src.replaceAll("\"", "&quot;");
+		src = src.replaceAll("  ", "　");
+		src = src.replaceAll("<", "&lt;");
+		src = src.replaceAll(">", "&gt;");
+		src = src.replaceAll("\r\n", "<br>");
+		return src;
+	}
 }

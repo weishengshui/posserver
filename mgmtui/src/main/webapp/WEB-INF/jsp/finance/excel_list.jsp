@@ -45,13 +45,13 @@
 									<td><s:property value="#excelVO.agentName" />
 									</td>
 									<td>
-									<s:if test="#excelVO.status == 'CREATING'">
+									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
 										文件生成中
 									</s:if>
-									<s:elseif test="#excelVO.status == 'COMPLETION'">
+									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
 										文件已生成
 									</s:elseif>
-									<s:elseif test="#excelVO.status == 'FAILED'">
+									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
 										文件生成失败
 									</s:elseif>
 									<s:else>
@@ -59,7 +59,15 @@
 									</s:else>
 									</td>
 									<td>
-									<input onclick="download()" type="button" value="下载"/>
+									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
+										<input type="button" value="下载" disabled="true"/>
+									</s:if>
+									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
+										<input type="button" value="下载"  onclick="download()"/>
+									</s:elseif>
+									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
+										<input type="button" value="显示错误信息" onclick='showError("${excelVO.reportDetail}")'/>
+									</s:elseif>
 									</td>
 								</tr>
 							</s:iterator>
@@ -87,6 +95,10 @@
 		var file_name = document.getElementById("file_name").innerHTML;
 		
 		alert(document.getElementById("file_name").innerHTML);
+	}
+	
+	function showError(errorMsg) {
+		alert(errorMsg);
 	}
 	</script>
 </body>
