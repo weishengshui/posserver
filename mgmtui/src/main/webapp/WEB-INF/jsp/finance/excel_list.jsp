@@ -53,20 +53,29 @@
 									<td><s:property value="#excelVO.agentName" />
 									</td>
 									<td>
-									<s:if test="#excelVO.status == 'CREATING'">
+									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
 										文件生成中
 									</s:if>
-									<s:elseif test="#excelVO.status == 'COMPLETION'">
+									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
 										文件已生成
 									</s:elseif>
-									<s:elseif test="#excelVO.status == 'FAILED'">
+									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
 										文件生成失败
 									</s:elseif>
 									<s:else>
 										状态未知
 									</s:else>
 									</td>
-									<td><input type="button" value="下载"/>
+									<td>
+									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
+										<input type="button" value="下载" disabled="true"/>
+									</s:if>
+									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
+										<input type="button" value="下载"/>
+									</s:elseif>
+									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
+										<input type="button" value="显示错误信息" onclick='showError("${excelVO.reportDetail}")'/>
+									</s:elseif>
 									</td>
 								</tr>
 							</s:iterator>
@@ -88,6 +97,10 @@
 		document.getElementById("pageInfo.pageId").value = pageId;
 		formObj.action = "${pageContext.request.contextPath}/finance/search_excel";
 		formObj.submit();
+	}
+	
+	function showError(errorMsg) {
+		alert(errorMsg);
 	}
 	</script>
 </body>

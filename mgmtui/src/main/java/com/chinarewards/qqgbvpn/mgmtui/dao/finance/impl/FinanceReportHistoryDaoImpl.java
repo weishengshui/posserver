@@ -42,6 +42,11 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 				countHql.append(" and f.createDate <= :endDate");
 				paramMap.put("endDate", searchVO.getEndDate());
 			}
+			if (!StringUtil.isEmptyString(searchVO.getFinanceReportHistoryStatus())) {
+				hql.append(" and f.status = :status");
+				countHql.append(" and f.status = :status");
+				paramMap.put("status", FinanceReportHistoryStatus.valueOf(searchVO.getFinanceReportHistoryStatus()));
+			}
 		}
 		hql.append(" order by f.createDate desc");
 		pageInfo = this.findPageInfo(countHql.toString(), hql.toString(), paramMap, pageInfo);

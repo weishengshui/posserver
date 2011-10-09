@@ -3,9 +3,6 @@ package com.chinarewards.qqgbvpn.mgmtui.vo;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
-import com.chinarewards.qqgbvpn.domain.status.FinanceReportHistoryStatus;
-
 public class FinanceReportSearchVO implements Serializable {
 
 	private static final long serialVersionUID = 2672324894689357121L;
@@ -18,7 +15,7 @@ public class FinanceReportSearchVO implements Serializable {
 	
 	private Date endDate;
 	
-	private FinanceReportHistoryStatus financeReportHistoryStatus;
+	private String financeReportHistoryStatus;
 
 	public String getAgentId() {
 		return agentId;
@@ -52,19 +49,12 @@ public class FinanceReportSearchVO implements Serializable {
 		this.endDate = endDate;
 	}
 
-	public FinanceReportHistoryStatus getFinanceReportHistoryStatus() {
+	public String getFinanceReportHistoryStatus() {
 		return financeReportHistoryStatus;
 	}
 
 	public void setFinanceReportHistoryStatus(String financeReportHistoryStatus) {
-		if(financeReportHistoryStatus == null)return;
-		if(financeReportHistoryStatus == "CREATING"){
-			this.financeReportHistoryStatus = FinanceReportHistoryStatus.CREATING;
-		}else if(financeReportHistoryStatus == "COMPLETION"){
-			this.financeReportHistoryStatus = FinanceReportHistoryStatus.COMPLETION;
-		}else if(financeReportHistoryStatus == "FAILED"){
-			this.financeReportHistoryStatus = FinanceReportHistoryStatus.FAILED;
-		}
+		this.financeReportHistoryStatus = financeReportHistoryStatus;
 	}
 	
 

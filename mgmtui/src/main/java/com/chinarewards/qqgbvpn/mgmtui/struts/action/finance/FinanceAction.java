@@ -1,12 +1,9 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action.finance;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
@@ -16,8 +13,9 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.thread.CreateFinanceReport;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
+import com.chinarewards.utils.StringUtil;
 
 /**
  * finance action
@@ -131,7 +129,21 @@ public class FinanceAction extends BaseAction {
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(INITPAGESIZE);
+		System.out.println("getFinanceReportHistoryStatus:" + searchVO.getFinanceReportHistoryStatus());
 		pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
+		if (pageInfo != null) {
+			List<FinanceReportHistory> list = pageInfo.getItems();
+			if (list != null && list.size() > 0) {
+				List<FinanceReportHistory> tempList = new ArrayList<FinanceReportHistory>();
+				for (FinanceReportHistory history : list) {
+					if (!StringUtil.isEmptyString(history.getReportDetail())) {
+						history.setReportDetail(Tools.charConversion(history.getReportDetail()));
+					}
+					tempList.add(history);
+				}
+				pageInfo.setItems(tempList);
+			}
+		}
 		prepareAgent();
 		prepareStatus();
 		return SUCCESS;
