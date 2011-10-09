@@ -28,9 +28,10 @@
 			<td><s:form id="search_bill" namespace="/finance" action="search_bill_paging" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
+				<input type="hidden" name="searchVO.agentName" id="agentName"/>
 				
 				代理商：
-					<s:select name="searchVO.agentId" list="agent" />&nbsp;&nbsp;
+					<s:select name="searchVO.agentId" list="agent" id="agent_select"/>&nbsp;&nbsp;
 				开始时间：
 					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;&nbsp;
 				结束时间：
@@ -92,12 +93,16 @@
 		</tr>
 	</table>
 	<script type="text/javascript">
+	var is_generate = '<s:property value="#request.generate"/>';
+	if(is_generate =="false"){
+		alert("没有账单记录不能生成Excel文件！");
+	}
 	
 	initializeDatepicker("startDate","endDate");
 	function initializeDatepicker(idFrom, idTo) {
 		var dates = $('#' + idFrom + ', ' + '#' + idTo).datepicker({
 			showAnim: "",
-			dateFormat: "yy-mm-dd",
+			dateFormat: "yyyy-mm-dd",
 			changeMonth: true,
 			changeYear: true,
 			onSelect: function(selectedDate) {
@@ -125,8 +130,43 @@
 		window.location.href="${pageContext.request.contextPath}/finance/generate_excel?searchVO.agentId="+agent_id+
 				"&searchVO.startDate="+start_date+"&searchVO.endDate="+end_date+"&pageInfo.pageId="+pageInfo_pageId+"&pageInfo.pageSize="+pageInfo_pageSize; */
 		var formObj = document.getElementById("generateexcel");
-		formObj.submit();
+				
+		if(check_start_date && check_end_date){
+			formObj.submit();	
+		}
 	}
+	
+	var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
+	
+	function check_start_date(){
+		if($("#startDate").val == null || $("#startDate").val == "")return false;
+		if(!pattern.exec($("#startDate").val)){
+			alert('请输入正确的开始时间 /n 例如2011-01-01');
+			return false;
+		}
+		return true;
+	}
+	function check_end_date(){
+		if($("#endDate").val == null || $("#endDate").val == "")return false;
+		if(!pattern.exec($("#endDate").val)){
+			alert('请输入正确的结束时间 /n 例如2011-01-01');
+			return false;
+		}
+		return true;
+	}
+	$("#startDate").change(function (){
+		check_start_date();
+	});
+	$("#endDate").change(function (){
+		check_end_date();
+	});
+	
+	$("#agent_select").change(function(){
+		 $("#agent_select option:selected").each(function () {
+             $("#agentName").val($(this).text());
+           });
+
+	});
 	</script>
 </body>
 </html>

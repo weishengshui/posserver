@@ -4,6 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
@@ -13,6 +17,7 @@ import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.thread.CreateFinanceReport;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
+import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
 
 /**
  * finance action
@@ -34,13 +39,15 @@ public class FinanceAction extends BaseAction {
 
 	private Map<String,String> agent = new LinkedHashMap<String,String>();
 	
+	private Map<String,String> status = new LinkedHashMap<String,String>();
+	
 	private FinanceReportSearchVO searchVO = new FinanceReportSearchVO();
 
 	public void validate(){
 		
 	}
 	
-	private void prepareData(){
+	private void prepareAgent(){
 		agent.put("","无");
 		try {
 			List<AgentVO> list = getAgentLogic().findAllAgent();
@@ -54,27 +61,69 @@ public class FinanceAction extends BaseAction {
 		}
 	}
 	
+	private void prepareStatus(){
+		status.put("", "全部");
+		status.put("CREATING", "生成中");
+		status.put("COMPLETION", "完成");
+		status.put("FAILED", "失败");
+	}
+	
 	@Override
 	public String execute() {
-		pageInfo = new PageInfo();
-		pageInfo.setPageId(1);
-		pageInfo.setPageSize(INITPAGESIZE);
-		pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
-		
-		prepareData();
+		try{
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(INITPAGESIZE);
+			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			
+			prepareAgent();
+		}catch(Exception e){
+			e.printStackTrace();
+			return ERROR;
+		}
 		return SUCCESS;
 	}
 
 	public String searchBill(){
-		pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
-		prepareData();
+		try{
+			if(pageInfo == null || pageInfo.getPageId()==0){
+				log.debug("pageInfo lost !");
+			}
+			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			prepareAgent();
+		}catch(Exception e){
+			e.printStackTrace();
+			return ERROR;
+		}
+		
 		return SUCCESS;
 	}
 	
 	public String generateExcel(){
-		FinanceReportHistory history = getFinanceManager().createFinanceReportHistory(searchVO);
-		Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId());
-		createReport.start();
+		try{
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(INITPAGESIZE);
+			
+			/*List<FinanceReportVO> vo = getFinanceManager().searchFinanceReport(searchVO);
+			if(vo == null || "".equals(vo) || vo.size() == 0){
+				HttpServletRequest request = ServletActionContext.getRequest ();
+				request.setAttribute("generate", "false");
+				log.debug("can not generate excel because no bill result.");
+				return INPUT;
+			}*/
+			FinanceReportHistory history = getFinanceManager().createFinanceReportHistory(searchVO);
+			//超时时间到时从配置文件中获取
+			Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId(),60000);
+			createReport.start();
+			
+			pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
+		}catch(Exception e){
+			e.printStackTrace();
+			return ERROR;
+		}
+		/*prepareAgent();
+		prepareStatus();*/
 		return SUCCESS;
 	}
 	
@@ -83,6 +132,8 @@ public class FinanceAction extends BaseAction {
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(INITPAGESIZE);
 		pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
+		prepareAgent();
+		prepareStatus();
 		return SUCCESS;
 	}
 	
@@ -119,6 +170,13 @@ public class FinanceAction extends BaseAction {
 	public FinanceReportSearchVO getSearchVO() {
 		return searchVO;
 	}
-	
+
+	public Map<String, String> getStatus() {
+		return status;
+	}
+
+	public void setStatus(Map<String, String> status) {
+		this.status = status;
+	}
 	
 }

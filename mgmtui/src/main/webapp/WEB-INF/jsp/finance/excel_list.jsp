@@ -14,7 +14,7 @@
 
 	<table align="center" width="800px">
 		<tr>
-			<td><s:form id="search_bill" namespace="/finance" action="search_bill_paging" method="GET" theme="simple">
+			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 				代理商：
@@ -23,6 +23,8 @@
 					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;&nbsp;
 				结束时间：
 					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate"/>&nbsp;
+				状态：
+					<s:select name="searchVO.financeReportHistoryStatus" list="status" />
 				<input type="submit" value="查询" />
 				</s:form></td>
 		</tr>
@@ -32,7 +34,7 @@
 					<table align="center" width="800px" border="1">
 						<tr align="center">
 							<td>文件名称</td>
-							<td>代理商ID</td>
+							<td>代理商</td>
 							<td>状态</td>
 							<td>下载</td>
 						</tr>
@@ -43,17 +45,26 @@
 									<s:if test="#excelVO.startDate == null">
 										截止于
 									</s:if>
-									<s:elseif test="#excelVO.endDate == null">
-										起始于
+									<s:else>
+										<s:property value="#excelVO.startDate" />~
+									</s:else>
+									<s:property value="#excelVO.endDate" />
+									</td>
+									<td><s:property value="#excelVO.agentName" />
+									</td>
+									<td>
+									<s:if test="#excelVO.status == 'CREATING'">
+										文件生成中
+									</s:if>
+									<s:elseif test="#excelVO.status == 'COMPLETION'">
+										文件已生成
+									</s:elseif>
+									<s:elseif test="#excelVO.status == 'FAILED'">
+										文件生成失败
 									</s:elseif>
 									<s:else>
-										<s:property value="#excelVO.startDate" />
+										状态未知
 									</s:else>
-									
-									</td>
-									<td><s:property value="#excelVO.agentId" />
-									</td>
-									<td><s:property value="#excelVO.status" />
 									</td>
 									<td><input type="button" value="下载"/>
 									</td>
@@ -73,9 +84,9 @@
 	</table>
 	<script type="text/javascript">
 	function goPage(pageId) {
-		var formObj = document.getElementById("search_bill");
+		var formObj = document.getElementById("search_excel");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${pageContext.request.contextPath}/finance/search_bill_paging";
+		formObj.action = "${pageContext.request.contextPath}/finance/search_excel";
 		formObj.submit();
 	}
 	</script>

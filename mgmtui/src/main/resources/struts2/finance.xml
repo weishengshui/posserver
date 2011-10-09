@@ -19,7 +19,10 @@
 		<action name="generate_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
 			method="generateExcel">
-			<result name="success" type="chain">search_excel</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">search_excel</param>
+			</result>
+			<result name="input">/WEB-INF/jsp/finance/search_bill.jsp</result>
 		</action>
 		<action name="search_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
