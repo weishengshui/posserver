@@ -1,7 +1,13 @@
 package com.chinarewards.qqgbvpn.mgmtui.thread;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.status.FinanceReportHistoryStatus;
@@ -58,109 +64,128 @@ public class CreateFinanceReport extends Thread {
 		if (!StringUtil.isEmptyString(financeReportId)) {
 			FinanceReportHistory history = financeMgr.getFinanceReportHistoryById(financeReportId);
 			if (history != null ) {
-				StringBuffer sb = new StringBuffer("");
-				TimeoutDaemonThread daemonThread = new TimeoutDaemonThread(timeout);
+				ExecutorService executor = Executors.newSingleThreadExecutor();
+				FutureTask<String> future = new FutureTask<String>(
+						new Callable<String>() {
+							public String call() {
+								StringBuffer sb = new StringBuffer("");
+								sb.append(this.getReportTitle());
+								List<FinanceReportVO> financeReportVOList = financeMgr
+										.searchFinanceReport(searchVO);
+								if (financeReportVOList != null
+										&& financeReportVOList.size() > 0) {
+									sb.append(this
+											.getReportData(financeReportVOList));
+								}
+								sb.append(getReportSum());
+								return sb.toString();
+							}
+
+							private StringBuffer getReportTitle() {
+								StringBuffer sb = new StringBuffer();
+								sb.append("腾讯终端验证机帐单\r\n");
+								sb.append("月份");
+								sb.append(",");
+								sb.append("代理商名称");
+								sb.append(",");
+								sb.append("POS机编号");
+								sb.append(",");
+								sb.append("基本运营费a");
+								sb.append(",");
+								sb.append("实际验证个数");
+								sb.append(",");
+								sb.append("超额验证个数b");
+								sb.append(",");
+								sb.append("单价c");
+								sb.append(",");
+								sb.append("超额运营费d=b*c");
+								sb.append(",");
+								sb.append("运营费用e=a+d");
+								sb.append(",");
+								sb.append("\r\n");
+								return sb;
+							}
+
+							private StringBuffer getReportData(
+									List<FinanceReportVO> financeReportVOList) {
+								StringBuffer sb = new StringBuffer();
+								for (FinanceReportVO vo : financeReportVOList) {
+									sb.append(vo.getReportMonth());
+									sb.append(",");
+									sb.append(vo.getAgentName());
+									sb.append(",");
+									sb.append(vo.getPosId());
+									sb.append(",");
+									sb.append(vo.getBaseAmount());
+									sb.append(",");
+									sb.append(vo.getActuallyValCount());
+									sb.append(",");
+									sb.append(vo.getBeyondValCount());
+									sb.append(",");
+									sb.append(vo.getUnitPrice());
+									sb.append(",");
+									sb.append(vo.getBeyondAmount());
+									sb.append(",");
+									sb.append(vo.getAmount());
+									sb.append(",");
+									sb.append("\r\n");
+
+									baseAmountSum += vo.getBaseAmount();
+									actuallyValCountSum += vo
+											.getActuallyValCount();
+									beyondValCountSum += vo.getBeyondValCount();
+									beyondAmountSum = add(beyondAmountSum,vo.getBeyondAmount());
+									amountSum = add(amountSum,vo.getAmount());
+								}
+								return sb;
+							}
+							
+							private double add(double v1, double v2) {
+								BigDecimal b1 = new BigDecimal(Double.toString(v1));
+								BigDecimal b2 = new BigDecimal(Double.toString(v2));
+								return b1.add(b2).doubleValue();
+							}
+
+							private StringBuffer getReportSum() {
+								StringBuffer sb = new StringBuffer();
+								sb.append("合计");
+								sb.append(",");
+								sb.append(",");
+								sb.append(",");
+								sb.append(baseAmountSum);
+								sb.append(",");
+								sb.append(actuallyValCountSum);
+								sb.append(",");
+								sb.append(beyondValCountSum);
+								sb.append(",");
+								sb.append(",");
+								sb.append(beyondAmountSum);
+								sb.append(",");
+								sb.append(amountSum);
+								sb.append(",");
+								sb.append("\r\n");
+								return sb;
+							}
+						});
+				executor.execute(future);
 				try {
-					daemonThread.start();
-					sb.append(this.getReportTitle());
-					List<FinanceReportVO> financeReportVOList = financeMgr.searchFinanceReport(searchVO);
-					if (financeReportVOList != null && financeReportVOList.size() > 0) {
-						sb.append(this.getReportData(financeReportVOList));
-					}
-					sb.append(getReportSum());
-					history.setReportDetail(sb.toString());
+					String str = future.get(timeout, TimeUnit.MILLISECONDS);
+					history.setReportDetail(str);
 					history.setModifyDate(new Date());
 					history.setStatus(FinanceReportHistoryStatus.COMPLETION);
-					daemonThread.cancel();
-				} catch (Throwable t) {
-					history.setReportDetail(t.getMessage());
+				} catch (Exception e) {
+					future.cancel(true);
+					e.printStackTrace();
+					history.setReportDetail("超时." + e.toString());
 					history.setModifyDate(new Date());
 					history.setStatus(FinanceReportHistoryStatus.FAILED);
 				} finally {
-					if (!daemonThread.getIsCanceled()) {
-						daemonThread.cancel();
-					}
+					executor.shutdown();
 				}
+
 				financeMgr.saveFinanceReportHistory(history);
 			}
 		}
 	}
 	
-	private StringBuffer getReportTitle() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("腾讯终端验证机帐单\r\n");
-		sb.append("月份");
-		sb.append(",");
-		sb.append("代理商名称");
-		sb.append(",");
-		sb.append("POS机编号");
-		sb.append(",");
-		sb.append("基本运营费a");
-		sb.append(",");
-		sb.append("实际验证个数");
-		sb.append(",");
-		sb.append("超额验证个数b");
-		sb.append(",");
-		sb.append("单价c");
-		sb.append(",");
-		sb.append("超额运营费d=b*c");
-		sb.append(",");
-		sb.append("运营费用e=a+d");
-		sb.append(",");
-		sb.append("\r\n");
-		return sb;
-	}
-	
-	private StringBuffer getReportData(List<FinanceReportVO> financeReportVOList) {
-		StringBuffer sb = new StringBuffer();
-		for (FinanceReportVO vo : financeReportVOList) {
-			sb.append(vo.getReportMonth());
-			sb.append(",");
-			sb.append(vo.getAgentName());
-			sb.append(",");
-			sb.append(vo.getPosId());
-			sb.append(",");
-			sb.append(vo.getBaseAmount());
-			sb.append(",");
-			sb.append(vo.getActuallyValCount());
-			sb.append(",");
-			sb.append(vo.getBeyondValCount());
-			sb.append(",");
-			sb.append(vo.getUnitPrice());
-			sb.append(",");
-			sb.append(vo.getBeyondAmount());
-			sb.append(",");
-			sb.append(vo.getAmount());
-			sb.append(",");
-			sb.append("\r\n");
-			
-			baseAmountSum += vo.getBaseAmount();
-			actuallyValCountSum += vo.getActuallyValCount();
-			beyondValCountSum += vo.getBeyondValCount();
-			beyondAmountSum += vo.getBeyondAmount();
-			amountSum += vo.getAmount();
-		}
-		return sb;
-	}
-	
-	private StringBuffer getReportSum() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("合计");
-		sb.append(",");
-		sb.append(",");
-		sb.append(",");
-		sb.append(baseAmountSum);
-		sb.append(",");
-		sb.append(actuallyValCountSum);
-		sb.append(",");
-		sb.append(beyondValCountSum);
-		sb.append(",");
-		sb.append(",");
-		sb.append(beyondAmountSum);
-		sb.append(",");
-		sb.append(amountSum);
-		sb.append(",");
-		sb.append("\r\n");
-		return sb;
-	}
 }
