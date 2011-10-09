@@ -7,6 +7,7 @@ import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.chinarewards.qqgbvpn.core.BaseDao;
+import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
@@ -51,8 +52,13 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 	public FinanceReportHistory createFinanceReportHistory(
 			FinanceReportSearchVO searchVO) {
 		FinanceReportHistory f = new FinanceReportHistory();
-		f.setAgentId(searchVO.getAgentId());
-		f.setAgentName(searchVO.getAgentName());
+		if (!StringUtil.isEmptyString(searchVO.getAgentId())) {
+			Agent agent = getEm().find(Agent.class, searchVO.getAgentId());
+			if (agent != null) {
+				f.setAgentId(agent.getId());
+				f.setAgentName(agent.getName());
+			}
+		}
 		f.setStartDate(searchVO.getStartDate());
 		if(searchVO.getEndDate() == null){
 			f.setEndDate(new Date());
