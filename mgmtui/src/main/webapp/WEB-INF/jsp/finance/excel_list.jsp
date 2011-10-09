@@ -17,7 +17,7 @@
 			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-				<input type="hidden" id="file" name="file" />
+				<input type="hidden" id="fileName" name="fileName" />
 				<input type="hidden" id="reportId" name="reportId" />
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" />&nbsp;&nbsp;
@@ -99,7 +99,8 @@
 		alert(file_name);
 		var formObj = document.getElementById("search_excel");
 		formObj.reportId.value = reportId;
-		formObj.file.value = file_name;
+		formObj.fileName.value = file_name;
+		alert(formObj.fileName.value);
 		formObj.action = "${pageContext.request.contextPath}/finance/download_excel";
 		formObj.submit();
 		
