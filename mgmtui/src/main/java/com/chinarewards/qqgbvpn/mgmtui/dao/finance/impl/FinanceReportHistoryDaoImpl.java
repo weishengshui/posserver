@@ -69,6 +69,22 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 		f.setStatus(FinanceReportHistoryStatus.CREATING);
 		getEm().persist(f);
 		
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		try {
+			eventDetail = mapper.writeValueAsString(f);
+		} catch (Exception e) {
+			e.printStackTrace();
+			eventDetail = e.toString();
+		}
+		Journal journal = new Journal();
+		journal.setTs(new Date());
+		journal.setEntity(DomainEntity.FINANCE_REPORT_HISTORY.toString());
+		journal.setEntityId(f.getId());
+		journal.setEvent(DomainEvent.FINANCE_REPORT_HISTORY_CREATE.toString());
+		journal.setEventDetail(eventDetail);
+		getEm().persist(journal);
+		
 		return f;
 	}
 
@@ -87,7 +103,7 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 			eventDetail = mapper.writeValueAsString(financeReportHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
-			eventDetail = e.getMessage();
+			eventDetail = e.toString();
 		}
 		Journal journal = new Journal();
 		journal.setTs(new Date());
