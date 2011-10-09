@@ -13,5 +13,5 @@ public interface FinanceReportHistoryDao {
 	public FinanceReportHistory getFinanceReportHistoryById(String id);
 	
 	public FinanceReportHistory saveFinanceReportHistory(FinanceReportHistory financeReportHistory);
-
+	
 }

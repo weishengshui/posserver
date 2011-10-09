@@ -1,10 +1,12 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action.finance;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -17,7 +19,6 @@ import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.thread.CreateFinanceReport;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
 
 /**
  * finance action
@@ -43,6 +44,8 @@ public class FinanceAction extends BaseAction {
 	
 	private FinanceReportSearchVO searchVO = new FinanceReportSearchVO();
 
+	private String file;
+	
 	public void validate(){
 		
 	}
@@ -137,6 +140,10 @@ public class FinanceAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String downLoadExcel(){
+		return SUCCESS;
+	}
+	
 	public PageInfo getPageInfo() {
 		return pageInfo;
 	}
@@ -178,5 +185,24 @@ public class FinanceAction extends BaseAction {
 	public void setStatus(Map<String, String> status) {
 		this.status = status;
 	}
+
+	public String getFile() {
+		String fileName= "";
+		try {
+		fileName = new String(file.getBytes(),"ISO8859-1"); //把file转换成ISO8859-1编码格式
+		} catch (UnsupportedEncodingException e) {
+		e.printStackTrace();
+		}
+		return fileName; 
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+	}
 	
+	public InputStream getInputStream() throws FileNotFoundException {
+		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById("1111");
+		
+		return new StringBufferInputStream(report.getReportDetail());
+		} 
 }

@@ -29,5 +29,16 @@
 			method="searchExcel">
 			<result name="success">/WEB-INF/jsp/finance/excel_list.jsp</result>
 		</action>
+		<action name="download_excel"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
+			method="downLoadExcel">
+			<result name="success" type="stream">
+			<param name="contentType">application/octet-stream</param>
+			<param name="inputName">inputStream</param>
+			<param name="contentDisposition">attachment;filename="${file}"</param>
+			<param name="bufferSize">5120</param>
+			</result>
+		</action>
+		
 	</package>
 </struts>

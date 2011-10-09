@@ -165,7 +165,6 @@
 		 $("#agent_select option:selected").each(function () {
              $("#agentName").val($(this).text());
            });
-
 	});
 	</script>
 </body>

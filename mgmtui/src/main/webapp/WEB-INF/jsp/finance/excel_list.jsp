@@ -41,15 +41,7 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td>
-									<s:if test="#excelVO.startDate == null">
-										截止于
-									</s:if>
-									<s:else>
-										<s:property value="#excelVO.startDate" />~
-									</s:else>
-									<s:property value="#excelVO.endDate" />
-									</td>
+									<td id="file_name"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:property value="#excelVO.startDate" />~</s:else><s:property value="#excelVO.endDate" /></td>
 									<td><s:property value="#excelVO.agentName" />
 									</td>
 									<td>
@@ -66,7 +58,8 @@
 										状态未知
 									</s:else>
 									</td>
-									<td><input type="button" value="下载"/>
+									<td>
+									<input onclick="download()" type="button" value="下载"/>
 									</td>
 								</tr>
 							</s:iterator>
@@ -88,6 +81,12 @@
 		document.getElementById("pageInfo.pageId").value = pageId;
 		formObj.action = "${pageContext.request.contextPath}/finance/search_excel";
 		formObj.submit();
+	}
+	
+	function download(){
+		var file_name = document.getElementById("file_name").innerHTML;
+		
+		alert(document.getElementById("file_name").innerHTML);
 	}
 	</script>
 </body>
