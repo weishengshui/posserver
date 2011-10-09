@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -11,7 +10,9 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.MXBeans.ManageConnectMXBean;
+import com.chinarewards.qqgbvpn.main.MXBeans.MonitorManageMXBean;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
 
 /**
@@ -21,22 +22,34 @@ import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class ManageConnectCountFilter extends IoFilterAdapter implements
-		ManageConnectMXBean {
+public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManageMXBean {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	// 存储记录所有的连接及状态
+	// 存储所有的连接及状态
 	private Hashtable<Long, IoSessionMessageManage> sessionCollector = new Hashtable<Long, IoSessionMessageManage>();
+	// 存储所有指令的使用情况
+	private Hashtable<Long, Long> commandCollector = new Hashtable<Long, Long>();
+	//用来标识连接的状态，闲置和活动
 	private String IS_IDLE = "idle";
 	private String IS_ACTIVE = "active";
 
+	//当前打开的连接
 	private long openConnectCount;
+	//当前活动的连接
 	private long activityConnectCount;
+	//当前闲置的连接
 	private long idleConnectCount;
 
+	//总共接收了多少字节
 	private long receiveBytesCount;
+	//总共发送了多少字节
 	private long sendBytesCount;
+	
+	//记录已经关闭连接的接收字节数
+	private long closedReceiveBytes;
+	//记录已经关闭连接的发送字节数
+	private long closedSendBytes;
 
 	/**
 	 * 得到打开的连接数
@@ -71,7 +84,22 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
+		
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
+		
+		// 得到指令信息
+		ICommand msg = ((Message) message).getBodyMessage();
+		log.debug(" msg = {}", msg);
+		if (commandCollector != null) {
+			// 如果collector里面还没有这个指令的记录就添加
+			log.debug(" msg.getCmdId() = {}", msg.getCmdId());
+			if (commandCollector.get(msg.getCmdId()) == null) {
+				commandCollector.put(msg.getCmdId(), 1L);
+			} else {
+				long count = commandCollector.get(msg.getCmdId());
+				commandCollector.put(msg.getCmdId(), ++count);
+			}
+		}
 		nextFilter.messageReceived(session, message);
 	}
 
@@ -81,7 +109,10 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
+		
+	
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
+		
 		nextFilter.messageSent(session, writeRequest);
 	}
 
@@ -91,13 +122,12 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	@Override
 	public void sessionClosed(NextFilter nextFilter, IoSession session)
 			throws Exception {
-		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
-			long sessionId = Long.valueOf(iterator.next().toString());
-			if (sessionId==session.getId()) {
-				sessionCollector.remove(sessionId);
-				break;
-			}
-		}
+		//记录即将要关闭的连接，接收和发送的字节数
+		this.closedReceiveBytes += session.getReadBytes();
+		this.closedSendBytes += session.getWrittenBytes();
+		//移除。
+		sessionCollector.remove(session.getId());
+
 		nextFilter.sessionClosed(session);
 	}
 
@@ -107,7 +137,9 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	@Override
 	public void sessionIdle(NextFilter nextFilter, IoSession session,
 			IdleStatus status) throws Exception {
+		//改变当前连接的状态为闲置
 		updateIoSessionConnectMessage(session, IS_IDLE);
+		
 		nextFilter.sessionIdle(session, status);
 	}
 
@@ -116,12 +148,28 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	 */
 	@Override
 	public void sessionOpened(NextFilter nextFilter, IoSession session)
-			throws Exception {
-		IoSessionMessageManage sessionMess = new IoSessionMessageManage();
-		sessionMess.setState(IS_ACTIVE);
-		sessionMess.setSession(session);
-		sessionCollector.put(session.getId(), sessionMess);
+			throws Exception {		
+		
+		addElementToSessionCollector(session,IS_ACTIVE);
+		
 		nextFilter.sessionOpened(session);
+	}
+	/**
+	 * 当sessionCollector里面没有元素时，用来添加元素。
+	 * @param session
+	 */
+	private void addElementToSessionCollector(IoSession session , String state){
+		IoSessionMessageManage sessionMess = new IoSessionMessageManage();
+		//在当前这个连接第一次出发闲置的事件时，记录闲置的开始时间
+		if (state.equals(IS_IDLE)) {
+			// 得到当前系统时间戳（毫秒计算）
+			log.debug("()={}", System.currentTimeMillis());
+			sessionMess.setIdleTime(System.currentTimeMillis());
+		}
+		sessionMess.setState(state);
+		sessionMess.setSession(session);
+
+		sessionCollector.put(session.getId(), sessionMess);
 	}
 
 	/**
@@ -133,18 +181,25 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	 *            : active or idle
 	 */
 	private void updateIoSessionConnectMessage(IoSession session, String state) {
-		log.debug("session.getId = {}，state={}",new Object[]{session.getId(),state});
+		
+		log.debug("session.getId = {}，state={}", new Object[] {	session.getId(), state });
+		
 		IoSessionMessageManage sessionMess = sessionCollector.get(session.getId());
-		log.debug("sessionMess={}",sessionMess);
+		
+		log.debug("sessionMess={}", sessionMess);
+		
 		if (sessionMess != null) {
-			if (sessionMess.getState().equals(IS_ACTIVE)&&state.equals(IS_IDLE)) {
+			//在当前这个连接第一次出发闲置的事件时，记录闲置的开始时间
+			if (sessionMess.getState().equals(IS_ACTIVE) && state.equals(IS_IDLE)) {
 				// 得到当前系统时间戳（毫秒计算）
-				log.debug("()={}",System.currentTimeMillis());
+				log.debug("()={}", System.currentTimeMillis());
 				sessionMess.setIdleTime(System.currentTimeMillis());
 			}
 			sessionMess.setState(state);
 			sessionMess.setSession(session);
-
+		}else{
+			//如果因为情况所有的统计数据而去掉了连接管理，但是这个连接并没有关闭，当这个连接发送或者接收数据时，做添加连接管理处理
+			addElementToSessionCollector(session , state);
 		}
 	}
 
@@ -158,7 +213,7 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	private long getConnectCountByState(String state) {
 		long count = 0;
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
-			long sessionId =Long.valueOf(iterator.next().toString()) ;
+			long sessionId = Long.valueOf(iterator.next().toString());
 			if (sessionCollector.get(sessionId).getState().equals(state)) {
 				count++;
 			}
@@ -171,11 +226,15 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	 */
 	@Override
 	public long getReceiveBytesCount() {
-		receiveBytesCount = 0;
+		//初始化为那些已关闭连接所接收过的字节数
+		receiveBytesCount = this.closedReceiveBytes;
+		log.debug(" receiveBytesCount={} ",receiveBytesCount);
+		//得到正在管理的连接的所接收的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
 			receiveBytesCount += sessionMess.getSession().getReadBytes();
 		}
+		log.debug(" receiveBytesCount={} ",receiveBytesCount);
 		return receiveBytesCount;
 	}
 
@@ -184,11 +243,15 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	 */
 	@Override
 	public long getSendBytesCount() {
-		sendBytesCount = 0;
+		//初始化为那些已关闭连接所发送过的字节数
+		sendBytesCount = this.closedSendBytes;
+		log.debug(" sendBytesCount={} ",sendBytesCount);
+		//得到正在管理的连接的所发送的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
 			sendBytesCount += sessionMess.getSession().getWrittenBytes();
 		}
+		log.debug(" sendBytesCount={} ",sendBytesCount);
 		return sendBytesCount;
 	}
 
@@ -213,6 +276,10 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 	 */
 	@Override
 	public void clearAllStatistic() {
+		
+		this.closedReceiveBytes = 0;
+		this.closedSendBytes = 0;
+		//清空连接管理池
 		if (sessionCollector != null && !sessionCollector.isEmpty()) {
 			sessionCollector.clear();
 			this.openConnectCount = 0;
@@ -221,26 +288,53 @@ public class ManageConnectCountFilter extends IoFilterAdapter implements
 			this.receiveBytesCount = 0;
 			this.sendBytesCount = 0;
 		}
+		//清空指令管理池
+		if (commandCollector != null && !commandCollector.isEmpty()) {
+			commandCollector.clear();
+		}
 	}
 
 	/**
+	 * 
 	 * 根据闲置的时间，关闭闲置的连接
 	 */
 	@Override
 	public void closeIdleConnect(long minute) {
+		//把分钟转换成毫秒数
 		long idleMilliSecond = minute * 60 * 1000;
+		//得到应该可以关闭的闲置时间
 		long startIdleMilliSecond = System.currentTimeMillis() - idleMilliSecond;
-		log.debug("startIdleMilliSecond={}",startIdleMilliSecond);
+		log.debug("startIdleMilliSecond={}", startIdleMilliSecond);
+		
 		if (sessionCollector != null && !sessionCollector.isEmpty()) {
 			for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 				IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
-				 // 按照闲置的时间关闭所有闲置的连接
-				 if(sessionMess.getState().equals(IS_IDLE) && sessionMess.getIdleTime() <= startIdleMilliSecond){
-					 log.debug("sessionMess.getIdleTime()={}",sessionMess.getIdleTime());
-					 sessionMess.getSession().close(true);
-				 }
+				// 按照闲置的时间关闭所有闲置的连接
+				if (sessionMess.getState().equals(IS_IDLE) && sessionMess.getIdleTime() <= startIdleMilliSecond) {
+					log.debug("sessionMess.getIdleTime()={}",sessionMess.getIdleTime());
+					sessionMess.getSession().close(true);
+				}
 			}
 		}
 
+	}
+
+	/**
+	 * 得到指令的信息
+	 */
+	@Override
+	public String getAllCommandReceiveMessage() {
+		String mes = "";
+		if (commandCollector != null) {
+			mes += "receive_command_type_count (" + commandCollector.size()	+ ") : ";
+			for (Iterator ite = commandCollector.keySet().iterator(); ite.hasNext();) {
+				long command = Long.valueOf(ite.next().toString());
+				long count = commandCollector.get(command);
+				log.debug("command ={},count={}===={}", new Object[] { command,	count });
+				mes += command + " (" + count + ") | ";
+			}
+
+		}
+		return mes;
 	}
 }

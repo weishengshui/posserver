@@ -37,7 +37,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.main.protocol.filter.ManageConnectCountFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorManageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
@@ -164,8 +164,6 @@ public class DefaultPosServer implements PosServer {
 		
 		acceptor = new NioSocketAcceptor();
 		
-		// add  jmx  monitor
-		addMonitor();
 		
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
@@ -175,6 +173,8 @@ public class DefaultPosServer implements PosServer {
 				new ProtocolCodecFilter(new MessageCoderFactory(injector,
 						cmdCodecFactory)));
 
+		// add  jmx  monitor
+		addMonitor();
 		
 		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
@@ -300,9 +300,9 @@ public class DefaultPosServer implements PosServer {
 		//jmx  服务器
 		MBeanServer mbs=MBeanServerFactory.createMBeanServer();
 		//管理连接状态数目工具Filter
-		ManageConnectCountFilter manageConnectCountFilter=new ManageConnectCountFilter();
+		MonitorManageFilter monitorManageFilter=new MonitorManageFilter();
 		//注册需要被管理的MBean
-		mbs.registerMBean(manageConnectCountFilter, new ObjectName("ManageConnectCountFilter:name=ManageConnectCount"));
+		mbs.registerMBean(monitorManageFilter, new ObjectName("MonitorManageFilter:name=MonitorManage"));
 		
 		String jmxServiceURL="service:jmx:rmi:///jndi/rmi://localhost:"+jmxMoniterPort+"/jmxrmi";
 		// Create an RMI connector and start it
@@ -313,8 +313,8 @@ public class DefaultPosServer implements PosServer {
         cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
         
      // manage connect count filter
-		acceptor.getFilterChain().addLast("manageConnect",
-				manageConnectCountFilter);
+		acceptor.getFilterChain().addLast("monitorManageFilter",
+				monitorManageFilter);
 		
        
         //jmx----------------------code end--------------------------

@@ -1,11 +1,12 @@
 package com.chinarewards.qqgbvpn.main.MXBeans;
 
+
 /**
  * 用了管理体现不同状态的连接数
  * @author dengrenwen
  *
  */
-public interface ManageConnectMXBean {
+public interface MonitorManageMXBean {
 
 	/**
 	 * 已打开的连接数
@@ -51,4 +52,9 @@ public interface ManageConnectMXBean {
 	 */
 	public void closeIdleConnect(long minute);
 	
+	/**
+	 * 各个指令的接收数目
+	 * @return
+	 */
+	public String getAllCommandReceiveMessage();
 }
