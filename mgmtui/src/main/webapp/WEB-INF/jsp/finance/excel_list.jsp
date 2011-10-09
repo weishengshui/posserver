@@ -17,6 +17,8 @@
 			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
+				<input type="hidden" id="file" name="file" />
+				<input type="hidden" id="reportId" name="reportId" />
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" />&nbsp;&nbsp;
 				开始时间：
@@ -41,7 +43,7 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td id="file_name"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:property value="#excelVO.startDate" />~</s:else><s:property value="#excelVO.endDate" /></td>
+									<td id="file_name_${excelVO.id}"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:property value="#excelVO.startDate" />~</s:else><s:property value="#excelVO.endDate" /></td>
 									<td><s:property value="#excelVO.agentName" />
 									</td>
 									<td>
@@ -63,7 +65,7 @@
 										<input type="button" value="下载" disabled="true"/>
 									</s:if>
 									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
-										<input type="button" value="下载"  onclick="download()"/>
+										<input type="button" value="下载"  onclick="download('${excelVO.id}')"/>
 									</s:elseif>
 									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
 										<input type="button" value="显示错误信息" onclick='showError("${excelVO.reportDetail}")'/>
@@ -91,10 +93,16 @@
 		formObj.submit();
 	}
 	
-	function download(){
-		var file_name = document.getElementById("file_name").innerHTML;
+	function download(reportId){
+		alert(reportId);
+		var file_name = document.getElementById("file_name_" + reportId).innerHTML + ".csv";
+		alert(file_name);
+		var formObj = document.getElementById("search_excel");
+		formObj.reportId.value = reportId;
+		formObj.file.value = file_name;
+		formObj.action = "${pageContext.request.contextPath}/finance/download_excel";
+		formObj.submit();
 		
-		alert(document.getElementById("file_name").innerHTML);
 	}
 	
 	function showError(errorMsg) {

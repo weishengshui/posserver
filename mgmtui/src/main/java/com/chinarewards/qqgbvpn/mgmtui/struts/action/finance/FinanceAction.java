@@ -47,6 +47,16 @@ public class FinanceAction extends BaseAction {
 
 	private String file;
 	
+	private String reportId;
+	
+	public String getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(String reportId) {
+		this.reportId = reportId;
+	}
+
 	public void validate(){
 		
 	}
@@ -216,7 +226,7 @@ public class FinanceAction extends BaseAction {
 	}
 	
 	public InputStream getInputStream() throws FileNotFoundException {
-		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById("1111");
+		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById(reportId);
 		
 		return new StringBufferInputStream(report.getReportDetail());
 		} 
