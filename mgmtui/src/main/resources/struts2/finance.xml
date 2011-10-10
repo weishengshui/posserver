@@ -9,13 +9,13 @@
 		<!-- find all album -->
 		<action name="search_bill"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction">
-			<result name="success">/WEB-INF/jsp/finance/search_bill.jsp</result>
+			<result name="success" type="tiles">finance.searchBill</result>
 		</action>
 		<action name="search_bill_paging"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
 			method="searchBill">
-			<result name="success">/WEB-INF/jsp/finance/search_bill.jsp</result>
-			<result name="input">/WEB-INF/jsp/finance/search_bill.jsp</result>
+			<result name="success" type="tiles">finance.searchBill</result>
+			<result name="input" type="tiles">finance.searchBill</result>
 		</action>
 		<action name="generate_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
@@ -23,12 +23,12 @@
 			<result name="success" type="redirectAction">
 				<param name="actionName">search_excel</param>
 			</result>
-			<result name="input">/WEB-INF/jsp/finance/search_bill.jsp</result>
+			<result name="input" type="tiles">finance.searchBill</result>
 		</action>
 		<action name="search_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
 			method="searchExcel">
-			<result name="success">/WEB-INF/jsp/finance/excel_list.jsp</result>
+			<result name="success" type="tiles">finance.searchExcel</result>
 		</action>
 		<action name="download_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"

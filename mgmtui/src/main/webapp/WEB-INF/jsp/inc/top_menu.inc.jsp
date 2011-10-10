@@ -75,8 +75,8 @@
 	<li><a href="#">财务报表 <!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
 		<ul>
-		<li><a href="<s:url action="search_bill" namespace="/finance" />">邀请第三方填写申请表</a></li>
-		<li><a href="<s:url action="search_bill_history" namespace="/finance" />">我方生成回收单</a></li>
+		<li><a href="<s:url action="search_bill" namespace="/finance" />">生成报表</a></li>
+		<li><a href="<s:url action="search_excel" namespace="/finance" />">查寻报表</a></li>
 		</ul>
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
