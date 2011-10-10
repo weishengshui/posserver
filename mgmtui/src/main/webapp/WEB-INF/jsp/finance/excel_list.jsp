@@ -8,7 +8,13 @@
 <html>
 
 <head>
-
+<link rel="stylesheet"
+	href="<s:url value='/styles/jquery-ui/jquery-ui-1.8.2.custom.css' />"
+	type="text/css" />
+<script type="text/javascript"
+	src="<s:url value='/js/jquery/jquery-ui-i18n.js' />"></script>
+<script type="text/javascript"
+	src="<s:url value='/js/jquery/jquery-ui-1.8.2.custom.min.js' />"></script>
 </head>
 <body>
 
@@ -20,9 +26,9 @@
 				<input type="hidden" id="file" name="file" />
 				<input type="hidden" id="reportId" name="reportId" />
 				代理商：
-					<s:select name="searchVO.agentId" list="agent" />&nbsp;&nbsp;
+					<s:select name="searchVO.agentId" list="agent" />&nbsp;
 				开始时间：
-					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;&nbsp;
+					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;
 				结束时间：
 					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate"/>&nbsp;
 				状态：
@@ -86,6 +92,22 @@
 		</tr>
 	</table>
 	<script type="text/javascript">
+	initializeDatepicker("startDate","endDate");
+	function initializeDatepicker(idFrom, idTo) {
+		var dates = $('#' + idFrom + ', ' + '#' + idTo).datepicker({
+			showAnim: "",
+			dateFormat: "yyyy-mm-dd",
+			changeMonth: true,
+			changeYear: true,
+			onSelect: function(selectedDate) {
+				var instance = $(this).data("datepicker");
+				var date = $.datepicker.parseDate(instance.settings.dateFormat || 
+						$.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+				dates.not('#' + idFrom).datepicker("option", "minDate", date);
+			}
+		});
+	}
+	
 	function goPage(pageId) {
 		var formObj = document.getElementById("search_excel");
 		document.getElementById("pageInfo.pageId").value = pageId;

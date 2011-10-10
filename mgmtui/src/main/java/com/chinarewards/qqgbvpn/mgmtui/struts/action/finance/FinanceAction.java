@@ -102,6 +102,7 @@ public class FinanceAction extends BaseAction {
 		try{
 			if(pageInfo == null || pageInfo.getPageId()==0){
 				log.debug("pageInfo lost !");
+				return INPUT;
 			}
 			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
 			prepareAgent();
@@ -136,15 +137,17 @@ public class FinanceAction extends BaseAction {
 			e.printStackTrace();
 			return ERROR;
 		}
-		/*prepareAgent();
-		prepareStatus();*/
+		prepareAgent();
+		prepareStatus();
 		return SUCCESS;
 	}
 	
 	public String searchExcel(){
-		pageInfo = new PageInfo();
-		pageInfo.setPageId(1);
-		pageInfo.setPageSize(INITPAGESIZE);
+		if(pageInfo == null || pageInfo.getPageId()==0){
+			pageInfo = new PageInfo();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(INITPAGESIZE);
+		}
 		System.out.println("getFinanceReportHistoryStatus:" + searchVO.getFinanceReportHistoryStatus());
 		pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
 		if (pageInfo != null) {
