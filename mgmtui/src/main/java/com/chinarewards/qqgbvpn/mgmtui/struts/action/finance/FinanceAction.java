@@ -62,7 +62,7 @@ public class FinanceAction extends BaseAction {
 	}
 	
 	private void prepareAgent(){
-		agent.put("","无");
+		agent.put("","全部");
 		try {
 			List<AgentVO> list = getAgentLogic().findAllAgent();
 			if (list != null) {

@@ -50,8 +50,22 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td id="file_name_${excelVO.id}"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~</s:else><s:date name="#excelVO.endDate" format="yyyy-MM-dd" /></td>
-									<td><s:property value="#excelVO.agentName" />
+									<td id="file_name_${excelVO.id}" style="text-align:left;padding-left:10px;">
+									<s:if test="#excelVO.startDate == null">
+										截止于
+									</s:if>
+									<s:else>
+										<s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~
+									</s:else>
+									<s:date name="#excelVO.endDate" format="yyyy-MM-dd" />.csv
+									</td>
+									<td>
+									<s:if test="#excelVO.agentName != null">
+										<s:property value="#excelVO.agentName" />
+									</s:if>
+									<s:else>
+										全部
+									</s:else>
 									</td>
 									<td>
 									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
