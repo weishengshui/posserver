@@ -311,7 +311,7 @@ public class DefaultPosServer implements PosServer {
 		MonitorManageFilter monitorManageFilter = new MonitorManageFilter();
 		// 注册需要被管理的MBean
 		mbs.registerMBean(monitorManageFilter, new ObjectName(
-				"MonitorManageFilter:name=MonitorManage"));
+				"MonitorManage:name=MonitorManage"));
 
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
