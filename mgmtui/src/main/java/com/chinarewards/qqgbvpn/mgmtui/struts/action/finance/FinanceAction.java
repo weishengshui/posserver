@@ -1,8 +1,8 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action.finance;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -45,7 +45,7 @@ public class FinanceAction extends BaseAction {
 	
 	private FinanceReportSearchVO searchVO = new FinanceReportSearchVO();
 
-	private String file;
+	private String fileName;
 	
 	private String reportId;
 	
@@ -214,23 +214,24 @@ public class FinanceAction extends BaseAction {
 		this.status = status;
 	}
 
-	public String getFile() {
-		String fileName= "";
+	public String getFileName() {
+		String tempName= "";
 		try {
-		fileName = new String(file.getBytes(),"ISO8859-1"); //把file转换成ISO8859-1编码格式
+			tempName = new String(fileName.getBytes(),"ISO8859-1"); //把file转换成ISO8859-1编码格式
 		} catch (UnsupportedEncodingException e) {
 		e.printStackTrace();
 		}
-		return fileName; 
+		return tempName; 
 	}
 
-	public void setFile(String file) {
-		this.file = file;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 	
-	public InputStream getInputStream() throws FileNotFoundException {
+	public InputStream getInputStream() throws FileNotFoundException, UnsupportedEncodingException {
 		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById(reportId);
-		
-		return new StringBufferInputStream(report.getReportDetail());
+		System.out.println("report.getReportDetail():" + report.getReportDetail());
+		//return new StringBufferInputStream(report.getReportDetail());
+		return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
 		} 
 }
