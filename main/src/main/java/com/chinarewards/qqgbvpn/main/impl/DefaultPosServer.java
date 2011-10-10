@@ -40,7 +40,8 @@ import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.ErrorConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorManageFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorCommandManageFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorConnectManageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.chinarewards.qqgbvpn.main.rmi.RMIRegistry;
@@ -83,6 +84,10 @@ public class DefaultPosServer implements PosServer {
 	protected final ServiceDispatcher serviceDispatcher;
 
 	protected JMXConnectorServer cs;
+	
+	private MonitorConnectManageFilter monitorConnectManageFilter;
+	private MonitorCommandManageFilter monitorCommandManageFilter;
+	
 	/**
 	 * socket server address
 	 */
@@ -196,7 +201,14 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
 				new IdleConnectionKillerFilter(idleTime));
 		
-		// our logging filter
+		// add jmx monitor
+		addMonitor();
+		
+		// monitor manage connect count filter ------> jmx
+		acceptor.getFilterChain().addLast("monitorConnectManageFilter",
+				this.monitorConnectManageFilter);
+
+		// our logging filter		
 		acceptor.getFilterChain()
 				.addLast(
 						"cr-logger",
@@ -209,13 +221,14 @@ public class DefaultPosServer implements PosServer {
 		acceptor.getFilterChain().addLast(
 				"codec", new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
-		// add jmx monitor
-		addMonitor();
-
 		// kills error connection if too many.
 		acceptor.getFilterChain().addLast("errorConnectionKiller",
 				new ErrorConnectionKillerFilter());
-
+		
+		// monitor manage command filter ------> jmx
+		acceptor.getFilterChain().addLast("monitorCommandManageFilter",
+				this.monitorCommandManageFilter);
+		
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
@@ -342,10 +355,14 @@ public class DefaultPosServer implements PosServer {
 		// jmx 服务器
 		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
 		// 管理连接状态数目工具Filter
-		MonitorManageFilter monitorManageFilter = new MonitorManageFilter();
+		this.monitorConnectManageFilter = new MonitorConnectManageFilter();
+		this.monitorCommandManageFilter = new MonitorCommandManageFilter();
 		// 注册需要被管理的MBean
-		mbs.registerMBean(monitorManageFilter, new ObjectName(
-				"MonitorManage:name=MonitorManage"));
+		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
+				"monitorConnectManage:name=monitorConnectManage"));
+		
+		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
+		"MonitorCommandManage:name=MonitorCommandManage"));
 
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
@@ -355,11 +372,6 @@ public class DefaultPosServer implements PosServer {
 		log.debug(" JMXServiceURL ={}", jmxServiceURL);
 
 		cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
-
-		// manage connect count filter
-		acceptor.getFilterChain().addLast("monitorManageFilter",
-				monitorManageFilter);
-
 		// jmx----------------------code end--------------------------
 	}
 

@@ -10,9 +10,7 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.MXBeans.MonitorManageMXBean;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
+import com.chinarewards.qqgbvpn.main.MXBeans.MonitorConnectManageMXBean;
 import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
 
 /**
@@ -22,14 +20,12 @@ import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManageMXBean {
+public class MonitorConnectManageFilter extends IoFilterAdapter implements	MonitorConnectManageMXBean {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	// 存储所有的连接及状态
 	private Hashtable<Long, IoSessionMessageManage> sessionCollector = new Hashtable<Long, IoSessionMessageManage>();
-	// 存储所有指令的使用情况
-	private Hashtable<Long, Long> commandCollector = new Hashtable<Long, Long>();
 	//用来标识连接的状态，闲置和活动
 	private String IS_IDLE = "idle";
 	private String IS_ACTIVE = "active";
@@ -86,20 +82,7 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 			Object message) throws Exception {
 		
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
-		
-		// 得到指令信息
-		ICommand msg = ((Message) message).getBodyMessage();
-		log.debug(" msg = {}", msg);
-		if (commandCollector != null) {
-			// 如果collector里面还没有这个指令的记录就添加
-			log.debug(" msg.getCmdId() = {}", msg.getCmdId());
-			if (commandCollector.get(msg.getCmdId()) == null) {
-				commandCollector.put(msg.getCmdId(), 1L);
-			} else {
-				long count = commandCollector.get(msg.getCmdId());
-				commandCollector.put(msg.getCmdId(), ++count);
-			}
-		}
+	
 		nextFilter.messageReceived(session, message);
 	}
 
@@ -110,9 +93,7 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 		
-	
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
-		
 		nextFilter.messageSent(session, writeRequest);
 	}
 
@@ -163,7 +144,6 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 		//在当前这个连接第一次出发闲置的事件时，记录闲置的开始时间
 		if (state.equals(IS_IDLE)) {
 			// 得到当前系统时间戳（毫秒计算）
-			log.debug("()={}", System.currentTimeMillis());
 			sessionMess.setIdleTime(System.currentTimeMillis());
 		}
 		sessionMess.setState(state);
@@ -196,6 +176,7 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 				sessionMess.setIdleTime(System.currentTimeMillis());
 			}
 			sessionMess.setState(state);
+			log.debug("session_id={},state={}",new Object[]{session.getId(),state});
 			sessionMess.setSession(session);
 		}else{
 			//如果因为情况所有的统计数据而去掉了连接管理，但是这个连接并没有关闭，当这个连接发送或者接收数据时，做添加连接管理处理
@@ -279,19 +260,7 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 		
 		this.closedReceiveBytes = 0;
 		this.closedSendBytes = 0;
-		//清空连接管理池
-//		if (sessionCollector != null && !sessionCollector.isEmpty()) {
-//			sessionCollector.clear();
-//			this.openConnectCount = 0;
-//			this.activityConnectCount = 0;
-//			this.idleConnectCount = 0;
-//			this.receiveBytesCount = 0;
-//			this.sendBytesCount = 0;
-//		}
-		//清空指令管理池
-		if (commandCollector != null && !commandCollector.isEmpty()) {
-			commandCollector.clear();
-		}
+
 	}
 
 	/**
@@ -317,24 +286,5 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 			}
 		}
 
-	}
-
-	/**
-	 * 得到指令的信息
-	 */
-	@Override
-	public String getAllCommandReceiveMessage() {
-		String mes = "";
-		if (commandCollector != null) {
-			mes += "receive_command_type_count (" + commandCollector.size()	+ ") : ";
-			for (Iterator ite = commandCollector.keySet().iterator(); ite.hasNext();) {
-				long command = Long.valueOf(ite.next().toString());
-				long count = commandCollector.get(command);
-				log.debug("command ={},count={}===={}", new Object[] { command,	count });
-				mes += command + " (" + count + ") | ";
-			}
-
-		}
-		return mes;
 	}
 }

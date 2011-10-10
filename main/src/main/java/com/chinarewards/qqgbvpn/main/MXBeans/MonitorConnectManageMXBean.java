@@ -6,7 +6,7 @@ package com.chinarewards.qqgbvpn.main.MXBeans;
  * @author dengrenwen
  *
  */
-public interface MonitorManageMXBean {
+public interface MonitorConnectManageMXBean {
 
 	/**
 	 * 已打开的连接数
@@ -52,9 +52,4 @@ public interface MonitorManageMXBean {
 	 */
 	public void closeIdleConnect(long second);
 	
-	/**
-	 * 各个指令的接收数目
-	 * @return
-	 */
-	public String getAllCommandReceiveMessage();
 }
