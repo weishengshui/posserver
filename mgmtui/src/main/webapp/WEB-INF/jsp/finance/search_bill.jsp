@@ -18,7 +18,7 @@
 </head>
 <body>
 
-	<table align="center" width="800px">
+	<table align="center" width="800px" class="table_style">
 	<s:form action="generate_excel" namespace="/finance" method="Get" id="generateexcel" theme="simple">
 		<s:hidden name="searchVO.agentId" id="searchVO.agentId"/>
 		<s:hidden name="searchVO.startDate" id="searchVO.startDate"/>
@@ -41,7 +41,7 @@
 		<tr>
 			<td>
 				<div id="billList_DIV_ID">
-					<table align="center" width="800px" border="1">
+					<table align="center" width="800px" border="1" style="border-collapse: collapse;margin-top:10px;">
 						<tr align="center">
 							<td>月份</td>
 							<td>代理商名称</td>

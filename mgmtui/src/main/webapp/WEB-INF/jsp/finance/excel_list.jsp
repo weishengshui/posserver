@@ -18,7 +18,7 @@
 </head>
 <body>
 
-	<table align="center" width="800px">
+	<table align="center" width="800px" class="table_style">
 		<tr>
 			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
@@ -39,7 +39,7 @@
 		<tr>
 			<td>
 				<div id="excelList_DIV_ID">
-					<table align="center" width="800px" border="1">
+					<table align="center" width="800px" border="1" style="border-collapse: collapse;">
 						<tr align="center">
 							<td>文件名称</td>
 							<td>代理商</td>
