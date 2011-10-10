@@ -60,7 +60,15 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td id="file_name_${excelVO.id}" style="text-align:left;padding-left:10px;"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~</s:else><s:date name="#excelVO.endDate" format="yyyy-MM-dd" />.csv</td>
+									<td id="file_name_${excelVO.id}" style="text-align:left;padding-left:10px;">
+									<s:if test="#excelVO.startDate == null">
+										截止于
+									</s:if>
+									<s:else>
+										<s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~
+									</s:else>
+									<s:date name="#excelVO.endDate" format="yyyy-MM-dd" />.csv
+									</td>
 									<td>
 									<s:if test="#excelVO.agentName != null">
 										<s:property value="#excelVO.agentName" />
@@ -92,7 +100,7 @@
 										<input type="button" value="下载" disabled="true"/>
 									</s:if>
 									<s:elseif test="#excelVO.status != null && 'COMPLETION' == #excelVO.status.toString()">
-										<input type="button" value="下载"  onclick="download('${excelVO.id}')"/>
+										<input type="button" value="下载"  onclick="download('${excelVO.id}','<s:date name="#excelVO.startDate" format="yyyy-MM-dd" />','<s:date name="#excelVO.endDate" format="yyyy-MM-dd" />')"/>
 									</s:elseif>
 									<s:elseif test="#excelVO.status != null && 'FAILED' == #excelVO.status.toString()">
 										<input type="button" value="显示错误信息" onclick='showError("${excelVO.reportDetail}")'/>
@@ -132,9 +140,15 @@
 		formObj.submit();
 	}
 	
-	function download(reportId){
-		var file_name = document.getElementById("file_name_" + reportId).innerHTML;
-		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + encodeURIComponent(file_name);
+	function download(reportId,startDate,endDate){
+		var fileName = "";
+		if (startDate != null && $.trim(startDate) != "") {
+			fileName += startDate + "~";
+		} else {
+			fileName += "截止于";
+		}
+		fileName += endDate + ".csv";
+		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + encodeURIComponent(fileName);
 	}
 	
 	function showError(errorMsg) {
