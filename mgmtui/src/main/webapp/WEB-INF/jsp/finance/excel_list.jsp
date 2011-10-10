@@ -28,9 +28,9 @@
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" />&nbsp;
 				开始时间：
-					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate"/>&nbsp;
+					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate" readonly="true"/>&nbsp;
 				结束时间：
-					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate"/>&nbsp;
+					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate" readonly="true"/>&nbsp;
 				状态：
 					<s:select name="searchVO.financeReportHistoryStatus" list="status" />
 				<input type="submit" value="查询" />
@@ -135,31 +135,6 @@
 		var file_name = document.getElementById("file_name_" + reportId).innerHTML;
 		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + file_name;
 	}
-	
-	var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
-	
-	function check_start_date(){
-		if($("#startDate").val == null || $("#startDate").val == "")return false;
-		if(!pattern.exec($("#startDate").val)){
-			alert('请输入正确的开始时间 /n 例如2011-01-01');
-			return false;
-		}
-		return true;
-	}
-	function check_end_date(){
-		if($("#endDate").val == null || $("#endDate").val == "")return false;
-		if(!pattern.exec($("#endDate").val)){
-			alert('请输入正确的结束时间 /n 例如2011-01-01');
-			return false;
-		}
-		return true;
-	}
-	$("#startDate").change(function (){
-		check_start_date();
-	});
-	$("#endDate").change(function (){
-		check_end_date();
-	});
 	
 	function showError(errorMsg) {
 		alert(errorMsg);
