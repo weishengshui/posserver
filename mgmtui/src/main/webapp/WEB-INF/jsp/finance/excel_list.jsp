@@ -28,9 +28,15 @@
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" />&nbsp;
 				开始时间：
-					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate" readonly="true"/>&nbsp;
+					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate" readonly="true">
+						<s:param name="value"><s:date name="searchVO.startDate" format="yyyy-MM-dd" /></s:param>
+					</s:textfield>
+					&nbsp;
 				结束时间：
-					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate" readonly="true"/>&nbsp;
+					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate" readonly="true">
+						<s:param name="value"><s:date name="searchVO.endDate" format="yyyy-MM-dd" /></s:param>
+					</s:textfield>
+					&nbsp;
 				状态：
 					<s:select name="searchVO.financeReportHistoryStatus" list="status" />
 				<input type="submit" value="查询" />
