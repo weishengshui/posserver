@@ -77,7 +77,7 @@
 									</td>
 									<td><s:property value="#billVO.beyondValCount" />
 									</td>
-									<td><s:property value="#billVO.unitPrice" />
+									<td><s:property value="#billVO.unitPrice" />元/个
 									</td>
 									<td><s:property value="#billVO.beyondAmount" />
 									</td>
@@ -123,11 +123,9 @@
 	}
 	
 	function generate_excel(){
-		if(check_start_date && check_end_date){
-			if (confirm("确定要生成报表吗？")) {
-				var formObj = document.getElementById("generateexcel");
-				formObj.submit();	
-			}
+		if (confirm("确定要生成报表吗？")) {
+			var formObj = document.getElementById("generateexcel");
+			formObj.submit();	
 		}
 	}
 	

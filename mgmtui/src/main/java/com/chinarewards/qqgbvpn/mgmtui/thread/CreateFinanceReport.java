@@ -122,7 +122,7 @@ public class CreateFinanceReport extends Thread {
 									sb.append(",");
 									sb.append(vo.getBeyondValCount());
 									sb.append(",");
-									sb.append(vo.getUnitPrice());
+									sb.append(vo.getUnitPrice() + "元/个");
 									sb.append(",");
 									sb.append(vo.getBeyondAmount());
 									sb.append(",");
