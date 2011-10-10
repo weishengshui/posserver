@@ -80,7 +80,7 @@ public class DefaultPosServer implements PosServer {
 	 * The configured port to use.
 	 */
 	protected int port;
-	
+
 	/**
 	 * The configured jmx moniter server port to use.
 	 */
@@ -116,7 +116,10 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#start()
 	 */
 	@Override
-	public void start() throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
+	public void start() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
 
 		printConfigValues();
 
@@ -128,8 +131,8 @@ public class DefaultPosServer implements PosServer {
 		// setup Apache Mina server.
 		startMinaService();
 
-		//TODO jmx agent  connector.start();
-		
+		// TODO jmx agent connector.start();
+
 		log.info("Server running, listening on {}", getLocalPort());
 
 	}
@@ -149,22 +152,24 @@ public class DefaultPosServer implements PosServer {
 	 * Start the Apache Mina service.
 	 * 
 	 * @throws PosServerException
-	 * @throws NullPointerException 
-	 * @throws MalformedObjectNameException 
-	 * @throws NotCompliantMBeanException 
-	 * @throws MBeanRegistrationException 
-	 * @throws InstanceAlreadyExistsException 
-	 * @throws IOException 
+	 * @throws NullPointerException
+	 * @throws MalformedObjectNameException
+	 * @throws NotCompliantMBeanException
+	 * @throws MBeanRegistrationException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws IOException
 	 */
-	protected void startMinaService() throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
+	protected void startMinaService() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
 		// =============== server side ===================
-		
+
 		acceptor = new NioSocketAcceptor();
-		
-		
+
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 
 		// not this
@@ -173,9 +178,9 @@ public class DefaultPosServer implements PosServer {
 				new ProtocolCodecFilter(new MessageCoderFactory(injector,
 						cmdCodecFactory)));
 
-		// add  jmx  monitor
+		// add jmx monitor
 		addMonitor();
-		
+
 		// bodyMessage filter
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
@@ -190,7 +195,7 @@ public class DefaultPosServer implements PosServer {
 
 		acceptor.setHandler(new ServerSessionHandler(injector,
 				serviceDispatcher, mapping));
-		
+
 		// additional configuration
 		acceptor.setCloseOnDeactivation(true);
 		acceptor.setReuseAddress(true);
@@ -243,10 +248,10 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void stop() throws IOException {
-		//TODO jmx agent  connector.stop();
+		// TODO jmx agent connector.stop();
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
-		if(cs !=null && cs.isActive())
+		if (cs != null && cs.isActive())
 			cs.stop();
 
 	}
@@ -292,40 +297,49 @@ public class DefaultPosServer implements PosServer {
 
 		return port;
 	}
-	
-	public void addMonitor()throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException {
+
+	public void addMonitor() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
 		jmxMoniterPort = configuration.getInt("monitor.port", 9999);
-		log.debug(" monitor port ={}",jmxMoniterPort);
-		//jmx----------------------code start--------------------------
-		//jmx  服务器
-		MBeanServer mbs=MBeanServerFactory.createMBeanServer();
-		//管理连接状态数目工具Filter
-		MonitorManageFilter monitorManageFilter=new MonitorManageFilter();
-		//注册需要被管理的MBean
-		mbs.registerMBean(monitorManageFilter, new ObjectName("MonitorManageFilter:name=MonitorManage"));
-		
-		String jmxServiceURL="service:jmx:rmi:///jndi/rmi://localhost:"+jmxMoniterPort+"/jmxrmi";
+		log.debug(" monitor port ={}", jmxMoniterPort);
+		// jmx----------------------code start--------------------------
+		// jmx 服务器
+		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
+		// 管理连接状态数目工具Filter
+		MonitorManageFilter monitorManageFilter = new MonitorManageFilter();
+		// 注册需要被管理的MBean
+		mbs.registerMBean(monitorManageFilter, new ObjectName(
+				"MonitorManageFilter:name=MonitorManage"));
+
+		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
+				+ jmxMoniterPort + "/jmxrmi";
 		// Create an RMI connector and start it
-        JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
-        
-        log.debug(" JMXServiceURL ={}",jmxServiceURL);
-        
-        cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
-        
-     // manage connect count filter
+		JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
+
+		log.debug(" JMXServiceURL ={}", jmxServiceURL);
+
+		cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
+
+		// manage connect count filter
 		acceptor.getFilterChain().addLast("monitorManageFilter",
 				monitorManageFilter);
-		
-       
-        //jmx----------------------code end--------------------------
-	} 
+
+		// jmx----------------------code end--------------------------
+	}
 
 	@Override
 	public void setMonitorEnable(boolean isMonitorEnable) throws IOException {
-      if(cs != null && isMonitorEnable){
-    	  RMIRegistry.RegistryRMI(jmxMoniterPort);
-    	  cs.start(); 			
-      }
+		if (cs != null && isMonitorEnable) {
+			RMIRegistry.RegistryRMI(jmxMoniterPort);
+			cs.start();
+		} else {
+			if (cs != null && cs.isActive()&& !isMonitorEnable){
+				cs.stop();
+			}
+			// TODO
+		}
 	}
 
 }

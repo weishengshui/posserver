@@ -280,14 +280,14 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 		this.closedReceiveBytes = 0;
 		this.closedSendBytes = 0;
 		//清空连接管理池
-		if (sessionCollector != null && !sessionCollector.isEmpty()) {
-			sessionCollector.clear();
-			this.openConnectCount = 0;
-			this.activityConnectCount = 0;
-			this.idleConnectCount = 0;
-			this.receiveBytesCount = 0;
-			this.sendBytesCount = 0;
-		}
+//		if (sessionCollector != null && !sessionCollector.isEmpty()) {
+//			sessionCollector.clear();
+//			this.openConnectCount = 0;
+//			this.activityConnectCount = 0;
+//			this.idleConnectCount = 0;
+//			this.receiveBytesCount = 0;
+//			this.sendBytesCount = 0;
+//		}
 		//清空指令管理池
 		if (commandCollector != null && !commandCollector.isEmpty()) {
 			commandCollector.clear();
@@ -299,9 +299,9 @@ public class MonitorManageFilter extends IoFilterAdapter implements	MonitorManag
 	 * 根据闲置的时间，关闭闲置的连接
 	 */
 	@Override
-	public void closeIdleConnect(long minute) {
+	public void closeIdleConnect(long second) {
 		//把分钟转换成毫秒数
-		long idleMilliSecond = minute * 60 * 1000;
+		long idleMilliSecond = second * 1000;
 		//得到应该可以关闭的闲置时间
 		long startIdleMilliSecond = System.currentTimeMillis() - idleMilliSecond;
 		log.debug("startIdleMilliSecond={}", startIdleMilliSecond);

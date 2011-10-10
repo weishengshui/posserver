@@ -7,8 +7,6 @@ import java.rmi.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.PosServer;
-
 /**
  * 启动rmi服务
  * @author dengrenwen

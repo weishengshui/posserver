@@ -47,10 +47,10 @@ public interface MonitorManageMXBean {
 	public void clearAllStatistic();
 	
 	/**
-	 * 关闭闲置了多少分钟的连接
-	 * @param minute
+	 * 关闭闲置了多少秒钟的连接
+	 * @param second
 	 */
-	public void closeIdleConnect(long minute);
+	public void closeIdleConnect(long second);
 	
 	/**
 	 * 各个指令的接收数目
