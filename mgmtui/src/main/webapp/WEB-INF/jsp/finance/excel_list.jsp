@@ -37,9 +37,12 @@
 				</s:form></td>
 		</tr>
 		<tr>
+			<td style="font-size: 12px;font-weight:bold;color:red;">*提示：您可以刷新页面或点击查询来更新报表状态</td>
+		</tr>
+		<tr>
 			<td>
 				<div id="excelList_DIV_ID">
-					<table align="center" width="800px" border="1" style="border-collapse: collapse;">
+					<table align="center" width="800px" border="1" style="border-collapse: collapse;margin-top:10px;">
 						<tr align="center">
 							<td>文件名称</td>
 							<td>代理商</td>

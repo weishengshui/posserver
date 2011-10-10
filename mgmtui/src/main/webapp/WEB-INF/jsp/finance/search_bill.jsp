@@ -117,17 +117,11 @@
 	}
 	
 	function generate_excel(){
-		/* var agent_id = document.getElementById("searchVO.agentId").value;
-		var start_date = document.getElementById("searchVO.startDate").value;
-		var end_date = document.getElementById("searchVO.endDate").value;
-		var pageInfo_pageId = document.getElementById("pageInfo.pageId").value;
-		var pageInfo_pageSize = document.getElementById("pageInfo.pageSize").value;
-		window.location.href="${pageContext.request.contextPath}/finance/generate_excel?searchVO.agentId="+agent_id+
-				"&searchVO.startDate="+start_date+"&searchVO.endDate="+end_date+"&pageInfo.pageId="+pageInfo_pageId+"&pageInfo.pageSize="+pageInfo_pageSize; */
-		var formObj = document.getElementById("generateexcel");
-				
 		if(check_start_date && check_end_date){
-			formObj.submit();	
+			if (confirm("确定要生成报表吗？")) {
+				var formObj = document.getElementById("generateexcel");
+				formObj.submit();	
+			}
 		}
 	}
 	
