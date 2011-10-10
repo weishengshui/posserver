@@ -4,7 +4,7 @@ import org.apache.mina.core.session.IoSession;
 
 /**
  * 用了管理，需要控制的iosession 的属性
- * @author harry 
+ * @author harry
  *
  */
 public class IoSessionMessageManage {

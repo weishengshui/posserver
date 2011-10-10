@@ -59,7 +59,12 @@ public class DefaultPosServer implements PosServer {
 	/**
 	 * Default timeout, in seconds, which the server will disconnect a client.
 	 */
-	public static final int DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
+	public static final long DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
+	
+	/**
+	 * Default monitor port
+	 */
+	public static final int DEFAULT_SERVER_MONITORPORT = 9999;
 
 	protected final Configuration configuration;
 
@@ -136,7 +141,6 @@ public class DefaultPosServer implements PosServer {
 		// setup Apache Mina server.
 		startMinaService();
 
-		// TODO jmx agent connector.start();
 
 		log.info("Server running, listening on {}", getLocalPort());
 
@@ -168,11 +172,14 @@ public class DefaultPosServer implements PosServer {
 			InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
+
 		
 		// default 1800 seconds
-		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,
+		long idleTime = configuration.getLong(ConfigKey.SERVER_CLIENTMAXIDLETIME,
 				DEFAULT_SERVER_CLIENTMAXIDLETIME);
-		
+
+		log.debug("idleTime={}",idleTime);
+
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -187,7 +194,7 @@ public class DefaultPosServer implements PosServer {
 
 		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
-				new IdleConnectionKillerFilter());
+				new IdleConnectionKillerFilter(idleTime));
 		
 		// our logging filter
 		acceptor.getFilterChain()
@@ -232,7 +239,7 @@ public class DefaultPosServer implements PosServer {
 			log.info("Client idle timeout set to {} seconds, will be disabled",
 					idleTime);
 		}
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		
 		// start the acceptor and listen to incomming connection!
 		try {
@@ -276,7 +283,6 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void stop() throws IOException {
-		// TODO jmx agent connector.stop();
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
 		if (cs != null && cs.isActive())
@@ -330,7 +336,7 @@ public class DefaultPosServer implements PosServer {
 			InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
-		jmxMoniterPort = configuration.getInt("monitor.port", 9999);
+		jmxMoniterPort = configuration.getInt(ConfigKey.SERVER_MONITORPORT, DEFAULT_SERVER_MONITORPORT);
 		log.debug(" monitor port ={}", jmxMoniterPort);
 		// jmx----------------------code start--------------------------
 		// jmx 服务器
@@ -366,7 +372,6 @@ public class DefaultPosServer implements PosServer {
 			if (cs != null && cs.isActive()&& !isMonitorEnable){
 				cs.stop();
 			}
-			// TODO
 		}
 	}
 
