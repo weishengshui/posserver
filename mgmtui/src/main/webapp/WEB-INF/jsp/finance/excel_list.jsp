@@ -49,7 +49,7 @@
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
 							<s:iterator id="excelVO" value="pageInfo.items" status="i">
 								<tr align="center">
-									<td id="file_name_${excelVO.id}"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:property value="#excelVO.startDate" />~</s:else><s:property value="#excelVO.endDate" /></td>
+									<td id="file_name_${excelVO.id}"><s:if test="#excelVO.startDate == null">截止于</s:if><s:else><s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~</s:else><s:date name="#excelVO.endDate" format="yyyy-MM-dd" /></td>
 									<td><s:property value="#excelVO.agentName" />
 									</td>
 									<td>
@@ -112,16 +112,8 @@
 	}
 	
 	function download(reportId){
-		alert(reportId);
 		var file_name = document.getElementById("file_name_" + reportId).innerHTML + ".csv";
-		alert(file_name);
-		var formObj = document.getElementById("search_excel");
-		formObj.reportId.value = reportId;
-		formObj.fileName.value = file_name;
-		alert(formObj.fileName.value);
-		formObj.action = "${pageContext.request.contextPath}/finance/download_excel";
-		formObj.submit();
-		
+		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + file_name;
 	}
 	
 	var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
