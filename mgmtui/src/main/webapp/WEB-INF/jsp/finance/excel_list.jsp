@@ -54,6 +54,7 @@
 							<td>代理商</td>
 							<td>状态</td>
 							<td>创建时间</td>
+							<td>生成时间</td>
 							<td>下载</td>
 						</tr>
 						<s:if test="pageInfo.items != null && pageInfo.items.size()>0">
@@ -91,6 +92,8 @@
 									</s:else>
 									</td>
 									<td><s:date name="#excelVO.createDate" format="%{getText('dateformat.ymdhm')}" />
+									</td>
+									<td><s:date name="#excelVO.modifyDate" format="%{getText('dateformat.ymdhm')}" />
 									</td>
 									<td>
 									<s:if test="#excelVO.status != null && 'CREATING' == #excelVO.status.toString()">
