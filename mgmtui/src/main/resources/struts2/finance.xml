@@ -15,7 +15,6 @@
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
 			method="searchBill">
 			<result name="success">/WEB-INF/jsp/finance/search_bill.jsp</result>
-			<result name="input">/WEB-INF/jsp/finance/search_bill.jsp</result>
 		</action>
 		<action name="generate_excel"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"

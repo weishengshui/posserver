@@ -102,7 +102,9 @@ public class FinanceAction extends BaseAction {
 		try{
 			if(pageInfo == null || pageInfo.getPageId()==0){
 				log.debug("pageInfo lost !");
-				return INPUT;
+				pageInfo = new PageInfo();
+				pageInfo.setPageId(1);
+				pageInfo.setPageSize(INITPAGESIZE);
 			}
 			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
 			prepareAgent();

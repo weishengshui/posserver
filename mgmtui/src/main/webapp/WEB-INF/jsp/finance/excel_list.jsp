@@ -96,7 +96,7 @@
 	function initializeDatepicker(idFrom, idTo) {
 		var dates = $('#' + idFrom + ', ' + '#' + idTo).datepicker({
 			showAnim: "",
-			dateFormat: "yyyy-mm-dd",
+			dateFormat: "yy-mm-dd",
 			changeMonth: true,
 			changeYear: true,
 			onSelect: function(selectedDate) {
