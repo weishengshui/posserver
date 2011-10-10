@@ -103,7 +103,7 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 			}
 		}
 		searchSql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId ";
-		searchSql += " order by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId ";
+		searchSql += " order by DATE_FORMAT(v.ts, '%Y-%m') desc,v.agentId,v.posId ";
 		countSql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId) a ";
 		PageInfo<FinanceReportVO> result = this.findPageInfoByNativeQuery(countSql, searchSql, countParamMap, paramMap, pageInfo);
 		return result;
