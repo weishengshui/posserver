@@ -116,7 +116,7 @@ public class CreateFinanceReport extends Thread {
 									sb.append(",");
 									sb.append(vo.getPosId());
 									sb.append(",");
-									sb.append(vo.getBaseAmount());
+									sb.append(vo.getBaseAmount() + "/台/月");
 									sb.append(",");
 									sb.append(vo.getActuallyValCount());
 									sb.append(",");
