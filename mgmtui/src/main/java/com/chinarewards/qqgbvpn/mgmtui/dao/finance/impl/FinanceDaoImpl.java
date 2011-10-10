@@ -23,15 +23,15 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 				"DATE_FORMAT(v.ts, '%Y-%m'),v.agentName,v.posId," +
 				FinanceReportVO.BASE_AMOUNT + " AS baseAmount" +
 				",COUNT(v.id) AS actuallyValCount" +
-				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) AS beyondValCount" +
 				", " + FinanceReportVO.UNIT_PRICE + " AS unitPrice" +
-				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) " +
 								"* " + FinanceReportVO.UNIT_PRICE + " AS beyondAmount" +
 				", (" + FinanceReportVO.BASE_AMOUNT +
-						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) " +
 										"* " + FinanceReportVO.UNIT_PRICE + ")) AS amount" +
 				") " +
 				" from Validation v " +
@@ -66,15 +66,15 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 				"DATE_FORMAT(v.ts, '%Y-%m'),v.agentName,v.posId," +
 				FinanceReportVO.BASE_AMOUNT + " AS baseAmount" +
 				",COUNT(v.id) AS actuallyValCount" +
-				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) AS beyondValCount" +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) AS beyondValCount" +
 				", " + FinanceReportVO.UNIT_PRICE + " AS unitPrice" +
-				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+				", (CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+						"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) " +
 								"* " + FinanceReportVO.UNIT_PRICE + " AS beyondAmount" +
 				", (" + FinanceReportVO.BASE_AMOUNT +
-						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") > 0 " +
-								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_AMOUNT + ") ELSE 0 END) " +
+						" + ((CASE WHEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") > 0 " +
+								"THEN (COUNT(v.id) - " + FinanceReportVO.BASE_LINE + ") ELSE 0 END) " +
 										"* " + FinanceReportVO.UNIT_PRICE + ")) AS amount" +
 				") " +
 				"from Validation v " +

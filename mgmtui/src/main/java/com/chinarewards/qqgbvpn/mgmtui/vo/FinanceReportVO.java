@@ -8,6 +8,8 @@ public class FinanceReportVO implements Serializable {
 	
 	public static final int BASE_AMOUNT = 120;
 	
+	public static final int BASE_LINE = 1;
+	
 	public static final double UNIT_PRICE = 0.6;
 	
 	private String reportMonth;
