@@ -137,8 +137,6 @@ public class FinanceAction extends BaseAction {
 			e.printStackTrace();
 			return ERROR;
 		}
-		prepareAgent();
-		prepareStatus();
 		return SUCCESS;
 	}
 	
