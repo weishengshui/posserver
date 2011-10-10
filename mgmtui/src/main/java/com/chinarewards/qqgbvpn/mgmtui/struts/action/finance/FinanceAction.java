@@ -122,16 +122,9 @@ public class FinanceAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(INITPAGESIZE);
 			
-			/*List<FinanceReportVO> vo = getFinanceManager().searchFinanceReport(searchVO);
-			if(vo == null || "".equals(vo) || vo.size() == 0){
-				HttpServletRequest request = ServletActionContext.getRequest ();
-				request.setAttribute("generate", "false");
-				log.debug("can not generate excel because no bill result.");
-				return INPUT;
-			}*/
 			FinanceReportHistory history = getFinanceManager().createFinanceReportHistory(searchVO);
 			//超时时间到时从配置文件中获取
-			Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId(),60000);
+			Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId());
 			createReport.start();
 			
 			pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
@@ -148,7 +141,6 @@ public class FinanceAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(INITPAGESIZE);
 		}
-		System.out.println("getFinanceReportHistoryStatus:" + searchVO.getFinanceReportHistoryStatus());
 		pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
 		if (pageInfo != null) {
 			List<FinanceReportHistory> list = pageInfo.getItems();
@@ -230,8 +222,6 @@ public class FinanceAction extends BaseAction {
 	
 	public InputStream getInputStream() throws FileNotFoundException, UnsupportedEncodingException {
 		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById(reportId);
-		System.out.println("report.getReportDetail():" + report.getReportDetail());
-		//return new StringBufferInputStream(report.getReportDetail());
 		return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
 		} 
 }
