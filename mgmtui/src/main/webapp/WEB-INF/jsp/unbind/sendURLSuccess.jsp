@@ -8,13 +8,13 @@
 <title>邀请成功</title>
 </head>
 <body>
-<s:form action="sendURL" namespace="/unbind" method="Post" id="successForm">
+<s:form action="sendURL" namespace="/unbind" method="Get" id="successForm">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">已发出通知予：<s:property value="agentName" /></td>
 	</tr>
 	<tr>
-		<td width="77%">发出日期：<s:date name="sendTime" format="yyyy-MM-dd hh:mm:ss" /></td>
+		<td width="77%">发出日期：<s:date name="sendTime" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	<tr>
 		<td width="77%"><input type="submit" value="完成" id="searchBtn" /></td>

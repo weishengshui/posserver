@@ -8,13 +8,14 @@
 <title>回收单查询</title>
 </head>
 <body>
-<s:form action="getReturnNoteList" namespace="/unbind" method="Post" id="listForm">
-<s:token/>
+<s:form action="getReturnNoteList" namespace="/unbind" method="Get" id="listForm">
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 <s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td width="77%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
+		<td width="50%">回收单号：<input type="text" name="rnNum" value="${rnNum}" /></td>
+		<td width="37%">状态：<s:select name="status" id="status" value="status"   list="#{'CONFIRMED':'已确认','RETURNED':'已全部全收'}" 
+		listKey="key" listValue="value" theme="simple" headerKey="" headerValue="--------" /></td>
 		<td width="13%">
 			<input type="submit" value="查询" id="searchBtn" />
 		</td>
@@ -30,10 +31,23 @@
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
-		<td><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
+		<td><a href="${pageContext.request.contextPath}/unbind/getReturnNoteInfo?rnId=${list.id}" target="_blank"><s:property value="#list.rnNumber" /></a></td>
 		<td><s:property value="#list.agentName" /></td>
-		<td><s:property value="#list.status" /></td>
-		<td><s:date name="#list.createDate" format="yyyy-MM-dd hh:mm:ss" /></td>
+		<td>
+		<s:if test="#list.status != null && 'PRINTED' == #list.status.toString()">
+			已打印
+		</s:if>
+		<s:elseif test="#list.status != null && 'CONFIRMED' == #list.status.toString()">
+			已确认
+		</s:elseif>
+		<s:elseif test="#list.status != null && 'RETURNED' == #list.status.toString()">
+			已全部全收
+		</s:elseif>
+		<s:else>
+			草稿
+		</s:else>
+		</td>
+		<td><s:date name="#list.createDate" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	</s:iterator>
 	<tr>
@@ -48,7 +62,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPageForRnList";
+		formObj.action = "${pageContext.request.contextPath}/unbind/goPageForRnList";
 		formObj.submit();
 	}
 	

@@ -7,6 +7,8 @@
 </s:if>
 <s:form  namespace="/pos" action="edit" name="posForm" theme="simple" id="posForm" onsubmit="return checkPos();">
 <s:hidden name="posVO.id"/>
+<s:hidden name="posVO.version"/>
+
 <table align="center" width="600px">
 		<tr>
 			<td width="20%">
@@ -24,7 +26,7 @@
 				厂商编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="posVO.model" label="model"/>
+				<s:textfield name="posVO.sn" label="Serial number"/>	<%-- 厂商编号 --%>
 			</td>
 		</tr>
 		<tr>
@@ -32,7 +34,7 @@
 				型号:
 			</td>
 			<td >
-				<s:textfield name="posVO.sn" label="Serial number"/>
+				<s:textfield name="posVO.model" label="model"/>
 			</td>
 			<td >
 				电机号码:
@@ -75,6 +77,20 @@
 			</td>
 			<td >
 				<s:textfield name="posVO.secret" label="secret" id="posVO.secret" readonly="true"/>
+			</td>
+		</tr>
+		<tr>
+			<td >
+				允许升级固件:
+			</td>
+			<td >
+				<s:radio name="posVO.upgradeRequired" value="posVO.upgradeRequired"  list="#{true:'允许',false:'禁止'}" listKey="key" listValue="value"  theme="simple" />
+			</td>
+			<td >
+				固件档案名称:
+			</td>
+			<td >
+				<s:textfield name="posVO.firmware" label="firmware"/>
 			</td>
 		</tr>
 		<s:if test="posVO.id != null ">

@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
+import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
@@ -61,6 +62,10 @@ public class PosAction extends BasePagingAction{
 	// POS 内置唯一标识。6位字符
 	private String secret;
 	
+	private PageInfo<PosVO> pageInfo;
+	
+	private static final int SIZE = 10;
+
 	public String detail(){
 		log.debug("posAction call detail");
 		if(!Tools.isEmptyString(id)){
@@ -81,6 +86,8 @@ public class PosAction extends BasePagingAction{
 			posVO.setIstatus(PosInitializationStatus.UNINITED.toString());
 			//默认已回收
 			posVO.setDstatus(PosDeliveryStatus.RETURNED.toString());
+			//默认允许
+			posVO.setUpgradeRequired(false);
 		}
 		return SUCCESS;
 	}
@@ -129,6 +136,12 @@ public class PosAction extends BasePagingAction{
 	
 	@Override
 	public String execute(){
+		if (pageInfo == null) {
+			pageInfo = new PageInfo<PosVO>();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(SIZE);
+		}
+		
 		if(Tools.isEmptyString(posSearchVO)){
 			posSearchVO = new PosSearchVO();
 		}  
@@ -140,29 +153,13 @@ public class PosAction extends BasePagingAction{
 		posSearchVO.setSecret(secret);
 		posSearchVO.setSimPhoneNo(simPhoneNo);
 		posSearchVO.setSn(sn);
+		
+		posSearchVO.setSize(pageInfo.getPageSize());
+		posSearchVO.setPage(pageInfo.getPageId());
 		log.debug("posAction call list=======:"+Tools.objToString(posSearchVO));
-		return SUCCESS;
-	}
-	
-	
-	public String listCenter(){
-		log.debug("posAction call listCenter");
-		if(Tools.isEmptyString(posSearchVO)){
-			posSearchVO = new PosSearchVO();
-		}  
-		posSearchVO.setDstatus(dstatus);
-		posSearchVO.setIstatus(istatus);
-		posSearchVO.setModel(model);
-		posSearchVO.setOstatus(ostatus);
-		posSearchVO.setPosId(posId);
-		posSearchVO.setSecret(secret);
-		posSearchVO.setSimPhoneNo(simPhoneNo);
-		posSearchVO.setSn(sn);
-		PaginationTools paginationTools = new PaginationTools(page, countEachPage);
+		
 		try{
-			PageInfo<PosVO> pageInfo =getPosLogic().queryPos(posSearchVO, paginationTools);
-			posVOList = pageInfo.getItems();
-			this.insertPageList(pageInfo.getRecordCount(), page);
+			pageInfo = getPosLogic().queryPos(posSearchVO);
 		}catch(Exception e){
 			log.error("list fail",e);
 			e.printStackTrace();
@@ -282,6 +279,12 @@ public class PosAction extends BasePagingAction{
 		this.secret = secret;
 	}
 	
-	
+	public PageInfo<PosVO> getPageInfo() {
+		return pageInfo;
+	}
+
+	public void setPageInfo(PageInfo<PosVO> pageInfo) {
+		this.pageInfo = pageInfo;
+	}
 
 }

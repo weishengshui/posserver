@@ -26,6 +26,10 @@ case "$1" in
 	# the actual location /etc/posnet2.
 	rm -rf /usr/share/posnet2/conf
 	ln -s $ETC_DIR /usr/share/posnet2/conf
+	
+	# create a link to the log
+	mkdir -p /var/log/posnet2
+	ln -sf /var/log/posnet2 /usr/share/posnet2/log
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -1,7 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -17,15 +16,14 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.google.inject.Injector;
 
 public class MessageEncoder implements ProtocolEncoder {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Charset charset;
-
-	private Injector injector;
+	
+	private PackageHeadCodec packageHeadCodec;
 	
 	protected CmdCodecFactory cmdCodecFactory;
 
@@ -36,11 +34,10 @@ public class MessageEncoder implements ProtocolEncoder {
 	 * @param injector
 	 * @param cmdCodecFactory
 	 */
-	public MessageEncoder(Charset charset, Injector injector,
-			CmdCodecFactory cmdCodecFactory) {
+	public MessageEncoder(Charset charset, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
-		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.packageHeadCodec = new PackageHeadCodec();
 	}
 
 	/*
@@ -52,10 +49,7 @@ public class MessageEncoder implements ProtocolEncoder {
 	 */
 	@Override
 	public void dispose(IoSession session) throws Exception {
-		// TODO Auto-generated method stub
-
-		System.out.println("dispose()");
-
+		
 	}
 
 	/*
@@ -69,64 +63,62 @@ public class MessageEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
-		log.debug("encode message start");
 		
-		log.debug("message========:"+message.getClass());
+		log.debug("encode message start");
+		if (session != null && session.isConnected()) {
+			log.trace("Mina session ID: {}", session.getId());
+		}
+		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
 		ICommand bodyMessage = msg.getBodyMessage();
 
 		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;
-		log.debug("cmdId is ({})", cmdId);
+		log.debug("cmdId to send: ({})", cmdId);
 		
-		if(bodyMessage instanceof ErrorBodyMessage){
+		if (bodyMessage instanceof ErrorBodyMessage) {
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
-			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage)bodyMessage;
+			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage) bodyMessage;
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
-			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(), ProtocolLengths.COMMAND);
-		}else{
-//			String cmdName = injector.getInstance(CmdProperties.class).getCmdNameById(cmdId);
-//			if(cmdName == null || cmdName.length() == 0){
+			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getErrorCode(),
+					ProtocolLengths.COMMAND);
+		} else {
 //				throw new RuntimeException("cmd id is not exits,cmdId is :"+cmdId);
 //			}
 			//Dispatcher
 			//IBodyMessageCoder bodyMessageCoder = injector.getInstance(Key.get(IBodyMessageCoder.class, Names.named(cmdName)));
+			
+			// XXX handles the case no codec is found for the command ID.
+			
 			ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
 			log.trace("bodyMessageCoder = {}", bodyMessageCoder);
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		log.debug("bodyByte====return====:({})",Arrays.toString(bodyByte));
+		//head process
+		headMessage.setMessageSize(ProtocolLengths.HEAD + bodyByte.length);
+		byte[] headByte = packageHeadCodec.encode(headMessage);
 		
-		byte[] headByte = new byte[ProtocolLengths.HEAD];
-
-		Tools.putUnsignedInt(headByte, headMessage.getSeq(), 0);
-		Tools.putUnsignedInt(headByte, headMessage.getAck(), 4);
-		Tools.putUnsignedShort(headByte, headMessage.getFlags(), 8);
-		Tools.putUnsignedShort(headByte, 0, 10);
-		Tools.putUnsignedInt(headByte, ProtocolLengths.HEAD + bodyByte.length,
-				12);
-
+		
 		byte[] result = new byte[ProtocolLengths.HEAD + bodyByte.length];
 
 		Tools.putBytes(result, headByte, 0);
 		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
 		
+		// make the 
 		int checkSumVal = Tools.checkSum(result, result.length);
-
 		Tools.putUnsignedShort(result, checkSumVal, 10);
-
-		log.debug("checkSumVal=====return===:({})" ,checkSumVal);
+		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
 		
 		IoBuffer buf = IoBuffer.allocate(result.length);
 
 		// debug print
-		log.debug("Outgoing byte content");
-		CodecUtil.debugRaw(log, result);
+		log.debug("Encoded byte content");
+		// TODO make the '96' be configurable.
+		CodecUtil.hexDumpForLogging(log, result, 96);
 
-		log.debug("result========length:({})",result.length);
-		log.debug("result========value:({})",Arrays.toString(result));
+		// write to Mina session
 		buf.put(result);
 		buf.flip();
 		out.write(buf);

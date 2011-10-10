@@ -22,7 +22,7 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-		log.debug("validate message decode");
+		log.debug("validate request message decode");
 		ValidateRequestMessage message = new ValidateRequestMessage();
 		if (in.remaining() < ProtocolLengths.COMMAND + 2) {
 			throw new PackageException(
@@ -80,25 +80,28 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 						new Object[] { cmdId, grouponId, grouponVCode });
 		return message;
 	}
-
+	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		log.debug("validate message encode");
-		ValidateResponseMessage responseMessage = (ValidateResponseMessage) bodyMessage;
+		log.debug("validate request message encode");
+		ValidateRequestMessage requestMessage = (ValidateRequestMessage) bodyMessage;
 
-		long cmdId = responseMessage.getCmdId();
-		int result = responseMessage.getResult();
-
+		long cmdId = requestMessage.getCmdId();
+		String grouponId = requestMessage.getGrouponId();
+		String grouponVCode = requestMessage.getGrouponVCode();
+		
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(responseMessage.getResultName()==null?"":responseMessage.getResultName()).append(
+		buffer.append(grouponId==null?"":grouponId).append(
 				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getResultExplain()==null?"":responseMessage.getResultExplain()).append(
-				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getCurrentTime()==null?"":responseMessage.getCurrentTime()).append(
-				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getUseTime()==null?"":responseMessage.getUseTime()).append(
-				CmdConstant.SEPARATOR);
-		buffer.append(responseMessage.getValidTime()==null?"":responseMessage.getValidTime()).append(
+		buffer.append(grouponVCode==null?"":grouponVCode).append(
 				CmdConstant.SEPARATOR);
 
 		String tmpStr = buffer.toString();
@@ -107,12 +110,10 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 		byte[] tmp = tmpStr.getBytes(charset);
 		log.debug("validate src is ({})",tmpStr);
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND
-				+ ProtocolLengths.RESULT + tmp.length];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + tmp.length];
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND
-				+ ProtocolLengths.RESULT);
+		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND);
+		
 		log.debug("validate message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		return resultByte;
 	}

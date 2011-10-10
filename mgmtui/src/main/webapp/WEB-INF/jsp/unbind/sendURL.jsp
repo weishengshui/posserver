@@ -11,8 +11,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="sendURL" namespace="/unbind" method="Post" id="sendURLForm">
-<s:token/>
+<s:form action="sendURL" namespace="/unbind" method="Get" id="sendURLForm">
 <input type="hidden" id="agentId" name="agentId"/>
 <input type="hidden" id="agentEmail" name="agentEmail"/>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
@@ -26,14 +25,12 @@
 <s:if test="agentList!=null && agentList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
-		<td class="td_title">Agent Id</td>
-		<td class="td_title">Agent Name</td>
-		<td class="td_title">Agent Email</td>
+		<td class="td_title">名称</td>
+		<td class="td_title">Email</td>
 		<td class="td_title">操作</td>
 	</tr>
 	<s:iterator value="agentList" id="list">
 	<tr>
-		<td><s:property value="#list.id" /></td>
 		<td><s:property value="#list.name" /></td>
 		<td><s:property value="#list.email" /></td>
 		<td><button type="button" onclick="sendURL('${list.id}', '${list.name}','${list.email}')">发送</button></td>
@@ -45,12 +42,14 @@
 
 <script type="text/javascript">
 	function sendURL(agentId, agentName, email) {
-		document.getElementById("agentId").value = agentId;
-		document.getElementById("agentName").value = agentName;
-		document.getElementById("agentEmail").value = email;
-		var formObj = document.getElementById("sendURLForm");
-		formObj.action = "${ctx}/unbind/createInvite";
-		formObj.submit();
+		if (confirm("确定要向\"" + agentName + "\"发送回收邀请吗？")) {
+			document.getElementById("agentId").value = agentId;
+			document.getElementById("agentName").value = agentName;
+			document.getElementById("agentEmail").value = email;
+			var formObj = document.getElementById("sendURLForm");
+			formObj.action = "${pageContext.request.contextPath}/unbind/createInvite";
+			formObj.submit();
+		}
 	}
 </script>
 </body>

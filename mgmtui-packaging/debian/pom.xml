@@ -21,6 +21,7 @@
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>mgmtui</artifactId>
 			<version>${project.version}</version>
+			<type>war</type>
 		</dependency>
 	</dependencies>
 	<build>
@@ -42,8 +43,13 @@
 						<id>copy</id>
 						<phase>package</phase>
 						<goals>
-							<goal>copy</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<excludeTransitive>true</excludeTransitive>
+						</configuration>
+						<!--
 						<configuration>
 							<artifactItems>
 								<artifactItem>
@@ -52,9 +58,11 @@
 									<version>${project.version}</version>
 									<type>war</type>
 									<outputDirectory>${project.build.directory}</outputDirectory>
+									<destFileName>mgmtui-${project.version}.war</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
+						-->
 					</execution>
 				</executions>
 			</plugin>
@@ -93,7 +101,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>prefix</type>
-										<prefix>/etc/${posnet2-mgmtui}</prefix>
+										<prefix>/etc/${pkgname}</prefix>
 									</mapper>
 								</data>
 								<!-- /etc/init.d script. -->
@@ -123,16 +131,17 @@
 				<artifactId>wagon-maven-plugin</artifactId>
 				<version>1.0-beta-3</version>
 				<configuration>
-					<fromFile>${project.build.directory}/${project.build.finalName}</fromFile>
+					<fromDir>${project.build.directory}</fromDir>
+					<includes>*.deb,*.changes</includes>
 					<serverId>repository</serverId>
-					<url>scp://192.168.4.223/usr/share/nginx/www/apt/chinarewards/binary</url>
+					<url>${repo.incoming.url}</url>
 				</configuration>
 				<executions>
 					<execution>
 						<id>upload-deb-to-server</id>
 						<phase>deploy</phase>
 						<goals>
-							<goal>upload-single</goal>
+							<goal>upload</goal>
 						</goals>
 					</execution>
 				</executions>

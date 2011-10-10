@@ -1,0 +1,5 @@
+<html>
+<body>
+<br>${agentName}已成功填写申请表，共申请回收${posCount}台POS机。<br><a href="${confirmPath}">请点击此链接查看回收单具体信息，谢谢。</a>
+</body>
+</html>

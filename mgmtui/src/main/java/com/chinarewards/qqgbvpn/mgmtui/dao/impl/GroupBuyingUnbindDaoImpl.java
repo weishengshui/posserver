@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
@@ -31,7 +33,7 @@ import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuyingUnbindDao {
+public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbindDao {
 
 	public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException {
 		String[] posIds = (String[]) params.get("posId");
@@ -49,7 +51,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					if (pa != null) {
 						Journal journal = new Journal();
 						journal.setTs(data);
-						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+						journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 						journal.setEntityId(pa.getId());
 						journal.setEvent(DomainEvent.POS_UNBIND_SUCCESS.toString());
 						if (items != null) {
@@ -61,12 +63,37 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						try {
 							
 							if ("0".equals(resultCode)) {
+								log.debug("resultCode : {}", resultCode);
 								//删除绑定关系
-								em.get().remove(pa);
+								getEm().remove(pa);
 								//更新POS机交付状态
 								Pos p = pa.getPos();
+								log.debug("posId : {}", p.getPosId());
 								p.setDstatus(PosDeliveryStatus.RETURNED);
 								savePos(p);
+								//更新POS机所关联的所有回收单中POS机的交付状态
+								List<ReturnNoteDetail> rnDetailList = getReturnNoteDetailListByPosId(p.getPosId());
+								log.debug("rnDetailList.size : {}", rnDetailList.size());
+								if (rnDetailList != null && rnDetailList.size() > 0) {
+									HashMap<String,ReturnNote> tempMap = new HashMap<String,ReturnNote>();
+									for (ReturnNoteDetail rnd : rnDetailList) {
+										rnd.setDstatus(PosDeliveryStatus.RETURNED);
+										saveReturnNoteDetail(rnd);
+										//收集还没有完全回收的回收单
+										if (!ReturnNoteStatus.RETURNED.equals(rnd.getRn().getStatus()) 
+												&& !tempMap.containsKey(rnd.getRn().getId())) {
+											tempMap.put(rnd.getRn().getId(), rnd.getRn());
+										}
+									}
+									for (String rnId : tempMap.keySet()) {
+										//如果回收单中的所有POS机都已经回收，则修改回收单的状态为全部回收
+										if (isReadyToReturned(rnId)) {
+											ReturnNote returnNote = tempMap.get(rnId);
+											returnNote.setStatus(ReturnNoteStatus.RETURNED);
+											saveReturnNote(returnNote);
+										}
+									}
+								}
 							}
 							saveJournal(journal);
 						} catch (Exception e) {
@@ -82,7 +109,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					} else {
 						Journal journal = new Journal();
 						journal.setTs(data);
-						journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+						journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 						journal.setEntityId(posId);
 						journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 						journal.setEventDetail("group buying unbind error,pos assignment not found by posId : " + posId);
@@ -103,7 +130,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 					//resultStatus取消状态，非0代表不成功，直接写失败日志
 					Journal journal = new Journal();
 					journal.setTs(data);
-					journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+					journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 					journal.setEntityId(posId);
 					journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 					journal.setEventDetail(resultStatus);
@@ -125,7 +152,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 			//resultCode不等于0说明QQ响应失败，直接写错误日志
 			Journal journal = new Journal();
 			journal.setTs(data);
-			journal.setEntity(DomainEntity.UNBIND_POS_ASSIGNMENT.toString());
+			journal.setEntity(DomainEntity.POS_ASSIGNMENT.toString());
 			journal.setEntityId(posIds.toString());
 			journal.setEvent(DomainEvent.POS_UNBIND_FAILED.toString());
 			journal.setEventDetail(resultCode);
@@ -145,15 +172,15 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private void saveJournal(Journal journal) {
-		em.get().persist(journal);
+		getEm().persist(journal);
 	}
 	
 	private void savePos(Pos p) {
-		em.get().persist(p);
+		getEm().persist(p);
 	}
 	
 	private PosAssignment getPosAssignmentByIdPosId(String posId) {
-		Query jql = em.get().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
+		Query jql = getEm().createQuery("select pa from PosAssignment pa,Pos p where pa.pos.id = p.id and p.posId = ?1");
 		jql.setParameter(1, posId);
 		List resultList = jql.getResultList();
 		PosAssignment pa = null;
@@ -181,15 +208,17 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 回收单页面查询调用
 	 */
 	public PageInfo getPosByAgentId(PageInfo pageInfo, String agentId) {
-		String sql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1";
-		List params = new ArrayList();
-		params.add(agentId);
-		PageInfo resultList = this.findPageInfo(sql, params, pageInfo);
-		return resultList;
+		String countSql = "select count(p.id) from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = :agentId";
+		String searchSql = "select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = :agentId order by p.posId desc";
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("agentId", agentId);
+		
+		pageInfo = this.findPageInfo(countSql.toString(),searchSql.toString(),paramMap,pageInfo);
+		return pageInfo;
 	}
 	
 	private List<Pos> getPosByAgentId(String agentId) {
-		Query jql = em.get().createQuery("select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1");
+		Query jql = getEm().createQuery("select p from Pos p, PosAssignment pa where p.id = pa.pos.id and pa.agent.id = ?1");
 		jql.setParameter(1, agentId);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
@@ -200,7 +229,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 发送URL页面查询调用
 	 */
 	public Agent getAgentByName(String agentName) {
-		Query jql = em.get().createQuery("select a from Agent a where a.name = ?1");
+		Query jql = getEm().createQuery("select a from Agent a where a.name = ?1");
 		jql.setParameter(1, agentName);
 		List resultList = jql.getResultList();
 		Agent agent = null;
@@ -211,7 +240,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	public List<Agent> getAgentLikeName(String agentName) {
-		Query jql = em.get().createQuery("select a from Agent a where upper(a.name) like ?1");
+		Query jql = getEm().createQuery("select a from Agent a where upper(a.name) like ?1");
 		jql.setParameter(1, "%" + agentName.toUpperCase() + "%");
 		List resultList = jql.getResultList();
 		return resultList;
@@ -222,7 +251,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * 解绑页面查询调用
 	 */
 	public List<Pos> getPosByPosInfo(String info) {
-		Query jql = em.get().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
+		Query jql = getEm().createQuery("select p from Pos p where p.posId = ?1 or p.sn = ?1 or p.simPhoneNo = ?1");
 		jql.setParameter(1, info);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
@@ -281,7 +310,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				rn = this.getReturnNoteByToken(inviteCode);
 				if (rn != null && ReturnNoteStatus.CONFIRMED.equals(rn.getStatus())) {
 					log.warn("Return Note already confirmed!");
-					throw new UnUseableRNException(rn.getId() + "," + rn.getRnNumber());
+					throw new UnUseableRNException(rn.getId() + "," + rn.getRnNumber() + "," + rn.getCreateDate());
 				}
 			}
 			if (rn == null) {
@@ -301,29 +330,52 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				
 				saveReturnNote(rn);
 				
-				Journal journal = new Journal();
-				journal.setTs(date);
-				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
-				journal.setEntityId(rn.getId());
-				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
-				journal.setEventDetail(gson.toJson(rn));
-				saveJournal(journal);
-				
 				List<Pos> posList = getPosListByIds(posIds);
 				
 				if (posList != null && posList.size() > 0) {
 					for (Pos p : posList) {
+						log.debug("p.getDstatus() : {}", p.getDstatus());
 						ReturnNoteDetail rnd = new ReturnNoteDetail();
 						rnd.setRn(rn);
 						rnd.setPosId(p.getPosId());
 						rnd.setModel(p.getModel());
 						rnd.setSimPhoneNo(p.getSimPhoneNo());
 						rnd.setSn(p.getSn());
+						rnd.setDstatus(p.getDstatus());
 						saveReturnNoteDetail(rnd);
 					}
 				}
+				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+
+				/*
+				 * 新增的回收单写入POS机列表，
+				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
+				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
+				 * 显示很乱，不容易识别
+				*/
+				ReturnNoteInfo rni = new ReturnNoteInfo();
+				rni.setRn(rn);
+				rni.setPosList(posList);
+				journal_new.setEventDetail(gson.toJson(rni));
+				saveJournal(journal_new);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
+				saveJournal(journal);
 				
 			} catch (Exception e) {
 				throw new SaveDBException(e);
@@ -349,16 +401,6 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 				
 				saveReturnNote(rn);
 				
-				Journal journal = new Journal();
-				journal.setTs(date);
-				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
-				journal.setEntityId(rn.getId());
-				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
-				GsonBuilder builder = new GsonBuilder();
-				Gson gson = builder.create();
-				journal.setEventDetail(gson.toJson(rn));
-				saveJournal(journal);
-				
 				posList = getPosByAgentId(agentId);
 				
 				if (posList != null && posList.size() > 0) {
@@ -369,9 +411,41 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 						rnd.setModel(p.getModel());
 						rnd.setSimPhoneNo(p.getSimPhoneNo());
 						rnd.setSn(p.getSn());
+						rnd.setDstatus(p.getDstatus());
 						saveReturnNoteDetail(rnd);
 					}
 				}
+				
+				GsonBuilder builder = new GsonBuilder();
+				Gson gson = builder.create();
+				
+				//后台增加新增回收单事件的日志
+				Journal journal_new = new Journal();
+				journal_new.setTs(date);
+				journal_new.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal_new.setEntityId(rn.getId());
+				journal_new.setEvent(DomainEvent.USER_ADDED_RNOTE.toString());
+				/*
+				 * 新增的回收单写入POS机列表，
+				 * 这里写入的是POS机的列表，而不是ReturnNoteDetail的列表，
+				 * 是因为ReturnNoteDetail的列表转为json对象后又会关联出ReturnNote的信息，
+				 * 显示很乱，不容易识别
+				*/
+				ReturnNoteInfo rni = new ReturnNoteInfo();
+				rni.setRn(rn);
+				rni.setPosList(posList);
+				journal_new.setEventDetail(gson.toJson(rni));
+				saveJournal(journal_new);
+				
+				Journal journal = new Journal();
+				journal.setTs(date);
+				journal.setEntity(DomainEntity.RETURN_NOTE.toString());
+				journal.setEntityId(rn.getId());
+				journal.setEvent(DomainEvent.USER_CONFIRMED_RNOTE.toString());
+
+				//确认的回收单不写入POS机列表
+				journal.setEventDetail(gson.toJson(rn));
+				saveJournal(journal);
 				
 			} catch (Exception e) {
 				throw new SaveDBException(e);
@@ -383,25 +457,25 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private void saveReturnNote(ReturnNote rn) {
-		em.get().persist(rn);
+		getEm().persist(rn);
 	}
 	
 	private void saveReturnNoteDetail(ReturnNoteDetail rnd) {
-		em.get().persist(rnd);
+		getEm().persist(rnd);
 	}
 	
 	private void saveReturnNoteInvitation(ReturnNoteInvitation rni) {
-		em.get().persist(rni);
+		getEm().persist(rni);
 	}
 	
 	private ReturnNote getReturnNote(String rnId) {
-		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		ReturnNote rn = getEm().find(ReturnNote.class, rnId);
 		return rn;
 	}
 	
 	private ReturnNote getReturnNoteByToken(String token) {
 		log.debug("token: {}", token);
-		Query jql = em.get().createQuery("select rn from ReturnNote rn where rn.token = ?1");
+		Query jql = getEm().createQuery("select rn from ReturnNote rn where rn.token = ?1");
 		jql.setParameter(1, token);
 		List resultList = jql.getResultList();
 		ReturnNote rn = null;
@@ -413,20 +487,20 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	private Agent getAgentById(String agentId) {
-		Agent a = em.get().find(Agent.class, agentId);
+		Agent a = getEm().find(Agent.class, agentId);
 		return a;
 	}
 	
 	private List<Pos> getPosListByIds(List<String> posIds) {
 		log.debug("posIds:{}", posIds);
-		Query jql = em.get().createQuery("select p from Pos p where p.id in (?1)");
+		Query jql = getEm().createQuery("select p from Pos p where p.id in (?1)");
 		jql.setParameter(1, posIds);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
 	}
 	
 	public Agent getAgentByRnId(String rnId) {
-		Query jql = em.get().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
+		Query jql = getEm().createQuery("select a from Agent a,ReturnNote rn where a.id = rn.agent.id and rn.status = '"
 				+ ReturnNoteStatus.DRAFT.toString() + "' and rn.id = ?1");
 		jql.setParameter(1, rnId);
 		List resultList = jql.getResultList();
@@ -438,7 +512,7 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	}
 	
 	public Agent getAgentByInviteCode(String inviteCode) {
-		Query jql = em.get().createQuery("select a from Agent a,ReturnNoteInvitation rni where a.id = rni.agent.id and rni.token = ?1" +
+		Query jql = getEm().createQuery("select a from Agent a,ReturnNoteInvitation rni where a.id = rni.agent.id and rni.token = ?1" +
 				" and not EXISTS (select 1 from ReturnNote rn where rni.token = rn.token)");
 		jql.setParameter(1, inviteCode);
 		List resultList = jql.getResultList();
@@ -481,9 +555,9 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 */
 	public ReturnNoteInfo getReturnNoteInfoByRnId(String rnId) {
 		ReturnNoteInfo rnInfo = new ReturnNoteInfo();
-		ReturnNote rn = em.get().find(ReturnNote.class, rnId);
+		ReturnNote rn = getEm().find(ReturnNote.class, rnId);
 		if (rn != null) {
-			Query jql = em.get().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = (?1)");
+			Query jql = getEm().createQuery("select rnd from ReturnNoteDetail rnd where rnd.rn.id = ?1");
 			jql.setParameter(1, rnId);
 			List<ReturnNoteDetail> rnDetailList = jql.getResultList();
 			
@@ -499,12 +573,37 @@ public class GroupBuyingUnbindDaoImpl extends BaseDaoImpl implements GroupBuying
 	 * @return
 	 * 查回收单列表
 	 */
-	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, PageInfo pageInfo) {
-		String sql = "select rn from ReturnNote rn where upper(rn.rnNumber) like ?1 order by rn.createDate desc";
-		List<Object> params = new ArrayList<Object>();
-		params.add("%" + rnNumber.toUpperCase() + "%");
-		pageInfo = this.findPageInfo(sql, params, pageInfo);
+	public PageInfo getReturnNoteLikeRnNumber(String rnNumber, String status, PageInfo pageInfo) {
+		StringBuffer countSql = new StringBuffer("select count(rn.id) from ReturnNote rn where upper(rn.rnNumber) like :rnNumber");
+		StringBuffer searchSql = new StringBuffer("select rn from ReturnNote rn where upper(rn.rnNumber) like :rnNumber");
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("rnNumber", "%" + rnNumber.toUpperCase() + "%");
+		if (!Tools.isEmptyString(status)) {
+			countSql.append(" and rn.status = :status");
+			searchSql.append(" and rn.status = :status");
+			paramMap.put("status", ReturnNoteStatus.valueOf(status));
+		}
+		searchSql.append(" order by rn.createDate desc");
+		
+		pageInfo = this.findPageInfo(countSql.toString(),searchSql.toString(),paramMap,pageInfo);
 		return pageInfo;
+	}
+	
+	private List<ReturnNoteDetail> getReturnNoteDetailListByPosId(String posId) {
+		Query jql = getEm().createQuery("select rnd from ReturnNoteDetail rnd where rnd.dstatus = '" 
+					+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.posId = ?1");
+		jql.setParameter(1, posId);
+		return jql.getResultList();
+	}
+	
+	private boolean isReadyToReturned(String rnId) {
+		log.debug("rnId : {}", rnId);
+		Query jql = getEm().createQuery("select count(rnd.id) from ReturnNoteDetail rnd where rnd.dstatus = '" 
+				+ PosDeliveryStatus.DELIVERED.toString() + "' and rnd.rn.id = ?1");
+		jql.setParameter(1, rnId);
+		Long count = (Long) jql.getSingleResult();
+		log.debug("count : {}", count);
+		return count != null && count > 0 ? false : true;
 	}
 	
 }

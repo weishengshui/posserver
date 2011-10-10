@@ -3,13 +3,14 @@ package com.chinarewards.qqgbvpn.mgmtui.struts.agent;
 import java.util.List;
 
 import org.apache.struts2.ServletActionContext;
+
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
+import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 
 /**
@@ -33,42 +34,28 @@ public class AgentAction extends BasePagingToolBarAction {
 	private AgentSearchVO agentSearchVO = new AgentSearchVO();
 	
 	private boolean agentIsExist;
+	
+	private PageInfo<AgentVO> pageInfo;
+	
+	private static final int SIZE = 10;
 
 	@Override
 	public String execute(){
-		agentSearchVO.setSize(getPageSize());
-		
-		if(agentSearchVO.getPage() == null){
-			agentSearchVO.setPage(getCurrentPage()==0?1:getCurrentPage());
+		if (pageInfo == null) {
+			pageInfo = new PageInfo<AgentVO>();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(SIZE);
 		}
-		return SUCCESS;
-	}
-	
-	/**
-	 * description：获取列表
-	 * @return
-	 * @time 2011-9-5   下午07:12:24
-	 * @author Seek
-	 */
-	public String agentList(){
-		log.debug("agentAction call list");
-		try{		
-			AgentStore agentStore = getAgentLogic().queryAgent(agentSearchVO);
-			agentVOList = agentStore.getAgentVOList();
-			
-			
-			setCurrentPage(agentSearchVO.getPage());	//当前页
-			setCountTotal(agentStore.getCountTotal());	//总数据量
-			
-			final String urlMark = "{*}";
-			String urlTemplate = super.buildURLTemplate(super.getCurrentPath(), "&", "agentSearchVO.page=", urlMark);
-			
-			setUrlTemplate(urlTemplate);
-			setUrlMark(urlMark);
-		}catch(Exception e){
+		agentSearchVO.setSize(pageInfo.getPageSize());
+		agentSearchVO.setPage(pageInfo.getPageId());
+		
+		try{
+			pageInfo = getAgentLogic().queryAgent(agentSearchVO);
+		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
 		}
+		
 		return SUCCESS;
 	}
 	
@@ -123,6 +110,7 @@ public class AgentAction extends BasePagingToolBarAction {
 			}else{
 				getAgentLogic().update(agentVO);
 			}
+			log.debug("agent add success!");
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -150,8 +138,7 @@ public class AgentAction extends BasePagingToolBarAction {
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		agentLogic = injector.getInstance(AgentLogic.class);
+		agentLogic = super.getInstance(AgentLogic.class);
 		return agentLogic;
 	}
 	
@@ -194,5 +181,13 @@ public class AgentAction extends BasePagingToolBarAction {
 	public void setAgentIsExist(boolean agentIsExist) {
 		this.agentIsExist = agentIsExist;
 	}
+	
+	public PageInfo getPageInfo() {
+		return pageInfo;
+	}
 
+	public void setPageInfo(PageInfo pageInfo) {
+		this.pageInfo = pageInfo;
+	}
+	
 }

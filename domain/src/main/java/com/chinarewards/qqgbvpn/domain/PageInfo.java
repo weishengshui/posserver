@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PageInfo<T> implements Serializable {
@@ -77,6 +78,9 @@ public class PageInfo<T> implements Serializable {
     }
 
     public List<T> getItems() {
+    	if(items == null){
+    		items = new ArrayList();
+    	}
         return items;
     }
 

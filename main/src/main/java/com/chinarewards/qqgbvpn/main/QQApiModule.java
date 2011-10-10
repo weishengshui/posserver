@@ -6,6 +6,8 @@ import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.GroupBuyingDaoImpl;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.impl.PosDaoImpl;
+import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
+import com.chinarewards.qqgbvpn.main.logic.firmware.impl.FirmwareManagerImpl;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.login.impl.LoginManagerImpl;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
@@ -19,10 +21,14 @@ public class QQApiModule extends AbstractModule {
 	@Override
 	protected void configure() {
 
-		bind(GroupBuyingService.class).to(GroupBuyingServiceImpl.class).in(Singleton.class);
+		bind(GroupBuyingService.class).to(GroupBuyingServiceImpl.class).in(
+				Singleton.class);
 
-		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class).in(Singleton.class);
+		bind(GroupBuyingManager.class).to(GroupBuyingManagerImpl.class).in(
+				Singleton.class);
 		bind(LoginManager.class).to(LoginManagerImpl.class);
+		bind(FirmwareManager.class).to(FirmwareManagerImpl.class).in(
+				Singleton.class);
 
 		bind(GroupBuyingDao.class).to(GroupBuyingDaoImpl.class);
 

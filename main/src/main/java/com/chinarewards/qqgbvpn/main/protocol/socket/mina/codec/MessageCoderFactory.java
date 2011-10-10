@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
-import com.google.inject.Injector;
 
 public class MessageCoderFactory implements ProtocolCodecFactory {
 
@@ -27,20 +26,17 @@ public class MessageCoderFactory implements ProtocolCodecFactory {
 
 	private ProtocolDecoder decoder;
 
-	private Injector injector;
-	
 	protected final CmdCodecFactory cmdCodecFactory;
 
-	public MessageCoderFactory(Injector injector, CmdCodecFactory cmdCodecFactory) {
-		this(charsetDefault, injector, cmdCodecFactory);
+	public MessageCoderFactory(CmdCodecFactory cmdCodecFactory) {
+		this(charsetDefault, cmdCodecFactory);
 	}
 
-	public MessageCoderFactory(Charset charset, Injector injector, CmdCodecFactory cmdCodecFactory) {
+	public MessageCoderFactory(Charset charset, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
-		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
-		encoder = new MessageEncoder(charset, this.injector, cmdCodecFactory);
-		decoder = new MessageDecoder(charset, this.injector, cmdCodecFactory);
+		encoder = new MessageEncoder(charset, this.cmdCodecFactory);
+		decoder = new MessageDecoder(charset, this.cmdCodecFactory);
 	}
 
 	@Override

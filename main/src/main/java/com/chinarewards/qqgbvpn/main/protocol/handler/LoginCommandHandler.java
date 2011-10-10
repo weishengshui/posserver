@@ -6,12 +6,13 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.config.PosNetworkProperties;
+import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
@@ -43,9 +44,17 @@ public class LoginCommandHandler implements ServiceHandler {
 				+ bodyMessage);
 		LoginResponseMessage loginResponseMessage = null;
 		try {
-			loginResponseMessage = loginManager.login(bodyMessage);
+			//创建一个新的challenge
+			byte[] newChallenge = ChallengeUtil.generateChallenge();
+			//获取旧的challenge
+			byte[] oldChallenge = (byte[]) request.getSession().getAttribute(ServiceSession.CHALLENGE_SESSION_KEY);
+			
+			loginResponseMessage = loginManager.login(bodyMessage, newChallenge, oldChallenge);
+			
+			//save to session
+			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			log.warn("An error occurred when handling command", e);
 			loginResponseMessage
 					.setChallenge(new byte[ProtocolLengths.CHALLENGE_RESPONSE]);
 			loginResponseMessage = new LoginResponseMessage();
@@ -56,9 +65,8 @@ public class LoginCommandHandler implements ServiceHandler {
 				.getPosCode()) {
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("posId", ((LoginRequestMessage) bodyMessage).getPosId());
-			
-			
-			
+
+			// initialize groupon cache after login.
 			String serverKey = configuration.getString("txserver.key");
 			log.debug("LoginCommandHandler======execute==serverKey=:"
 					+ serverKey);

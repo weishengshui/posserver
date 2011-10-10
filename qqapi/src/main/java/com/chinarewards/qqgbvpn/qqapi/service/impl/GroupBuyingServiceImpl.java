@@ -1,10 +1,16 @@
 package com.chinarewards.qqgbvpn.qqapi.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.http.HttpResponse;
+import org.apache.http.params.CoreProtocolPNames;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -20,7 +26,9 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 
 	final Configuration configuration;
 	
-	//Logger log = LoggerFactory.getLogger(getClass());
+	private static final String charset = "gbk";
+	
+	Logger log = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 
@@ -59,10 +67,11 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		
 		String url = configuration.getString("qq.groupbuy.url.groupBuyingSearchGroupon");
 		//log.trace("URL for Groupon Searching: qq.groupbuy.url.groupBuyingSearchGroupon={}", url);
+		HashMap<String, Object> searchResult = getResult(url,postParams,charset,"//groupon/item",GroupBuyingSearchListVO.class);
 		
-		HashMap<String, Object> searchResult = GroupBuyingUtil.parseXML(
+		/*HashMap<String, Object> searchResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
-				GroupBuyingSearchListVO.class);
+				GroupBuyingSearchListVO.class);*/
 		return searchResult;
 	}
 
@@ -99,9 +108,12 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
 		String url = configuration.getString("qq.groupbuy.url.groupBuyingValidationUrl");
-		HashMap<String, Object> validateResult = GroupBuyingUtil.parseXML(
+		
+		HashMap<String, Object> validateResult = getResult(url,postParams,charset,"//groupon",GroupBuyingValidateResultVO.class);
+		
+		/*HashMap<String, Object> validateResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon",
-				GroupBuyingValidateResultVO.class);
+				GroupBuyingValidateResultVO.class);*/
 		return validateResult;
 	}
 
@@ -141,9 +153,28 @@ public class GroupBuyingServiceImpl implements GroupBuyingService {
 		postParams.put("sign", GroupBuyingUtil.MD5(sb.toString()));
 		// 发送POST请求，并得到返回数据
 		String url = configuration.getString("qq.groupbuy.url.groupBuyingUnbindPosUrl");
-		HashMap<String, Object> unbindResult = GroupBuyingUtil.parseXML(
+		
+		HashMap<String, Object> unbindResult = getResult(url,postParams,charset,"//groupon/item",GroupBuyingUnbindVO.class);
+		
+		/*HashMap<String, Object> unbindResult = GroupBuyingUtil.parseXML(
 				GroupBuyingUtil.sendPost(url, postParams), "//groupon/item",
-				GroupBuyingUnbindVO.class);
+				GroupBuyingUnbindVO.class);*/
 		return unbindResult;
+	}
+	
+	private HashMap<String, Object> getResult(String url, HashMap<String, Object> postParams, String charset, String nodeDir, Class bean) throws ParseXMLException {
+		HashMap<String, Object> result = new HashMap<String, Object>();
+		try {
+			HttpResponse httpResponse = GroupBuyingUtil.sendPost(url, postParams,charset);
+			String contentCharset = httpResponse.getParams().getParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
+			InputStream in = httpResponse.getEntity().getContent();
+			String str = GroupBuyingUtil.getStringByInputStream(in,contentCharset);
+			String xmlEncoding = GroupBuyingUtil.getXMLEncodingByString(str);
+			ByteArrayInputStream bin = new ByteArrayInputStream(str.getBytes(xmlEncoding));
+			result = GroupBuyingUtil.parseXML(bin, nodeDir, bean);
+		} catch (Exception e) {
+			throw new ParseXMLException(e);
+		}
+		return result;
 	}
 }

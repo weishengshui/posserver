@@ -20,13 +20,23 @@ public class PagerTag extends SimpleTagSupport {
 	public void doTag() throws JspException, IOException {
 		super.doTag();
 		JspWriter out  = this.getJspContext().getOut();
-		out.print("页&nbsp;" + pageInfo.getPageId() + "/" + pageInfo.getPageCount() + "&nbsp;&nbsp;");
-		out.print("共&nbsp;" + pageInfo.getRecordCount() + "&nbsp;&nbsp;");
+		out.print("<div style='margin-top: 15px;'  class='page'>");
 		if (pageInfo.getPageId() > 1) {
-			out.print("<a href='javascript:goPage(" + (pageInfo.getPageId() - 1) + ");'>上一页</a>&nbsp;&nbsp;");
+			out.print("<a href='javascript:goPage(1);' class='home'>首页</a>&nbsp;&nbsp;");
+			out.print("<a href='javascript:goPage(" + (pageInfo.getPageId() - 1) + ");' class='up'> << 上一页</a>&nbsp;&nbsp;");
+		} else {
+			out.print("<span>首页</span>&nbsp;&nbsp;");
+			out.print("<span> << 上一页</span>&nbsp;&nbsp;");
 		}
 		if (pageInfo.getPageId() < pageInfo.getPageCount()) {
-			out.print("<a href='javascript:goPage(" + (pageInfo.getPageId() + 1) + ");'>下一页</a>");
+			out.print("<a href='javascript:goPage(" + (pageInfo.getPageId() + 1) + ");' class='home'>下一页 >> </a>&nbsp;&nbsp;");
+			out.print("<a href='javascript:goPage(" + pageInfo.getPageCount() + ");' class='up'>末页</a>&nbsp;&nbsp;");
+		} else {
+			out.print("<span>下一页 >> </span>&nbsp;&nbsp;");
+			out.print("<span>末页</span>&nbsp;&nbsp;");
 		}
+		out.print("页&nbsp;" + pageInfo.getPageId() + "/" + pageInfo.getPageCount() + "&nbsp;&nbsp;");
+		out.print("共&nbsp;" + pageInfo.getRecordCount() + "&nbsp;&nbsp;条&nbsp;&nbsp;");
+		out.print("</div>");
 	}
 }

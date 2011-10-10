@@ -1,14 +1,59 @@
-<configuration>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<configuration scan="true" debug="false">
+
+<!--
+	For more configuration information and examples, see the Logback 
+	website: http://logback.qos.ch/manual/configuration.html 
+ -->
+
+
+	<!-- ================================= -->
+	<!-- Preserve messages in a local file -->
+	<!-- ================================= -->
+	
+	<!-- A time/date based rolling appender -->
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	
+		<file>${POSNET_HOME}/log/posnet2.log</file>
+		
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${POSNET_HOME}/log/posnet2.log.%d{yyyy-MM-dd}</fileNamePattern>
+		</rollingPolicy>
+		
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%date{ISO8601} [%-5p] %-27.27c{1} - %m%n</Pattern>
+			<Pattern>%date{ISO8601} [%-16thread] [%-5p] %-27.27c{1} - %m%n</Pattern>
 		</layout>
 	</appender>
+	
 
+	<!-- ============================== -->
+	<!-- Appends message to the console -->
+	<!-- ============================== -->
+	
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoder>
+			<pattern>%date{ISO8601} [%-16thread] [%-5p] %-27.27c{1} - %m%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!--
+		Logger configurations 
+	 -->
+
+	<!-- Lower this level to view more POS server related log. -->
 	<logger name="com.chinarewards" level="INFO" />
+	
+	<!-- Since hibernate produce too much INFO level information -->
 	<logger name="org.hibernate" level="WARN" />
 
 	<root level="INFO">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
 	</root>
+	
 </configuration>

@@ -4,7 +4,7 @@
 package com.chinarewards.qqgbvpn.main;
 
 import java.net.InetSocketAddress;
-import java.util.Properties;
+import java.util.Iterator;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.chinarewards.qqgbvpn.config.ConfigReader;
-import com.chinarewards.qqgbvpn.config.DatabaseProperties;
 import com.chinarewards.qqgbvpn.config.HardCodedConfigModule;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
@@ -52,7 +51,7 @@ public class BootStrap {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
-	private static final String APP_NAME = "POSv2 Server";
+	private static final String APP_NAME = "POSNet2 Server";
 
 	/**
 	 * Container for all dependency injection required objects.
@@ -116,8 +115,9 @@ public class BootStrap {
 		// print application version.
 		AppInfo appInfo = AppInfo.getInstance();
 		System.out.println(APP_NAME + ": version " + appInfo.getVersionString()
-				+ "(build: " + appInfo.getBuildNumber() + ")");
-
+				+ " (build: " + appInfo.getBuildNumber() + ")");
+		System.out.println("Build: ID=" + appInfo.getBuildId() + ", Tag=" + appInfo.getBuildTag()
+				+ ", Job=" + appInfo.getBuildJobName() + ", Source Branch=" + appInfo.getBuildCvsBranch());
 	}
 
 	/**
@@ -138,6 +138,8 @@ public class BootStrap {
 
 		// build the configuration object.
 		buildConfiguration();
+		
+		printConfigValues(configuration);
 
 		// print some text.
 		log.info("Bootstrapping...");
@@ -201,9 +203,7 @@ public class BootStrap {
 
 		// print version and quit.
 		if (cl.hasOption("version")) {
-			AppInfo appInfo = AppInfo.getInstance();
-			System.out.println(BootStrap.APP_NAME + " version "
-					+ appInfo.getVersionString());
+			printAppVersion();
 			System.exit(0);
 		}
 
@@ -239,6 +239,26 @@ public class BootStrap {
 							+ "POSNET_HOME environment variable for the home directory, or -d <home_dir> ");
 		}
 
+	}
+
+	/**
+	 * Print configuration.
+	 */
+	private void printConfigValues(Configuration configuration) {
+		// get system configuration
+		@SuppressWarnings("rawtypes")
+		Iterator iter = configuration.getKeys();
+		if (configuration.isEmpty()) {
+			log.warn("No configuration values, it is weired!");
+		} else {
+			log.debug("System configuration:");
+			while (iter.hasNext()) {
+				String key = (String) iter.next();
+				log.debug("- {}: {}", key, configuration.getProperty(key));
+			}
+		}
+
+		// TODO print command mapping
 	}
 
 	@SuppressWarnings("static-access")
@@ -294,7 +314,7 @@ public class BootStrap {
 		Module serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
-		log.debug("Bootstraping Guice injector...");
+		log.info("Creating Guice injector. If it is stucked, there is a chance the database is down.");
 		injector = Guice.createInjector(new AppModule(), new ServerModule(),
 				new HardCodedConfigModule(configuration), jpaModule, serviceHandlerModule);
 
@@ -306,7 +326,8 @@ public class BootStrap {
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
 		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
 		
-		return Modules.override(new ServiceHandlerModule(configuration)).with(new ServiceHandlerGuiceModule(mapping));
+		return Modules.override(new ServiceHandlerModule(configuration)).with(
+				new ServiceHandlerGuiceModule(mapping));
 		
 	}
 

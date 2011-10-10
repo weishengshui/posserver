@@ -24,35 +24,46 @@
 		<action name="createInvite"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="createInvite">
-			<result name="success" type="tiles">unbind.sendURLSuccess</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">sendURLSuccess</param>
+				<param name="agentName">${agentName}</param>
+				<param name="sendTime">${passTime}</param>
+			</result>
 			<result name="error" type="tiles">unbind.sendURL</result>
-			<result name="invalid.token" type="tiles">unbind.sendURL</result>
-        	<interceptor-ref name="defaultStack"/>  
-            <interceptor-ref name="token">  
-                 <param name="includeMethods">createInvite</param>    
-            </interceptor-ref>  
+		</action>
+		<action name="sendURLSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="sendURLSuccess">
+			<result name="success" type="tiles">unbind.sendURLSuccess</result>
+		</action>
+		<action name="confirmSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="confirmSuccess">
+			<result name="success" type="tiles">unbind.confirmSuccess</result>
 		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
-			<result name="success" type="tiles">unbind.confirmSuccess</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${passTime}</param>
+			</result>
 			<result name="error" type="tiles">unbind.list</result>
-			<result name="invalid.token" type="tiles">unbind.list</result>
-        	<interceptor-ref name="defaultStack"/>  
-            <interceptor-ref name="token">  
-                 <param name="includeMethods">confirmRnNumber</param>    
-            </interceptor-ref>
 		</action>
 		<action name="confirmAllRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmAllRnNumber">
-			<result name="success" type="tiles">unbind.confirmSuccess</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${passTime}</param>
+			</result>
 			<result name="error" type="tiles">unbind.list</result>
-			<result name="invalid.token" type="tiles">unbind.list</result>
-        	<interceptor-ref name="defaultStack"/>  
-            <interceptor-ref name="token">  
-                 <param name="includeMethods">confirmAllRnNumber</param>    
-            </interceptor-ref>
 		</action>
 		<action name="posSearch"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
@@ -62,12 +73,16 @@
 		<action name="unbind"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="unbind">
+			<result name="success" type="redirectAction">
+				<param name="actionName">unbindSuccess</param>
+				<param name="successMsg">${successMsg}</param>
+				<param name="errorMsg">${errorMsg}</param>
+			</result>
+		</action>
+		<action name="unbindSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="unbindSuccess">
 			<result name="success" type="tiles">unbind.unbind</result>
-			<result name="invalid.token" type="tiles">unbind.unbind</result>
-        	<interceptor-ref name="defaultStack"/>  
-            <interceptor-ref name="token">  
-                 <param name="includeMethods">unbind</param>    
-            </interceptor-ref>
 		</action>
 		<action name="sendURL"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
@@ -97,10 +112,23 @@
 			method="request">
 			<result name="success">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
+		<action name="confirmSuccess"
+			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
+			method="confirmSuccess">
+			<result name="success">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
+		</action>
 		<action name="confirmRnNumber"
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.UnbindAction"
 			method="confirmRnNumber">
-			<result name="success">/WEB-INF/jsp/unbind/confirmSuccess.jsp</result>
+			<result name="success" type="redirectAction">
+				<param name="actionName">confirmSuccess</param>
+				<param name="posCount">${posCount}</param>
+				<param name="rnId">${rnId}</param>
+				<param name="rnNum">${rnNum}</param>
+				<param name="rnTime">${passTime}</param>
+				<param name="isAgent">${isAgent}</param>
+				<param name="errorMsg">${errorMsg}</param>
+			</result>
 			<result name="error">/WEB-INF/jsp/unbind/agentPosList.jsp</result>
 		</action>
 		<action name="goPage"

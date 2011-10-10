@@ -45,6 +45,13 @@
 			<fileMode>0644</fileMode>
 			<outputDirectory>db</outputDirectory>
 		</fileSet>
+		<!-- Newly added schema generated from hibernate tools -->
+		<fileSet>
+			<directory>target/hibernate3/sql</directory>
+			<includes />
+			<fileMode>0644</fileMode>
+			<outputDirectory>db/complete</outputDirectory>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>

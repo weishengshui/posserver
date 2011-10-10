@@ -2,11 +2,14 @@ package com.chinarewards.qqgbvpn.mgmtui.logic.pos.impl;
 
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
@@ -27,7 +30,7 @@ public class PosLogicImpl implements PosLogic {
 	
 	@Transactional
 	@Override
-	public void deletePosById(String id) throws ParamsException{
+	public void deletePosById(String id) throws ParamsException, OptimisticLockException{
 		
 		// TODO
 		
@@ -35,20 +38,19 @@ public class PosLogicImpl implements PosLogic {
 	}
 
 	@Override
-	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO,
-			PaginationTools paginationTools) {
-		return posDao.get().queryPos(posSearchVO, paginationTools);
+	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO) {
+		return posDao.get().queryPos(posSearchVO);
 	}
 
 	@Transactional
 	@Override
-	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException{
+	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException, OptimisticLockException{
 		return posDao.get().savePos(posVO);
 	}
 
 	@Transactional
 	@Override
-	public void updatePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException{
+	public void updatePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException, OptimisticLockException{
 		posDao.get().updatePos(posVO);
 	}
 
@@ -60,10 +62,19 @@ public class PosLogicImpl implements PosLogic {
 
 	@Transactional
 	@Override
-	public void updatePosStatusToWorking(List<String> posIds) {
+	public void updatePosStatusToWorking(List<String> posIds) throws OptimisticLockException{
 		posDao.get().updatePosStatusToWorking(posIds);
 	}
 
-	
+	@Transactional
+	@Override
+	public void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException {
+		posDao.get().createPosAssignment(agentId, posIds);
+	}
+
+	@Override
+	public PosVO getPosByPosNum(String posNum) throws ParamsException,PosNotExistException {
+		return posDao.get().getPosByPosNum(posNum);
+	}
 
 }

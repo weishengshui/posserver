@@ -32,6 +32,9 @@ public class PosAdapter {
 		posVO.setSecret(pos.getSecret());
 		posVO.setSimPhoneNo(pos.getSimPhoneNo());
 		posVO.setSn(pos.getSn());
+		posVO.setVersion(pos.getVersion());
+		posVO.setFirmware(pos.getFirmware());
+		posVO.setUpgradeRequired(pos.getUpgradeRequired());
 		return posVO;
 		
 	}
@@ -63,6 +66,9 @@ public class PosAdapter {
 		pos.setSecret(posVO.getSecret()==null?null:posVO.getSecret().trim());
 		pos.setSimPhoneNo(posVO.getSimPhoneNo()==null?null:posVO.getSimPhoneNo().trim());
 		pos.setSn(posVO.getSn()==null?null:posVO.getSn().trim());
+		pos.setVersion(posVO.getVersion());
+		pos.setFirmware(posVO.getFirmware()==null?null:posVO.getFirmware().trim());
+		pos.setUpgradeRequired(posVO.getUpgradeRequired());
 		return pos;
 	}
 }

@@ -5,17 +5,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.NoResultException;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.core.BaseDao;
+import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.PosAssignment;
 import com.chinarewards.qqgbvpn.domain.event.DomainEntity;
 import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
@@ -24,12 +26,12 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.adapter.pos.PosAdapter;
 import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -40,7 +42,7 @@ import com.google.inject.Provider;
  * @author huangwei
  * 
  */
-public class PosDaoImpl implements PosDao {
+public class PosDaoImpl extends BaseDao implements PosDao {
 
 	Logger log = LoggerFactory.getLogger(PosDaoImpl.class);
 
@@ -87,157 +89,94 @@ public class PosDaoImpl implements PosDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO,
-			PaginationTools paginationTools) {
-		log
-				.trace(
-						"calling queryPos start and params is  posSearchVO:({}),paginationTools:({})",
-						new Object[] { Tools.objToString(posSearchVO),
-								Tools.objToString(paginationTools) });
-		int recordCount = this.countPos(posSearchVO);
-		PageInfo<PosVO> pageinfo = new PageInfo<PosVO>();
-		pageinfo.setRecordCount(recordCount);
+	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO) {
+		log.trace(
+			"calling queryPos start and params is  posSearchVO:({})",
+			new Object[] { Tools.objToString(posSearchVO) });
+		
+		//int recordCount = this.countPos(posSearchVO);
+		PageInfo pageinfo = new PageInfo();
+		//pageinfo.setRecordCount(recordCount);
 
-		StringBuffer hql = new StringBuffer();
-		hql.append("SELECT p FROM Pos p WHERE 1=1 ");
+		StringBuffer searchSql = new StringBuffer();
+		searchSql.append("SELECT p FROM Pos p WHERE 1=1 ");
+		
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("SELECT count(p.id) FROM Pos p WHERE 1=1 ");
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 
 		log.debug("posSearchVO============:" + posSearchVO);
 
 		if (!Tools.isEmptyString(posSearchVO)) {
 			if (!Tools.isEmptyString(posSearchVO.getDstatus())) {
-				hql.append(" AND p.dstatus = :dstatus ");
+				searchSql.append(" AND p.dstatus = :dstatus ");
+				countSql.append(" AND p.dstatus = :dstatus ");
 				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO
 						.getDstatus()));
 			}
 			if (!Tools.isEmptyString(posSearchVO.getIstatus())) {
-				hql.append(" AND p.istatus = :istatus ");
+				searchSql.append(" AND p.istatus = :istatus ");
+				countSql.append(" AND p.istatus = :istatus ");
 				paramMap.put("istatus", PosInitializationStatus
 						.valueOf(posSearchVO.getIstatus()));
 			}
 			if (!Tools.isEmptyString(posSearchVO.getModel())) {
-				hql.append(" AND lower(p.model) like :model ");
+				searchSql.append(" AND lower(p.model) like :model ");
+				countSql.append(" AND lower(p.model) like :model ");
 				paramMap.put("model", "%"
 						+ posSearchVO.getModel().toLowerCase().trim() + "%");
 			}
 			if (!Tools.isEmptyString(posSearchVO.getOstatus())) {
-				hql.append(" AND p.ostatus = :ostatus ");
+				searchSql.append(" AND p.ostatus = :ostatus ");
+				countSql.append(" AND p.ostatus = :ostatus ");
 				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO
 						.getOstatus().trim()));
 			}
 			if (!Tools.isEmptyString(posSearchVO.getPosId())) {
-				hql.append(" AND lower(p.posId) like :posid ");
+				searchSql.append(" AND lower(p.posId) like :posid ");
+				countSql.append(" AND lower(p.posId) like :posid ");
 				paramMap.put("posid", "%"
 						+ posSearchVO.getPosId().toLowerCase().trim() + "%");
 			}
 			if (!Tools.isEmptyString(posSearchVO.getSecret())) {
-				hql.append(" AND lower(p.secret) like :secret ");
+				searchSql.append(" AND lower(p.secret) like :secret ");
+				countSql.append(" AND lower(p.secret) like :secret ");
 				paramMap.put("secret", "%"
 						+ posSearchVO.getSecret().toLowerCase().toLowerCase()
 								.trim() + "%");
 			}
 			if (!Tools.isEmptyString(posSearchVO.getSimPhoneNo())) {
-				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				searchSql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
+				countSql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
 				paramMap.put("simPhoneNo", "%"
 						+ posSearchVO.getSimPhoneNo().toLowerCase().trim()
 						+ "%");
 			}
 			if (!Tools.isEmptyString(posSearchVO.getSn())) {
-				hql.append(" AND lower(p.sn) like :sn ");
+				searchSql.append(" AND lower(p.sn) like :sn ");
+				countSql.append(" AND lower(p.sn) like :sn ");
 				paramMap.put("sn", "%" + posSearchVO.getSn().toLowerCase()
 						+ "%");
 			}
 		}
-
-		Query query = getEm().createQuery(hql.toString());
-		log.debug("hql========:" + hql.toString());
-		for (Entry<String, Object> entry : paramMap.entrySet()) {
-			query = query.setParameter(entry.getKey(), entry.getValue());
-			log.debug("key===({})value===({})", new Object[] { entry.getKey(),
-					entry.getValue() });
-		}
-		if (paginationTools != null) {
-			query = query.setFirstResult(paginationTools.getStartIndex())
-					.setMaxResults(paginationTools.getCountOnEachPage());
-		}
-		List<Pos> posList = query.getResultList();
-		List<PosVO> posVOList = new ArrayList<PosVO>();
+		pageinfo = this.findPageInfo(countSql.toString(), searchSql.toString(), paramMap, posSearchVO.getPage(), posSearchVO.getSize());
+		
+		List<Pos> posList = pageinfo.getItems();
+		
+		List<PosVO> posVoList = new ArrayList<PosVO>();
+		
 		for (Pos pos : posList) {
 			PosVO posVO = posAdapter.get().convertToPosVO(pos);
-			posVOList.add(posVO);
+			posVoList.add(posVO);
 		}
-		pageinfo.setItems(posVOList);
+		
+		pageinfo.setItems(posVoList);
+		
 		log.trace("calling queryPos end and result is :({})", Tools
 				.objToString(pageinfo));
 		return pageinfo;
 	}
-
-	private int countPos(PosSearchVO posSearchVO) {
-		log.trace("calling countPos start and params is  posSearchVO:({})",
-				Tools.objToString(posSearchVO));
-		StringBuffer hql = new StringBuffer();
-		hql.append("SELECT count(p.id) FROM Pos p WHERE 1=1 ");
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-
-		log.debug("posSearchVO======count======:" + posSearchVO);
-		if (!Tools.isEmptyString(posSearchVO)) {
-			if (!Tools.isEmptyString(posSearchVO.getDstatus())) {
-				hql.append(" AND p.dstatus = :dstatus ");
-				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO
-						.getDstatus()));
-			}
-			if (!Tools.isEmptyString(posSearchVO.getIstatus())) {
-				hql.append(" AND p.istatus = :istatus ");
-				paramMap.put("istatus", PosInitializationStatus
-						.valueOf(posSearchVO.getIstatus()));
-			}
-			if (!Tools.isEmptyString(posSearchVO.getModel())) {
-				hql.append(" AND lower(p.model) like :model ");
-				paramMap.put("model", "%"
-						+ posSearchVO.getModel().toLowerCase().trim() + "%");
-			}
-			if (!Tools.isEmptyString(posSearchVO.getOstatus())) {
-				hql.append(" AND p.ostatus = :ostatus ");
-				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO
-						.getOstatus().trim()));
-			}
-			if (!Tools.isEmptyString(posSearchVO.getPosId())) {
-				hql.append(" AND lower(p.posId) like :posId ");
-				paramMap.put("posId", "%"
-						+ posSearchVO.getPosId().toLowerCase().trim() + "%");
-			}
-			if (!Tools.isEmptyString(posSearchVO.getSecret())) {
-				hql.append(" AND lower(p.secret) like :secret ");
-				paramMap.put("secret", "%"
-						+ posSearchVO.getSecret().toLowerCase().toLowerCase()
-								.trim() + "%");
-			}
-			if (!Tools.isEmptyString(posSearchVO.getSimPhoneNo())) {
-				hql.append(" AND lower(p.simPhoneNo) like :simPhoneNo ");
-				paramMap.put("simPhoneNo", "%"
-						+ posSearchVO.getSimPhoneNo().toLowerCase().trim()
-						+ "%");
-			}
-			if (!Tools.isEmptyString(posSearchVO.getSn())) {
-				hql.append(" AND lower(p.sn) like :sn ");
-				paramMap.put("sn", "%" + posSearchVO.getSn().toLowerCase()
-						+ "%");
-			}
-		}
-		log.debug("hql====count====:" + hql.toString());
-		log.debug("paramMap.keySet().size()==============:"
-				+ paramMap.keySet().size());
-		Query query = getEm().createQuery(hql.toString());
-		for (Entry<String, Object> entry : paramMap.entrySet()) {
-			query = query.setParameter(entry.getKey(), entry.getValue());
-			log.debug("count   key===({})value===({})", new Object[] {
-					entry.getKey(), entry.getValue() });
-		}
-		int count = ((Long) query.getSingleResult()).intValue();
-		log.trace("calling queryPos end and result is :({})", count);
-		return count;
-	}
-
+	
 	@Override
 	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,
 			ParamsException, SimPhoneNoIsExitsException {
@@ -398,6 +337,37 @@ public class PosDaoImpl implements PosDao {
 
 	}
 	
+	@Override
+	public PosVO getPosByPosNum(String posNum) throws ParamsException, PosNotExistException {
+		log.trace("calling getPosByPosNum start and params is {}", posNum);
+		if (Tools.isEmptyString(posNum)) {
+			throw new ParamsException("pos number is null");
+		}
+		
+		Pos pos = null;
+		
+		try{
+			pos = (Pos) getEm().createQuery("FROM Pos WHERE posId=:posNum")
+					.setParameter("posNum", posNum)
+					.getSingleResult();
+		}catch (NoResultException e) {
+			throw new PosNotExistException("POS(posNum=" + posNum + ") not existed!");
+		}
+		
+		
+		if (pos != null) {
+			PosVO posVO = posAdapter.get().convertToPosVO(pos);
+			if(pos.getDstatus() == PosDeliveryStatus.DELIVERED){
+				posVO.setDeliveryAgent(getDeliveryAgentByPos(pos.getId()));
+			}
+			posVO.setCreateAt(this.getPosCreateAtById(pos.getId()));
+			posVO.setLastModifyAt(this.getPosLastModifyAtById(pos.getId()));
+			return posVO;
+		} else {
+			return null;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	private Date getPosCreateAtById(String entityId){
 		String hql = "select j.ts from Journal j where j.entityId = :entityId and j.event = :event";
@@ -430,6 +400,21 @@ public class PosDaoImpl implements PosDao {
 			return list.get(0);
 		}else{
 			return null;
+		}
+	}
+
+	@Override
+	public void createPosAssignment(String agentId, List<String> posIds) throws PosNotExistException {
+		Agent agent = getEm().find(Agent.class, agentId);
+		for (String posId : posIds) {
+			Pos pos = getEm().find(Pos.class, posId);
+			if (pos == null) {
+				throw new PosNotExistException("pos id=" + posId + " not found");
+			}
+			PosAssignment pa = new PosAssignment();
+			pa.setAgent(agent);
+			pa.setPos(pos);
+			getEm().persist(pa);
 		}
 	}
 

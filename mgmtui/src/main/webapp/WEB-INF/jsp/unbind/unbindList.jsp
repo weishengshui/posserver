@@ -11,8 +11,7 @@
 <s:if test="errorMsg!=null">
 <b>${errorMsg}</b>
 </s:if>
-<s:form action="search" namespace="/unbind" method="Post" id="listForm">
-<s:token/>
+<s:form action="search" namespace="/unbind" method="Get" id="listForm">
 <s:hidden name="agentId" id="agentId" />
 <s:hidden name="posIds" id="posIds" />
 <s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
@@ -30,29 +29,34 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td></td>
-		<td class="td_title">posId</td>
-		<td class="td_title">simPhoneNo</td>
-		<td class="td_title">sn</td>
+		<td class="td_title">POS机编号</td>
+		<td class="td_title">厂商编号</td>
+		<td class="td_title">型号</td>
+		<td class="td_title">电机号码</td>
+		<td class="td_title">交付状态</td>
 	</tr>
 	<s:iterator value="pageInfo.items" id="list">
 	<tr>
 		<td><input type="checkbox" name="posId" value="<s:property value="#list.id" />" onclick="ckPosId(this)"/></td>
 		<td><s:property value="#list.posId" /></td>
+		<td><s:property value="#list.sn" /></td>	<%-- 厂商编号 --%>
+		<td><s:property value="#list.model" /></td>
 		<td><s:property value="#list.simPhoneNo" /></td>
-		<td><s:property value="#list.sn" /></td>
+		<td>
+			<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
+				已交付
+			</s:if>
+			<s:elseif test="#list.dstatus != null && #list.dstatus.toString() == 'RETURNED'">
+				已回收
+			</s:elseif>	
+		</td>
 	</tr>
 	</s:iterator>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><p:page pageInfo="${pageInfo}" /></td>
+		<td colspan="6" class="td_pageInfo"><p:page pageInfo="${pageInfo}" /></td>
 	</tr>
 	<tr>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><button type="button" onclick="confirmAllRnNumber()">全部回收</button>　　<button type="button" onclick="confirmRnNumber()">回收</button></td>
+		<td colspan="6" class="td_pageInfo"><button type="button" onclick="confirmAllRnNumber()">全部回收</button>　　<button type="button" onclick="confirmRnNumber()">回收</button></td>
 	</tr>
 </table>
 </s:if>
@@ -81,16 +85,20 @@
 			alert("请选择要回收的POS机!");
 			return;
 		}
-		document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
-		var formObj = document.getElementById("listForm");
-		formObj.action = "${ctx}/unbind/confirmRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收以选中的POS机吗？")) {
+			document.getElementById("posIds").value = posIds.substring(0,posIds.length-1);
+			var formObj = document.getElementById("listForm");
+			formObj.action = "${pageContext.request.contextPath}/unbind/confirmRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function confirmAllRnNumber() {
-		var formObj = document.getElementById("listForm");
-		formObj.action = "${ctx}/unbind/confirmAllRnNumber";
-		formObj.submit();
+		if (confirm("确定要回收所有的POS机吗？")) {
+			var formObj = document.getElementById("listForm");
+			formObj.action = "${pageContext.request.contextPath}/unbind/confirmAllRnNumber";
+			formObj.submit();
+		}
 	}
 	
 	function ckPosId(obj) {
@@ -106,7 +114,7 @@
 	function goPage(pageId) {
 		var formObj = document.getElementById("listForm");
 		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${ctx}/unbind/goPage";
+		formObj.action = "${pageContext.request.contextPath}/unbind/goPage";
 		formObj.submit();
 	}
 	

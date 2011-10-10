@@ -1,7 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -10,16 +9,8 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.common.Tools;
-import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
-import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.google.inject.Injector;
 
 public class MessageDecoder extends CumulativeProtocolDecoder {
 
@@ -27,134 +18,118 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	private Charset charset;
 
-	private Injector injector;
-
 	protected CmdCodecFactory cmdCodecFactory;
+	
+	/**
+	 * The maximum allowed message size (the whole message)
+	 */
+	private long maxMessageSize = 1024 * 100;
 
-	public MessageDecoder(Charset charset, Injector injector,
-			CmdCodecFactory cmdCodecFactory) {
+	public MessageDecoder(Charset charset, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
-		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
 	}
+	
+	
+	/**
+	 * @return the maxMessageSize
+	 */
+	public long getMaxMessageSize() {
+		return maxMessageSize;
+	}
 
+	/**
+	 * @param maxMessageSize the maxMessageSize to set
+	 */
+	public void setMaxMessageSize(long maxMessageSize) {
+		if (maxMessageSize <=0) {
+			throw new IllegalArgumentException("Maximum message should be larger than zero");
+		}
+		this.maxMessageSize = maxMessageSize;
+	}
+
+
+
+	/**
+	 * 
+	 * @see http 
+	 *      ://mina.apache.org/report/trunk/apidocs/org/apache/mina/filter/codec
+	 *      /CumulativeProtocolDecoder.html for the usage.
+	 */
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 
-		log.debug("session.getId()=======:" + session.getId());
-		log.debug("MessageDecoder.doDecode invoked");
-		log.debug("in.remaining is {}", in.remaining());
+		log.debug("MessageDecoder.doDecode() invoked");
+		log.trace("Mina session ID: " + session.getId());
 
-		// check length, it must greater than head length
-		if (in.remaining() > ProtocolLengths.HEAD) {
+		// TODO make the '96' be configurable.
+		CodecUtil.hexDumpForLogging(log, in, 96);
 
-			log.debug("Do processing");
-			HeadMessage headMessage = new HeadMessage();
-			// read header
-			// read seq
-			log.debug("Read head");
-			long seq = in.getUnsignedInt();
-			headMessage.setSeq(seq);
+		ProtocolMessageDecoder decoder = new ProtocolMessageDecoder(
+				cmdCodecFactory);
+		ProtocolMessageDecoder.Result result = decoder.decode(in, charset);
 
-			// read ack
-			long ack = in.getUnsignedInt();
-			headMessage.setAck(ack);
-
-			// read flags
-			int flags = in.getUnsignedShort();
-			headMessage.setFlags(flags);
-			log.debug("in.remaining() = " + in.remaining());
-
-			// read checksum
-			log.debug("read checksum");
-			int checksum = in.getUnsignedShort();
-			log.debug("checksum========:" + checksum);
-			headMessage.setChecksum(checksum);
-			log.debug("in.remaining() = " + in.remaining());
-
-			// read message size
-			log.debug("read message size");
-			long messageSize = in.getUnsignedInt();
-			headMessage.setMessageSize(messageSize);
-			log.debug("in.remaining() = " + in.remaining());
-			log.debug("headMessage ====: {}", headMessage.toString());
-
-			// check length
-			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
-				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
-				Message message = new Message(headMessage, bodyMessage);
-				out.write(message);
+		// close the session if message to big.
+		boolean sessionClosed = killTooBigMessage(session, in, result);
+		// return false since we don't need data as the session is closed
+		// by killTooBigMessage()
+		if (sessionClosed) return false;
+		
+		// act according to the result.
+		if (!result.isMoreDataRequired()) {
+			Object parsedMessage = result.getMessage();
+			log.trace(
+					"Number of bytes remained in buffer after parsing one message: {}",
+					in.remaining());
+			if (parsedMessage == null) {
+				log.warn(
+						"Internal error: No message is returned by {} even it reports a message is parsed",
+						decoder.getClass());
+				return true;
+			} else {
+				log.debug("Message processed completed. Message: {}",
+						parsedMessage);
+				// write the data.
+				out.write(parsedMessage);
 				return true;
 			}
-			int position = in.position();
-
-			in.position(0);
-			// byteTmp: raw bytes
-			byte[] byteTmp = new byte[in.remaining()];
-			in.get(byteTmp);
-			CodecUtil.debugRaw(log, byteTmp);
-			Tools.putUnsignedShort(byteTmp, 0, 10);
-			log.debug("byteTmp==msg==:" + Arrays.toString(byteTmp));
-
-			int checkSumTmp = Tools.checkSum(byteTmp, byteTmp.length);
-			log.debug("checkSumTmp========:" + checkSumTmp);
-
-			// checksum
-
-			if (checkSumTmp != checksum) {
-				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
-				Message message = new Message(headMessage, bodyMessage);
-				out.write(message);
-				return true;
-			}
-
-			in.position(position);
-			ICommand bodyMessage = null;
-			try {
-				bodyMessage = this.decodeMessageBody(in, charset);
-			} catch (Exception e) {
-				ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
-				errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
-				Message message = new Message(headMessage, errorBodyMessage);
-				out.write(message);
-				return true;
-			}
-			Message message = new Message(headMessage, bodyMessage);
-			out.write(message);
-			return true;
-
 		} else {
-			HeadMessage headMessage = new HeadMessage();
-			ErrorBodyMessage errorBodyMessage = new ErrorBodyMessage();
-			errorBodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_CODE);
-			Message message = new Message(headMessage, errorBodyMessage);
-			out.write(message);
-			byte[] tmp = new byte[in.remaining()];
-			in.get(tmp);
-			return true;
+			log.trace("More raw data is required to decode");
+			// we do not have sufficient bytes to parse the message, return
+			// 'false' to request Mina to do more.
+			return false;
 		}
 
 	}
 
-	private ICommand decodeMessageBody(IoBuffer in, Charset charset)
-			throws PackageException {
+	/**
+	 * Closes the session if message size exceed the threshold.
+	 * 
+	 * @param session
+	 * @param result
+	 * @return return <code>true</code> if this function has closed the 
+	 * session, <code>false</code> otherwise.
+	 */
+	protected boolean killTooBigMessage(IoSession session, IoBuffer in,
+			ProtocolMessageDecoder.Result result) {
+		
+		// there is nothing we can do if the header is unknown
+		if (result.getHeader() == null) {
+			return false;
+		}
+		
+		HeadMessage header = result.getHeader();
+		if (header.getMessageSize() > getMaxMessageSize()) {
+			log.debug(
+					"Received header indicates a message size of {} bytes, which exceed the threshold {}, session will be closed",
+					header.getMessageSize(), getMaxMessageSize());
+			session.close(true);	// close immediately
+			return true;
+		}
+		
+		return false;
 
-		// get cmdId and process it
-		int position = in.position();
-		long cmdId = in.getUnsignedInt();
-		log.debug("position========:" + position);
-		in.position(position);
-		log.debug("cmdId========:" + cmdId);
-		log.debug("injector========:" + (injector == null));
-
-		// get the message codec.
-		ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
-		log.trace("bodyMessageCoder = {}", bodyMessageCoder);
-
-		return bodyMessageCoder.decode(in, charset);
 	}
 
 }

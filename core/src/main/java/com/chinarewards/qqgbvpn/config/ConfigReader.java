@@ -8,6 +8,9 @@ import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.HomeDirLocator;
 import com.google.inject.Inject;
@@ -21,6 +24,8 @@ import com.google.inject.Inject;
 public class ConfigReader {
 
 	private final HomeDirLocator homeDirLocator;
+	
+	private static final Logger log = LoggerFactory.getLogger(ConfigReader.class);
 
 	/**
 	 * 
@@ -43,6 +48,7 @@ public class ConfigReader {
 
 		// get home directory
 		String dir = homeDirLocator.getHomeDir();
+		log.debug("Home directory is set to {}", dir);
 		if (dir == null) {
 			return null;
 		}
@@ -50,11 +56,16 @@ public class ConfigReader {
 		// if conf/ subdirectory is specified.
 		File f = new File(dir);
 		if (getConfSubdirectory() != null) {
+			log.debug("Configuration subdirectory is set to {}", getConfSubdirectory());
 			f = new File(dir, getConfSubdirectory());
 		}
+		
+		log.debug("Configuration directory is set to {}", f);
 
 		// get the target config file.
-		Configuration conf = buildConfigObject(new File(f, filename));
+		File confFile = new File(f, filename);
+		log.debug("Config file: {}", confFile);
+		Configuration conf = buildConfigObject(confFile);
 
 		return conf;
 
@@ -80,6 +91,8 @@ public class ConfigReader {
 	protected Configuration buildConfigObject(File absFile)
 			throws ConfigurationException {
 
+		log.debug("Reading configuration file {}", absFile);
+		
 		String ext = getFileExtension(absFile);
 
 		if (ext == null)
@@ -87,10 +100,15 @@ public class ConfigReader {
 
 		// TODO extract this code.
 		if ("ini".equals(ext)) {
+			log.debug("- {} is an .ini file, load using PropertiesConfiguration.", absFile);
 			PropertiesConfiguration p = new PropertiesConfiguration(absFile.getAbsoluteFile());
+			p.setReloadingStrategy(new FileChangedReloadingStrategy());
+			p.setDelimiterParsingDisabled(true);	// no delimiter is used in the config value
 			return p;
 		}
 
+		log.debug("Config file extension '{}' not supported", ext);
+		
 		// not supported
 		return null;
 

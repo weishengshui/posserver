@@ -9,6 +9,12 @@ public class ValidateRequestMessage implements ICommand {
 	
 	public String grouponVCode;
 	
+	@Override
+	public String toString() {
+		return "ValidateRequestMessage [cmdId=" + cmdId + ", grouponId="
+				+ grouponId + ", grouponVCode=" + grouponVCode + "]";
+	}
+
 	//--------------------------------//
 	@Override
 	public long getCmdId() {

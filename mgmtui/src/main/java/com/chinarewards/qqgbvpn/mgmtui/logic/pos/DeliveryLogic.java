@@ -6,6 +6,7 @@ package com.chinarewards.qqgbvpn.mgmtui.logic.pos;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
@@ -116,8 +117,7 @@ public interface DeliveryLogic {
 	 */
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
 			String posId) throws PosNotExistException,
-			PosWithWrongStatusException, DeliveryWithWrongStatusException,
-			DeliveryDetailExistException;
+			PosWithWrongStatusException, DeliveryWithWrongStatusException;
 
 	/**
 	 * Delete delivery note detail from note.
@@ -148,7 +148,7 @@ public interface DeliveryLogic {
 	 * @throws DeliveryNoteWithNoDetailException
 	 *             when delivery not with no details.
 	 */
-	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> getAllDeliveryNoteDetailVOByUnInitPosStatus(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException;
 
 	/**
@@ -164,10 +164,13 @@ public interface DeliveryLogic {
 	 *             When delivery status is not DRAFT.
 	 * @throws PosWithWrongStatusException
 	 * @throws DeliveryNoteWithNoDetailException
+	 * @throws AgentNotException
+	 * @throws PosNotExistException
 	 */
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
-			PosWithWrongStatusException, DeliveryNoteWithNoDetailException;
+			PosWithWrongStatusException, DeliveryNoteWithNoDetailException,
+			AgentNotException, PosNotExistException;
 
 	/**
 	 * Delivery note status should not be {@code DeliveryNoteStatus#DRAFT}. And

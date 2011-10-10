@@ -14,24 +14,23 @@ public class BodyMessageFilter extends IoFilterAdapter {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void exceptionCaught(NextFilter nextFilter, IoSession session,
-			Throwable cause) throws Exception {
-		log.debug("ErrorBodyMessage exception:({})", cause);
-	}
-
-	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
+		
+		log.trace("messageReceived() started");
+		
 		ICommand msg = ((Message) message).getBodyMessage();
 		// return when IBodyMessage instanceof ErrorBodyMessage
 		if (msg instanceof ErrorBodyMessage) {
-			log.debug("IBodyMessage is ErrorBodyMessage");
+			log.debug("IBodyMessage is ErrorBodyMessage!!");
+			// short circuit the message.
 			session.write(message);
 		} else {
 			log.debug("IBodyMessage is not ErrorBodyMessage");
 			nextFilter.messageReceived(session, message);
 		}
 
+		log.trace("messageReceived() done");
 	}
 
 }

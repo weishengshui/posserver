@@ -53,6 +53,7 @@ public class ServiceHandlerGuiceModule extends AbstractModule {
 		bind(ServiceHandlerObjectFactory.class).to(
 				GuiceServiceHandlerObjectFactory.class).in(Singleton.class);
 
+		log.debug("Configuration completed");
 	}
 
 }

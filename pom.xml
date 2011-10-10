@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>root</artifactId>
@@ -20,17 +19,15 @@
 	</scm>
 	<inceptionYear>2011</inceptionYear>
 	<properties>
+		<apache.commonconfig.version>1.7</apache.commonconfig.version>
 		<guice.version>3.0</guice.version>
 		<guice-struts2>3.0</guice-struts2>
 		<hibernate.version>3.4.0</hibernate.version>
-		<junit.version>4.8.2</junit.version>
-		<slf4j.version>1.5.11</slf4j.version>
-		<logback.version>0.9.16</logback.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
-		<apache.commonconfig.version>1.6</apache.commonconfig.version>
 		<jackson.json.version>1.8.5</jackson.json.version>
-		<!-- project.version: this project's version -->
-		<project.version>0.1.0-SNAPSHOT</project.version>
+		<junit.version>4.8.2</junit.version>
+		<logback.version>0.9.19</logback.version>
+		<slf4j.version>1.5.11</slf4j.version>
 	</properties>
 	<organization>
 		<name>China Rewards</name>
@@ -196,7 +193,7 @@
 		</dependencies>
 	</dependencyManagement>
 	<modules>
-		<module>config</module>
+		<module>testing</module>
 		<module>core</module>
 		<module>domain</module>
 		<module>main</module>

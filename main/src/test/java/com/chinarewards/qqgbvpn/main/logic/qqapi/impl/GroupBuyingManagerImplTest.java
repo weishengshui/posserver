@@ -34,6 +34,7 @@ public class GroupBuyingManagerImplTest extends GuiceTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		super.tearDown();
 	}
 
 	@Test

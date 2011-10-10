@@ -20,6 +20,7 @@ public enum DomainEvent {
 	 * The following information should he logged:
 	 * <ol>
 	 * <li>Username (SysUser.username)</li>
+	 * <li>User ID (SysUser.id)</li>
 	 * <li>IP address (ip)</li>
 	 * </ol>
 	 */
@@ -148,7 +149,19 @@ public enum DomainEvent {
 
 	USER_REMOVED_DNOTE_DTL, USER_REMOVED_DNOTE, //
 	USER_CONFIRMED_DNOTE, USER_PRINTED_DNOTE, //
-	USER_ADDED_RNOTE, USER_ADDED_RNOTE_DTL, USER_CONFIRMED_RNOTE,
+	
+	
+	USER_ADDED_RNOTE, 
+	
+	USER_ADDED_RNOTE_DTL, 
+	
+	/**
+	 * User confirmed a return note.
+	 * <p>
+	 * 
+	 */
+	USER_CONFIRMED_RNOTE,
+	
 	USER_ADDED_RNOTE_INVITATION,
 
 	// ---------- POS Server Related -------------

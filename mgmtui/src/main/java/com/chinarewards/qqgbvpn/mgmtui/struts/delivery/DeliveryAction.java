@@ -5,12 +5,14 @@ import java.util.List;
 import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
+import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
-import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentStore;
+import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
@@ -60,46 +62,25 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	
 	private DeliverySearchVO deliverySearchVO = new DeliverySearchVO();
 	
+	private PageInfo<DeliveryNoteVO> pageInfo;
+	
+	private static final int SIZE = 10;
+	
 	@Override
 	public String execute(){
-		if(super.getCurrentPage()==0){
-			super.setCurrentPage(1);
+		if (pageInfo == null) {
+			pageInfo = new PageInfo<DeliveryNoteVO>();
+			pageInfo.setPageId(1);
+			pageInfo.setPageSize(SIZE);
 		}
+		deliverySearchVO.setSize(pageInfo.getPageSize());
+		deliverySearchVO.setPage(pageInfo.getPageId());
 		
 		try{
+			pageInfo = getDeliveryLogic().fetchDeliverys(deliverySearchVO);
+			
 			//查询所有的第三方合作伙伴
-			AgentStore agentStore = getAgentLogic().queryAgent(null);
-			agentVOList = agentStore.getAgentVOList();
-		}catch(Throwable e){
-			log.error(e.getMessage(), e);
-			return ERROR;
-		}
-		return SUCCESS;
-	}
-	
-	/**
-	 * description：交付单列表
-	 * @time 2011-9-7   上午10:40:00
-	 * @author Seek
-	 */
-	public String deliveryList(){
-		PaginationTools paginationTools = new PaginationTools();
-		paginationTools.setCountOnEachPage(super.getPageSize());
-		paginationTools.setStartIndex( (super.getCurrentPage()-1) * super.getPageSize() );
-		
-		try{
-			deliverySearchVO.setPagination(paginationTools);
-			PageInfo<DeliveryNoteVO> pageInfo = getDeliveryLogic().fetchDeliverys(deliverySearchVO);
-			
-			deliveryNoteVOList = pageInfo.getItems();
-			super.setCountTotal(pageInfo.getRecordCount());
-			
-			//template
-			final String urlMark = "{*}";
-			String urlTemplate = super.buildURLTemplate(super.getCurrentPath(), "&", "currentPage=", urlMark);
-			
-			setUrlTemplate(urlTemplate);
-			setUrlMark(urlMark);
+			agentVOList = getAgentLogic().findAllAgent();
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -133,8 +114,7 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	public String showAddPosForDelivery(){
 		try{
 			//查询所有的第三方合作伙伴
-			AgentStore agentStore = getAgentLogic().queryAgent(null);
-			agentVOList = agentStore.getAgentVOList();
+			agentVOList = getAgentLogic().findAllAgent();
 			
 			if(deliveryId != null){
 				deliveryNoteDetailVOList = getDeliveryLogic().fetchDetailListByNoteId(deliveryId);
@@ -243,7 +223,15 @@ public class DeliveryAction extends BasePagingToolBarAction {
 				return ERROR;
 			}
 			
-			deliveryNoteDetailVOList = getDeliveryLogic().delivery(deliveryId);
+			deliveryNoteDetailVOList = getDeliveryLogic().getAllDeliveryNoteDetailVOByUnInitPosStatus(deliveryId);
+			
+			if(deliveryNoteDetailVOList == null || deliveryNoteDetailVOList.size() == 0){
+				return INPUT;
+			}
+		}catch(DeliveryNoteWithNoDetailException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "该订单没有添加任何POS机";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -291,6 +279,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 			
 			//confirm
 			getDeliveryLogic().confirmDelivery(deliveryId);	
+		}catch(DeliveryWithWrongStatusException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "交付单状态异常";
+			return ERROR;
+		}catch(AgentNotException e){
+			log.error(e.getMessage(), e);
+			errorMsg = "无效的第三方关联";
+			return ERROR;
 		}catch(Throwable e){
 			log.error(e.getMessage(), e);
 			return ERROR;
@@ -353,14 +349,12 @@ public class DeliveryAction extends BasePagingToolBarAction {
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		agentLogic = injector.getInstance(AgentLogic.class);
+		agentLogic = super.getInstance(AgentLogic.class);
 		return agentLogic;
 	}
 	
 	private DeliveryLogic getDeliveryLogic() {
-		Injector injector = (Injector)ServletActionContext.getServletContext().getAttribute(Injector.class.getName());
-		deliveryLogic = injector.getInstance(DeliveryLogic.class);
+		deliveryLogic = super.getInstance(DeliveryLogic.class);
 		return deliveryLogic;
 	}
 	
@@ -467,6 +461,14 @@ public class DeliveryAction extends BasePagingToolBarAction {
 
 	public void setDeliverySearchVO(DeliverySearchVO deliverySearchVO) {
 		this.deliverySearchVO = deliverySearchVO;
+	}
+	
+	public PageInfo getPageInfo() {
+		return pageInfo;
+	}
+
+	public void setPageInfo(PageInfo pageInfo) {
+		this.pageInfo = pageInfo;
 	}
 	
 }

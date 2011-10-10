@@ -8,16 +8,22 @@
 <title>生成回收单成功</title>
 </head>
 <body>
-<s:form action="list" namespace="/unbind" method="Post" id="successForm">
+<s:if test="errorMsg!=null">
+<b>${errorMsg}</b>
+</s:if>
+<s:form action="list" namespace="/unbind" method="Get" id="successForm">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td width="77%">已生成回收单！</td>
 	</tr>
 	<tr>
-		<td width="77%">编号：<s:property value="#request.rnNumber" /></td>
+		<td width="77%">编号：<s:property value="rnNum" /></td>
 	</tr>
 	<tr>
-		<td width="77%">POS机：<s:property value="#request.posCount" />台</td>
+		<td width="77%">POS机：<s:property value="posCount" />台</td>
+	</tr>
+	<tr>
+		<td width="77%">发出邀请时间：<s:date name="rnTime" format="%{getText('dateformat.ymdhm')}" /></td>
 	</tr>
 	<s:if test="#request.isAgent!=null && #request.isAgent == 'true'">
 	<tr>
@@ -26,15 +32,25 @@
 	</s:if>
 	<s:else>
 	<tr>
-		<td width="77%"><a href="${ctx}/unbind/getReturnNoteInfo?rnId=${rnId}" target="_blank">打印</a>　　<input type="submit" value="完成" id="searchBtn" /></td>
+		<td width="77%"><button type="button" onclick="goPrint('${rnId}')">打印</button>　　<input type="submit" value="完成" id="searchBtn" /></td>
 	</tr>
 	</s:else> 
 </table>
 </s:form>
 
+<s:form action="getReturnNoteInfo" namespace="/unbind" method="Get" id="printForm">
+<input type="hidden" id="rnId" name="rnId" />
+</s:form>
 <script type="text/javascript">
 	function closeWindow() {
 		window.close(); 
+	}
+	
+	function goPrint(rnId) {
+		document.getElementById("rnId").value = rnId;
+		var formObj = document.getElementById("printForm");
+		formObj.action = "${pageContext.request.contextPath}/unbind/getReturnNoteInfo";
+		formObj.submit();
 	}
 </script>
 </body>

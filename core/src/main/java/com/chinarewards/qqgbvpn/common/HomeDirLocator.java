@@ -3,6 +3,9 @@
  */
 package com.chinarewards.qqgbvpn.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * 
@@ -13,8 +16,12 @@ public class HomeDirLocator {
 
 	String hardCodedDir;
 
+	String envKey = "POSNET_HOME";
+	
+	Logger log = LoggerFactory.getLogger(getClass());
+
 	/**
-	 * Specifies the directory which will be served as the final 
+	 * Specifies the directory which will be served as the final
 	 * 
 	 * @param hardCodedDir
 	 */
@@ -49,12 +56,15 @@ public class HomeDirLocator {
 	 *         <code>nulL</code> if not found.
 	 */
 	protected String getHomeDirFromSysEnv() {
+		
+		String envKey = getHomeDirEnvName();
+		log.trace("Environment key for home directory: {}", envKey);
 
-		String v = System.getProperties().getProperty(getHomeDirEnvName());
+		String v = System.getProperties().getProperty(envKey);
 
 		if (v == null) {
 			// fallback
-			v = System.getenv(getHomeDirEnvName());
+			v = System.getenv(envKey);
 		}
 
 		return v;
@@ -66,7 +76,11 @@ public class HomeDirLocator {
 	 * @return
 	 */
 	public String getHomeDirEnvName() {
-		return "POSNET_HOME";
+		return envKey;
+	}
+
+	public void setHomeDirEnvName(String envKey) {
+		this.envKey = envKey;
 	}
 
 }

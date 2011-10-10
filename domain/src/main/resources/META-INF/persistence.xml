@@ -6,13 +6,16 @@
 		<class>com.chinarewards.qqgbvpn.domain.Agent</class>
 		<class>com.chinarewards.qqgbvpn.domain.DeliveryNote</class>
 		<class>com.chinarewards.qqgbvpn.domain.DeliveryNoteDetail</class>
+		<class>com.chinarewards.qqgbvpn.domain.GroupBuyValidateResult</class>
+		<class>com.chinarewards.qqgbvpn.domain.GrouponCache</class>
+		<class>com.chinarewards.qqgbvpn.domain.GroupBuyValidateResult</class>
 		<class>com.chinarewards.qqgbvpn.domain.Pos</class>
 		<class>com.chinarewards.qqgbvpn.domain.PosAssignment</class>
 		<class>com.chinarewards.qqgbvpn.domain.ReturnNote</class>
 		<class>com.chinarewards.qqgbvpn.domain.ReturnNoteDetail</class>
+		<class>com.chinarewards.qqgbvpn.domain.ReturnNoteInvitation</class>
 		<class>com.chinarewards.qqgbvpn.domain.SysUser</class>
 		<class>com.chinarewards.qqgbvpn.domain.Validation</class>
 		<class>com.chinarewards.qqgbvpn.domain.event.Journal</class>
-		<class>com.chinarewards.qqgbvpn.domain.GroupBuyValidateResult</class>
 	</persistence-unit>
 </persistence>

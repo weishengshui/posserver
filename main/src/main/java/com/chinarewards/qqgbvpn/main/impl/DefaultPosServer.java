@@ -5,7 +5,6 @@ package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -21,11 +20,13 @@ import javax.management.remote.JMXServiceURL;
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LogLevel;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
@@ -36,9 +37,10 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerObjectFactory;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.ErrorConnectionKillerFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorManageFilter;
-import com.chinarewards.qqgbvpn.main.protocol.filter.TransactionFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.chinarewards.qqgbvpn.main.rmi.RMIRegistry;
@@ -53,6 +55,11 @@ import com.google.inject.persist.PersistService;
  * @since 0.1.0
  */
 public class DefaultPosServer implements PosServer {
+	
+	/**
+	 * Default timeout, in seconds, which the server will disconnect a client.
+	 */
+	public static final int DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
 
 	protected final Configuration configuration;
 
@@ -121,8 +128,6 @@ public class DefaultPosServer implements PosServer {
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
 
-		printConfigValues();
-
 		buildCodecMapping();
 
 		// start the JPA persistence service
@@ -163,69 +168,92 @@ public class DefaultPosServer implements PosServer {
 			InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
+		
+		// default 1800 seconds
+		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,
+				DEFAULT_SERVER_CLIENTMAXIDLETIME);
+		
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
 		// =============== server side ===================
 
+		// Programmers: You MUST consult your team before rearranging the 
+		// order of the following Mina filters, as the ordering may affects
+		// the behaviour of the application which may lead to unpredictable
+		// result.
+		
 		acceptor = new NioSocketAcceptor();
 
-		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
+		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
+		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
+				new IdleConnectionKillerFilter());
+		
+		// our logging filter
+		acceptor.getFilterChain()
+				.addLast(
+						"cr-logger",
+						new com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter());
+		
+		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
-		// not this
+		// decode message
+		// TODO config MessageCoderFactory to allow setting the maximum message size 
 		acceptor.getFilterChain().addLast(
-				"codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(injector,
-						cmdCodecFactory)));
+				"codec", new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
 
 		// add jmx monitor
 		addMonitor();
 
-		// bodyMessage filter
+		// kills error connection if too many.
+		acceptor.getFilterChain().addLast("errorConnectionKiller",
+				new ErrorConnectionKillerFilter());
+
+		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
-
-		// Transaction filter.
-		acceptor.getFilterChain().addLast("transaction",
-				injector.getInstance(TransactionFilter.class));
-
+		
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
-		acceptor.setHandler(new ServerSessionHandler(injector,
-				serviceDispatcher, mapping));
-
+		// the handler class
+		acceptor.setHandler(new ServerSessionHandler(serviceDispatcher,
+				mapping, configuration));
+		
 		// additional configuration
 		acceptor.setCloseOnDeactivation(true);
 		acceptor.setReuseAddress(true);
 
 		// acceptor.getSessionConfig().setReadBufferSize(2048);
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		if (idleTime > 0) {
+			log.info("Client idle timeout set to {} seconds", idleTime);
+		} else {
+			log.info("Client idle timeout set to {} seconds, will be disabled",
+					idleTime);
+		}
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
+		
+		// start the acceptor and listen to incomming connection!
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
 			throw new PosServerException("Error binding server port", e);
 		}
 	}
-
+	
 	/**
-	 * Print configuration.
+	 * Build an new instance of LoggingFilter with sane logging level. The
+	 * principle is to hide unnecessary logging under INFO level.
+	 * 
+	 * @return
 	 */
-	private void printConfigValues() {
-		// get system configuration
-		Iterator iter = configuration.getKeys();
-		if (configuration.isEmpty()) {
-			log.debug("No configuration values");
-		} else {
-			log.debug("System configuration:");
-			while (iter.hasNext()) {
-				String key = (String) iter.next();
-				log.debug("- {}: {}", key, configuration.getProperty(key));
-			}
-		}
-
-		// TODO print command mapping
+	protected LoggingFilter buildLoggingFilter() {
+		LoggingFilter loggingFilter = new LoggingFilter();
+		loggingFilter.setMessageReceivedLogLevel(LogLevel.DEBUG);
+		loggingFilter.setMessageSentLogLevel(LogLevel.DEBUG);
+		loggingFilter.setSessionIdleLogLevel(LogLevel.TRACE);
+		return loggingFilter;
 	}
 
 	protected void startPersistenceService() {

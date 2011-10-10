@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
+import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
@@ -75,39 +76,34 @@ public class AgentLogicTest extends JPATestCase{
 				agentVOTemp.setName("pos_"+i);
 				agentLogic.save(agentVOTemp);
 			}
-			AgentStore agentStore = agentLogic.queryAgent(null);
-			assertNotNull(agentStore);
-			assertEquals(agentStore.getCountTotal(), 10);
-			assertEquals(agentStore.getAgentVOList().size(), 10);
-			
 			
 			AgentSearchVO agentSearchVO = new AgentSearchVO();
 			agentSearchVO.setPage(1);
 			agentSearchVO.setSize(3);
-			AgentStore agentStore2 = agentLogic.queryAgent(agentSearchVO);
-			assertNotNull(agentStore2);
-			assertEquals(agentStore2.getCountTotal(), 10);
-			assertEquals(agentStore2.getAgentVOList().size(), 3);
+			PageInfo<AgentVO> pageInfo2 = agentLogic.queryAgent(agentSearchVO);
+			assertNotNull(pageInfo2);
+			assertEquals(pageInfo2.getRecordCount(), 10);
+			assertEquals(pageInfo2.getItems().size(), 3);
 			
 			
 			
 			AgentSearchVO agentSearchVO2 = new AgentSearchVO();
 			agentSearchVO2.setPage(4);
 			agentSearchVO2.setSize(3);
-			AgentStore agentStore3 = agentLogic.queryAgent(agentSearchVO2);
-			assertNotNull(agentStore3);
-			assertEquals(agentStore3.getCountTotal(), 10);
-			assertEquals(agentStore3.getAgentVOList().size(), 1);
+			PageInfo<AgentVO> pageInfo3 = agentLogic.queryAgent(agentSearchVO2);
+			assertNotNull(pageInfo3);
+			assertEquals(pageInfo3.getRecordCount(), 10);
+			assertEquals(pageInfo3.getItems().size(), 1);
 			
 			
 			AgentSearchVO agentSearchVO3 = new AgentSearchVO();
 			agentSearchVO3.setPage(1);
 			agentSearchVO3.setSize(5);
 			agentSearchVO3.setAgentName("8");
-			AgentStore agentStore5 = agentLogic.queryAgent(agentSearchVO3);
-			assertNotNull(agentStore5);
-			assertEquals(agentStore5.getCountTotal(), 1);
-			assertEquals(agentStore5.getAgentVOList().size(), 1);
+			PageInfo<AgentVO> pageInfo5 = agentLogic.queryAgent(agentSearchVO3);
+			assertNotNull(pageInfo5);
+			assertEquals(pageInfo5.getRecordCount(), 1);
+			assertEquals(pageInfo5.getItems().size(), 1);
 		}
 	}
 	

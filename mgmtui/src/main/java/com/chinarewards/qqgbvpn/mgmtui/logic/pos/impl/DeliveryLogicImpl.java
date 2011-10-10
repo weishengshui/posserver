@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.OptimisticLockException;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +24,18 @@ import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.DeliveryDetailDao;
 import com.chinarewards.qqgbvpn.mgmtui.dao.agent.AgentDao;
+import com.chinarewards.qqgbvpn.mgmtui.dao.pos.PosDao;
+import com.chinarewards.qqgbvpn.mgmtui.exception.AgentNotException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryDetailExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryNoteWithNoDetailException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.DeliveryWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosNotExistException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.PosWithWrongStatusException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.ParamsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
+import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.DeliveryLogic;
-import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteDetailVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.delivery.DeliveryNoteVO;
@@ -58,8 +64,9 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	@Inject
 	Provider<AgentDao> agentDao;
 
+	// With no transaction.
 	@Inject
-	Provider<PosLogic> posLogic;
+	Provider<PosDao> posDao;
 
 	@Inject
 	DateTimeProvider dtProvider;
@@ -73,6 +80,10 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	protected DeliveryDetailDao getDetailDao() {
 		return deliveryDetailDao.get();
+	}
+	
+	protected PosDao getPosDao() {
+		return posDao.get();
 	}
 
 	@Override
@@ -136,19 +147,11 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO criteria) {
-		log.debug(" Process in method fetchDeliverys, criteria:{}",
-				criteria == null ? null : criteria.toString());
+	public PageInfo<DeliveryNoteVO> fetchDeliverys(DeliverySearchVO deliverySearchVO) {
+		PageInfo<DeliveryNoteVO> pageInfo = getDeliveryDao().fetchDeliverys(
+				deliverySearchVO);
 
-		List<DeliveryNoteVO> resultList = getDeliveryDao().fetchDeliverys(
-				criteria);
-		int count = getDeliveryDao().countDeliverys(criteria);
-
-		PageInfo<DeliveryNoteVO> page = new PageInfo<DeliveryNoteVO>();
-		page.setItems(resultList);
-		page.setRecordCount(count);
-
-		return page;
+		return pageInfo;
 	}
 
 	@Override
@@ -207,19 +210,17 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional(rollbackOn = { PosNotExistException.class,
-			PosWithWrongStatusException.class,
-			DeliveryWithWrongStatusException.class,
-			DeliveryDetailExistException.class })
+	@Transactional(rollbackOn = { PosNotExistException.class, PosWithWrongStatusException.class, DeliveryWithWrongStatusException.class })
 	public DeliveryNoteDetailVO appendPosToNote(String deliveryNoteId,
-			String posId) throws PosNotExistException,
-			PosWithWrongStatusException, DeliveryWithWrongStatusException,
-			DeliveryDetailExistException {
+			String posNum) throws PosNotExistException,
+			PosWithWrongStatusException, DeliveryWithWrongStatusException
+//			,DeliveryDetailExistException 
+			{
 		if (Tools.isEmptyString(deliveryNoteId)) {
 			throw new IllegalArgumentException("Delivery note ID is missing.");
 		}
-		if (Tools.isEmptyString(posId)) {
-			throw new IllegalArgumentException("POS ID is missing.");
+		if (Tools.isEmptyString(posNum)) {
+			throw new IllegalArgumentException("POS Number is missing.");
 		}
 		// check delivery note status.
 		DeliveryNoteVO note = getDeliveryDao()
@@ -229,23 +230,31 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 					"Delivery status must be DRAFT, but now is:"
 							+ note.getStatus());
 		}
-
-		// check the POS first.
-		DeliveryNoteDetailVO detail = getDetailDao().fetchByDeliveryIdPosId(
-				deliveryNoteId, posId);
-
-		// if existed, do nothing
-		// else create new deliveryNoteDetail
-		if (detail == null) {
-			detail = getDetailDao().create(deliveryNoteId, posId);
-		} else {
-			throw new DeliveryDetailExistException("delivery note(id="
-					+ deliveryNoteId + ") has added the pos(id=" + posId + ")");
+		
+		PosVO posVO = null;
+		try {
+			posVO = getPosDao().getPosByPosNum(posNum);
+		} catch (ParamsException e) {
+			throw new PosNotExistException(e);
 		}
-
+		if (!PosDeliveryStatus.RETURNED.toString().equals(posVO.getDstatus())) {	//=已交付    ，改成 !=已回收
+			throw new PosWithWrongStatusException(
+					"Should be PosDeliveryStatus.RETURNED, but was:"
+							+ posVO.getDstatus());
+		}
+		
+		posVO.setDstatus(PosDeliveryStatus.LOCKED.toString());	//修改POS机的状态
+		try {
+			getPosDao().updatePos(posVO);
+		} catch (Throwable e) {
+			throw new PosWithWrongStatusException(e);
+		}
+		
+		DeliveryNoteDetailVO detail = getDetailDao().create(deliveryNoteId, posVO);
+		
 		return detail;
 	}
-
+	
 	@Override
 	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public void deletePosFromNote(String deliveryNoteId, String detailId)
@@ -271,7 +280,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 
 	@Override
 	@Transactional(rollbackOn = DeliveryNoteWithNoDetailException.class)
-	public List<DeliveryNoteDetailVO> delivery(String deliveryNoteId)
+	public List<DeliveryNoteDetailVO> getAllDeliveryNoteDetailVOByUnInitPosStatus(String deliveryNoteId)
 			throws DeliveryNoteWithNoDetailException {
 		log.debug("Process in delivery(), noteId:{}", deliveryNoteId);
 		// Check arguments.
@@ -301,12 +310,13 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 	}
 
 	@Override
-	@Transactional(rollbackOn = { DeliveryWithWrongStatusException.class,
-			PosWithWrongStatusException.class,
-			DeliveryNoteWithNoDetailException.class, RuntimeException.class })
+	@Transactional(rollbackOn = { DeliveryWithWrongStatusException.class, PosWithWrongStatusException.class,
+			DeliveryNoteWithNoDetailException.class, AgentNotException.class,
+			PosNotExistException.class, RuntimeException.class })
 	public void confirmDelivery(String deliveryNoteId)
 			throws DeliveryWithWrongStatusException,
-			PosWithWrongStatusException, DeliveryNoteWithNoDetailException {
+			PosWithWrongStatusException, DeliveryNoteWithNoDetailException,
+			AgentNotException, PosNotExistException {
 		// check delivery note status - DeliveryNoteStatus#DRAFT
 		DeliveryNoteVO dn = getDeliveryDao().fetchDeliveryById(deliveryNoteId);
 		if (!DeliveryNoteStatus.DRAFT.toString().equals(dn.getStatus())) {
@@ -324,22 +334,33 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 		getDeliveryDao().merge(dn);
 
 		List<PosVO> posList = getDetailDao().fetchPosByNoteId(dn.getId());
+		List<String> posNums = new LinkedList<String>();
 		List<String> posIds = new LinkedList<String>();
 		for (PosVO pos : posList) {
 			// check POS status.
-			if (!PosDeliveryStatus.RETURNED.toString().equals(pos.getDstatus())) {
+			if (!PosDeliveryStatus.LOCKED.toString().equals(pos.getDstatus())) {		//RETURNED -> LOCKED
 				throw new PosWithWrongStatusException(
-						"Pos dstatus should be PosDeliveryStatus.RETURNED, but now is:"
+						"Pos dstatus should be PosDeliveryStatus.LOCKED, but now is:"
 								+ pos.getDstatus());
 			}
 
-			posIds.add(pos.getPosId());
+			posNums.add(pos.getPosId());
+			posIds.add(pos.getId());
 		}
 		log.debug("Try to update pos status, posIds:{}", posIds);
 		if (posIds == null || posIds.isEmpty()) {
 			throw new DeliveryNoteWithNoDetailException();
 		}
-		posLogic.get().updatePosStatusToWorking(posIds);
+		if (dn.getAgent() == null) {
+			throw new AgentNotException();
+		}
+		posDao.get().createPosAssignment(dn.getAgent().getId(), posIds);
+		
+		try{
+			posDao.get().updatePosStatusToWorking(posNums);
+		}catch(OptimisticLockException e){
+			throw new PosWithWrongStatusException(e);
+		}
 
 		// add journalLogic
 		try {
@@ -354,7 +375,7 @@ public class DeliveryLogicImpl implements DeliveryLogic {
 			log.error("Error in parse to JSON", e);
 		}
 	}
-
+	
 	@Override
 	@Transactional(rollbackOn = DeliveryWithWrongStatusException.class)
 	public void printDelivery(String deliveryNoteId)

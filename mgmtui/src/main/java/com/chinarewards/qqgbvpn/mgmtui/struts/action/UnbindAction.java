@@ -1,12 +1,15 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.configuration.Configuration;
@@ -64,6 +67,12 @@ public class UnbindAction extends BaseAction {
 	
 	private String rnNum;
 	
+	private String status;
+	
+	private Date rnTime;
+	
+	private Integer posCount;
+	
 	private String inviteCode;
 	
 	private String agentName;
@@ -74,7 +83,11 @@ public class UnbindAction extends BaseAction {
 	
 	private List<Agent> agentList;
 	
+	private String isAgent;
+	
 	private Date sendTime;
+	
+	private String passTime;
 	
 	private ReturnNoteInfo rnInfo;
 	
@@ -97,6 +110,46 @@ public class UnbindAction extends BaseAction {
 		return configuration;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getPassTime() {
+		return passTime;
+	}
+
+	public void setPassTime(String passTime) {
+		this.passTime = passTime;
+	}
+
+	public Integer getPosCount() {
+		return posCount;
+	}
+
+	public void setPosCount(Integer posCount) {
+		this.posCount = posCount;
+	}
+
+	public String getIsAgent() {
+		return isAgent;
+	}
+
+	public void setIsAgent(String isAgent) {
+		this.isAgent = isAgent;
+	}
+
+	public Date getRnTime() {
+		return rnTime;
+	}
+
+	public void setRnTime(Date rnTime) {
+		this.rnTime = rnTime;
+	}
+
 	public ReturnNoteInfo getRnInfo() {
 		return rnInfo;
 	}
@@ -244,13 +297,16 @@ public class UnbindAction extends BaseAction {
 
 	public String search() {
 		posIds = "";
-		if (agentName != null && !"".equals(agentName.trim())) {
+		if (!StringUtil.isEmptyString(agentName)) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByName(agentName.trim());
 			if (a != null) {
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				if (!(pageInfo.getItems() != null && pageInfo.getItems().size() > 0)) {
+					this.errorMsg = a.getName() + "暂无任何可以回收的POS机!";
+				}
 				this.setAgentId(a.getId());
 				this.setAgent(a);
 			} else {
@@ -263,13 +319,18 @@ public class UnbindAction extends BaseAction {
 	
 	public String request() {
 		posIds = "";
-		if (inviteCode != null && !"".equals(inviteCode.trim())) {
+		if (!StringUtil.isEmptyString(inviteCode)) {
 			Agent a = getGroupBuyingUnbindManager().getAgentByInviteCode(inviteCode.trim());
 			if (a != null) {
+				log.debug("a.getId() : {}",a.getId());
 				pageInfo = new PageInfo();
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(initPageSize);
 				pageInfo = getGroupBuyingUnbindManager().getPosByAgentId(pageInfo, a.getId());
+				List<Pos> posList = pageInfo.getItems();
+				for (Pos p : posList) {
+					log.debug("p.getDstatus() : {}",p.getDstatus());
+				}
 				this.setAgentId(a.getId());
 				this.setAgentName(a.getName());
 				this.setAgent(a);
@@ -291,19 +352,56 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
-	public String createInvite() throws UnsupportedEncodingException, MessagingException{
-		if (this.getAgentId() != null && !"".equals(this.getAgentId().trim())) {
+	public String createInvite() {
+		if (!StringUtil.isEmptyString(this.getAgentId())) {
 			//生成邀请单
 			String inviteCode = getGroupBuyingUnbindManager().createInviteCode(this.getAgentId().trim());
 			if (inviteCode != null) {
 				//发送邮件
+				/*String path = getInviteEmailPath(inviteCode);
+				String[] toAdds = {this.getAgentEmail()};
+				String subject = "邀请填写申请表";
+				Object[] params = {path};
+				try {
+					getMailService().sendMail(toAdds, null, subject, "/mailtemplate/createInviteMailTemplate"
+							, "createInvite", params);
+				} catch (AddressException e) {
+					this.errorMsg = "邮件地址为空，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				} catch (MessagingException e) {
+					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				}*/
+				
+				//volelocity mail start
 				String path = getInviteEmailPath(inviteCode);
 				String[] toAdds = {this.getAgentEmail()};
 				String subject = "邀请填写申请表";
-				String content = "<html><body><br><a href='" + path + "'>请点击此链接填写申请表，谢谢。</a></body></html>";
-				getMailService().sendMail(toAdds, null, subject, content, null);
+				Map<String,Object> params = new HashMap<String,Object>();
+				params.put("invitePath", path);
+				String tempPath;
+				try {
+					tempPath = getClass().getResource("/mailtemplate").toURI().getPath();
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+					tempPath = "";
+				}
+				try {
+					getMailService().sendMailByVelocity(toAdds, null, subject, tempPath, "createInviteMailTemplate.vm", params);
+				} catch (AddressException e) {
+					e.printStackTrace();
+					this.errorMsg = "邮件地址为空，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				} catch (MessagingException e) {
+					e.printStackTrace();
+					this.errorMsg = "邮件地址有误,发送失败，请确认地址是否正确后重试或联系管理员!";
+					return ERROR;
+				}
+				//volelocity mail end
+				
 				this.setAgentName(this.getAgentName());
-				this.setSendTime(new Date());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(new Date()));
 				return SUCCESS;
 			}
 		}
@@ -329,30 +427,48 @@ public class UnbindAction extends BaseAction {
 			if (rn != null) {
 				//受邀者填写完后发邮件给我方
 				if (!StringUtil.isEmptyString(inviteCode)) {
+					/*String[] toAdds = {getConfiguration().getString("company.email")};
+					String subject = "第三方成功填写申请表";
+					String path = getRnDetailPath(rn.getId());
+					Object[] params = {this.getAgentName(),posList.size(),path};
+					try {
+						getMailService().sendMail(toAdds, null, subject, "/mailtemplate/confirmRnNumberMailTemplate"
+								, "confirmRnNumber", params);
+					} catch (Throwable e) {
+						this.errorMsg = "恭喜您已成功填写申请表，但发送回馈邮件失败，麻烦您联系管理员，通知我司您已成功填写回收申请表，谢谢!";
+					}*/
+					
+					//volelocity mail start
 					String[] toAdds = {getConfiguration().getString("company.email")};
 					String subject = "第三方成功填写申请表";
-					String content = "<html><body><br>" + this.getAgentName() + "已成功填写申请表，共申请回收" + posList.size() + "台POS机。</body></html>";
+					String path = getRnDetailPath(rn.getId());
+					Map<String,Object> params = new HashMap<String,Object>();
+					params.put("agentName", this.getAgentName());
+					params.put("posCount", posList.size());
+					params.put("confirmPath", path);
+					String tempPath;
 					try {
-						getMailService().sendMail(toAdds, null, subject, content, null);
-					} catch (Throwable e) {
-						
+						tempPath = getClass().getResource("/mailtemplate").toURI().getPath();
+					} catch (URISyntaxException e1) {
+						e1.printStackTrace();
+						tempPath = "";
 					}
-					getRequest().setAttribute("isAgent", "true");
+					try {
+						getMailService().sendMailByVelocity(toAdds, null, subject, tempPath, "confirmRnNumberMailTemplate.vm", params);
+					} catch (Throwable e) {
+						this.errorMsg = "恭喜您已成功填写申请表，但发送回馈邮件失败，麻烦您联系管理员，通知我司您已成功填写回收申请表，谢谢!";
+					}
+					//volelocity mail end
+					
+					this.setIsAgent("true");
 				}
-				getRequest().setAttribute("posCount", posList.size());
-				getRequest().setAttribute("rnId", rn.getId());
-				getRequest().setAttribute("rnNumber", rn.getRnNumber());
+				this.setPosCount(splitPosIds(posIds.trim()).size());
+				this.setRnId(rn.getId());
+				this.setRnNum(rn.getRnNumber());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rn.getCreateDate()));
 				return SUCCESS;
-				//rnNumber不为空，说明此次邀请已经使用，重复使用提示成功，显示已经生成的信息
-			} else if (!StringUtil.isEmptyString(errInfo)) { 
-				if (!StringUtil.isEmptyString(inviteCode)) {
-					getRequest().setAttribute("isAgent", "true");
-				}
-				getRequest().setAttribute("posCount", posList.size());
-				getRequest().setAttribute("rnId", errInfo.split(",")[0]);
-				getRequest().setAttribute("rnNumber", errInfo.split(",")[1]);
-				return SUCCESS;
-			} else {
+			}else {
 				this.errorMsg = "第三方信息找不到!";
 			}
 		} else {
@@ -362,13 +478,23 @@ public class UnbindAction extends BaseAction {
 		return ERROR;
 	}
 	
+	public String confirmSuccess() {
+		return SUCCESS;
+	}
+	
+	public String unbindSuccess() {
+		return SUCCESS;
+	}
+	
 	public String confirmAllRnNumber() throws SaveDBException {
 		if (!StringUtil.isEmptyString(agentId)) {
 			ReturnNoteInfo rnInfo = getGroupBuyingUnbindManager().confirmAllReturnNote(agentId.trim());
 			if (rnInfo != null) {
-				getRequest().setAttribute("posCount", rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
-				getRequest().setAttribute("rnId", rnInfo.getRn().getId());
-				getRequest().setAttribute("rnNumber", rnInfo.getRn().getRnNumber());
+				this.setPosCount(rnInfo.getPosList() != null ? rnInfo.getPosList().size() : 0);
+				this.setRnId(rnInfo.getRn().getId());
+				this.setRnNum(rnInfo.getRn().getRnNumber());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				this.setPassTime(sdf.format(rnInfo.getRn().getCreateDate()));
 				return SUCCESS;
 			}
 		}
@@ -377,7 +503,7 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String posSearch() {
-		if (posCondition != null && !"".equals(posCondition.trim())) {
+		if (!StringUtil.isEmptyString(posCondition)) {
 			posList = getGroupBuyingUnbindManager().getPosByPosInfo(posCondition.trim());
 			if (posList == null || posList.size() == 0) {
 				this.errorMsg = "POS机信息找不到!";
@@ -387,7 +513,7 @@ public class UnbindAction extends BaseAction {
 	}
 	
 	public String unbind(){
-		if (posId != null && !"".equals(posId.trim())) {
+		if (!StringUtil.isEmptyString(posId)) {
 			HashMap<String, Object> params = new HashMap<String, Object>();
 			params.put("posId", new String[] { posId.trim() });
 			params.put("key", getConfiguration().getString("txserver.key"));
@@ -402,7 +528,7 @@ public class UnbindAction extends BaseAction {
 						this.errorMsg = "服务器繁忙!";
 						break;
 					case -2:
-						this.errorMsg = "md5校验失败!";
+						this.errorMsg = "MD5校验失败!";
 						break;
 					case -3:
 						this.errorMsg = "没有权限!";
@@ -443,14 +569,21 @@ public class UnbindAction extends BaseAction {
 		return SUCCESS;
 	}
 	
+	public String sendURLSuccess() {
+		return SUCCESS;
+	}
+	
 	public String getReturnNoteList() {
 		if (rnNum == null) {
 			rnNum = "";
 		}
+		if (status == null) {
+			status = "";
+		}
 		pageInfo = new PageInfo();
 		pageInfo.setPageId(1);
 		pageInfo.setPageSize(initPageSize);
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
@@ -463,7 +596,7 @@ public class UnbindAction extends BaseAction {
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(initPageSize);
 		}
-		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), pageInfo);
+		pageInfo = getGroupBuyingUnbindManager().getReturnNoteLikeRnNumber(rnNum.trim(), status.trim(), pageInfo);
 		return SUCCESS;
 	}
 	
@@ -482,6 +615,13 @@ public class UnbindAction extends BaseAction {
 		String path = getRequest().getRequestURL().toString();
 		String ctx = getRequest().getContextPath();
 		path = path.substring(0, path.indexOf(ctx)) + ctx + "/returnnote/request?inviteCode=" + inviteCode;
+		return path;
+	}
+	
+	private String getRnDetailPath(String rnId) {
+		String path = getRequest().getRequestURL().toString();
+		String ctx = getRequest().getContextPath();
+		path = path.substring(0, path.indexOf(ctx)) + ctx + "/unbind/getReturnNoteInfo?rnId=" + rnId;
 		return path;
 	}
 	

@@ -3,6 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.mgmtui.guice;
 
+import java.util.Properties;
+
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.configuration.Configuration;
@@ -37,6 +39,8 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 	protected String rootConfigFilename = "posnet.ini";
 
 	Configuration configuration;
+	
+	public static final String HOME_DIR_ENV_KEY = "POSNETMGMT_HOME";
 
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
@@ -44,7 +48,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		Injector injector = (Injector) servletContextEvent.getServletContext()
 				.getAttribute(Injector.class.getName());
 		log.info("Shutting down persistence service");
-		injector.getInstance(PersistService.class).stop();
+		//injector.getInstance(PersistService.class).stop();
 		
 		// continue super class call.
 		super.contextDestroyed(servletContextEvent);
@@ -57,7 +61,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 				.getAttribute(Injector.class.getName());
 		
 		log.info("Starting persistence service");
-		injector.getInstance(PersistService.class).start();
+		//injector.getInstance(PersistService.class).start();
 	}
 
 	/*
@@ -114,6 +118,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		// check if the directory is given via command line.
 		String homedir = null; // we don't have default directory
 		HomeDirLocator homeDirLocator = new HomeDirLocator(homedir);
+		homeDirLocator.setHomeDirEnvName(HOME_DIR_ENV_KEY);
 		ConfigReader cr = new ConfigReader(homeDirLocator);
 
 		log.info("Home directory: {}", homeDirLocator.getHomeDir());
@@ -126,7 +131,7 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 			// no configuration is found, throw exception
 			throw new RuntimeException(
 					"No configuration is found. Please specify "
-							+ "POSNET_HOME environment variable for the home directory.");
+							+ HOME_DIR_ENV_KEY + " environment variable for the home directory.");
 		}
 
 	}
@@ -144,7 +149,16 @@ public class GuiceBootstrap extends GuiceServletContextListener {
 		JpaPersistModuleBuilder builder = new JpaPersistModuleBuilder();
 
 		JpaPersistModule jpaModule = new JpaPersistModule("posnet");
-		builder.configModule(jpaModule, configuration, "db");
+		Properties jpaProp = builder.buildHibernateProperties(configuration, "db");
+		jpaModule.properties(jpaProp);
+		
+		if (log.isDebugEnabled()) {
+			log.debug("Database configurations:");
+			log.debug("- User    : {}", configuration.getProperty("db.user"));
+			//log.debug("- Password: {}", configuration.getProperty("db.password"));
+			log.debug("- Driver  : {}", configuration.getProperty("db.driver"));
+			log.debug("- URL     : {}", configuration.getProperty("db.url"));
+		}
 
 		return jpaModule;
 	}

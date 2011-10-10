@@ -1,13 +1,12 @@
 package com.chinarewards.qqgbvpn.domain;
 
-import java.util.Arrays;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -57,13 +56,20 @@ public class Pos {
 	// POS 内置唯一标识。6位字符
 	String secret;
 	
-	// save the challenge code.
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	byte[] challenge;
+	String firmware;
+	
+	Boolean upgradeRequired;
+	
+//	// save the challenge code.
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	byte[] challenge;
+	
+	@Version
+    long version;	//2011-09-13   Seek
 
 	public String getId() {
 		return id;
@@ -151,30 +157,56 @@ public class Pos {
 		this.secret = secret;
 	}
 
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public byte[] getChallenge() {
-		return challenge;
+	public String getFirmware() {
+		return firmware;
 	}
 
-	/**
-	 * FIXME should not use this. This is session specific.
-	 * 
-	 * @deprecated
-	 */
-	public void setChallenge(byte[] challenge) {
-		this.challenge = challenge;
+	public void setFirmware(String firmware) {
+		this.firmware = firmware;
 	}
 
+	public Boolean getUpgradeRequired() {
+		return upgradeRequired;
+	}
+
+	public void setUpgradeRequired(Boolean upgradeRequired) {
+		this.upgradeRequired = upgradeRequired;
+	}
+	
+
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public byte[] getChallenge() {
+//		return challenge;
+//	}
+//
+//	/**
+//	 * FIXME should not use this. This is session specific.
+//	 * 
+//	 * @deprecated
+//	 */
+//	public void setChallenge(byte[] challenge) {
+//		this.challenge = challenge;
+//	}
+	
+	public long getVersion() {
+		return version;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
+	}
+	
 	@Override
 	public String toString() {
 		return "Pos [id=" + id + ", posId=" + posId + ", model=" + model
 				+ ", sn=" + sn + ", simPhoneNo=" + simPhoneNo + ", dstatus="
 				+ dstatus + ", istatus=" + istatus + ", ostatus=" + ostatus
-				+ ", secret=" + secret + ", challenge="
-				+ Arrays.toString(challenge) + "]";
+				+ ", secret=" + secret + ", firmware=" + firmware
+				+ "upgradeRequired=" + upgradeRequired + "]";
 	}
+
 }

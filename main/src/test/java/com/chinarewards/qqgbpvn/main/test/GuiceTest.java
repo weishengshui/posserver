@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbpvn.main.test;
 
+import org.junit.After;
 import org.junit.Before;
 
 import com.google.inject.Guice;
@@ -57,7 +58,16 @@ public abstract class GuiceTest extends BaseTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		super.setUp();
 		createInjector();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.chinarewards.qqgbpvn.main.test.BaseTest#tearDown()
+	 */
+	@After
+	public void tearDown() throws Exception {
+		super.tearDown();
+	}
+	
 }
