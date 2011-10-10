@@ -92,10 +92,6 @@
 		</tr>
 	</table>
 	<script type="text/javascript">
-	var is_generate = '<s:property value="#request.generate"/>';
-	if(is_generate =="false"){
-		alert("没有账单记录不能生成Excel文件！");
-	}
 	
 	initializeDatepicker("startDate","endDate");
 	function initializeDatepicker(idFrom, idTo) {

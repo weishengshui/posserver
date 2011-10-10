@@ -86,10 +86,6 @@
 					</table>
 				</div></td>
 		</tr>
-		<tr>
-			<td align="left"><input type="button" onclick="" value="生成Excel" >
-			</td>
-		</tr>
 	</table>
 	<script type="text/javascript">
 	initializeDatepicker("startDate","endDate");
@@ -127,6 +123,31 @@
 		formObj.submit();
 		
 	}
+	
+	var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
+	
+	function check_start_date(){
+		if($("#startDate").val == null || $("#startDate").val == "")return false;
+		if(!pattern.exec($("#startDate").val)){
+			alert('请输入正确的开始时间 /n 例如2011-01-01');
+			return false;
+		}
+		return true;
+	}
+	function check_end_date(){
+		if($("#endDate").val == null || $("#endDate").val == "")return false;
+		if(!pattern.exec($("#endDate").val)){
+			alert('请输入正确的结束时间 /n 例如2011-01-01');
+			return false;
+		}
+		return true;
+	}
+	$("#startDate").change(function (){
+		check_start_date();
+	});
+	$("#endDate").change(function (){
+		check_end_date();
+	});
 	
 	function showError(errorMsg) {
 		alert(errorMsg);
