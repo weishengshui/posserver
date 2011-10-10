@@ -6,7 +6,7 @@ public class FinanceReportVO implements Serializable {
 
 	private static final long serialVersionUID = -8807160572059457815L;
 	
-	public static final int BASE_AMOUNT = 1;
+	public static final int BASE_AMOUNT = 120;
 	
 	public static final double UNIT_PRICE = 0.6;
 	

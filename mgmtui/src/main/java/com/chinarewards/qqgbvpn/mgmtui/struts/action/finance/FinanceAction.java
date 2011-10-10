@@ -123,11 +123,11 @@ public class FinanceAction extends BaseAction {
 			pageInfo.setPageSize(INITPAGESIZE);
 			
 			FinanceReportHistory history = getFinanceManager().createFinanceReportHistory(searchVO);
-			//超时时间到时从配置文件中获取
+			
+			//启动线程来生成报表
 			Thread createReport = new CreateFinanceReport(getFinanceManager(),searchVO,history.getId());
 			createReport.start();
 			
-			pageInfo = getFinanceManager().searchFinanceReportHistory(searchVO, pageInfo);
 		}catch(Exception e){
 			e.printStackTrace();
 			return ERROR;

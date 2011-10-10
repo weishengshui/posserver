@@ -132,7 +132,7 @@
 	}
 	
 	function download(reportId){
-		var file_name = document.getElementById("file_name_" + reportId).innerHTML + ".csv";
+		var file_name = document.getElementById("file_name_" + reportId).innerHTML;
 		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + file_name;
 	}
 	

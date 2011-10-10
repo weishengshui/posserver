@@ -19,9 +19,9 @@ import com.chinarewards.utils.StringUtil;
 public class CreateFinanceReport extends Thread {
 	
 	/**
-	 * 默认超时时间10分钟
+	 * 默认超时时间30分钟
 	 */
-	private long timeout = 600000;
+	private long timeout = 1800000;
 	
 	private FinanceManager financeMgr;
 	
@@ -116,7 +116,7 @@ public class CreateFinanceReport extends Thread {
 									sb.append(",");
 									sb.append(vo.getPosId());
 									sb.append(",");
-									sb.append(vo.getBaseAmount());
+									sb.append(vo.getBaseAmount() + "/台/月");
 									sb.append(",");
 									sb.append(vo.getActuallyValCount());
 									sb.append(",");

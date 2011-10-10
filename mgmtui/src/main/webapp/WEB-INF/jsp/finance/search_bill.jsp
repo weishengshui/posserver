@@ -65,7 +65,7 @@
 									</td>
 									<td><s:property value="#billVO.posId" />
 									</td>
-									<td><s:property value="#billVO.baseAmount" />
+									<td><s:property value="#billVO.baseAmount" />/台/月
 									</td>
 									<td><s:property value="#billVO.actuallyValCount" />
 									</td>
