@@ -220,8 +220,12 @@ public class FinanceAction extends BaseAction {
 		this.fileName = fileName;
 	}
 	
-	public InputStream getInputStream() throws FileNotFoundException, UnsupportedEncodingException {
-		FinanceReportHistory report = getFinanceManager().getFinanceReportHistoryById(reportId);
-		return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
-		} 
+	public InputStream getInputStream() throws UnsupportedEncodingException {
+		FinanceReportHistory report = getFinanceManager()
+				.getFinanceReportHistoryById(reportId);
+		if (report != null) {
+			return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
+		}
+		return new ByteArrayInputStream("".getBytes());
+	}
 }
