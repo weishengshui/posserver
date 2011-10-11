@@ -15,6 +15,7 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.FinanceReportHistoryStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.finance.FinanceReportHistoryDao;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
 import com.chinarewards.utils.StringUtil;
 
@@ -40,7 +41,7 @@ public class FinanceReportHistoryDaoImpl extends BaseDao implements FinanceRepor
 			if (searchVO.getEndDate() != null) {
 				hql.append(" and f.createDate <= :endDate");
 				countHql.append(" and f.createDate <= :endDate");
-				paramMap.put("endDate", searchVO.getEndDate());
+				paramMap.put("endDate", Tools.addDate(searchVO.getEndDate(), 1));
 			}
 			if (!StringUtil.isEmptyString(searchVO.getFinanceReportHistoryStatus())) {
 				hql.append(" and f.status = :status");

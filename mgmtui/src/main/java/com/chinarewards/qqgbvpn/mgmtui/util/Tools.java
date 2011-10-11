@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.mgmtui.util;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -106,5 +107,20 @@ public class Tools {
 		src = src.replaceAll(">", "&gt;");
 		src = src.replaceAll("\r\n", "<br>");
 		return src;
+	}
+	
+	/**
+	 * 增加日期天数
+	 * @author iori
+	 * @param date
+	 * @param x 天数
+	 * @return
+	 */
+	public static Date addDate(Date date, int x) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_MONTH, x);
+		date = cal.getTime();
+		return date;
 	}
 }

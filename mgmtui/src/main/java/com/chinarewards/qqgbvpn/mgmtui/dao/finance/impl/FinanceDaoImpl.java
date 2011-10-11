@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.core.BaseDao;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.finance.FinanceDao;
+import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
 import com.chinarewards.utils.StringUtil;
@@ -48,7 +49,7 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 			}
 			if (searchVO.getEndDate() != null) {
 				hql += " and v.ts <= :endDate";
-				paramMap.put("endDate", searchVO.getEndDate());
+				paramMap.put("endDate", Tools.addDate(searchVO.getEndDate(), 1));
 			}
 		}
 		hql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId";
@@ -98,8 +99,8 @@ public class FinanceDaoImpl extends BaseDao implements FinanceDao {
 			if (searchVO.getEndDate() != null) {
 				searchSql += " and v.ts <= :endDate";
 				countSql += " and v.ts <= :endDate";
-				paramMap.put("endDate", searchVO.getEndDate());
-				countParamMap.put("endDate", searchVO.getEndDate());
+				paramMap.put("endDate", Tools.addDate(searchVO.getEndDate(), 1));
+				countParamMap.put("endDate", Tools.addDate(searchVO.getEndDate(), 1));
 			}
 		}
 		searchSql += " group by DATE_FORMAT(v.ts, '%Y-%m'),v.agentId,v.posId ";
