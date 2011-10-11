@@ -20,7 +20,7 @@
 
 	<table align="center" width="800px" class="table_style">
 		<tr>
-			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple">
+			<td><s:form id="search_excel" namespace="/finance" action="search_excel" method="GET" theme="simple" onsubmit="return submitTest();">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
 				<input type="hidden" id="fileName" name="fileName" />
@@ -28,12 +28,12 @@
 				代理商：
 					<s:select name="searchVO.agentId" list="agent" />&nbsp;
 				开始时间：
-					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate" readonly="true">
+					<s:textfield name="searchVO.startDate" cssClass="date" id="startDate">
 						<s:param name="value"><s:date name="searchVO.startDate" format="yyyy-MM-dd" /></s:param>
 					</s:textfield>
 					&nbsp;
 				结束时间：
-					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate" readonly="true">
+					<s:textfield name="searchVO.endDate" cssClass="date" id="endDate">
 						<s:param name="value"><s:date name="searchVO.endDate" format="yyyy-MM-dd" /></s:param>
 					</s:textfield>
 					&nbsp;
@@ -134,10 +134,12 @@
 	}
 	
 	function goPage(pageId) {
-		var formObj = document.getElementById("search_excel");
-		document.getElementById("pageInfo.pageId").value = pageId;
-		formObj.action = "${pageContext.request.contextPath}/finance/search_excel";
-		formObj.submit();
+		if (submitTest()) {
+			var formObj = document.getElementById("search_excel");
+			document.getElementById("pageInfo.pageId").value = pageId;
+			formObj.action = "${pageContext.request.contextPath}/finance/search_excel";
+			formObj.submit();
+		}
 	}
 	
 	function download(reportId,startDate,endDate){
@@ -153,6 +155,22 @@
 	
 	function showError(errorMsg) {
 		alert(errorMsg);
+	}
+	
+	function submitTest() {
+		if (testDateFormat($("#startDate").val()) && testDateFormat($("#endDate").val())) {
+			return true;
+		}
+		alert("日期格式错误，请使用\"2011-10-01\"格式");
+		return false;
+	}
+	
+	function testDateFormat(date) {
+		if (date == null || date == "") {
+			return true;
+		}
+		var reg = /^(\d{4}-\d{2}-\d{2})$/;
+		return reg.test(date);
 	}
 	</script>
 </body>
