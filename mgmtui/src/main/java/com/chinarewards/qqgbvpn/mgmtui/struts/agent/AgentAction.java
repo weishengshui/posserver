@@ -110,6 +110,7 @@ public class AgentAction extends BasePagingToolBarAction {
 			}else{
 				getAgentLogic().update(agentVO);
 			}
+			log.debug("agent add success!");
 		} catch (Throwable e) {
 			log.error(e.getMessage(), e);
 			return ERROR;

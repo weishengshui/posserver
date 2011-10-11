@@ -7,12 +7,14 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.protocol.impl.GuiceUnitOfWorkInterceptor;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.impl.SimpleServiceHandlerObjectFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.google.inject.matcher.Matchers;
 
 /**
  * 
@@ -25,6 +27,8 @@ public class ServiceHandlerModule extends AbstractModule {
 	protected final Configuration configuration;
 
 	protected ServiceMapping mapping;
+	
+	protected static final Logger log = LoggerFactory.getLogger(ServiceHandlerModule.class);
 
 	public ServiceHandlerModule(Configuration configuration) {
 		this.configuration = configuration;
@@ -39,7 +43,7 @@ public class ServiceHandlerModule extends AbstractModule {
 	protected void configure() {
 
 		bind(ServiceMappingConfigBuilder.class).in(Singleton.class);
-		
+
 		bind(ServiceMapping.class).toProvider(ServiceMappingProvider.class).in(
 				Singleton.class);
 
@@ -52,6 +56,14 @@ public class ServiceHandlerModule extends AbstractModule {
 		bind(ServiceDispatcher.class).to(SimpleServiceDispatcher.class).in(
 				Singleton.class);
 
+		// Start Guice UnitOfWork and Transaction around the dispatcher method
+		GuiceUnitOfWorkInterceptor uowIntercept = new GuiceUnitOfWorkInterceptor();
+		requestInjection(uowIntercept);
+		bindInterceptor(Matchers.subclassesOf(ServiceDispatcher.class),
+				Matchers.any(), uowIntercept);
+		
+		
+		log.debug("Finished configuration");
 	}
 
 	private static class ServiceMappingProvider implements
@@ -60,7 +72,7 @@ public class ServiceHandlerModule extends AbstractModule {
 		protected final Configuration configuration;
 
 		protected final ServiceMappingConfigBuilder builder;
-		
+
 		Logger log = LoggerFactory.getLogger(getClass());
 
 		@Inject

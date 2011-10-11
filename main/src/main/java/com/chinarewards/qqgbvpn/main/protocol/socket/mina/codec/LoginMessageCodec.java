@@ -28,7 +28,7 @@ public class LoginMessageCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("login/bind message decode");
 		LoginRequestMessage message = new LoginRequestMessage();
-		if (in.remaining() != ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
+		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
 				+ ProtocolLengths.CHALLENGE_RESPONSE) {
 			throw new PackageException(
 					"login packge message body error, body message is :" + in);
@@ -50,21 +50,29 @@ public class LoginMessageCodec implements ICommandCodec {
 		return message;
 	}
 
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("login/bind message encode");
 
-		LoginResponseMessage responseMessage = (LoginResponseMessage) bodyMessage;
-		long cmdId = responseMessage.getCmdId();
-		int result = responseMessage.getResult();
-		byte[] challeuge = responseMessage.getChallenge();
+		LoginRequestMessage requestMessage = (LoginRequestMessage) bodyMessage;
+		long cmdId = requestMessage.getCmdId();
+		String posId = requestMessage.getPosId();
+		byte[] challengeResponse = requestMessage.getChallengeResponse();
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT
-				+ ProtocolLengths.CHALLENGE];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.POS_ID
+		             	+ ProtocolLengths.CHALLENGE_RESPONSE];
 
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
+		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
+		Tools.putBytes(resultByte, challengeResponse, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID);
 
 		return resultByte;
 	}

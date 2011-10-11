@@ -1,7 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -17,15 +16,14 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
-import com.google.inject.Injector;
 
 public class MessageEncoder implements ProtocolEncoder {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Charset charset;
-
-	private Injector injector;
+	
+	private PackageHeadCodec packageHeadCodec;
 	
 	protected CmdCodecFactory cmdCodecFactory;
 
@@ -36,11 +34,10 @@ public class MessageEncoder implements ProtocolEncoder {
 	 * @param injector
 	 * @param cmdCodecFactory
 	 */
-	public MessageEncoder(Charset charset, Injector injector,
-			CmdCodecFactory cmdCodecFactory) {
+	public MessageEncoder(Charset charset, CmdCodecFactory cmdCodecFactory) {
 		this.charset = charset;
-		this.injector = injector;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.packageHeadCodec = new PackageHeadCodec();
 	}
 
 	/*
@@ -68,7 +65,9 @@ public class MessageEncoder implements ProtocolEncoder {
 			ProtocolEncoderOutput out) throws Exception {
 		
 		log.debug("encode message start");
-		log.trace("session.getId()=======:" + session.getId());
+		if (session != null && session.isConnected()) {
+			log.trace("Mina session ID: {}", session.getId());
+		}
 		
 		Message msg = (Message) message;
 		HeadMessage headMessage = msg.getHeadMessage();
@@ -76,7 +75,7 @@ public class MessageEncoder implements ProtocolEncoder {
 
 		long cmdId = bodyMessage.getCmdId();
 		byte[] bodyByte = null;
-		log.debug("cmdId is ({})", cmdId);
+		log.debug("cmdId to send: ({})", cmdId);
 		
 		if (bodyMessage instanceof ErrorBodyMessage) {
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
@@ -97,27 +96,20 @@ public class MessageEncoder implements ProtocolEncoder {
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		log.debug("bodyByte====return====:({})",Arrays.toString(bodyByte));
+		//head process
+		headMessage.setMessageSize(ProtocolLengths.HEAD + bodyByte.length);
+		byte[] headByte = packageHeadCodec.encode(headMessage);
 		
-		byte[] headByte = new byte[ProtocolLengths.HEAD];
-
-		Tools.putUnsignedInt(headByte, headMessage.getSeq(), 0);
-		Tools.putUnsignedInt(headByte, headMessage.getAck(), 4);
-		Tools.putUnsignedShort(headByte, headMessage.getFlags(), 8);
-		Tools.putUnsignedShort(headByte, 0, 10);
-		Tools.putUnsignedInt(headByte, ProtocolLengths.HEAD + bodyByte.length,
-				12);
-
+		
 		byte[] result = new byte[ProtocolLengths.HEAD + bodyByte.length];
 
 		Tools.putBytes(result, headByte, 0);
 		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
 		
+		// make the 
 		int checkSumVal = Tools.checkSum(result, result.length);
-
 		Tools.putUnsignedShort(result, checkSumVal, 10);
-
-		log.debug("checkSumVal=====return===:({})" ,checkSumVal);
+		log.debug("Encoded message checkum: 0x{})", Integer.toHexString(checkSumVal));
 		
 		IoBuffer buf = IoBuffer.allocate(result.length);
 

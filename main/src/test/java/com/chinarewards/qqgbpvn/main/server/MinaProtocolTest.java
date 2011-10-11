@@ -47,9 +47,9 @@ public class MinaProtocolTest extends JpaGuiceTest {
 		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
 		conf.setProperty("db.url", "jdbc:hsqldb:.");
 		// additional Hibernate properties
-		conf.setProperty("db.hibernate.dialect",
+		conf.setProperty("db.ext.hibernate.dialect",
 				"org.hibernate.dialect.HSQLDialect");
-		conf.setProperty("db.hibernate.show_sql", true);
+		conf.setProperty("db.ext.hibernate.show_sql", true);
 		// URL for QQ
 		conf.setProperty("qq.groupbuy.url.groupBuyingSearchGroupon",
 				"http://localhost:8086/qqapi");

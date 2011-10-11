@@ -26,7 +26,7 @@
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<jackson.json.version>1.8.5</jackson.json.version>
 		<junit.version>4.8.2</junit.version>
-		<logback.version>0.9.16</logback.version>
+		<logback.version>0.9.19</logback.version>
 		<slf4j.version>1.5.11</slf4j.version>
 	</properties>
 	<organization>
@@ -193,7 +193,7 @@
 		</dependencies>
 	</dependencyManagement>
 	<modules>
-		<module>config</module>
+		<module>testing</module>
 		<module>core</module>
 		<module>domain</module>
 		<module>main</module>

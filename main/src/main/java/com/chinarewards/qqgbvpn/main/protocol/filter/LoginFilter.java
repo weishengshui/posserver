@@ -74,6 +74,7 @@ public class LoginFilter extends IoFilterAdapter {
 		// special treatment for some command (cyril: I don't know why it is needed);
 		if (cmdId == CmdConstant.INIT_CMD_ID) {
 			// get POS ID
+			// FIXME completely wrong implementation
 			InitRequestMessage im = (InitRequestMessage) msg;
 			session.setAttribute(POS_ID, im.getPosId());
 			
@@ -82,6 +83,7 @@ public class LoginFilter extends IoFilterAdapter {
 		} else if (cmdId == CmdConstant.LOGIN_CMD_ID
 				|| cmdId == CmdConstant.BIND_CMD_ID) {
 			// get POS ID
+			// FIXME completely wrong implementation
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
 			session.setAttribute(POS_ID, lm.getPosId());
 			
@@ -155,8 +157,7 @@ public class LoginFilter extends IoFilterAdapter {
 			}
 		}
 		
-		// XXX missing nextFilter.messageSent(session, writeRequest); !?!
-
+		nextFilter.messageSent(session, writeRequest);
 		
 		log.trace("messageSent() done");
 	}

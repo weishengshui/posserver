@@ -78,13 +78,13 @@ public class ValidateCommandHandler implements ServiceHandler {
 				log.debug("ValidateCommandHandler======remote==");
 				HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
 				int resultCode = Integer.valueOf((String) result.get("resultCode"));
-				log.debug("resultCode=========: {}"+resultCode);
+				log.debug("resultCode=========: {}", resultCode);
 				if (resultCode == SUCCESS_CODE ) {
 					List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
 							.get("items");
 					validateResponseMessage.setResult(SUCCESS_CODE);
 					for (GroupBuyingValidateResultVO item : items) {
-						log.debug("item.getResultStatus()=============:"+item.getResultStatus());
+						log.debug("item.getResultStatus()=============: [{}]", item.getResultStatus());
 						//腾讯验证通过
 						if (!"0".equals(item.getResultStatus())) {
 							validateResponseMessage.setResult(1);

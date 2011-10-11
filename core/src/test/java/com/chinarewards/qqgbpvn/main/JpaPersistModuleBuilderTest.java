@@ -51,8 +51,8 @@ public class JpaPersistModuleBuilderTest extends GuiceTest {
 		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
 		conf.setProperty("db.url", "jdbc:hsqldb:.");
 		// additional Hibernate properties
-		conf.setProperty("db.hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		conf.setProperty("db.hibernate.show_sql", true);
+		conf.setProperty("db.ext.hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+		conf.setProperty("db.ext.hibernate.show_sql", true);
 
 		// play with the API
 		JpaPersistModuleBuilder b = new JpaPersistModuleBuilder();
@@ -81,9 +81,9 @@ public class JpaPersistModuleBuilderTest extends GuiceTest {
 		conf.setProperty("db.driver", "org.hsqldb.jdbcDriver");
 		conf.setProperty("db.url", "jdbc:hsqldb:.");
 		// additional Hibernate properties
-		conf.setProperty("db.hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		conf.setProperty("db.hibernate.show_sql", true);
-		conf.setProperty("db.hibernate.connection.username", "bad-root");	// this will be overwritten
+		conf.setProperty("db.ext.hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+		conf.setProperty("db.ext.hibernate.show_sql", true);
+		conf.setProperty("db.ext.hibernate.connection.username", "bad-root");	// this will be overwritten
 
 		// play with the API
 		JpaPersistModuleBuilder b = new JpaPersistModuleBuilder();

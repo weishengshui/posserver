@@ -4,6 +4,7 @@
 package com.chinarewards.qqgbvpn.main;
 
 import java.net.InetSocketAddress;
+import java.util.Iterator;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -137,6 +138,8 @@ public class BootStrap {
 
 		// build the configuration object.
 		buildConfiguration();
+		
+		printConfigValues(configuration);
 
 		// print some text.
 		log.info("Bootstrapping...");
@@ -238,6 +241,26 @@ public class BootStrap {
 
 	}
 
+	/**
+	 * Print configuration.
+	 */
+	private void printConfigValues(Configuration configuration) {
+		// get system configuration
+		@SuppressWarnings("rawtypes")
+		Iterator iter = configuration.getKeys();
+		if (configuration.isEmpty()) {
+			log.warn("No configuration values, it is weired!");
+		} else {
+			log.debug("System configuration:");
+			while (iter.hasNext()) {
+				String key = (String) iter.next();
+				log.debug("- {}: {}", key, configuration.getProperty(key));
+			}
+		}
+
+		// TODO print command mapping
+	}
+
 	@SuppressWarnings("static-access")
 	protected Options buildCmdArgOpts() {
 
@@ -291,7 +314,7 @@ public class BootStrap {
 		Module serviceHandlerModule = buildServiceHandlerModule();
 
 		// prepare Guice injector
-		log.debug("Bootstraping Guice injector...");
+		log.info("Creating Guice injector. If it is stucked, there is a chance the database is down.");
 		injector = Guice.createInjector(new AppModule(), new ServerModule(),
 				new HardCodedConfigModule(configuration), jpaModule, serviceHandlerModule);
 
@@ -303,7 +326,8 @@ public class BootStrap {
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
 		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
 		
-		return Modules.override(new ServiceHandlerModule(configuration)).with(new ServiceHandlerGuiceModule(mapping));
+		return Modules.override(new ServiceHandlerModule(configuration)).with(
+				new ServiceHandlerGuiceModule(mapping));
 		
 	}
 

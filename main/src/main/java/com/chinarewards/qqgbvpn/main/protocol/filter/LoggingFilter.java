@@ -1,12 +1,15 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
+import org.apache.mina.core.buffer.IoBuffer;
+import org.apache.mina.core.filterchain.IoFilter.NextFilter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * Provides better business-oriented logging.
@@ -24,13 +27,48 @@ public class LoggingFilter extends IoFilterAdapter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	private int maxHexDumpLength = 96;
+
+	/**
+	 * Returns the maximum length which data will be dumped for incoming and
+	 * outgoing message.
+	 * <p>
+	 * 
+	 * Default value is 128.
+	 * 
+	 * @return the maxHexDumpLength
+	 */
+	public int getMaxHexDumpLength() {
+		return maxHexDumpLength;
+	}
+
+	/**
+	 * Sets the maximum length which data will be dumped for incoming and
+	 * outgoing message. If zero is specified, no hex dump will be performed.
+	 * <p>
+	 * 
+	 * Default value is 128.
+	 * 
+	 * @return the maxHexDumpLength
+	 * @param maxHexDumpLength
+	 *            the maxHexDumpLength to set ＠throws IllegalArgumentException
+	 *            if the value is less than 0.
+	 */
+	public void setMaxHexDumpLength(int maxHexDumpLength) {
+		if (maxHexDumpLength < 0)
+			throw new IllegalArgumentException(
+					"Maximum length should not be less than zero.");
+		this.maxHexDumpLength = maxHexDumpLength;
+	}
+
 	@Override
 	public void exceptionCaught(NextFilter nextFilter, IoSession session,
 			Throwable cause) throws Exception {
 
 		logError(session, cause);
+		
+		nextFilter.exceptionCaught(session, cause);
 
-		exceptionCaught(nextFilter, session, cause);
 	}
 
 	/**
@@ -52,16 +90,107 @@ public class LoggingFilter extends IoFilterAdapter {
 		// return immediately if insufficient level is given.
 		if (!log.isDebugEnabled())
 			return;
+		
+		if (!session.isConnected()) {
+			return;
+		}
 
 		// prepare the logging data
 		String addr = buildAddressPortString(session);
 		String posId = getPosIdFromSession(session);
 
-		log.debug(
-				"An exception is caught when handling command. Detailed information: "
-						+ " client address={}:{}, POS ID={}", new Object[] {
-						addr, posId });
+		if (log.isDebugEnabled()) {
+			log.debug(
+					"An exception is caught when handling command. Detailed information: "
+							+ " client address={}, Mina session ID={}, POS ID={}", new Object[] {
+							addr, session.getId(), posId });
+		}
 
+	}
+
+	/**
+	 * Current implementation prints the raw message
+	 */
+	public void messageReceived(NextFilter nextFilter, IoSession session,
+			Object message) throws Exception {
+
+		printMessageReceivedFrom(session);
+		doHexDump(message, getMaxHexDumpLength());
+
+		nextFilter.messageReceived(session, message);
+
+	}
+	
+	@Override
+	public void sessionCreated(NextFilter nextFilter, IoSession session)
+			throws Exception {
+		
+		printTotalOpenedSessions(session);
+		
+		nextFilter.sessionCreated(session);
+		
+	}
+	
+	protected void printTotalOpenedSessions(IoSession session) {
+		log.trace("Currently managed session count: {}", session.getService()
+				.getManagedSessionCount());
+	}
+
+	protected void printMessageReceivedFrom(IoSession session) {
+		String addr = buildAddressPortString(session);
+		String posId = getPosIdFromSession(session);
+		if (log.isTraceEnabled()) {
+			log.trace(
+					"Message received from address {}, Mina session ID={}, POS ID={}",
+					new Object[] { addr, session.getId(), posId });
+		}
+	}
+
+	protected void doHexDump(Object message, int maxLength) {
+		// do nothing if not IoBuffer
+		if (!(message instanceof IoBuffer))
+			return;
+		// do nothing if no need to print.
+		if (maxLength <= 0)
+			return;
+
+		// print the buffer
+		IoBuffer buffer = (IoBuffer) message;
+		if (!buffer.hasRemaining())
+			return;
+
+		// remember the position
+		int position = buffer.position();
+		// number of available bytes to read.
+		int remaining = buffer.remaining();
+		// the actual length to read.
+		int partLength = remaining < maxHexDumpLength ? remaining
+				: maxHexDumpLength;
+
+		try {
+			// copy the target bytes to print
+			byte[] part = new byte[partLength];
+			buffer.get(part);
+			int omitted = buffer.remaining();
+			
+			String hexDump = CodecUtil.hexDumpAsString(part);
+
+			// use hex dump to output
+			if (log.isTraceEnabled()) {
+				log.trace("Received raw bytes from client: (Showing {} of {} bytes, {} omitted)\n{}",
+						new Object[] { partLength, remaining, omitted, hexDump });
+			}
+
+		} finally {
+			// must reset the position after reading from IoBuffer!
+			buffer.position(position);
+		}
+
+	}
+
+	public void messageSent(NextFilter nextFilter, IoSession session,
+			WriteRequest writeRequest) throws Exception {
+		nextFilter.messageSent(session, writeRequest);
 	}
 
 	/**
@@ -71,20 +200,11 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		if (session.containsAttribute(LoginFilter.POS_ID)) {
-			return (String) session.getAttribute(LoginFilter.POS_ID);
-		}
-		return null;
+		return MinaUtil.getPosIdFromSession(session);
 	}
 
 	protected String buildAddressPortString(IoSession session) {
-		SocketAddress addr = session.getRemoteAddress();
-		if (addr == null || !(addr instanceof InetSocketAddress)) {
-			return null;
-		}
-
-		InetSocketAddress sAddr = (InetSocketAddress) addr;
-		return sAddr.getAddress().getHostAddress() + ":" + sAddr.getPort();
+		return MinaUtil.buildAddressPortString(session);
 	}
 
 }

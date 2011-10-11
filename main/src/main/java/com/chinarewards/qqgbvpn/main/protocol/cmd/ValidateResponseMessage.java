@@ -17,9 +17,15 @@ public class ValidateResponseMessage implements ICommand {
 	private String useTime;
 	
 	private String validTime;
+	
+	@Override
+	public String toString() {
+		return "ValidateResponseMessage [cmdId=" + cmdId + ", result=" + result
+				+ ", resultName=" + resultName + ", resultExplain="
+				+ resultExplain + ", currentTime=" + currentTime + ", useTime="
+				+ useTime + ", validTime=" + validTime + "]";
+	}
 
-	
-	
 	//---------------------------------------//
 	public long getCmdId() {
 		return cmdId;
@@ -76,8 +82,5 @@ public class ValidateResponseMessage implements ICommand {
 	public void setValidTime(String validTime) {
 		this.validTime = validTime;
 	}
-	
-
-	
 	
 }

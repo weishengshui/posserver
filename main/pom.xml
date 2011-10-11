@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
@@ -11,25 +12,18 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<description>Server for POS Network Server version 2</description>
 	<dependencies>
-		<dependency>
-			<groupId>com.chinarewards.qqgbvpn</groupId>
-			<artifactId>config</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.chinarewards.qqgbvpn</groupId>
-			<artifactId>domain</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
+	
 		<!-- Google Guice - Dependency injection -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-multibindings</artifactId>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>com.google.inject.extensions</groupId>
 			<artifactId>guice-persist</artifactId>
@@ -51,6 +45,14 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
+		</dependency>
+
+		<!-- Connection Pooling using c3p0 -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-c3p0</artifactId>
+		    <version>3.6.7.Final</version>
+		    <scope>runtime</scope>
 		</dependency>
 
 		<!-- MYSQL -->
@@ -126,6 +128,13 @@
 			<version>2.2.0</version>
 		</dependency>
 
+		<!-- Logging -->
+		<!-- Concrete (and native) implementation of SLF4J -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+
 		<!-- Test Scope STARTS -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -164,7 +173,8 @@
 			<version>6.1.16</version>
 			<scope>test</scope>
 		</dependency>
-
+		
+		<!-- Contains handy API -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -172,12 +182,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Logging -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-		</dependency>
-		
 		<!-- It works with JUnit's log output? -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -280,6 +284,22 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<!-- Try to simply run the main program -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<classpathScope>test</classpathScope>
+					<includeProjectDependencies>true</includeProjectDependencies>
+					<includePluginDependencies>false</includePluginDependencies>
+					<mainClass>com.chinarewards.qqgbvpn.main.Main</mainClass>
+					<arguments>
+						<argument>-d</argument>
+						<argument>${project.basedir}</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>

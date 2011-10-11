@@ -7,12 +7,18 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  * 
  */
 public class FirmwareUpgradeRequestResponseMessage implements ICommand {
-
+	
 	private int result;
 
 	private long size;
 
 	private String firmwareName;
+	
+	@Override
+	public String toString() {
+		return "FirmwareUpgradeRequestResponseMessage [cmdId=" + getCmdId() + ", result=" + result
+				+ ", size=" + size + ", firmwareName=" + firmwareName + "]";
+	}
 
 	// -------------------------------------------------//
 	public long getCmdId() {
