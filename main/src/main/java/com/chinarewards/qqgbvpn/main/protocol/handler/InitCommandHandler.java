@@ -35,19 +35,22 @@ public class InitCommandHandler implements ServiceHandler {
 		log.debug("InitCommandHandler======execute==bodyMessage=: {}", bodyMessage);
 		
 		InitResponseMessage  initResponseMessage  = null;
+		byte[] newChallenge = ChallengeUtil.generateChallenge();
 		try {
 			//创建一个新的challenge
-			byte[] newChallenge = ChallengeUtil.generateChallenge();
 			initResponseMessage = loginManager.init(bodyMessage, newChallenge);
 			
 			//save to session
 			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			// must refresh the challenge even an exception has occurred.
+			log.warn("an unexpected error has occurred when POS ID "  + 
+					bodyMessage.getPosId() + " tries to login", e);
 			initResponseMessage = new InitResponseMessage();
 			initResponseMessage
-					.setChallenge(new byte[ProtocolLengths.CHALLENGE]);
+					.setChallenge(newChallenge);
 			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
+			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		}
 		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
 		response.writeResponse(initResponseMessage);

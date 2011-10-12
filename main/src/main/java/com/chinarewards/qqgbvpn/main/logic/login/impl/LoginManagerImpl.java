@@ -137,7 +137,7 @@ public class LoginManagerImpl implements LoginManager {
 					req.getChallengeResponse(), pos.getSecret(),
 					oldChallenge);
 
-			logger.debug("new challenge for POS (POS ID):{}", newChallenge, pos.getPosId());
+			logger.debug("new challenge for POS (POS ID): {}", newChallenge, pos.getPosId());
 			posDao.get().merge(pos);
 
 			if (check) {
@@ -150,6 +150,7 @@ public class LoginManagerImpl implements LoginManager {
 					domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 				}
 			} else {
+				logger.debug("challenge response not correct for POS ID {}", req.getPosId());
 				result = LoginResult.VALIDATE_FAILED;
 				domainEvent = DomainEvent.POS_LOGGED_FAILED.toString();
 			}

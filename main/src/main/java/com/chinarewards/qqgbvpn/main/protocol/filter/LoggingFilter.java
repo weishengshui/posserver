@@ -1,7 +1,9 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.filterchain.IoFilter.NextFilter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
@@ -86,24 +88,28 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * </ol>
 	 */
 	protected void logError(IoSession session, Throwable cause) {
-
-		// return immediately if insufficient level is given.
-		if (!log.isDebugEnabled())
-			return;
 		
-		if (!session.isConnected()) {
-			return;
-		}
+		try {
 
-		// prepare the logging data
-		String addr = buildAddressPortString(session);
-		String posId = getPosIdFromSession(session);
-
-		if (log.isDebugEnabled()) {
-			log.debug(
-					"An exception is caught when handling command. Detailed information: "
-							+ " client address={}, Mina session ID={}, POS ID={}", new Object[] {
-							addr, session.getId(), posId });
+			// return immediately if insufficient level is given.
+			if (!log.isDebugEnabled())
+				return;
+			
+			if (!session.isConnected()) {
+				return;
+			}
+	
+			// prepare the logging data
+			if (log.isWarnEnabled()) {
+				log.warn("An exception is caught when handling command. Detailed information: "
+						+ " client "
+						+ MinaUtil.buildCommonClientAddressText(session));
+			}
+		} catch (Throwable t) {
+			// should not affect the normal flow
+			log.warn(
+					"An exception has occurred when printing error information. Maybe the Mina session is not connected?",
+					t);
 		}
 
 	}
@@ -114,35 +120,71 @@ public class LoggingFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 
+		// print the source address
 		printMessageReceivedFrom(session);
+		// dump part of the raw message
 		doHexDump(message, getMaxHexDumpLength());
 
 		nextFilter.messageReceived(session, message);
 
+		log.trace("messageReceived() done");
 	}
-	
+
+	/**
+	 * Current implementation should only print debug information and then
+	 * passes on the filter chain.
+	 */
 	@Override
 	public void sessionCreated(NextFilter nextFilter, IoSession session)
 			throws Exception {
 		
-		printTotalOpenedSessions(session);
+		// print session.
+		try {
+			printRemoteSocketAddress(session);
+			printTotalOpenedSessions(session);
+		} catch (Throwable t) {
+			// this filter should be nice, although our code should have no error
+			log.warn("An internal error occurred when print debug information, fix it!", t);
+		}
 		
+		// pass to next
 		nextFilter.sessionCreated(session);
 		
 	}
 	
+	/**
+	 * Print the total number of opened sessions.
+	 * 
+	 * @param session
+	 */
 	protected void printTotalOpenedSessions(IoSession session) {
 		log.trace("Currently managed session count: {}", session.getService()
 				.getManagedSessionCount());
 	}
 
+	/**
+	 * Prints the remote address and port information.
+	 * 
+	 * @param session
+	 *            the session to print.
+	 */
+	protected void printRemoteSocketAddress(IoSession session) {
+
+		// we only know how to deal with SocketAddress.
+		SocketAddress addr = session.getRemoteAddress();
+		if (addr == null || !(addr instanceof InetSocketAddress)) {
+			return;
+		}
+
+		// print it
+		log.info("incoming connection from remote address: {}, Mina session ID: {}"
+				,buildAddressPortString(session), session.getId());
+	}
+	
 	protected void printMessageReceivedFrom(IoSession session) {
-		String addr = buildAddressPortString(session);
-		String posId = getPosIdFromSession(session);
 		if (log.isTraceEnabled()) {
-			log.trace(
-					"Message received from address {}, Mina session ID={}, POS ID={}",
-					new Object[] { addr, session.getId(), posId });
+			log.trace("raw message received from "
+					+ MinaUtil.buildCommonClientAddressText(session));
 		}
 	}
 
@@ -177,7 +219,7 @@ public class LoggingFilter extends IoFilterAdapter {
 
 			// use hex dump to output
 			if (log.isTraceEnabled()) {
-				log.trace("Received raw bytes from client: (Showing {} of {} bytes, {} omitted)\n{}",
+				log.trace("received raw bytes: (showing {} of {} bytes, {} omitted)\n{}",
 						new Object[] { partLength, remaining, omitted, hexDump });
 			}
 
@@ -190,6 +232,7 @@ public class LoggingFilter extends IoFilterAdapter {
 
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
+		// no-op
 		nextFilter.messageSent(session, writeRequest);
 	}
 
@@ -203,6 +246,11 @@ public class LoggingFilter extends IoFilterAdapter {
 		return MinaUtil.getPosIdFromSession(session);
 	}
 
+	/**
+	 * 
+	 * @param session
+	 * @return
+	 */
 	protected String buildAddressPortString(IoSession session) {
 		return MinaUtil.buildAddressPortString(session);
 	}

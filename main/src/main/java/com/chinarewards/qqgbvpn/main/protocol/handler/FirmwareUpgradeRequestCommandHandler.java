@@ -7,7 +7,6 @@ import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponseMessage;
 import com.google.inject.Inject;
@@ -28,8 +27,6 @@ public class FirmwareUpgradeRequestCommandHandler implements ServiceHandler {
 
 		FirmwareUpgradeRequestMessage bodyMessage = (FirmwareUpgradeRequestMessage) request
 				.getParameter();
-
-		log.debug("======execute==bodyMessage=: {}", bodyMessage);
 
 		FirmwareUpgradeRequestResponseMessage fwResponseMessage = null;
 		try {

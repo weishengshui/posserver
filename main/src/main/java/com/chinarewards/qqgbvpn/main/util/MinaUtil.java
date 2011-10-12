@@ -48,4 +48,25 @@ public abstract class MinaUtil {
 		return sAddr.getAddress().getHostAddress() + ":" + sAddr.getPort();
 	}
 
+	/**
+	 * Handy method to build a string for showing common information interested
+	 * in knowing the originating client.
+	 * <p>
+	 * 
+	 * Current implementation shows the following information:
+	 * <ol>
+	 * <li>IP address and port in the format &lt;ip&gt:&lt;port&gt;</li>
+	 * <li>Mina session ID</li>
+	 * <li>Identified POS ID, if logged in</li>
+	 * </ol>
+	 * 
+	 * @param session
+	 * @return
+	 */
+	public static final String buildCommonClientAddressText(IoSession session) {
+		return "address " + buildAddressPortString(session)
+				+ ", Mina session ID " + session.getId()
+				+ ", identified POS ID " + getPosIdFromSession(session);
+	}
+
 }

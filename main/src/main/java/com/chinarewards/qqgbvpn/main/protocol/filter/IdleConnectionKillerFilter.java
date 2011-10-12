@@ -33,6 +33,8 @@ public class IdleConnectionKillerFilter extends IoFilterAdapter {
 		session.close(true);
 
 		nextFilter.sessionIdle(session, status);
+		
+		log.trace("sessionIdle() done");
 	}
 
 }
