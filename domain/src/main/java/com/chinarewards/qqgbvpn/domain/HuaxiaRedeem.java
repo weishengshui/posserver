@@ -56,6 +56,11 @@ public class HuaxiaRedeem {
 	Date ackDate;
 	
 	/**
+	 * ack id
+	 */
+	String ackId;
+	
+	/**
 	 * redeem Status
 	 */
 	@Enumerated(EnumType.STRING)
@@ -90,6 +95,14 @@ public class HuaxiaRedeem {
 	 * <code>Agent.getName()</code>.
 	 */
 	String agentName;
+
+	public String getAckId() {
+		return ackId;
+	}
+
+	public void setAckId(String ackId) {
+		this.ackId = ackId;
+	}
 
 	public Date getConfirmDate() {
 		return confirmDate;

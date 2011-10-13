@@ -7,6 +7,10 @@ public class HuaxiaRequestMessage implements ICommand {
 	
 	public String cardNum;
 	
+	public String chanceId;
+	
+	public String ackId;
+	
 	@Override
 	public String toString() {
 		return "HuaxiaRequestMessage [cmdId=" + cmdId + ", cardNum="
@@ -29,6 +33,22 @@ public class HuaxiaRequestMessage implements ICommand {
 
 	public void setCardNum(String cardNum) {
 		this.cardNum = cardNum;
+	}
+
+	public String getChanceId() {
+		return chanceId;
+	}
+
+	public void setChanceId(String chanceId) {
+		this.chanceId = chanceId;
+	}
+
+	public String getAckId() {
+		return ackId;
+	}
+
+	public void setAckId(String ackId) {
+		this.ackId = ackId;
 	} 
 	
 	

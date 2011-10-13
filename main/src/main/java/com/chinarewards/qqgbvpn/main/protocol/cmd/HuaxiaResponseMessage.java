@@ -9,6 +9,10 @@ public class HuaxiaResponseMessage implements ICommand {
 	private int result;
 	
 	private String txDate;
+	
+	public String chanceId;
+	
+	public String ackId;
 
 	@Override
 	public String toString() {
@@ -39,6 +43,22 @@ public class HuaxiaResponseMessage implements ICommand {
 
 	public void setTxDate(String txDate) {
 		this.txDate = txDate;
+	}
+
+	public String getChanceId() {
+		return chanceId;
+	}
+
+	public void setChanceId(String chanceId) {
+		this.chanceId = chanceId;
+	}
+
+	public String getAckId() {
+		return ackId;
+	}
+
+	public void setAckId(String ackId) {
+		this.ackId = ackId;
 	}
 
 	

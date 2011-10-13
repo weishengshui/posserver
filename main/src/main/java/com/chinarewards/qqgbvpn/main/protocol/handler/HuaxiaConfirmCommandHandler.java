@@ -45,16 +45,23 @@ public class HuaxiaConfirmCommandHandler implements ServiceHandler {
 		params.setCardNum(huaxiaRequestMessage.getCardNum());
 		params.setPosId(posId);
 		
-		int result = mgr.get().huaxiaRedeemConfirm(params).getResult();
+		HuaxiaRedeemVO vo = mgr.get().huaxiaRedeemConfirm(params);
+		int result = vo.getResult();
+		String chanceId = vo.getChanceId();
+		String ackId = vo.getAckId();
 		
 		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_CONFIRM_RESPONSE);
 		huaxiaResponseMessage.setResult(result);
 		huaxiaResponseMessage.setTxDate(txDate);
+		huaxiaResponseMessage.setChanceId(chanceId);
+		huaxiaResponseMessage.setAckId(ackId);
 		
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaConfirmCommandHandler posId : {}" + posId);
 		log.debug("HuaxiaConfirmCommandHandler Result : {}" + result);
 		log.debug("HuaxiaConfirmCommandHandler TxDate : {}" + txDate);
+		log.debug("HuaxiaConfirmCommandHandler chanceId : {}" + chanceId);
+		log.debug("HuaxiaConfirmCommandHandler ackId : {}" + ackId);
 
 		response.writeResponse(huaxiaResponseMessage);
 	}

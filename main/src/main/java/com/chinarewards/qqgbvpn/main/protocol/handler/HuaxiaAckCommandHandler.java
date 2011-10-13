@@ -43,6 +43,8 @@ public class HuaxiaAckCommandHandler implements ServiceHandler {
 		
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
 		params.setCardNum(huaxiaRequestMessage.getCardNum());
+		params.setChanceId(huaxiaRequestMessage.getChanceId());
+		params.setAckId(huaxiaRequestMessage.getAckId());
 		params.setPosId(posId);
 		
 		int result = mgr.get().huaxiaRedeemAck(params).getResult();

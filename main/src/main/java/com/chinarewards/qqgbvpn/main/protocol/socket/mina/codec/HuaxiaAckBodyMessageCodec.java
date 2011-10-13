@@ -31,11 +31,17 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 		in.get(requestByte);
 		log.debug("requestByte :"+Arrays.toString(requestByte));
 		int cardNumEnd = -1;
+		int chanceIdEnd = -1;
+		int ackIdEnd = -1;
 		boolean errorFlag = false;
 		for (int i = 0; i < requestByte.length; i++) {
 			if (requestByte[i] == 0) {
 				if (cardNumEnd == -1) {
 					cardNumEnd = i;
+				} else if (chanceIdEnd == -1) {
+					chanceIdEnd = i;
+				} else if (ackIdEnd == -1) {
+					ackIdEnd = i;
 				} else {
 					errorFlag = true;
 				}
@@ -48,7 +54,14 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 			throw new PackageException(
 					"HuaxiaAck packge message body error, body message");
 		}
+		
+		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNumEnd is ({}) , chanceIdEnd is ({}) , ackIdEnd is ({})"
+				, new Object[] { cmdId, cardNumEnd ,chanceIdEnd, ackIdEnd});
+		
 		String cardNum = null;
+		String chanceId = null;
+		String ackId = null;
+		
 		if (cardNumEnd != 0) {
 			byte[] tmp = new byte[cardNumEnd];
 			for (int i = 0; i < cardNumEnd; i++) {
@@ -56,11 +69,29 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 			}
 			cardNum = new String(tmp, charset);
 		}
+		
+		if (chanceIdEnd - cardNumEnd != 1) {
+			byte[] tmp = new byte[requestByte.length - cardNumEnd - 2];
+			for (int i = 0; i < requestByte.length - cardNumEnd - 2; i++) {
+				tmp[i] = requestByte[i + cardNumEnd + 1];
+			}
+			chanceId = new String(tmp, charset);
+		}
+		
+		if (ackIdEnd - chanceIdEnd != 1) {
+			byte[] tmp = new byte[requestByte.length - chanceIdEnd - 2];
+			for (int i = 0; i < requestByte.length - chanceIdEnd - 2; i++) {
+				tmp[i] = requestByte[i + chanceIdEnd + 1];
+			}
+			ackId = new String(tmp, charset);
+		}
 
 		message.setCmdId(cmdId);
 		message.setCardNum(cardNum);
-		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNum is ({})"
-				, new Object[] { cmdId, cardNum });
+		message.setChanceId(chanceId);
+		message.setAckId(ackId);
+		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNum is ({}) , chanceId is ({}) , ackId is ({})"
+				, new Object[] { cmdId, cardNum ,chanceId, ackId});
 		return message;
 	}
 	

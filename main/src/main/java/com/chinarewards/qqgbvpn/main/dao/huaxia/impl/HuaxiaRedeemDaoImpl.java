@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.dao.huaxia.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Query;
 
@@ -16,6 +17,7 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.RedeemStatus;
 import com.chinarewards.qqgbvpn.main.dao.huaxia.HuaxiaRedeemDao;
+import com.chinarewards.qqgbvpn.main.util.Util;
 import com.chinarewards.qqgbvpn.main.vo.HuaxiaRedeemVO;
 import com.chinarewards.utils.StringUtil;
 
@@ -42,21 +44,16 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			Pos pos = getPosByPosId(posId);
 			Agent agent = getAgentByPosId(posId);
 			if (pos != null && agent != null) {
-				//优先处理A状态的
-				int redeemCountStatusA = getRedeemCountByCardNum(cardNum,RedeemStatus.A);
-				if (redeemCountStatusA > 0) {
-					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.A);
+				//先找自己的A
+				int redeemCountPosA = getRedeemCountByPosId(posId,cardNum,RedeemStatus.A);
+				if (redeemCountPosA > 0) {
+					HuaxiaRedeem redeem = getHuaxiaRedeemByPosId(posId,cardNum,RedeemStatus.A);
 					if (redeem != null) {
 						try {
-							//这里要工具箱对象，是因为防止用户是换了代理商或POS做的兑换
 							Date date = new Date();
-							redeem.setAgentId(agent.getId());
-							redeem.setAgentName(agent.getName());
-							redeem.setPosId(pos.getPosId());
-							redeem.setPosModel(pos.getModel());
-							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
 							redeem.setConfirmDate(date);
-							redeem.setStatus(RedeemStatus.A);
+							//更新ackId
+							redeem.setAckId(Util.getUUID(true));
 							
 							saveHuaxiaRedeem(redeem);
 							
@@ -74,10 +71,12 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_SAVE_EXCEPTION;
 						}
 						params.setResult(result);
+						params.setChanceId(redeem.getId());
+						params.setAckId(redeem.getAckId());
 						return params;
 					}
 				}
-				//A没有，则处理U,如果U也没有，则返回没有机会
+				//自己的A没有，则处理U
 				int redeemCount = getRedeemCountByCardNum(cardNum,RedeemStatus.U);
 				if (redeemCount > 0) {
 					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.U);
@@ -91,6 +90,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
 							redeem.setConfirmDate(date);
 							redeem.setStatus(RedeemStatus.A);
+							redeem.setAckId(Util.getUUID(true));
 							
 							saveHuaxiaRedeem(redeem);
 							
@@ -107,6 +107,48 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							e.printStackTrace();
 							result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_SAVE_EXCEPTION;
 						}
+						params.setResult(result);
+						params.setChanceId(redeem.getId());
+						params.setAckId(redeem.getAckId());
+						return params;
+					}
+				}
+				//处理其它POS机A状态的,如果也没有，则返回没有机会
+				int redeemCountStatusA = getRedeemCountByCardNum(cardNum,RedeemStatus.A);
+				if (redeemCountStatusA > 0) {
+					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.A);
+					if (redeem != null) {
+						try {
+							//这里要更新对象，是因为用户是换了POS做的兑换
+							Date date = new Date();
+							redeem.setAgentId(agent.getId());
+							redeem.setAgentName(agent.getName());
+							redeem.setPosId(pos.getPosId());
+							redeem.setPosModel(pos.getModel());
+							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
+							redeem.setConfirmDate(date);
+							redeem.setStatus(RedeemStatus.A);
+							redeem.setAckId(Util.getUUID(true));
+							
+							saveHuaxiaRedeem(redeem);
+							
+							Journal journal = new Journal();
+							journal.setTs(date);
+							journal.setEntity(DomainEntity.HUAXIA_REDEEM.toString());
+							journal.setEntityId(redeem.getId());
+							journal.setEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM.toString());
+							ObjectMapper mapper = new ObjectMapper();
+							journal.setEventDetail(mapper.writeValueAsString(redeem));
+							saveJournal(journal);
+							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
+						} catch (Exception e) {
+							e.printStackTrace();
+							result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_SAVE_EXCEPTION;
+						}
+						params.setResult(result);
+						params.setChanceId(redeem.getId());
+						params.setAckId(redeem.getAckId());
+						return params;
 					} else {
 						//没有机会
 						result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
@@ -130,12 +172,20 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 		if (params != null) {
 			String posId = params.getPosId();
 			String cardNum = params.getCardNum();
+			String ackId = params.getAckId();
+			String chanceId = params.getChanceId();
 			Pos pos = getPosByPosId(posId);
 			Agent agent = getAgentByPosId(posId);
 			if (pos != null && agent != null) {
-				int redeemCount = getRedeemCountByCardNum(cardNum,RedeemStatus.A);
+				int ackCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.R);
+				if (ackCount > 0) {
+					result = HuaxiaRedeemVO.REDEEM_RESULT_ALREADY_ACKED;
+					params.setResult(result);
+					return params;
+				}
+				int redeemCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.A);
 				if (redeemCount > 0) {
-					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.A);
+					HuaxiaRedeem redeem = getRedeemByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.A);
 					if (redeem != null) {
 						try {
 							Date date = new Date();
@@ -196,6 +246,96 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 		Query jql = getEm().createQuery(sql);
 		jql.setParameter("cardNum", cardNum);
 		return ((Long) jql.getSingleResult()).intValue();
+	}
+	
+	/**
+	 * 查询相应状态相应POS机的次数
+	 * @param cardNum
+	 * @return
+	 */
+	private int getRedeemCountByPosId(String posId,String cardNum,RedeemStatus status) {
+		if (StringUtil.isEmptyString(posId) || StringUtil.isEmptyString(cardNum)) {
+			return 0;
+		}
+		String sql = "select count(hr.id) from HuaxiaRedeem hr where hr.status = :status and hr.cardNum = :cardNum and hr.posId = :posId";
+		Query jql = getEm().createQuery(sql);
+		jql.setParameter("status", status);
+		jql.setParameter("cardNum", cardNum);
+		jql.setParameter("posId", posId);
+		return ((Long) jql.getSingleResult()).intValue();
+	}
+	
+	/**
+	 * 查询相应状态相应POS机的对象
+	 * @param cardNum
+	 * @return
+	 */
+	private HuaxiaRedeem getHuaxiaRedeemByPosId(String posId,String cardNum,RedeemStatus status) {
+		if (StringUtil.isEmptyString(posId) || StringUtil.isEmptyString(cardNum)) {
+			return null;
+		}
+		String sql = "select hr from HuaxiaRedeem hr where hr.status = :status and hr.cardNum = :cardNum and hr.posId = :posId";
+		Query jql = getEm().createQuery(sql);
+		jql.setParameter("status", status);
+		jql.setParameter("cardNum", cardNum);
+		jql.setParameter("posId", posId);
+		List<HuaxiaRedeem> list = jql.getResultList();
+		return list != null && list.size() > 0 ? list.get(0) : null;
+	}
+	
+	/**
+	 * 查询相应状态相应POS机的次数
+	 * @param cardNum
+	 * @return
+	 */
+	private int getRedeemCountByAckId(String posId,String cardNum,String ackId, String chanceId,RedeemStatus status) {
+		if (StringUtil.isEmptyString(posId) 
+				|| StringUtil.isEmptyString(cardNum) 
+				|| StringUtil.isEmptyString(ackId) 
+				|| StringUtil.isEmptyString(chanceId)) {
+			return 0;
+		}
+		String sql = "select count(hr.id) from HuaxiaRedeem hr " +
+				"where hr.status = :status " +
+				"and hr.cardNum = :cardNum " +
+				"and hr.posId = :posId " +
+				"and hr.id = :chanceId " +
+				"and hr.ackId = :ackId ";
+		Query jql = getEm().createQuery(sql);
+		jql.setParameter("status", status);
+		jql.setParameter("cardNum", cardNum);
+		jql.setParameter("posId", posId);
+		jql.setParameter("chanceId", chanceId);
+		jql.setParameter("ackId", ackId);
+		return ((Long) jql.getSingleResult()).intValue();
+	}
+	
+	/**
+	 * 查询相应状态相应POS机的次数
+	 * @param cardNum
+	 * @return
+	 */
+	private HuaxiaRedeem getRedeemByAckId(String posId,String cardNum,String ackId, String chanceId,RedeemStatus status) {
+		if (StringUtil.isEmptyString(posId) 
+				|| StringUtil.isEmptyString(cardNum) 
+				|| StringUtil.isEmptyString(ackId) 
+				|| StringUtil.isEmptyString(chanceId)) {
+			return null;
+		}
+		String sql = "select count(hr.id) from HuaxiaRedeem hr " +
+				"where hr.status = :status " +
+				"and hr.cardNum = :cardNum " +
+				"and hr.posId = :posId " +
+				"and hr.id = :chanceId " +
+				"and hr.ackId = :ackId ";
+		Query jql = getEm().createQuery(sql);
+		jql.setParameter("status", status);
+		jql.setParameter("cardNum", cardNum);
+		jql.setParameter("posId", posId);
+		jql.setParameter("chanceId", chanceId);
+		jql.setParameter("ackId", ackId);
+		List<HuaxiaRedeem> list = jql.getResultList();
+		return list != null && list.size() > 0 ? list.get(0) : null;
 	}
 	
 	/**

@@ -27,6 +27,11 @@ public class HuaxiaRedeemVO {
 	 */
 	public static final int REDEEM_RESULT_FAIL_SAVE_EXCEPTION = 4;
 	
+	/**
+	 * 兑换结果：Already acked (same POS) 
+	 */
+	public static final int REDEEM_RESULT_ALREADY_ACKED = 5;
+	
 
 	/**
 	 * 可用次数
@@ -49,6 +54,27 @@ public class HuaxiaRedeemVO {
 	 * POS ID
 	 */
 	private String posId;
+	
+	private String chanceId;
+	
+	private String ackId;
+	
+
+	public String getChanceId() {
+		return chanceId;
+	}
+
+	public void setChanceId(String chanceId) {
+		this.chanceId = chanceId;
+	}
+
+	public String getAckId() {
+		return ackId;
+	}
+
+	public void setAckId(String ackId) {
+		this.ackId = ackId;
+	}
 
 	public String getTxDate() {
 		return txDate;
