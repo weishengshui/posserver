@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.dao.huaxia.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			return vo;
 		}
 		String cardNum = params.getCardNum();
-		params.setRedeemCount(getRedeemCountByCardNum(cardNum,RedeemStatus.U));
+		params.setRedeemCount(searchCalidRedeemCountByCardNum(cardNum));
 		return params;
 	}
 
@@ -43,6 +42,42 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			Pos pos = getPosByPosId(posId);
 			Agent agent = getAgentByPosId(posId);
 			if (pos != null && agent != null) {
+				//优先处理A状态的
+				int redeemCountStatusA = getRedeemCountByCardNum(cardNum,RedeemStatus.A);
+				if (redeemCountStatusA > 0) {
+					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.A);
+					if (redeem != null) {
+						try {
+							//这里要工具箱对象，是因为防止用户是换了代理商或POS做的兑换
+							Date date = new Date();
+							redeem.setAgentId(agent.getId());
+							redeem.setAgentName(agent.getName());
+							redeem.setPosId(pos.getPosId());
+							redeem.setPosModel(pos.getModel());
+							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
+							redeem.setConfirmDate(date);
+							redeem.setStatus(RedeemStatus.A);
+							
+							saveHuaxiaRedeem(redeem);
+							
+							Journal journal = new Journal();
+							journal.setTs(date);
+							journal.setEntity(DomainEntity.HUAXIA_REDEEM.toString());
+							journal.setEntityId(redeem.getId());
+							journal.setEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM.toString());
+							ObjectMapper mapper = new ObjectMapper();
+							journal.setEventDetail(mapper.writeValueAsString(redeem));
+							saveJournal(journal);
+							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
+						} catch (Exception e) {
+							e.printStackTrace();
+							result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_SAVE_EXCEPTION;
+						}
+						params.setResult(result);
+						return params;
+					}
+				}
+				//A没有，则处理U,如果U也没有，则返回没有机会
 				int redeemCount = getRedeemCountByCardNum(cardNum,RedeemStatus.U);
 				if (redeemCount > 0) {
 					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.U);
@@ -145,7 +180,26 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 	}
 	
 	/**
-	 * 查询可用次数
+	 * 查询相应卡号的可用次数
+	 * @param cardNum
+	 * @return
+	 */
+	private int searchCalidRedeemCountByCardNum(String cardNum) {
+		if (StringUtil.isEmptyString(cardNum)) {
+			return 0;
+		}
+		String sql = "select count(hr.id) from HuaxiaRedeem hr where hr.status in ('" +
+				RedeemStatus.U.toString() +
+				"','" +
+				RedeemStatus.A.toString() +
+				"') and hr.cardNum = :cardNum";
+		Query jql = getEm().createQuery(sql);
+		jql.setParameter("cardNum", cardNum);
+		return ((Long) jql.getSingleResult()).intValue();
+	}
+	
+	/**
+	 * 查询相应状态的次数
 	 * @param cardNum
 	 * @return
 	 */
@@ -161,7 +215,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 	}
 	
 	/**
-	 * 查一个可兑换对象
+	 * 查一个相应状态的对象
 	 * @param cardNum
 	 * @return
 	 */
