@@ -31,7 +31,7 @@ public class HuaxiaRedeem {
 	String serialNum;
 	
 	/**
-	 * bank card number (last 4 bit from huaxia bank)
+	 * bank card number (last 4 digit from huaxia bank)
 	 */
 	String cardNum;
 	
