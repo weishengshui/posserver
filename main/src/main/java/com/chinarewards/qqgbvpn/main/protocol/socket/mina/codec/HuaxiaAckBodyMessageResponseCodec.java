@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -30,7 +31,7 @@ public class HuaxiaAckBodyMessageResponseCodec implements ICommandCodec {
 
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
-		String txDate = responseMessage.getTxDate();
+		String txDate = responseMessage.getTxDate() + CmdConstant.SEPARATOR;
 		
 		byte[] tmp = txDate.getBytes(charset);
 
