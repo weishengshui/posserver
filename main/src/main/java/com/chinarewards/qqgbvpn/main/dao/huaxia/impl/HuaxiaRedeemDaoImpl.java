@@ -322,7 +322,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 				|| StringUtil.isEmptyString(chanceId)) {
 			return null;
 		}
-		String sql = "select count(hr.id) from HuaxiaRedeem hr " +
+		String sql = "select hr from HuaxiaRedeem hr " +
 				"where hr.status = :status " +
 				"and hr.cardNum = :cardNum " +
 				"and hr.posId = :posId " +

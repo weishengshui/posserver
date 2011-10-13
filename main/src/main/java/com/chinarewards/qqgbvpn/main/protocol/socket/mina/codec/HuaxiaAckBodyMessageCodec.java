@@ -71,8 +71,8 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 		}
 		
 		if (chanceIdEnd - cardNumEnd != 1) {
-			byte[] tmp = new byte[requestByte.length - cardNumEnd - 2];
-			for (int i = 0; i < requestByte.length - cardNumEnd - 2; i++) {
+			byte[] tmp = new byte[chanceIdEnd - cardNumEnd - 1];
+			for (int i = 0; i < chanceIdEnd - cardNumEnd - 1; i++) {
 				tmp[i] = requestByte[i + cardNumEnd + 1];
 			}
 			chanceId = new String(tmp, charset);
@@ -90,8 +90,8 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 		message.setCardNum(cardNum);
 		message.setChanceId(chanceId);
 		message.setAckId(ackId);
-		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNum is ({}) , chanceId is ({}) , ackId is ({})"
-				, new Object[] { cmdId, cardNum ,chanceId, ackId});
+		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNum is ({}) , chanceId is ({}) , ackId is ({}) , requestByte.length is ({})"
+				, new Object[] { cmdId, cardNum ,chanceId, ackId, requestByte.length});
 		return message;
 	}
 	

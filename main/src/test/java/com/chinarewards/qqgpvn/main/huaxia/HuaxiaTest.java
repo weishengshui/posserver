@@ -51,8 +51,10 @@ public class HuaxiaTest extends JpaGuiceTest {
 	@Test
 	public void testHuaxiaRedeemAck() {
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
-		params.setCardNum("1234");
+		params.setCardNum("5767");
 		params.setPosId("REWARDS-0001");
+		params.setChanceId("0ca2993f-f598-11e0-abbd-c61e41ebd879");
+		params.setAckId("7fc473b9-976e-403a-b3d7-28ca9237d85c");
 		
 		HuaxiaRedeemManager gbm = getInjector().getInstance(HuaxiaRedeemManager.class);
 		int result = gbm.huaxiaRedeemAck(params).getResult();

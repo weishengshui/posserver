@@ -45,6 +45,7 @@ public class HuaxiaSearchCommandHandler implements ServiceHandler {
 			huaxiaResponseMessage.setResult(HuaxiaRedeemVO.REDEEM_RESULT_NONE);
 		}
 		
+		log.debug("HuaxiaSearchCommandHandler getRedeemCount : {}" + redeemCount.getRedeemCount());
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaSearchCommandHandler Result : {}" + huaxiaResponseMessage.getResult());
 

@@ -30,6 +30,8 @@ public class HuaxiaAckCommandHandler implements ServiceHandler {
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
+		log.debug("HuaxiaAckCommandHandler start1...");
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String txDate = sdf.format(new Date());
 		
@@ -47,12 +49,13 @@ public class HuaxiaAckCommandHandler implements ServiceHandler {
 		params.setAckId(huaxiaRequestMessage.getAckId());
 		params.setPosId(posId);
 		
+		log.debug("HuaxiaAckCommandHandler start2...");
 		int result = mgr.get().huaxiaRedeemAck(params).getResult();
-		
+		log.debug("HuaxiaAckCommandHandler start3...");
 		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_ACK_RESPONSE);
 		huaxiaResponseMessage.setResult(result);
 		huaxiaResponseMessage.setTxDate(txDate);
-		
+		log.debug("HuaxiaAckCommandHandler start4...");
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaAckCommandHandler posId : {}" + posId);
 		log.debug("HuaxiaAckCommandHandler Result : {}" + result);
