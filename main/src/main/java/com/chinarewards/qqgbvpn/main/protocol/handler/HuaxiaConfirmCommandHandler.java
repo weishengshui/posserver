@@ -30,7 +30,7 @@ public class HuaxiaConfirmCommandHandler implements ServiceHandler {
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String txDate = sdf.format(new Date());
 		
 		ServiceSession session = request.getSession();
