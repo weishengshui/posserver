@@ -13,5 +13,6 @@ CREATE TABLE `huaxiaredeem` (
    `confirmDate` datetime DEFAULT NULL,
    `ackDate` datetime DEFAULT NULL,
    `ackId` varchar(255) DEFAULT NULL,
+   `batchNum` varchar(255) DEFAULT NULL,
    PRIMARY KEY (`id`)
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8
