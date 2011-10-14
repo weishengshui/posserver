@@ -3,6 +3,7 @@ package com.chinarewards.qqgpvn.main.huaxia;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.HuaxiaRedeem;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
+import com.chinarewards.qqgbvpn.domain.event.Journal;
 import com.chinarewards.qqgbvpn.domain.status.RedeemStatus;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.logic.huaxia.HuaxiaRedeemManager;
@@ -194,6 +197,14 @@ public class HuaxiaTest extends JpaGuiceTest {
 		HuaxiaRedeemVO voA = gbm.huaxiaRedeemAck(paramsA);
 		log.debug("result : {}",voA.getResult());
 		assertEquals(HuaxiaRedeemVO.REDEEM_RESULT_NONE, voA.getResult().intValue());
+		
+		Journal j1 = (Journal) this.getEm().createQuery("select j from Journal j where j.entityId = '" + chanceId + "'").getSingleResult();
+		log.debug("POS1 event : {}",j1.getEvent());
+		assertEquals(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(), j1.getEvent());
+		
+		Journal j2 = (Journal) this.getEm().createQuery("select j from Journal j where j.entityId = '" + posId2 + "'").getSingleResult();
+		log.debug("POS2 event : {}",j2.getEvent());
+		assertEquals(DomainEvent.HUAXIA_REDEEM_ACK_FAILED.toString(), j2.getEvent());
 	}
 
 
