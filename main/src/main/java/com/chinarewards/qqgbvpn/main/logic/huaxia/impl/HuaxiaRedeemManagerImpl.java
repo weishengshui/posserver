@@ -128,7 +128,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -169,7 +169,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -211,7 +211,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -227,14 +227,20 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 					} else {
 						//没有机会
 						result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
+						// Add journal.
+						saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
 					}
 				} else {
 					//没有机会
 					result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
+					// Add journal.
+					saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
 				}
 			} else {
 				//POS机或代理商找不到
 				result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_POS_NONE;
+				// Add journal.
+				saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
 			}
 		}
 		params.setResult(result);
@@ -288,7 +294,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_ACK.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_ACK_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -301,18 +307,50 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 					} else {
 						//没有机会
 						result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
+						// Add journal.
+						saveRedeemFailedJournal(posId,cardNum,ackId,chanceId,result,DomainEvent.HUAXIA_REDEEM_ACK_FAILED.toString());
 					}
 				} else {
 					//没有机会
 					result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
+					// Add journal.
+					saveRedeemFailedJournal(posId,cardNum,ackId,chanceId,result,DomainEvent.HUAXIA_REDEEM_ACK_FAILED.toString());
 				}
 			} else {
 				//POS机或代理商找不到
 				result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_POS_NONE;
+				// Add journal.
+				saveRedeemFailedJournal(posId,cardNum,ackId,chanceId,result,DomainEvent.HUAXIA_REDEEM_ACK_FAILED.toString());
 			}
 		}
 		params.setResult(result);
 		return params;
+	}
+	
+	/**
+	 * 写失败的日志
+	 * @param posId
+	 * @param cardNum
+	 * @param result
+	 */
+	private void saveRedeemFailedJournal(String posId, String cardNum, String ackId, String chanceId, int result, String event) {
+		ObjectMapper mapper = new ObjectMapper();
+		String eventDetail = null;
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("posId", posId);
+		map.put("cardNum", cardNum);
+		map.put("result", result);
+		if (DomainEvent.HUAXIA_REDEEM_ACK_FAILED.toString().equals(event)) {
+			map.put("ackId", ackId);
+			map.put("chanceId", chanceId);
+		}
+		try {
+			eventDetail = mapper.writeValueAsString(map);
+		} catch (Exception e) {
+			log.error("convert map to json error.", e);
+			eventDetail = e.toString();
+		}
+		journalLogic.logEvent(event,DomainEntity.HUAXIA_REDEEM.toString(), posId, eventDetail);
 	}
     
 }
