@@ -16,8 +16,8 @@ public class ValCallbackRequestMessage implements ICommand{
 	
 	@Override
 	public String toString() {
-		return "ValCallbackRequestMessage [cmdId=" + cmdId + ", grouponId="
-				+ grouponId + ", grouponVCode=" + grouponVCode + "]";
+		return "cmdId=" + cmdId + ", grouponId="
+				+ grouponId + ", grouponVCode=" + grouponVCode;
 	}
 
 	//--------------------------------//

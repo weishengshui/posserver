@@ -62,8 +62,8 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "GetFirmwareFragmentResponseMessage [cmdId=" + getCmdId() + ",result=" + result
-				+ ", content=" + Arrays.toString(content) + "]";
+		return "cmdId=" + getCmdId() + ",result=" + result
+				+ ", content=" + Arrays.toString(content);
 	}
 
 	/**

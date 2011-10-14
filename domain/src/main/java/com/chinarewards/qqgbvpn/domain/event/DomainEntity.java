@@ -64,6 +64,11 @@ public enum DomainEntity {
 	/**
 	 * GrouponCache. The entity ID should be <code>Pos.getPosId()</code>
 	 */
-	GROUPON_CACHE
+	GROUPON_CACHE,
+	
+	/**
+	 * HuaxiaRedeem. The entity ID should be <code>HuaxiaRedeem.getId()</code>
+	 */
+	HUAXIA_REDEEM
 
 }

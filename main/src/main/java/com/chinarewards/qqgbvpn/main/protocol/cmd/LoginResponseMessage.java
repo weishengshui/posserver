@@ -19,8 +19,8 @@ public class LoginResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "LoginResponseMessage [cmdId=" + cmdId + ", result=" + result
-				+ ", challenge=" + Arrays.toString(challenge) + "]";
+		return "cmdId=" + cmdId + ", result=" + result
+				+ ", challenge=" + Arrays.toString(challenge);
 	}
 
 

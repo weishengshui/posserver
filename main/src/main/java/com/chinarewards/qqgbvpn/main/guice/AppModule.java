@@ -5,6 +5,7 @@ package com.chinarewards.qqgbvpn.main.guice;
 
 import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.main.ApplicationModule;
+import com.chinarewards.qqgbvpn.main.HuaxiaModule;
 import com.chinarewards.qqgbvpn.main.QQApiModule;
 import com.google.inject.AbstractModule;
 
@@ -30,6 +31,8 @@ public class AppModule extends AbstractModule {
 		install(new QQApiModule());
 
 		install(new DefaultJournalModule());
+		
+		install(new HuaxiaModule());
 	}
 
 }

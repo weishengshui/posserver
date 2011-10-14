@@ -16,8 +16,8 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "GetFirmwareFragmentRequestMessage [cmdId=" + getCmdId()+ ",posId=" + posId
-				+ ", offset=" + offset + ", length=" + length + "]";
+		return "cmdId=" + getCmdId()+ ",posId=" + posId
+				+ ", offset=" + offset + ", length=" + length;
 	}
 
 	public GetFirmwareFragmentRequestMessage(String posId, long offset,

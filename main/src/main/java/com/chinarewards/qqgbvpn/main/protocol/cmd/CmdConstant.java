@@ -125,4 +125,34 @@ public class CmdConstant {
 	 */
 	public static final long FIRMWARE_UP_DONE_CMD_ID_RESPONSE = 18;
 	
+	/**
+	 * 华厦银行查询兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_SEARCH = 19;
+	
+	/**
+	 * 华厦银行查询兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_SEARCH_RESPONSE = 20;
+	
+	/**
+	 * 华厦银行确认兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_CONFIRM = 21;
+	
+	/**
+	 * 华厦银行确认兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_CONFIRM_RESPONSE = 22;
+	
+	/**
+	 * 华厦银行ACK兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_ACK = 23;
+	
+	/**
+	 * 华厦银行ACK兑换品请求
+	 */
+	public static final long HUAXIA_BANK_REDEEM_ACK_RESPONSE = 24;
+	
 }
