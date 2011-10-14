@@ -128,7 +128,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_VALIDATE_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -169,7 +169,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_VALIDATE_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -211,7 +211,7 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 								log.error("convert HuaxiaRedeem to json error.", e);
 								eventDetail = e.toString();
 							}
-							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(),
+							journalLogic.logEvent(DomainEvent.HUAXIA_REDEEM_VALIDATE_OK.toString(),
 									DomainEntity.HUAXIA_REDEEM.toString(), redeem.getId(), eventDetail);
 							
 							result = HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS;
@@ -228,19 +228,19 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 						//没有机会
 						result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
 						// Add journal.
-						saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
+						saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_VALIDATE_FAILED.toString());
 					}
 				} else {
 					//没有机会
 					result = HuaxiaRedeemVO.REDEEM_RESULT_NONE;
 					// Add journal.
-					saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
+					saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_VALIDATE_FAILED.toString());
 				}
 			} else {
 				//POS机或代理商找不到
 				result = HuaxiaRedeemVO.REDEEM_RESULT_FAIL_POS_NONE;
 				// Add journal.
-				saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_COMFIRM_FAILED.toString());
+				saveRedeemFailedJournal(posId,cardNum,null,null,result,DomainEvent.HUAXIA_REDEEM_VALIDATE_FAILED.toString());
 			}
 		}
 		params.setResult(result);

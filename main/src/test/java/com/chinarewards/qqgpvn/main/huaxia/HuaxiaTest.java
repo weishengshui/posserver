@@ -200,7 +200,7 @@ public class HuaxiaTest extends JpaGuiceTest {
 		
 		Journal j1 = (Journal) this.getEm().createQuery("select j from Journal j where j.entityId = '" + chanceId + "'").getSingleResult();
 		log.debug("POS1 event : {}",j1.getEvent());
-		assertEquals(DomainEvent.HUAXIA_REDEEM_COMFIRM_OK.toString(), j1.getEvent());
+		assertEquals(DomainEvent.HUAXIA_REDEEM_VALIDATE_OK.toString(), j1.getEvent());
 		
 		Journal j2 = (Journal) this.getEm().createQuery("select j from Journal j where j.entityId = '" + posId2 + "'").getSingleResult();
 		log.debug("POS2 event : {}",j2.getEvent());
