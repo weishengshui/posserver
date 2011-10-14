@@ -112,7 +112,8 @@ public class HuaxiaRedeemManagerImpl implements HuaxiaRedeemManager {
 					HuaxiaRedeem redeem = dao.get().getHuaxiaRedeemByPosId(posId,cardNum,RedeemStatus.PEND_FOR_ACK);
 					if (redeem != null) {
 						try {
-							redeem.setConfirmDate(date);
+							//这种情况不改变验证时间
+							//redeem.setConfirmDate(date);
 							//更新ackId
 							redeem.setAckId(Util.getUUID(true));
 							
