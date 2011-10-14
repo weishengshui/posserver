@@ -47,11 +47,14 @@ public class HuaxiaRedeem {
 	
 	/**
 	 * confirm date (status:A)
+	 * 状态由U转为A的时间点
+	 * 无实际意义，只用于以后定位异常
 	 */
 	Date confirmDate;
 	
 	/**
 	 * ack date (status:R)
+	 * 实际兑换成功的时间
 	 */
 	Date ackDate;
 	

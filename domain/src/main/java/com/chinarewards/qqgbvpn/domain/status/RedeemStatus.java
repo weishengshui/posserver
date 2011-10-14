@@ -2,5 +2,5 @@ package com.chinarewards.qqgbvpn.domain.status;
 
 public enum RedeemStatus {
 
-	U, A, R
+	UNUSED, PEND_FOR_ACK, DONE
 }

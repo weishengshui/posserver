@@ -2,7 +2,6 @@ package com.chinarewards.qqgbvpn.main.dao.huaxia.impl;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.Query;
 
@@ -45,9 +44,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			Agent agent = getAgentByPosId(posId);
 			if (pos != null && agent != null) {
 				//先找自己的A
-				int redeemCountPosA = getRedeemCountByPosId(posId,cardNum,RedeemStatus.A);
+				int redeemCountPosA = getRedeemCountByPosId(posId,cardNum,RedeemStatus.PEND_FOR_ACK);
 				if (redeemCountPosA > 0) {
-					HuaxiaRedeem redeem = getHuaxiaRedeemByPosId(posId,cardNum,RedeemStatus.A);
+					HuaxiaRedeem redeem = getHuaxiaRedeemByPosId(posId,cardNum,RedeemStatus.PEND_FOR_ACK);
 					if (redeem != null) {
 						try {
 							Date date = new Date();
@@ -77,9 +76,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 					}
 				}
 				//自己的A没有，则处理U
-				int redeemCount = getRedeemCountByCardNum(cardNum,RedeemStatus.U);
+				int redeemCount = getRedeemCountByCardNum(cardNum,RedeemStatus.UNUSED);
 				if (redeemCount > 0) {
-					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.U);
+					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.UNUSED);
 					if (redeem != null) {
 						try {
 							Date date = new Date();
@@ -89,7 +88,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							redeem.setPosModel(pos.getModel());
 							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
 							redeem.setConfirmDate(date);
-							redeem.setStatus(RedeemStatus.A);
+							redeem.setStatus(RedeemStatus.PEND_FOR_ACK);
 							redeem.setAckId(Util.getUUID(true));
 							
 							saveHuaxiaRedeem(redeem);
@@ -114,9 +113,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 					}
 				}
 				//处理其它POS机A状态的,如果也没有，则返回没有机会
-				int redeemCountStatusA = getRedeemCountByCardNum(cardNum,RedeemStatus.A);
+				int redeemCountStatusA = getRedeemCountByCardNum(cardNum,RedeemStatus.PEND_FOR_ACK);
 				if (redeemCountStatusA > 0) {
-					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.A);
+					HuaxiaRedeem redeem = getHuaxiaRedeemByCardNum(cardNum,RedeemStatus.PEND_FOR_ACK);
 					if (redeem != null) {
 						try {
 							//这里要更新对象，是因为用户是换了POS做的兑换
@@ -127,7 +126,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							redeem.setPosModel(pos.getModel());
 							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
 							redeem.setConfirmDate(date);
-							redeem.setStatus(RedeemStatus.A);
+							redeem.setStatus(RedeemStatus.PEND_FOR_ACK);
 							redeem.setAckId(Util.getUUID(true));
 							
 							saveHuaxiaRedeem(redeem);
@@ -177,15 +176,15 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			Pos pos = getPosByPosId(posId);
 			Agent agent = getAgentByPosId(posId);
 			if (pos != null && agent != null) {
-				int ackCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.R);
+				int ackCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.DONE);
 				if (ackCount > 0) {
 					result = HuaxiaRedeemVO.REDEEM_RESULT_ALREADY_ACKED;
 					params.setResult(result);
 					return params;
 				}
-				int redeemCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.A);
+				int redeemCount = getRedeemCountByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.PEND_FOR_ACK);
 				if (redeemCount > 0) {
-					HuaxiaRedeem redeem = getRedeemByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.A);
+					HuaxiaRedeem redeem = getRedeemByAckId(posId,cardNum,ackId,chanceId,RedeemStatus.PEND_FOR_ACK);
 					if (redeem != null) {
 						try {
 							Date date = new Date();
@@ -195,7 +194,7 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 							redeem.setPosModel(pos.getModel());
 							redeem.setPosSimPhoneNo(pos.getSimPhoneNo());
 							redeem.setAckDate(date);
-							redeem.setStatus(RedeemStatus.R);
+							redeem.setStatus(RedeemStatus.DONE);
 							
 							saveHuaxiaRedeem(redeem);
 							
@@ -239,9 +238,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 			return 0;
 		}
 		String sql = "select count(hr.id) from HuaxiaRedeem hr where hr.status in ('" +
-				RedeemStatus.U.toString() +
+				RedeemStatus.UNUSED.toString() +
 				"','" +
-				RedeemStatus.A.toString() +
+				RedeemStatus.PEND_FOR_ACK.toString() +
 				"') and hr.cardNum = :cardNum";
 		Query jql = getEm().createQuery(sql);
 		jql.setParameter("cardNum", cardNum);
