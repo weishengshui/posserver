@@ -1,8 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.handler;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +27,6 @@ public class HuaxiaConfirmCommandHandler implements ServiceHandler {
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String txDate = sdf.format(new Date());
-		
 		ServiceSession session = request.getSession();
 		String posId = String.valueOf(session.getAttribute(LoginFilter.POS_ID));
 		
@@ -52,14 +46,14 @@ public class HuaxiaConfirmCommandHandler implements ServiceHandler {
 		
 		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_CONFIRM_RESPONSE);
 		huaxiaResponseMessage.setResult(result);
-		huaxiaResponseMessage.setTxDate(txDate);
+		huaxiaResponseMessage.setTxDate(vo.getTxDate());
 		huaxiaResponseMessage.setChanceId(chanceId);
 		huaxiaResponseMessage.setAckId(ackId);
 		
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaConfirmCommandHandler posId : {}" + posId);
 		log.debug("HuaxiaConfirmCommandHandler Result : {}" + result);
-		log.debug("HuaxiaConfirmCommandHandler TxDate : {}" + txDate);
+		log.debug("HuaxiaConfirmCommandHandler TxDate : {}" + vo.getTxDate());
 		log.debug("HuaxiaConfirmCommandHandler chanceId : {}" + chanceId);
 		log.debug("HuaxiaConfirmCommandHandler ackId : {}" + ackId);
 

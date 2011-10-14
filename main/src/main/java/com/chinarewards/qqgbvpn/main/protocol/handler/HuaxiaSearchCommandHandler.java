@@ -7,9 +7,11 @@ import com.chinarewards.qqgbvpn.main.logic.huaxia.HuaxiaRedeemManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.chinarewards.qqgbvpn.main.vo.HuaxiaRedeemVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -25,8 +27,9 @@ public class HuaxiaSearchCommandHandler implements ServiceHandler {
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
-//		ServiceSession session = request.getSession();
-//		log.debug("HuaxiaSearchCommandHandler posId : {}"+String.valueOf(session.getAttribute(LoginFilter.POS_ID)));
+		ServiceSession session = request.getSession();
+		String posId = String.valueOf(session.getAttribute(LoginFilter.POS_ID));
+		log.debug("HuaxiaSearchCommandHandler posId : {}" + posId);
 
 		HuaxiaRequestMessage huaxiaRequestMessage = (HuaxiaRequestMessage) request.getParameter();
 		HuaxiaResponseMessage huaxiaResponseMessage = new HuaxiaResponseMessage();
@@ -34,18 +37,21 @@ public class HuaxiaSearchCommandHandler implements ServiceHandler {
 		
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
 		params.setCardNum(huaxiaRequestMessage.getCardNum());
+		params.setPosId(posId);
 		
-		HuaxiaRedeemVO redeemCount = mgr.get().huaxiaRedeemSearch(params);
+		HuaxiaRedeemVO redeemVO = mgr.get().huaxiaRedeemSearch(params);
+		
+		int redeemCount = redeemVO.getRedeemCount();
+		
+		int result = redeemVO.getResult();
 		
 		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_SEARCH_RESPONSE);
 		
-		if (redeemCount.getRedeemCount() > 0) {
-			huaxiaResponseMessage.setResult(HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS);
-		} else {
-			huaxiaResponseMessage.setResult(HuaxiaRedeemVO.REDEEM_RESULT_NONE);
-		}
+		huaxiaResponseMessage.setRedeemCount(redeemCount);
 		
-		log.debug("HuaxiaSearchCommandHandler getRedeemCount : {}" + redeemCount.getRedeemCount());
+		huaxiaResponseMessage.setResult(result);
+		
+		log.debug("HuaxiaSearchCommandHandler getRedeemCount : {}" + redeemCount);
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaSearchCommandHandler Result : {}" + huaxiaResponseMessage.getResult());
 

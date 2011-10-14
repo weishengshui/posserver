@@ -1,8 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.handler;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +27,7 @@ public class HuaxiaAckCommandHandler implements ServiceHandler {
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
-		log.debug("HuaxiaAckCommandHandler start1...");
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String txDate = sdf.format(new Date());
+		log.debug("HuaxiaAckCommandHandler start...");
 		
 		ServiceSession session = request.getSession();
 		String posId = String.valueOf(session.getAttribute(LoginFilter.POS_ID));
@@ -49,17 +43,15 @@ public class HuaxiaAckCommandHandler implements ServiceHandler {
 		params.setAckId(huaxiaRequestMessage.getAckId());
 		params.setPosId(posId);
 		
-		log.debug("HuaxiaAckCommandHandler start2...");
-		int result = mgr.get().huaxiaRedeemAck(params).getResult();
-		log.debug("HuaxiaAckCommandHandler start3...");
+		HuaxiaRedeemVO vo = mgr.get().huaxiaRedeemAck(params);
 		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_ACK_RESPONSE);
-		huaxiaResponseMessage.setResult(result);
-		huaxiaResponseMessage.setTxDate(txDate);
-		log.debug("HuaxiaAckCommandHandler start4...");
+		huaxiaResponseMessage.setResult(vo.getResult());
+		huaxiaResponseMessage.setTxDate(vo.getTxDate());
+		
 		log.debug("huaxiaRequestMessage : {}" + huaxiaRequestMessage);
 		log.debug("HuaxiaAckCommandHandler posId : {}" + posId);
-		log.debug("HuaxiaAckCommandHandler Result : {}" + result);
-		log.debug("HuaxiaAckCommandHandler TxDate : {}" + txDate);
+		log.debug("HuaxiaAckCommandHandler Result : {}" + vo.getResult());
+		log.debug("HuaxiaAckCommandHandler TxDate : {}" + vo.getTxDate());
 
 		response.writeResponse(huaxiaResponseMessage);
 	}

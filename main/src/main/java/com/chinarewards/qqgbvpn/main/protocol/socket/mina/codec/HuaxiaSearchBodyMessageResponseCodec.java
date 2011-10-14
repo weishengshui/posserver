@@ -30,10 +30,13 @@ public class HuaxiaSearchBodyMessageResponseCodec implements ICommandCodec {
 
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
+		//兑换次数
+		int redeemCount = responseMessage.getRedeemCount();
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT + ProtocolLengths.REDEEM_COUNT];
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
+		Tools.putUnsignedShort(resultByte, redeemCount, (ProtocolLengths.COMMAND + ProtocolLengths.RESULT));
 		
 		log.debug("HuaxiaSearch message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		return resultByte;

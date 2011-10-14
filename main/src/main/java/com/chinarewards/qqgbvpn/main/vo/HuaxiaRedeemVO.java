@@ -32,6 +32,11 @@ public class HuaxiaRedeemVO {
 	 */
 	public static final int REDEEM_RESULT_ALREADY_ACKED = 5;
 	
+	/**
+	 * 限制兑换的最大次数
+	 */
+	public static final int REDEEM_MAXCOUNT = 65535;
+	
 
 	/**
 	 * 可用次数

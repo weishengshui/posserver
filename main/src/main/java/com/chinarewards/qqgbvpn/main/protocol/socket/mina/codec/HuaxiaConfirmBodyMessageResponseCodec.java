@@ -32,8 +32,15 @@ public class HuaxiaConfirmBodyMessageResponseCodec implements ICommandCodec {
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
 		
+		String txDate;
+		if (responseMessage.getTxDate() != null) {
+			txDate = responseMessage.getTxDate();
+		} else {
+			txDate = "";
+		}
+		
 		StringBuffer sb = new StringBuffer();
-		sb.append(responseMessage.getTxDate());
+		sb.append(txDate);
 		sb.append(CmdConstant.SEPARATOR);
 		sb.append(responseMessage.getChanceId());
 		sb.append(CmdConstant.SEPARATOR);
@@ -49,7 +56,7 @@ public class HuaxiaConfirmBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
 		
 		log.debug("HuaxiaAck message request:cmdId is ({}) , TxDate is ({}) , chanceId is ({}) , ackId is ({})"
-				, new Object[] { cmdId, responseMessage.getTxDate() ,responseMessage.getChanceId(), responseMessage.getAckId()});
+				, new Object[] { cmdId, txDate ,responseMessage.getChanceId(), responseMessage.getAckId()});
 		log.debug("HuaxiaConfirm message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		return resultByte;
 	}

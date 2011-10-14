@@ -30,7 +30,7 @@ public class HuaxiaTest extends JpaGuiceTest {
 	@Test
 	public void testHuaxiaRedeemSearch() {
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
-		params.setCardNum("1234");
+		params.setCardNum("7105");
 		
 		HuaxiaRedeemManager gbm = getInjector().getInstance(HuaxiaRedeemManager.class);
 		HuaxiaRedeemVO redeemCount = gbm.huaxiaRedeemSearch(params);
@@ -40,7 +40,7 @@ public class HuaxiaTest extends JpaGuiceTest {
 	@Test
 	public void testHuaxiaRedeemConfirm() {
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
-		params.setCardNum("1234");
+		params.setCardNum("5767");
 		params.setPosId("REWARDS-0001");
 		
 		HuaxiaRedeemManager gbm = getInjector().getInstance(HuaxiaRedeemManager.class);
@@ -53,8 +53,8 @@ public class HuaxiaTest extends JpaGuiceTest {
 		HuaxiaRedeemVO params = new HuaxiaRedeemVO();
 		params.setCardNum("5767");
 		params.setPosId("REWARDS-0001");
-		params.setChanceId("0ca2993f-f598-11e0-abbd-c61e41ebd879");
-		params.setAckId("7fc473b9-976e-403a-b3d7-28ca9237d85c");
+		params.setChanceId("e4daf63c-f606-11e0-abbd-c61e41ebd879");
+		params.setAckId("b4b92a66-6e78-422d-ab36-bedc8144eae8");
 		
 		HuaxiaRedeemManager gbm = getInjector().getInstance(HuaxiaRedeemManager.class);
 		int result = gbm.huaxiaRedeemAck(params).getResult();

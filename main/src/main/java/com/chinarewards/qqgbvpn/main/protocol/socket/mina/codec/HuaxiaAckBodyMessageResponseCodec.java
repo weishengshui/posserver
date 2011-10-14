@@ -31,7 +31,12 @@ public class HuaxiaAckBodyMessageResponseCodec implements ICommandCodec {
 
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
-		String txDate = responseMessage.getTxDate() + CmdConstant.SEPARATOR;
+		String txDate;
+		if (responseMessage.getTxDate() != null) {
+			txDate = responseMessage.getTxDate() + CmdConstant.SEPARATOR;
+		} else {
+			txDate = "" + CmdConstant.SEPARATOR;
+		}
 		
 		byte[] tmp = txDate.getBytes(charset);
 

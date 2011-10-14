@@ -13,6 +13,8 @@ public class HuaxiaResponseMessage implements ICommand {
 	public String chanceId;
 	
 	public String ackId;
+	
+	public int redeemCount;
 
 	@Override
 	public String toString() {
@@ -59,6 +61,14 @@ public class HuaxiaResponseMessage implements ICommand {
 
 	public void setAckId(String ackId) {
 		this.ackId = ackId;
+	}
+
+	public int getRedeemCount() {
+		return redeemCount;
+	}
+
+	public void setRedeemCount(int redeemCount) {
+		this.redeemCount = redeemCount;
 	}
 
 	
