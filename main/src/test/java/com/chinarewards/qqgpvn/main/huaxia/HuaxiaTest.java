@@ -138,6 +138,63 @@ public class HuaxiaTest extends JpaGuiceTest {
 		log.debug("result : {}",voA.getResult());
 		assertEquals(HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS, voA.getResult().intValue());
 	}
+	
+	@Test
+	public void testHuaxiaRedeemAckFailed() {
+		//模拟POS1验证成功后，POS2直接ACK，此时ACK失败，没有兑换机会
+		String cardNum = "1111";
+		String posId1 = "REWARDS-0001";
+		String posId2 = "REWARDS-0002";
+		String agentName = "agentName";
+		String ackId = "";
+		String chanceId = "";
+		
+		Pos pos = new Pos();
+		pos.setPosId(posId1);
+		this.getEm().persist(pos);
+		Pos pos2 = new Pos();
+		pos2.setPosId(posId2);
+		this.getEm().persist(pos2);
+		Agent agent = new Agent();
+		agent.setName(agentName);
+		this.getEm().persist(agent);
+		PosAssignment pa = new PosAssignment();
+		pa.setAgent(agent);
+		pa.setPos(pos);
+		this.getEm().persist(pa);
+		PosAssignment pa2 = new PosAssignment();
+		pa2.setAgent(agent);
+		pa2.setPos(pos2);
+		this.getEm().persist(pa2);
+		
+		HuaxiaRedeem redeem = new HuaxiaRedeem();
+		redeem.setCardNum(cardNum);
+		redeem.setStatus(RedeemStatus.UNUSED);
+		redeem.setCreateDate(new Date());
+		this.getEm().persist(redeem);
+		
+		HuaxiaRedeemManager gbm = getInjector().getInstance(HuaxiaRedeemManager.class);
+		
+		HuaxiaRedeemVO paramsV = new HuaxiaRedeemVO();
+		paramsV.setCardNum(cardNum);
+		paramsV.setPosId(posId1);
+		
+		HuaxiaRedeemVO voV = gbm.huaxiaRedeemConfirm(paramsV);
+		assertEquals(HuaxiaRedeemVO.REDEEM_RESULT_SUCCESS, voV.getResult().intValue());
+		
+		ackId = voV.getAckId();
+		chanceId = voV.getChanceId();
+		
+		HuaxiaRedeemVO paramsA = new HuaxiaRedeemVO();
+		paramsA.setCardNum(cardNum);
+		paramsA.setPosId(posId2);
+		paramsA.setChanceId(chanceId);
+		paramsA.setAckId(ackId);
+		
+		HuaxiaRedeemVO voA = gbm.huaxiaRedeemAck(paramsA);
+		log.debug("result : {}",voA.getResult());
+		assertEquals(HuaxiaRedeemVO.REDEEM_RESULT_NONE, voA.getResult().intValue());
+	}
 
 
 }
