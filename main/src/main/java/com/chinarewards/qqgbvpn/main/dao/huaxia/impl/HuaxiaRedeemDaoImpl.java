@@ -60,7 +60,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 		if (StringUtil.isEmptyString(posId) || StringUtil.isEmptyString(cardNum)) {
 			return null;
 		}
-		String sql = "select hr from HuaxiaRedeem hr where hr.status = :status and hr.cardNum = :cardNum and hr.posId = :posId";
+		String sql = "select hr from HuaxiaRedeem hr " +
+				"where hr.status = :status and hr.cardNum = :cardNum and hr.posId = :posId " +
+				"order by hr.createDate asc";
 		Query jql = getEm().createQuery(sql);
 		jql.setParameter("status", status);
 		jql.setParameter("cardNum", cardNum);
@@ -149,7 +151,9 @@ public class HuaxiaRedeemDaoImpl extends BaseDao implements HuaxiaRedeemDao {
 		if (StringUtil.isEmptyString(cardNum)) {
 			return null;
 		}
-		String sql = "select hr from HuaxiaRedeem hr where hr.status = :status and hr.cardNum = :cardNum";
+		String sql = "select hr from HuaxiaRedeem hr " +
+				"where hr.status = :status and hr.cardNum = :cardNum " +
+				"order by hr.createDate asc";
 		Query jql = getEm().createQuery(sql);
 		jql.setParameter("status", status);
 		jql.setParameter("cardNum", cardNum);
