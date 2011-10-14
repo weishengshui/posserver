@@ -18,8 +18,8 @@ public class HuaxiaResponseMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "HuaxiaResponseMessage [cmdId=" + cmdId + ", result=" + result
-				+ ", txDate=" + txDate + "]";
+		return "cmdId=" + cmdId + ", result=" + result
+				+ ", txDate=" + txDate;
 	}
 
 	//---------------------------------------//

@@ -15,8 +15,8 @@ public class FirmwareUpDoneResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "FirmwareUpDoneResponseMessage [cmdId=" + cmdId + ", result="
-				+ result + "]";
+		return "cmdId=" + cmdId + ", result="
+				+ result;
 	}
 
 	//-------------------------------------------------//

@@ -29,10 +29,10 @@ public class SearchResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "SearchResponseMessage [cmdId=" + cmdId + ", result=" + result
+		return "cmdId=" + cmdId + ", result=" + result
 				+ ", totalnum=" + totalnum + ", curnum=" + curnum
 				+ ", curpage=" + curpage + ", totalpage=" + totalpage
-				+ ", detail=" + detail + "]";
+				+ ", detail=" + detail;
 	}
 
 	@Override

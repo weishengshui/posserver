@@ -13,8 +13,8 @@ public class HuaxiaRequestMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "HuaxiaRequestMessage [cmdId=" + cmdId + ", cardNum="
-				+ cardNum + "]";
+		return "cmdId=" + cmdId + ", cardNum="
+				+ cardNum;
 	}
 
 	//--------------------------------//

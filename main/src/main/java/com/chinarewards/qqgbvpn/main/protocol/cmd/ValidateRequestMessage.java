@@ -11,8 +11,8 @@ public class ValidateRequestMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "ValidateRequestMessage [cmdId=" + cmdId + ", grouponId="
-				+ grouponId + ", grouponVCode=" + grouponVCode + "]";
+		return "cmdId=" + cmdId + ", grouponId="
+				+ grouponId + ", grouponVCode=" + grouponVCode;
 	}
 
 	//--------------------------------//

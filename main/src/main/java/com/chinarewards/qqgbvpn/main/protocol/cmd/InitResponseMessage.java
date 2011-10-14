@@ -19,8 +19,8 @@ public class InitResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "InitResponseMessage [cmdId=" + cmdId + ", result=" + result
-				+ ", challenge=" + Arrays.toString(challenge) + "]";
+		return "cmdId=" + cmdId + ", result=" + result
+				+ ", challenge=" + Arrays.toString(challenge);
 	}
 
 	//-------------------------------------------------//

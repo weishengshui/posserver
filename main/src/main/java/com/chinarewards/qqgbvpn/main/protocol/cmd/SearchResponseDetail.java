@@ -14,9 +14,9 @@ public class SearchResponseDetail {
 
 	@Override
 	public String toString() {
-		return "SearchResponseDetail [grouponId=" + grouponId
+		return "grouponId=" + grouponId
 				+ ", grouponName=" + grouponName + ", mercName=" + mercName
-				+ ", listName=" + listName + ", detailName=" + detailName + "]";
+				+ ", listName=" + listName + ", detailName=" + detailName;
 	}
 
 	//--------------------------------------------------//

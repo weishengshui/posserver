@@ -21,8 +21,7 @@ public class ErrorBodyMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "ErrorBodyMessage [cmdId=" + cmdId + ", errorCode=" + errorCode
-				+ "]";
+		return "cmdId=" + cmdId + ", errorCode=" + errorCode;
 	}
 
 	public long getErrorCode() {
