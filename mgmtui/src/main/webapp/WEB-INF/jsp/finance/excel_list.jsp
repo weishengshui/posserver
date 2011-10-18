@@ -67,7 +67,7 @@
 									<s:else>
 										<s:date name="#excelVO.startDate" format="yyyy-MM-dd" />~
 									</s:else>
-									<s:date name="#excelVO.endDate" format="yyyy-MM-dd" />.csv
+									<s:date name="#excelVO.endDate" format="yyyy-MM-dd" />.xls
 									</td>
 									<td>
 									<s:if test="#excelVO.agentName != null">
@@ -149,7 +149,7 @@
 		} else {
 			fileName += "截止于";
 		}
-		fileName += endDate + ".csv";
+		fileName += endDate + ".xls";
 		window.location.href = "${pageContext.request.contextPath}/finance/download_excel?reportId=" + reportId + "&fileName=" + encodeURIComponent(fileName);
 	}
 	

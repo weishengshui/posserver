@@ -1,7 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.action.finance;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -9,8 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.chinarewards.qqgbvpn.core.excel.ExcelService;
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
+import com.chinarewards.qqgbvpn.mgmtui.exception.Csv2ExcelException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.ServiceException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.finance.FinanceManager;
@@ -34,6 +35,8 @@ public class FinanceAction extends BaseAction {
 	private static final int INITPAGESIZE = 10;
 	
 	private FinanceManager financeManager;
+	
+	private ExcelService excelService;
 	
 	private AgentLogic agentLogic;
 	
@@ -172,6 +175,11 @@ public class FinanceAction extends BaseAction {
 		this.pageInfo = pageInfo;
 	}
 
+	public ExcelService getExcelService() {
+		excelService = super.getInstance(ExcelService.class);
+		return excelService;
+	}
+	
 	public FinanceManager getFinanceManager() {
 		financeManager = super.getInstance(FinanceManager.class);
 		return financeManager;
@@ -220,11 +228,17 @@ public class FinanceAction extends BaseAction {
 		this.fileName = fileName;
 	}
 	
-	public InputStream getInputStream() throws UnsupportedEncodingException {
+	public InputStream getInputStream() throws Csv2ExcelException {
 		FinanceReportHistory report = getFinanceManager()
 				.getFinanceReportHistoryById(reportId);
 		if (report != null) {
-			return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
+			try {
+				return getExcelService().getExcelInputStreamByCsv(report);
+			} catch (Throwable t) {
+				log.error("转换excel文件错误", t);
+				throw new Csv2ExcelException("转换excel文件错误", t);
+			}
+			//return new ByteArrayInputStream(report.getReportDetail().getBytes("gb2312"));
 		}
 		return new ByteArrayInputStream("".getBytes());
 	}
