@@ -33,7 +33,7 @@
 			class="com.chinarewards.qqgbvpn.mgmtui.struts.action.finance.FinanceAction"
 			method="downLoadExcel">
 			<result name="success" type="stream">
-			<param name="contentType">text/plain</param>
+			<param name="contentType">application/vnd.ns-excel</param>
 			<param name="inputName">inputStream</param>
 			<param name="contentDisposition">attachment;filename="${fileName}"</param>
 			<param name="bufferSize">5120</param>
