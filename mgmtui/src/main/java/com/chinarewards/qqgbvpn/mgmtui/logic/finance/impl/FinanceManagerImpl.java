@@ -106,7 +106,7 @@ public class FinanceManagerImpl implements FinanceManager {
 		try {
 			eventDetail = mapper.writeValueAsString(f);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("convert FinanceReportHistory to json error.", e);
 			eventDetail = e.toString();
 		}
 		journalLogic.logEvent(DomainEvent.FINANCE_REPORT_HISTORY_MODIFY.toString(),

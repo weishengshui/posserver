@@ -74,7 +74,7 @@ public class FinanceAction extends BaseAction {
 				}
 			}
 		} catch (ServiceException e) {
-			e.printStackTrace();
+			log.error("prepare Agent error",e);
 		}
 	}
 	
@@ -95,7 +95,7 @@ public class FinanceAction extends BaseAction {
 			
 			prepareAgent();
 		}catch(Exception e){
-			e.printStackTrace();
+			log.error("search report error",e);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -112,7 +112,7 @@ public class FinanceAction extends BaseAction {
 			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
 			prepareAgent();
 		}catch(Exception e){
-			e.printStackTrace();
+			log.error("search Bill error",e);
 			return ERROR;
 		}
 		
@@ -132,7 +132,7 @@ public class FinanceAction extends BaseAction {
 			createReport.start();
 			
 		}catch(Exception e){
-			e.printStackTrace();
+			log.error("generate Excel error",e);
 			return ERROR;
 		}
 		return SUCCESS;
@@ -219,7 +219,7 @@ public class FinanceAction extends BaseAction {
 		try {
 			tempName = new String(fileName.getBytes(),"ISO8859-1"); //把file转换成ISO8859-1编码格式
 		} catch (UnsupportedEncodingException e) {
-		e.printStackTrace();
+			log.error("get File Name error",e);
 		}
 		return tempName; 
 	}
