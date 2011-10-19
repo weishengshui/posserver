@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.mgmtui.util;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -89,5 +90,37 @@ public class Tools {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		sdf.format(new Date());
 		return sdf.format(new Date());
+	}
+	
+	/**
+	 * 将变量src中的特殊字符进行转义，使其在页面上正确显示。
+	 * @author iori
+	 */
+	public static String charConversion(String src) {
+		if (src == null || "".equals(src))
+			return "";
+
+		src = src.replaceAll("'", "&#39;");
+		src = src.replaceAll("\"", "&quot;");
+		src = src.replaceAll("  ", "　");
+		src = src.replaceAll("<", "&lt;");
+		src = src.replaceAll(">", "&gt;");
+		src = src.replaceAll("\r\n", "<br>");
+		return src;
+	}
+	
+	/**
+	 * 增加日期天数
+	 * @author iori
+	 * @param date
+	 * @param x 天数
+	 * @return
+	 */
+	public static Date addDate(Date date, int x) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DAY_OF_MONTH, x);
+		date = cal.getTime();
+		return date;
 	}
 }

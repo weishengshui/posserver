@@ -11,4 +11,5 @@
 	<include file="struts2/unbind.xml" />
 	<include file="struts2/agent.xml" />
 	<include file="struts2/delivery.xml" />
+	<include file="struts2/finance.xml" />
 </struts>

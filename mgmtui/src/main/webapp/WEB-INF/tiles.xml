@@ -91,4 +91,13 @@
 		<put-attribute name="body" value="/error.jsp" />
 	</definition>
 	<!--error end  -->
+	
+	<!-- finance start-->
+	<definition name="finance.searchBill" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/finance/search_bill.jsp" />
+	</definition>
+	<definition name="finance.searchExcel" extends="main">
+		<put-attribute name="body" value="/WEB-INF/jsp/finance/excel_list.jsp" />
+	</definition>
+	<!-- finance end  -->
 </tiles-definitions>

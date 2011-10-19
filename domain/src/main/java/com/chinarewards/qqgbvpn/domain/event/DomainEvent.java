@@ -305,5 +305,15 @@ public enum DomainEvent {
 	
 	HUAXIA_REDEEM_ACK_OK,
 	
-	HUAXIA_REDEEM_ACK_FAILED
+	HUAXIA_REDEEM_ACK_FAILED,
+	
+	/**
+	 * create FinanceReportHistory
+	 */
+	FINANCE_REPORT_HISTORY_CREATE,
+	
+	/**
+	 * modify FinanceReportHistory
+	 */
+	FINANCE_REPORT_HISTORY_MODIFY
 }

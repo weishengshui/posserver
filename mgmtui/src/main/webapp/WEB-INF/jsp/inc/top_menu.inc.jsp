@@ -23,6 +23,7 @@
 	<li><a href="<s:url value="/"/>">首页</a></li>
 	<!-- Home ENDS  -->
 	
+	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName == 'admin'">
 	<!-- POS manager STARTS -->
 	<li><a href="#">POS管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
@@ -67,11 +68,27 @@
 	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
 	</li>
 	<!-- POS回收 ENDS -->
+	</s:if>
 	
+	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName == 'finance'">
+	<!-- 财务报表 START -->
+	<li><a href="#">财务报表 <!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td><![endif]-->
+		<ul>
+		<li><a href="<s:url action="search_bill" namespace="/finance" />">生成报表</a></li>
+		<li><a href="<s:url action="search_excel" namespace="/finance" />">查询报表</a></li>
+		</ul>
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+	<!-- 财务报表END -->
+	</s:if>
+	
+	<s:if test="#session._userSession.user != null">
 	<!-- Home STARTS-->
 	<%-- <li>< s:action name="menuLoginLink" namespace="/" executeResult="true" /></li> --%>
 	<!-- Home ENDS  -->
 	<li><a href="<s:url action="logout" namespace="/" />">退出</a></li>
-
+	</s:if>
+	
 </ul>
 </div>
