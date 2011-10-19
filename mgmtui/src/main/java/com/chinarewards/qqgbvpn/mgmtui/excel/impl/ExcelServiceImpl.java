@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.core.excel.impl;
+package com.chinarewards.qqgbvpn.mgmtui.excel.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,8 +16,8 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
 
-import com.chinarewards.qqgbvpn.core.excel.ExcelService;
 import com.chinarewards.qqgbvpn.domain.FinanceReportHistory;
+import com.chinarewards.qqgbvpn.mgmtui.excel.ExcelService;
 
 public class ExcelServiceImpl implements ExcelService {
 

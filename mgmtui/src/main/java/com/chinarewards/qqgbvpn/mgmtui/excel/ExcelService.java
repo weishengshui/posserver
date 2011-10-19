@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.core.excel;
+package com.chinarewards.qqgbvpn.mgmtui.excel;
 
 import java.io.IOException;
 import java.io.InputStream;

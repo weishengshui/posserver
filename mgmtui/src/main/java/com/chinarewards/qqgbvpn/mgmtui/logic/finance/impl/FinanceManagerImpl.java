@@ -94,7 +94,13 @@ public class FinanceManagerImpl implements FinanceManager {
 	
 	public FinanceReportHistory getFinanceReportHistoryById(String id) {
 		FinanceReportHistory f = hdao.get().getFinanceReportHistoryById(id);
-		
+		return f;
+	}
+	
+	@Transactional
+	public FinanceReportHistory saveFinanceReportHistory(FinanceReportHistory financeReportHistory) {
+		FinanceReportHistory f = hdao.get().saveFinanceReportHistory(financeReportHistory);
+
 		ObjectMapper mapper = new ObjectMapper();
 		String eventDetail = null;
 		try {
@@ -105,12 +111,8 @@ public class FinanceManagerImpl implements FinanceManager {
 		}
 		journalLogic.logEvent(DomainEvent.FINANCE_REPORT_HISTORY_MODIFY.toString(),
 				DomainEntity.FINANCE_REPORT_HISTORY.toString(), f.getId(), eventDetail);
+		
 		return f;
-	}
-	
-	@Transactional
-	public FinanceReportHistory saveFinanceReportHistory(FinanceReportHistory financeReportHistory) {
-		return hdao.get().saveFinanceReportHistory(financeReportHistory);
 	}
 	
 	
