@@ -1,4 +1,4 @@
-CREATE TABLE `huaxiaredeem` (
+CREATE TABLE `HuaxiaRedeem` (
    `id` varchar(255) NOT NULL,
    `agentId` varchar(255) DEFAULT NULL,
    `agentName` varchar(255) DEFAULT NULL,
