@@ -60,6 +60,14 @@
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		
+		<!-- Connection Pooling using c3p0 -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-c3p0</artifactId>
+		    <version>3.6.7.Final</version>
+		    <scope>runtime</scope>
+		</dependency>
+
 		<!-- JSON -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
