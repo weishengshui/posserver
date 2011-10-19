@@ -69,6 +69,11 @@ public enum DomainEntity {
 	/**
 	 * HuaxiaRedeem. The entity ID should be <code>HuaxiaRedeem.getId()</code>
 	 */
-	HUAXIA_REDEEM
+	HUAXIA_REDEEM,
+	
+	/**
+	 * FinanceReportHistory. The entity ID should be <code>FinanceReportHistory.getId</code>
+	 */
+	FINANCE_REPORT_HISTORY
 
 }
