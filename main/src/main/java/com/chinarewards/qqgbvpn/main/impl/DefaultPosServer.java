@@ -385,7 +385,7 @@ public class DefaultPosServer implements PosServer {
 	@Override
 	public void setMonitorEnable(boolean isMonitorEnable) throws IOException {
 		if (cs != null && isMonitorEnable) {
-			RMIRegistry.RegistryRMI(jmxMoniterPort);
+			RMIRegistry.createRegistry(jmxMoniterPort);
 			cs.start();
 		} else {
 			if (cs != null && cs.isActive()&& !isMonitorEnable){

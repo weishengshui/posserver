@@ -17,15 +17,17 @@ public class RMIRegistry {
 
 	static Logger log = LoggerFactory.getLogger(RMIRegistry.class);
 
-	public static int RegistryRMI(int port) {
+	public static int createRegistry(int port) {
 		log.info("Start listener rmi server, port={}", port);
 		int p = port;
 		// Object obj = null;
 		try {
 			Registry registry = LocateRegistry.getRegistry(p);
 			registry.list();
+			log.info("using existing RMI registry found on port {}", port);
 		} catch (RemoteException remoteexception) {
-			log.info("listener rmi server error...");
+			log.info("no existing RMI registry found on port {}, creating...",
+					port);
 			Registry registry = null;
 			do {
 				if (registry != null)
@@ -33,7 +35,7 @@ public class RMIRegistry {
 				try {
 					registry = LocateRegistry.createRegistry(p);
 					registry.list();
-					log.info("RMI server create success...");
+					log.info("RMI server create success.");
 				} catch (RemoteException remoteexception1) {
 					log.error("Error creating RMI registry server",
 							remoteexception1);
