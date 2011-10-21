@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.PosEchoCommandRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.PosEchoCommandResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -32,21 +33,45 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 		}
 		long cmdId = in.getUnsignedInt();
 		
-		// decode data 
-		//获取
-		byte data[] = new byte[in.capacity()-in.position()];	//TODO in.remaining()  ?
-		in.get(data);
+		// decode data 	
+		byte data[] = new byte[in.remaining()];		//TODO in.capacity()-in.position() != in.remaining()
+		if(data != null && data.length != 0){
+			in.get(data);
+		}
 		
 		// reconstruct message.
 		PosEchoCommandRequestMessage requestMessage = new PosEchoCommandRequestMessage();
 		requestMessage.setData(data);
 		
+		
+		log.trace("PosEchoCommandRequestMessage:"+requestMessage);
 		return requestMessage;
 	}
 	
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		throw new UnsupportedOperationException();
+
+		PosEchoCommandRequestMessage msg = (PosEchoCommandRequestMessage) bodyMessage;
+
+		// prepare buffer
+		int bufLength = 0;
+		if (msg.getData() != null) {
+			bufLength += msg.getData().length;
+		}
+		
+		IoBuffer buf = IoBuffer.allocate(ProtocolLengths.COMMAND
+				+ ProtocolLengths.ECHO_COMMAND_RESULT + bufLength);
+
+		// encode data
+		// command ID
+		buf.putUnsignedInt(msg.getCmdId());
+		// data - optional
+		if (msg.getData() != null && bufLength > 0) {
+			buf.put(msg.getData());
+		}
+
+		// return result
+		return buf.array();
 	}
 	
 }
