@@ -19,6 +19,8 @@ public enum BusinessType {
 	
 	PosGetFirmwareFragment,
 	
-	PosRequestUpgrade
+	PosRequestUpgrade,
+	
+	PosEcho
 	
 }
