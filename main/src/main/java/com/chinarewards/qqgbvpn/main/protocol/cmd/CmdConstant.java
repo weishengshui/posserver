@@ -160,4 +160,14 @@ public class CmdConstant {
 	 */
 	public static final long HUAXIA_BANK_REDEEM_ACK_RESPONSE = 24;
 	
+	/**
+	 * pos echo 请求
+	 */
+	public static final long ECHO_CMD_ID = 25;
+	
+	/**
+	 * pos echo 响应
+	 */
+	public static final long ECHO_CMD_ID_RESPONSE = 26;
+	
 }
