@@ -1,4 +1,4 @@
-package com.chinarewards.qqgbvpn.main.MXBeans;
+package com.chinarewards.qqgbvpn.main.management;
 
 
 /**
@@ -6,12 +6,12 @@ package com.chinarewards.qqgbvpn.main.MXBeans;
  * @author dengrenwen
  *
  */
-public interface MonitorCommandManageMXBean {
+public interface PosCommandMXBean {
 	/**
 	 * 各个指令的接收数目
 	 * @return
 	 */
 	public String getAllCommandReceiveMessage();
 	
-	public void clearAllStatistic();
+	public void resetStatistics();
 }

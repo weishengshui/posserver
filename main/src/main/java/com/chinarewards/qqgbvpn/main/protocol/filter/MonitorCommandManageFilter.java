@@ -8,7 +8,7 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.MXBeans.MonitorCommandManageMXBean;
+import com.chinarewards.qqgbvpn.main.management.PosCommandMXBean;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 
@@ -19,7 +19,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class MonitorCommandManageFilter extends IoFilterAdapter implements	MonitorCommandManageMXBean {
+public class MonitorCommandManageFilter extends IoFilterAdapter implements	PosCommandMXBean {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -53,7 +53,7 @@ public class MonitorCommandManageFilter extends IoFilterAdapter implements	Monit
 	 * 清空所有统计数据
 	 */
 	@Override
-	public void clearAllStatistic() {
+	public void resetStatistics() {
 		
 		//清空指令管理池
 		if (commandCollector != null && !commandCollector.isEmpty()) {

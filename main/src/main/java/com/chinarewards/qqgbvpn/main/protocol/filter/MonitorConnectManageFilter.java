@@ -10,7 +10,7 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.MXBeans.MonitorConnectManageMXBean;
+import com.chinarewards.qqgbvpn.main.management.PosConnectionMXBean;
 import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
 
 /**
@@ -20,7 +20,8 @@ import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class MonitorConnectManageFilter extends IoFilterAdapter implements	MonitorConnectManageMXBean {
+public class MonitorConnectManageFilter extends IoFilterAdapter implements
+		PosConnectionMXBean {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -51,7 +52,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 得到打开的连接数
 	 */
 	@Override
-	public long getOpenConnectCount() {
+	public long getConnectionCount() {
 		openConnectCount = sessionCollector.keySet().size();
 		return openConnectCount;
 	}
@@ -60,7 +61,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 得到活跃的连接数
 	 */
 	@Override
-	public long getActivityConnectCount() {
+	public long getActive() {
 		activityConnectCount = getConnectCountByState(IS_ACTIVE);
 		return activityConnectCount;
 	}
@@ -69,7 +70,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 得到闲置的连接数
 	 */
 	@Override
-	public long getIdleConnectCount() {
+	public long getIdle() {
 		idleConnectCount = getConnectCountByState(IS_IDLE);
 		return idleConnectCount;
 	}
@@ -162,11 +163,10 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 */
 	private void updateIoSessionConnectMessage(IoSession session, String state) {
 		
-		log.debug("session.getId = {}，state={}", new Object[] {	session.getId(), state });
+//		log.trace("session.getId = {}, state={}",
+//				new Object[] { session.getId(), state });
 		
 		IoSessionMessageManage sessionMess = sessionCollector.get(session.getId());
-		
-		log.debug("sessionMess={}", sessionMess);
 		
 		if (sessionMess != null) {
 			//在当前这个连接第一次出发闲置的事件时，记录闲置的开始时间
@@ -176,9 +176,10 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 				sessionMess.setIdleTime(System.currentTimeMillis());
 			}
 			sessionMess.setState(state);
-			log.debug("session_id={},state={}",new Object[]{session.getId(),state});
+			log.debug("session_id={}, state={}", new Object[] {
+					session.getId(), state });
 			sessionMess.setSession(session);
-		}else{
+		} else {
 			//如果因为情况所有的统计数据而去掉了连接管理，但是这个连接并没有关闭，当这个连接发送或者接收数据时，做添加连接管理处理
 			addElementToSessionCollector(session , state);
 		}
@@ -206,7 +207,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 得到所有连接的总接收字节数
 	 */
 	@Override
-	public long getReceiveBytesCount() {
+	public long getBytesReceived() {
 		//初始化为那些已关闭连接所接收过的字节数
 		receiveBytesCount = this.closedReceiveBytes;
 		log.debug(" receiveBytesCount={} ",receiveBytesCount);
@@ -223,7 +224,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 得到所有连接的总发送字节数
 	 */
 	@Override
-	public long getSendBytesCount() {
+	public long getBytesSent() {
 		//初始化为那些已关闭连接所发送过的字节数
 		sendBytesCount = this.closedSendBytes;
 		log.debug(" sendBytesCount={} ",sendBytesCount);
@@ -240,7 +241,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 关闭所有闲置的连接
 	 */
 	@Override
-	public void closeAllIdleConnect() {
+	public void closeIdleConnecions() {
 		if (sessionCollector != null && !sessionCollector.isEmpty()) {
 			for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 				IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
@@ -256,7 +257,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 清空所有统计数据
 	 */
 	@Override
-	public void clearAllStatistic() {
+	public void resetStatistics() {
 		
 		this.closedReceiveBytes = 0;
 		this.closedSendBytes = 0;
@@ -268,7 +269,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements	Monit
 	 * 根据闲置的时间，关闭闲置的连接
 	 */
 	@Override
-	public void closeIdleConnect(long second) {
+	public void closeIdleConnecions(long second) {
 		//把分钟转换成毫秒数
 		long idleMilliSecond = second * 1000;
 		//得到应该可以关闭的闲置时间

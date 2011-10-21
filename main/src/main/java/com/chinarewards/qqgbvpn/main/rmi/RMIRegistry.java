@@ -9,22 +9,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 启动rmi服务
+ * 
  * @author dengrenwen
- *
+ * 
  */
 public class RMIRegistry {
 
 	static Logger log = LoggerFactory.getLogger(RMIRegistry.class);
-	
+
 	public static int RegistryRMI(int port) {
-		log.debug("start listener rmi server...,port=" + port);
+		log.info("Start listener rmi server, port={}", port);
 		int p = port;
 		// Object obj = null;
 		try {
 			Registry registry = LocateRegistry.getRegistry(p);
 			registry.list();
 		} catch (RemoteException remoteexception) {
-			log.debug("listener rmi server error...");
+			log.info("listener rmi server error...");
 			Registry registry = null;
 			do {
 				if (registry != null)
@@ -32,14 +33,13 @@ public class RMIRegistry {
 				try {
 					registry = LocateRegistry.createRegistry(p);
 					registry.list();
-					log.debug("server rmi create success...");
+					log.info("RMI server create success...");
 				} catch (RemoteException remoteexception1) {
-					remoteexception1.printStackTrace();
-					// throw remoteexception1;
+					log.error("Error creating RMI registry server",
+							remoteexception1);
 				}
 			} while (true);
 		}
-		log.debug("end listener rmi server...");
 		return p;
 	}
 }

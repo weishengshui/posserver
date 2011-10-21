@@ -202,7 +202,7 @@ public class DefaultPosServer implements PosServer {
 				new IdleConnectionKillerFilter(idleTime));
 		
 		// add jmx monitor
-		addMonitor();
+		registerJMXBeans();
 		
 		// monitor manage connect count filter ------> jmx
 		acceptor.getFilterChain().addLast("monitorConnectManageFilter",
@@ -254,7 +254,7 @@ public class DefaultPosServer implements PosServer {
 		}
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		
-		// start the acceptor and listen to incomming connection!
+		// start the acceptor and listen to incoming connection!
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
@@ -310,6 +310,9 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void shutdown() {
+		
+		// FIXME shutdown the registry server as well.
+		
 		try {
 			PersistService ps = injector.getInstance(PersistService.class);
 			ps.stop();
@@ -345,12 +348,15 @@ public class DefaultPosServer implements PosServer {
 		return port;
 	}
 
-	public void addMonitor() throws PosServerException,
+	public void registerJMXBeans() throws PosServerException,
 			InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
+		
+		// get the RMI port to use
 		jmxMoniterPort = configuration.getInt(ConfigKey.SERVER_MONITORPORT, DEFAULT_SERVER_MONITORPORT);
-		log.debug(" monitor port ={}", jmxMoniterPort);
+		log.info("monitor port={}", jmxMoniterPort);
+		
 		// jmx----------------------code start--------------------------
 		// jmx 服务器
 		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
@@ -359,17 +365,18 @@ public class DefaultPosServer implements PosServer {
 		this.monitorCommandManageFilter = new MonitorCommandManageFilter();
 		// 注册需要被管理的MBean
 		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
-				"monitorConnectManage:name=monitorConnectManage"));
+				"com.chinarewards.qqgbvpn.main:type=PosConnection"));
 		
 		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
-		"MonitorCommandManage:name=MonitorCommandManage"));
+				"com.chinarewards.qqgbvpn.main:type=PosCommand"));
 
+		// XXX is it correct? should localhost be configurable?
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
 		// Create an RMI connector and start it
 		JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
 
-		log.debug(" JMXServiceURL ={}", jmxServiceURL);
+		log.debug("JMXServiceURL={}", jmxServiceURL);
 
 		cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
 		// jmx----------------------code end--------------------------
