@@ -48,6 +48,14 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 		return requestMessage;
 	}
 	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 
@@ -69,7 +77,8 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 		if (msg.getData() != null && bufLength > 0) {
 			buf.put(msg.getData());
 		}
-
+		
+		log.trace("PosEchoCommandRequestMessage:", msg);
 		// return result
 		return buf.array();
 	}

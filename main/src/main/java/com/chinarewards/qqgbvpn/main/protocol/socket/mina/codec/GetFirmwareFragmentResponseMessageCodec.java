@@ -48,8 +48,7 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		
 		GetFirmwareFragmentResponseMessage message = new GetFirmwareFragmentResponseMessage(result, content);
 		
-		log.debug("get firmware fragment message response:cmdId is ({}) , result is ({}), content is ({})" , 
-				new Object[]{cmdId, result, Arrays.toString(content)});
+		log.trace("GetFirmwareFragmentResponseMessage:", message);
 		return message;
 	}
 	
@@ -79,7 +78,8 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		if (msg.getContent() != null && bufLength > 0) {
 			buf.put(msg.getContent());
 		}
-
+		
+		log.trace("GetFirmwareFragmentResponseMessage:", msg);
 		// return result
 		return buf.array();
 	}

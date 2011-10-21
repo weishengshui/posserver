@@ -45,7 +45,8 @@ public class GetFirmwareFragmentRequestMessageCodec implements ICommandCodec {
 		// reconstruct message.
 		GetFirmwareFragmentRequestMessage message = new GetFirmwareFragmentRequestMessage(
 				Tools.byteToString(posid, charset), offset, length);
-
+		
+		log.trace("GetFirmwareFragmentRequestMessage:", message);
 		return message;
 	}
 	
@@ -76,6 +77,7 @@ public class GetFirmwareFragmentRequestMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, length, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID 
 				+ ProtocolLengths.FIRMWARE_OFFSET);
 		
+		log.trace("GetFirmwareFragmentRequestMessage:", requestMessage);
 		return resultByte;
 	}
 	

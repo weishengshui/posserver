@@ -55,9 +55,9 @@ public class HuaxiaConfirmBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
 		
-		log.debug("HuaxiaAck message request:cmdId is ({}) , TxDate is ({}) , chanceId is ({}) , ackId is ({})"
-				, new Object[] { cmdId, txDate ,responseMessage.getChanceId(), responseMessage.getAckId()});
 		log.debug("HuaxiaConfirm message encode end ,result byte is ({})",Arrays.toString(resultByte));
+		
+		log.trace("HuaxiaResponseMessage:", responseMessage);
 		return resultByte;
 	}
 

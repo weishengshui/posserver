@@ -73,27 +73,22 @@ public class ValidationCallbackCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setGrouponId(grouponId);
 		message.setGrouponVCode(grouponVCode);
-		log
-				.debug(
-						"validationCallback message request:cmdId is ({}) , grouponId is ({}), grouponVCode is ({})",
-						new Object[] { cmdId, grouponId, grouponVCode });
+		
+		log.trace("ValCallbackRequestMessage:", message);
 		return message;
 	}
-
+	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		log.debug("validationCallback message encode");
-		ValCallbackResponseMessage responseMessage = (ValCallbackResponseMessage) bodyMessage;
-
-		long cmdId = responseMessage.getCmdId();
-		int result = responseMessage.getResult();
-
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND
-				+ ProtocolLengths.RESULT];
-		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		log.debug("validationCallback message encode end ,result byte is ({})",Arrays.toString(resultByte));
-		return resultByte;
+		throw new UnsupportedOperationException();
 	}
 
 }

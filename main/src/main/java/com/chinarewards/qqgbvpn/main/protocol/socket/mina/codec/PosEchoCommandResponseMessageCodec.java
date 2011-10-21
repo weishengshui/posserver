@@ -23,6 +23,14 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
@@ -48,6 +56,7 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 		responseMessage.setResult(result);
 		responseMessage.setData(data);
 		
+		log.trace("PosEchoCommandResponseMessage:", responseMessage);
 		return responseMessage;
 	}
 	
@@ -77,7 +86,8 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 		if (msg.getData() != null && bufLength > 0) {
 			buf.put(msg.getData());
 		}
-
+		
+		log.trace("PosEchoCommandResponseMessage:", msg);
 		// return result
 		return buf.array();
 	}

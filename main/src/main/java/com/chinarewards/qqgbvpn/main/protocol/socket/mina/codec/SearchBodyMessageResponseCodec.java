@@ -97,9 +97,7 @@ public class SearchBodyMessageResponseCodec implements ICommandCodec {
 		message.setTotalpage(totalpage);
 		message.setDetail(detailList);
 		
-		log.debug("search message request:cmdId is ({}) , result is ({}), totalnum is ({})" +
-				", curnum is ({}), curpage is ({}), totalpage is ({}), detailList is ({})", 
-				new Object[]{cmdId, result, totalnum, curnum, curpage, totalpage, detailList});
+		log.trace("SearchResponseMessage:"+message);
 		return message;
 	}
 
@@ -140,7 +138,8 @@ public class SearchBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, curpage, ProtocolLengths.COMMAND+6);
 		Tools.putUnsignedShort(resultByte, totalpage, ProtocolLengths.COMMAND+8);
 		Tools.putBytes(resultByte, detailByte, ProtocolLengths.COMMAND + 10);
-
+		
+		log.trace("SearchResponseMessage:"+responseMessage);
 		return resultByte;
 	}
 }

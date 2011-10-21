@@ -46,7 +46,7 @@ public class LoginMessageCodec implements ICommandCodec {
 		message.setChallengeResponse(challeugeresponse);
 		message.setPosId(Tools.byteToString(posIdBuf, charset));
 		
-		log.debug("login/bind message request:cmdId is ({}) , posid is ({}) ,challengeResponse is ({})",new Object[]{cmdId,posIdBuf,challeugeresponse});
+		log.trace("LoginRequestMessage:", message);
 		return message;
 	}
 
@@ -73,7 +73,8 @@ public class LoginMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challengeResponse, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID);
-
+		
+		log.trace("LoginRequestMessage:", requestMessage);
 		return resultByte;
 	}
 

@@ -80,9 +80,7 @@ public class ValidateBodyMessageResponseCodec implements ICommandCodec {
 		message.setUseTime(useTime);
 		message.setValidTime(validTime);
 		
-		log.debug("search message request:cmdId is ({}) , result is ({}), resultName is ({})" +
-				", resultExplain is ({}), currentTime is ({}), useTime is ({}), validTime is ({})", 
-				new Object[]{cmdId, result, resultName, resultExplain, currentTime, useTime, validTime});
+		log.trace("ValidateResponseMessage:", message);
 		return message;
 	}
 
@@ -118,7 +116,9 @@ public class ValidateBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND
 				+ ProtocolLengths.RESULT);
-		log.debug("validate message encode end ,result byte is ({})",Arrays.toString(resultByte));
+
+
+		log.trace("ValidateResponseMessage:", responseMessage);
 		return resultByte;
 	}
 

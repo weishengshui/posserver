@@ -9,14 +9,23 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
-public class HuaxiaSearchBodyMessageResponseCodec implements ICommandCodec {
+public class ValidationCallbackResponseCodec implements ICommandCodec {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
@@ -25,20 +34,18 @@ public class HuaxiaSearchBodyMessageResponseCodec implements ICommandCodec {
 
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
-		log.debug("HuaxiaSearch response message encode");
-		HuaxiaResponseMessage responseMessage = (HuaxiaResponseMessage) bodyMessage;
+		log.debug("validationCallback message encode");
+		ValCallbackResponseMessage responseMessage = (ValCallbackResponseMessage) bodyMessage;
 
 		long cmdId = responseMessage.getCmdId();
 		int result = responseMessage.getResult();
-		//兑换次数
-		int redeemCount = responseMessage.getRedeemCount();
 
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND + ProtocolLengths.RESULT + ProtocolLengths.REDEEM_COUNT];
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND
+				+ ProtocolLengths.RESULT];
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
-		Tools.putUnsignedShort(resultByte, redeemCount, (ProtocolLengths.COMMAND + ProtocolLengths.RESULT));
 		
-		log.trace("HuaxiaResponseMessage:", responseMessage);
+		log.trace("ValCallbackResponseMessage:", responseMessage);
 		return resultByte;
 	}
 
