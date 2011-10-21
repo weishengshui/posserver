@@ -10,7 +10,7 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qqgbvpn.main.MXBeans.MonitorConnectManageMXBean;
+import com.chinarewards.qqgbvpn.main.mxbeans.MonitorConnectManageMXBean;
 import com.chinarewards.qqgbvpn.main.util.IoSessionMessageManage;
 
 /**

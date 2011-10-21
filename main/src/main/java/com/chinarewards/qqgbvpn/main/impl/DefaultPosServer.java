@@ -4,6 +4,10 @@
 package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryManagerMXBean;
+import java.lang.management.MemoryPoolMXBean;
 import java.net.InetSocketAddress;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -354,15 +358,51 @@ public class DefaultPosServer implements PosServer {
 		// jmx----------------------code start--------------------------
 		// jmx 服务器
 		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
+
 		// 管理连接状态数目工具Filter
 		this.monitorConnectManageFilter = new MonitorConnectManageFilter();
 		this.monitorCommandManageFilter = new MonitorCommandManageFilter();
 		// 注册需要被管理的MBean
+		mbs.registerMBean(ManagementFactory.getClassLoadingMXBean(), new ObjectName(
+		"ClassLoading:name=ClassLoading"));
+		
+		mbs.registerMBean(ManagementFactory.getCompilationMXBean(), new ObjectName(
+		"Compilation:name=Compilation"));
+		
+		mbs.registerMBean(ManagementFactory.getMemoryMXBean(), new ObjectName(
+		"Memory:name=Memory"));
+		
+		mbs.registerMBean(ManagementFactory.getOperatingSystemMXBean(), new ObjectName(
+		"OperatingSystem:name=OperatingSystem"));
+		
+		mbs.registerMBean(ManagementFactory.getRuntimeMXBean(), new ObjectName(
+		"Runtime:name=Runtime"));
+		
+		mbs.registerMBean(ManagementFactory.getThreadMXBean(), new ObjectName(
+		"Thread:name=Thread"));
+		
+		int i=1;
+		for(GarbageCollectorMXBean garbageCollector : ManagementFactory.getGarbageCollectorMXBeans()){
+			mbs.registerMBean(garbageCollector, new ObjectName("GarbageCollector:name=GarbageCollector_"+(i++)));
+		}
+		i=1;
+		for(MemoryManagerMXBean memoryManager : ManagementFactory.getMemoryManagerMXBeans()){
+			mbs.registerMBean(memoryManager, new ObjectName("MemoryManager:name=MemoryManager_"+(i++)));
+		}
+		i=1;
+		for(MemoryPoolMXBean memoryPool : ManagementFactory.getMemoryPoolMXBeans()){
+			mbs.registerMBean(memoryPool, new ObjectName("MemoryPool:name=MemoryPool_"+(i++)));
+		}
+		
+		//		mbs.registerMBean(ManagementFactory.getGarbageCollectorMXBeans(), new ObjectName(
+//		"GarbageCollectorMXBeans:name=GarbageCollectorMXBeans"));
+		
+		
 		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
-				"monitorConnectManage:name=monitorConnectManage"));
+				"QqgbvpnConnect:name=Connect"));
 		
 		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
-		"MonitorCommandManage:name=MonitorCommandManage"));
+		"QqgbvpnCommand:name=Command"));
 
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
