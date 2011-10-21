@@ -35,7 +35,10 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 		// decode data 
 		//获取
 		byte data[] = new byte[in.capacity()-in.position()];	//TODO in.remaining()  ?
-		in.get(data);
+		
+		if(data != null && data.length != 0){
+			in.get(data);
+		}
 		
 		// reconstruct message.
 		PosEchoCommandRequestMessage requestMessage = new PosEchoCommandRequestMessage();
