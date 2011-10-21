@@ -57,7 +57,7 @@ public class HuaxiaConfirmBodyMessageResponseCodec implements ICommandCodec {
 		
 		log.debug("HuaxiaConfirm message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		
-		log.trace("HuaxiaResponseMessage:", responseMessage);
+		log.trace("HuaxiaResponseMessage:"+ responseMessage);
 		return resultByte;
 	}
 

@@ -39,4 +39,8 @@ public class PosEchoBuildMessage implements BuildMessage {
 		}
 	}
 	
+	public static void main(String[] args) throws Throwable{
+		System.out.println("abcdefg".getBytes("gb2312").length);
+	}
+	
 }

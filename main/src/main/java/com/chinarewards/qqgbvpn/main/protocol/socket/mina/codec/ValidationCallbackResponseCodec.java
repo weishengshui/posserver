@@ -45,7 +45,7 @@ public class ValidationCallbackResponseCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		
-		log.trace("ValCallbackResponseMessage:", responseMessage);
+		log.trace("ValCallbackResponseMessage:" + responseMessage);
 		return resultByte;
 	}
 

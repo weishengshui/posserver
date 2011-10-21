@@ -49,7 +49,7 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setResult(result);
 
-		log.trace("FirmwareUpDoneResponseMessage:", message);
+		log.trace("FirmwareUpDoneResponseMessage:"+ message);
 		return message;
 	}
 
@@ -70,7 +70,7 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 		// result
 		buf.putShort(msg.getResult());
 		
-		log.trace("FirmwareUpDoneResponseMessage:", msg);
+		log.trace("FirmwareUpDoneResponseMessage:"+ msg);
 		// return result
 		return buf.array();
 

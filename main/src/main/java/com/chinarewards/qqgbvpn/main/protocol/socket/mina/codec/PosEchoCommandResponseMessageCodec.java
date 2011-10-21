@@ -56,7 +56,7 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 		responseMessage.setResult(result);
 		responseMessage.setData(data);
 		
-		log.trace("PosEchoCommandResponseMessage:", responseMessage);
+		log.trace("PosEchoCommandResponseMessage:"+ responseMessage);
 		return responseMessage;
 	}
 	
@@ -87,7 +87,7 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 			buf.put(msg.getData());
 		}
 		
-		log.trace("PosEchoCommandResponseMessage:", msg);
+		log.trace("PosEchoCommandResponseMessage:"+ msg);
 		// return result
 		return buf.array();
 	}

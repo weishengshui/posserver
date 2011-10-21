@@ -91,7 +91,7 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 		message.setChanceId(chanceId);
 		message.setAckId(ackId);
 
-		log.trace("HuaxiaRequestMessage:", message);
+		log.trace("HuaxiaRequestMessage:"+ message);
 		return message;
 	}
 	

@@ -67,8 +67,7 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 			bufLength += msg.getData().length;
 		}
 		
-		IoBuffer buf = IoBuffer.allocate(ProtocolLengths.COMMAND
-				+ ProtocolLengths.ECHO_COMMAND_RESULT + bufLength);
+		IoBuffer buf = IoBuffer.allocate(ProtocolLengths.COMMAND + bufLength);
 
 		// encode data
 		// command ID
@@ -78,7 +77,7 @@ public class PosEchoCommandRequestMessageCodec implements ICommandCodec {
 			buf.put(msg.getData());
 		}
 		
-		log.trace("PosEchoCommandRequestMessage:", msg);
+		log.trace("PosEchoCommandRequestMessage:"+ msg);
 		// return result
 		return buf.array();
 	}
