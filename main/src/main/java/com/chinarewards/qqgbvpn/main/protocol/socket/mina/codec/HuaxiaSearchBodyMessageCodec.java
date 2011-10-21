@@ -60,7 +60,7 @@ public class HuaxiaSearchBodyMessageCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setCardNum(cardNum);
 		
-		log.trace("HuaxiaRequestMessage:"+ message);
+		log.trace("HuaxiaRequestMessage:{}", message);
 		return message;
 	}
 	

@@ -61,7 +61,7 @@ public class FirmwareResponseMessageCodec implements ICommandCodec {
 		message.setSize(size);
 		message.setFirmwareName(firmwareName);
 		
-		log.trace("FirmwareUpgradeRequestResponseMessage:" + message);
+		log.trace("FirmwareUpgradeRequestResponseMessage:{}", message);
 		return message;
 	}
 	
@@ -91,7 +91,7 @@ public class FirmwareResponseMessageCodec implements ICommandCodec {
 			buf.put((byte)0);
 		}
 		
-		log.trace("FirmwareUpgradeRequestResponseMessage:" + responseMessage);
+		log.trace("FirmwareUpgradeRequestResponseMessage:{}", responseMessage);
 		return Arrays.copyOfRange(buf.array(), 0, buf.position());
 	}
 	

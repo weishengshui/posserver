@@ -17,8 +17,7 @@ public class SearchRequestMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "cmdId=" + cmdId + ", page=" + page
-				+ ", size=" + size;
+		return " [cmdId=" + cmdId + ", page=" + page + ", size=" + size + "]";
 	}
 
 	@Override

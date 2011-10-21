@@ -80,7 +80,7 @@ public class ValidateBodyMessageResponseCodec implements ICommandCodec {
 		message.setUseTime(useTime);
 		message.setValidTime(validTime);
 		
-		log.trace("ValidateResponseMessage:" +message);
+		log.trace("ValidateResponseMessage:{}", message);
 		return message;
 	}
 
@@ -118,7 +118,7 @@ public class ValidateBodyMessageResponseCodec implements ICommandCodec {
 				+ ProtocolLengths.RESULT);
 
 
-		log.trace("ValidateResponseMessage:"+ responseMessage);
+		log.trace("ValidateResponseMessage:{}", responseMessage);
 		return resultByte;
 	}
 

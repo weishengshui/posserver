@@ -42,7 +42,7 @@ public class InitMessageCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setPosId(Tools.byteToString(posid, charset));
 		
-		log.trace("InitRequestMessage:"+ message);
+		log.trace("InitRequestMessage:{}", message);
 		return message;
 	}
 	
@@ -67,7 +67,7 @@ public class InitMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
 		
-		log.trace("InitRequestMessage:"+ initRequestMessage);
+		log.trace("InitRequestMessage:{}", initRequestMessage);
 		return resultByte;
 	}
 

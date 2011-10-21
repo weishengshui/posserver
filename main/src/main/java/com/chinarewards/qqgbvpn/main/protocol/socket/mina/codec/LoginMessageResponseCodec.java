@@ -53,7 +53,7 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		responseMessage.setResult(result);
 		responseMessage.setChallenge(challenge);
 		
-		log.trace("LoginResponseMessage:"+ responseMessage);
+		log.trace("LoginResponseMessage:{}", responseMessage);
 		return responseMessage;
 	}
 
@@ -73,7 +73,7 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
 		
-		log.trace("LoginResponseMessage:"+ responseMessage);
+		log.trace("LoginResponseMessage:{}", responseMessage);
 		return resultByte;
 	}
 

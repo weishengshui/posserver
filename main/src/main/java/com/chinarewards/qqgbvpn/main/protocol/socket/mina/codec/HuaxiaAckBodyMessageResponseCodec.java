@@ -48,7 +48,7 @@ public class HuaxiaAckBodyMessageResponseCodec implements ICommandCodec {
 		
 		log.debug("HuaxiaAck message encode end ,result byte is ({})",Arrays.toString(resultByte));
 		
-		log.trace("HuaxiaResponseMessage:"+ responseMessage);
+		log.trace("HuaxiaResponseMessage:{}", responseMessage);
 		return resultByte;
 	}
 

@@ -38,7 +38,7 @@ public class HuaxiaSearchBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putUnsignedShort(resultByte, redeemCount, (ProtocolLengths.COMMAND + ProtocolLengths.RESULT));
 		
-		log.trace("HuaxiaResponseMessage:"+ responseMessage);
+		log.trace("HuaxiaResponseMessage:{}", responseMessage);
 		return resultByte;
 	}
 

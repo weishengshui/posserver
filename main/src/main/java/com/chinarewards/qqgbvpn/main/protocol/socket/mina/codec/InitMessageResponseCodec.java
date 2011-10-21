@@ -52,7 +52,7 @@ public class InitMessageResponseCodec implements ICommandCodec {
 		message.setResult(result);
 		message.setChallenge(challenge);
 		
-		log.trace("InitResponseMessage:" + message);
+		log.trace("InitResponseMessage:{}", message);
 		return message;
 	}
 
@@ -70,7 +70,7 @@ public class InitMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, result, ProtocolLengths.COMMAND);
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND+ProtocolLengths.RESULT);
 		
-		log.trace("InitResponseMessage:" + responseMessage);
+		log.trace("InitResponseMessage:{}", responseMessage);
 		return resultByte;
 	}
 

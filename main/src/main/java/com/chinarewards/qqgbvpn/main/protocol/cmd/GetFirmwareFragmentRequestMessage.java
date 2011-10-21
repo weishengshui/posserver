@@ -8,6 +8,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class GetFirmwareFragmentRequestMessage implements ICommand {
 
+	private final long cmdId = CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID;
+	
 	private final String posId;
 
 	private final long offset;
@@ -16,8 +18,8 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId()+ ",posId=" + posId
-				+ ", offset=" + offset + ", length=" + length;
+		return " [cmdId=" + cmdId + ", posId=" + posId + ", offset=" + offset
+				+ ", length=" + length + "]";
 	}
 
 	public GetFirmwareFragmentRequestMessage(String posId, long offset,
@@ -32,7 +34,7 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 	 * {@link CmdConstant#GET_FIRMWARE_FRAGMENT_CMD_ID}
 	 */
 	public long getCmdId() {
-		return CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID;
+		return cmdId;
 	}
 
 	/**

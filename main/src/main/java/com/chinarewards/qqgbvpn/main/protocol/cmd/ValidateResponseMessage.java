@@ -20,10 +20,10 @@ public class ValidateResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "cmdId=" + cmdId + ", result=" + result
-				+ ", resultName=" + resultName + ", resultExplain="
-				+ resultExplain + ", currentTime=" + currentTime + ", useTime="
-				+ useTime + ", validTime=" + validTime;
+		return " [cmdId=" + cmdId + ", result=" + result + ", resultName="
+				+ resultName + ", resultExplain=" + resultExplain
+				+ ", currentTime=" + currentTime + ", useTime=" + useTime
+				+ ", validTime=" + validTime + "]";
 	}
 
 	//---------------------------------------//

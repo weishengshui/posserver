@@ -8,17 +8,18 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  * @see FirmwareUpgradeRequestResponseMessage
  */
 public class FirmwareUpgradeRequestMessage implements ICommand {
-
+	
+	private long cmdId = CmdConstant.FIRMWARE_UPGRADE_CMD_ID;
+	
 	private String posId;
 
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId() + ", posId="
-				+ posId;
+		return " [cmdId=" + cmdId + ", posId=" + posId + "]";
 	}
 
 	public long getCmdId() {
-		return CmdConstant.FIRMWARE_UPGRADE_CMD_ID;
+		return cmdId;
 	}
 
 	public String getPosId() {

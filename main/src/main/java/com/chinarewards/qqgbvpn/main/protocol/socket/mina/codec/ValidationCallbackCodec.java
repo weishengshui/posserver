@@ -74,7 +74,7 @@ public class ValidationCallbackCodec implements ICommandCodec {
 		message.setGrouponId(grouponId);
 		message.setGrouponVCode(grouponVCode);
 		
-		log.trace("ValCallbackRequestMessage:" + message);
+		log.trace("ValCallbackRequestMessage:{}", message);
 		return message;
 	}
 	

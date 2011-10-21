@@ -41,7 +41,7 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		// construct message
 		message.setPosId(Tools.byteToString(posIdBuf, charset));
 
-		log.trace("FirmwareUpgradeRequestMessage:" + message);
+		log.trace("FirmwareUpgradeRequestMessage:{}", message);
 		return message;
 	}
 	
@@ -66,7 +66,7 @@ public class FirmwareRequestMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putBytes(resultByte, posId.getBytes(), ProtocolLengths.COMMAND);
 		
-		log.trace("FirmwareUpgradeRequestMessage:" + requestMessage);
+		log.trace("FirmwareUpgradeRequestMessage:{}", requestMessage);
 		return resultByte;
 	}
 	
