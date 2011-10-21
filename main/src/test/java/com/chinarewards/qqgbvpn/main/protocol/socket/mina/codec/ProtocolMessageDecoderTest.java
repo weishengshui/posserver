@@ -22,6 +22,8 @@ import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdMapping;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -223,6 +225,62 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		assertEquals(1, parsedCmd.getCmdId());
 		assertEquals(CHARSET_TO_TEST, parsedCmd.getPosId());
 
+	}
+
+	/**
+	 * Test the case a complete message, when converted to byte arrays, is
+	 * divided into two parts which a incomplete header is sent.
+	 * <p>
+	 * 
+	 * The message decoder should survive.
+	 */
+	@Test
+	public void testDoDecode_UnsupportedCommandId() throws Exception {
+	
+		//
+		// Prepare the original data which will be validated against the
+		// output by the API to be tested.
+		//
+		
+		// use any codec to play with this
+		FirmwareUpDoneRequestCodec codec = new FirmwareUpDoneRequestCodec();
+		FirmwareUpDoneRequestMessage srcMsg = new FirmwareUpDoneRequestMessage();
+		srcMsg.setCmdId(987654321);	// !!! unsupported command ID
+		srcMsg.setPosId(CHARSET_TO_TEST);
+		//
+		byte[] srcRawMsg = codec.encode(srcMsg, charset);
+		byte[] srcCompleteRawMsg = PackageUtil.formatPackageContent(0, srcRawMsg);
+		assertTrue(srcCompleteRawMsg.length == srcRawMsg.length + ProtocolLengths.HEAD);
+		
+		// this test requires the data length must be longer than the header
+		// byte at least 1 byte.
+		assertTrue("The source complete raw message is too short for testing",
+				srcCompleteRawMsg.length > ProtocolLengths.HEAD + 2);
+	
+		// the API needs a IoBuffer, so we make it.
+		IoBuffer in1 = IoBuffer.allocate(srcCompleteRawMsg.length);
+		in1.put(srcCompleteRawMsg);
+		in1.position(0);
+		
+		//
+		// Call the API for the first time.
+		//
+		Result ret1 = msgDecoder.decode(in1, charset);
+		assertNotNull(ret1);
+		assertFalse("Decoder should not report more data is needed!", ret1.isMoreDataRequired());
+		assertNotNull(ret1.getHeader());
+		assertNotNull(ret1.getMessage());
+		assertEquals(0, ret1.getOweLength());
+		// check the body message, should be error message
+		assertTrue("Message not instance of Message",
+				ret1.getMessage() instanceof Message);
+		Message msg = (Message)ret1.getMessage();
+		assertTrue("Message not instance of Message",
+				msg.getBodyMessage() instanceof ErrorBodyMessage);
+		ErrorBodyMessage ebm = (ErrorBodyMessage)msg.getBodyMessage();
+		assertEquals(CmdConstant.ERROR_INVALID_CMD_ID, ebm.getErrorCode());
+		assertEquals(0, in1.remaining());
+		
 	}
 	
 }

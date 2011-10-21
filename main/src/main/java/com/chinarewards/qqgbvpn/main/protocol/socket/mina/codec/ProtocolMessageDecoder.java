@@ -191,7 +191,7 @@ public class ProtocolMessageDecoder {
 			in.position(start + ProtocolLengths.HEAD);
 			ICommand bodyMessage = null;
 			try {
-				bodyMessage = this.decodeMessageBody(in, charset);
+				bodyMessage = this.decodeMessageBody(in, charset, header);
 				// a message is completely decoded.
 				Message message = new Message(header, bodyMessage);
 				return new Result(false, 0, header, message);
@@ -214,8 +214,8 @@ public class ProtocolMessageDecoder {
 
 	}
 
-	protected ICommand decodeMessageBody(IoBuffer in, Charset charset)
-			throws PackageException {
+	protected ICommand decodeMessageBody(IoBuffer in, Charset charset,
+			HeadMessage header) throws PackageException {
 
 		// get cmdId and process it
 		int position = in.position();
@@ -227,8 +227,23 @@ public class ProtocolMessageDecoder {
 		ICommandCodec bodyMessageCoder = cmdCodecFactory.getCodec(cmdId);
 		log.trace("Command codec for command ID {}: {}", cmdId,
 				bodyMessageCoder);
-
-		return bodyMessageCoder.decode(in, charset);
+		if (bodyMessageCoder != null) {
+			// codec is found, decode it
+			return bodyMessageCoder.decode(in, charset);
+		} else {
+			// no codec is found:
+			// 1. consume all bytes in the buffer.
+			long toConsume = header.getMessageSize() - ProtocolLengths.HEAD;
+			if (toConsume > 0 && in.remaining() > 0) {
+				long actualConsume = toConsume > in.remaining() ?
+						in.remaining() : toConsume;
+				in.skip((int)actualConsume);	// XXX potential problem
+			}
+			// 2. report invalid command ID.
+			ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
+			bodyMessage.setErrorCode(CmdConstant.ERROR_INVALID_CMD_ID);
+			return bodyMessage;
+		}
 	}
 
 }

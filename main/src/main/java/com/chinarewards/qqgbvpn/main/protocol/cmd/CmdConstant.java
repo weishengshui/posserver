@@ -101,6 +101,11 @@ public class CmdConstant {
 	public static final long ERROR_NO_LOGIN_CODE = 7;
 
 	/**
+	 * Invalid command ID.
+	 */
+	public static final long ERROR_INVALID_CMD_ID = 9;
+
+	/**
 	 * enter
 	 */
 	public static final char ENTER = 13;
