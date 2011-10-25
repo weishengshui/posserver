@@ -47,7 +47,7 @@ do_start()
 	# rstore link to the jetty context (deploy).
 	rm -f $JETTY_CONF_CTX_DIR/posnet2-mgmtui.xml
 	# the traling slash '/' is IMPORTANT!
-	ln -s /usr/share/posnet2-mgmtui/conf/appserver/jetty/posnet2-mgmtui.xml $JETTY_CONF_CTX_DIR
+	ln -s /etc/posnet2-mgmtui/appserver/jetty/posnet2-mgmtui.xml $JETTY_CONF_CTX_DIR
 
 	return 0
 }
