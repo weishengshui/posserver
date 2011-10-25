@@ -22,12 +22,15 @@ public interface PosServer {
 	/**
 	 * Start the server.
 	 */
-	public void start() throws PosServerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException, MalformedObjectNameException, NullPointerException, IOException;
+	public void start() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException;
 
 	/**
 	 * Stop the server.
 	 */
-	public void stop()throws IOException;
+	public void stop() throws IOException;
 
 	/**
 	 * Complete shutdown the server and release all resources. This should be
