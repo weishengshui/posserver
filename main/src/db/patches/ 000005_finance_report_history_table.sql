@@ -1,12 +1,12 @@
-CREATE TABLE `financereporthistory` (
-  `id` varchar(255) NOT NULL,
-  `agentId` varchar(255) DEFAULT NULL,
-  `agentName` varchar(255) DEFAULT NULL,
-  `createDate` datetime DEFAULT NULL,
-  `endDate` datetime DEFAULT NULL,
-  `modifyDate` datetime DEFAULT NULL,
-  `reportDetail` longtext,
-  `startDate` datetime DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
+CREATE TABLE `FinanceReportHistory` (
+  `id` VARCHAR(255) NOT NULL,
+  `agentId` VARCHAR(255) DEFAULT NULL,
+  `agentName` VARCHAR(255) DEFAULT NULL,
+  `createDate` DATETIME DEFAULT NULL,
+  `endDate` DATETIME DEFAULT NULL,
+  `modifyDate` DATETIME DEFAULT NULL,
+  `reportDetail` LONGTEXT,
+  `startDate` DATETIME DEFAULT NULL,
+  `status` VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;

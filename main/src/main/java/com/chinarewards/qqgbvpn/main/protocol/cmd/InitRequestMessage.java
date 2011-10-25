@@ -11,6 +11,11 @@ public class InitRequestMessage implements ICommand {
 	private long cmdId;
 
 	private String posId;
+	
+	@Override
+	public String toString() {
+		return " [cmdId=" + cmdId + ", posId=" + posId + "]";
+	}
 
 	public long getCmdId() {
 		return cmdId;
@@ -27,13 +32,4 @@ public class InitRequestMessage implements ICommand {
 	public void setCmdId(long cmdId) {
 		this.cmdId = cmdId;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "cmdId=" + cmdId + ", posId=" + posId;
-	}
-
 }

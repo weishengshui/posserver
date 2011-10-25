@@ -50,7 +50,8 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 	 */
 	public static final short RESULT_NO_FIRMWARE_UPGRADE = 7;
 	
-
+	private final long cmdId = CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE;
+	
 	private final short result;
 
 	private byte[] content;
@@ -62,8 +63,8 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId() + ",result=" + result
-				+ ", content=" + Arrays.toString(content);
+		return " [cmdId=" + cmdId + ", result=" + result + ", content="
+				+ Arrays.toString(content) + "]";
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 	 * {@link CmdConstant#GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE}
 	 */
 	public long getCmdId() {
-		return CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE;
+		return cmdId;
 	}
 
 	/**

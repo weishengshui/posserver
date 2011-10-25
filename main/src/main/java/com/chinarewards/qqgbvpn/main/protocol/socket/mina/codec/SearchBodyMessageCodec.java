@@ -44,7 +44,8 @@ public class SearchBodyMessageCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setPage(page);
 		message.setSize(size);
-		log.debug("search message request:cmdId is ({}) , page is ({}), size is ({})",new Object[]{cmdId,page,size});
+		
+		log.trace("SearchRequestMessage:{}", message);
 		return message;
 	}
 	
@@ -71,7 +72,8 @@ public class SearchBodyMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, page, ProtocolLengths.COMMAND);
 		Tools.putUnsignedShort(resultByte, size, ProtocolLengths.COMMAND + ProtocolLengths.PAGE);
-
+		
+		log.trace("SearchRequestMessage:{}", requestMessage);
 		return resultByte;
 	}
 

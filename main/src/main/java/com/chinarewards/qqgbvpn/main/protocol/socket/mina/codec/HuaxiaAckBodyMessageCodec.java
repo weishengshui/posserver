@@ -90,8 +90,8 @@ public class HuaxiaAckBodyMessageCodec implements ICommandCodec {
 		message.setCardNum(cardNum);
 		message.setChanceId(chanceId);
 		message.setAckId(ackId);
-		log.debug("HuaxiaAck message request:cmdId is ({}) , cardNum is ({}) , chanceId is ({}) , ackId is ({}) , requestByte.length is ({})"
-				, new Object[] { cmdId, cardNum ,chanceId, ackId, requestByte.length});
+
+		log.trace("HuaxiaRequestMessage:{}", message);
 		return message;
 	}
 	

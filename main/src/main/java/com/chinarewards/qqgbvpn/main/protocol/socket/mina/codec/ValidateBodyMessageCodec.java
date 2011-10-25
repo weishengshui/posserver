@@ -74,10 +74,8 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setGrouponId(grouponId);
 		message.setGrouponVCode(grouponVCode);
-		log
-				.debug(
-						"validate message request:cmdId is ({}) , grouponId is ({}), grouponVCode is ({})",
-						new Object[] { cmdId, grouponId, grouponVCode });
+		
+		log.trace("ValidateRequestMessage:{}", message);
 		return message;
 	}
 	
@@ -114,7 +112,7 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND);
 		
-		log.debug("validate message encode end ,result byte is ({})",Arrays.toString(resultByte));
+		log.trace("ValidateRequestMessage:{}", requestMessage);
 		return resultByte;
 	}
 

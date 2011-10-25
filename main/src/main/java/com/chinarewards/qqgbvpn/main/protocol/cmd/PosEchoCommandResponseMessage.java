@@ -24,6 +24,7 @@ public class PosEchoCommandResponseMessage implements ICommand {
 	 */
 	public static final short RESULT_OTHER_ERROR = 2;
 	
+	private final long cmdId = CmdConstant.ECHO_CMD_ID_RESPONSE;
 	
 	private short result;
 	
@@ -31,13 +32,13 @@ public class PosEchoCommandResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId() + ", result="
-				+ result + ", data=" + Arrays.toString(data);
+		return " [cmdId=" + cmdId + ", result=" + result + ", data="
+				+ Arrays.toString(data) + "]";
 	}
 
 	//-------------------------------------------------//
 	public long getCmdId() {
-		return CmdConstant.ECHO_CMD_ID_RESPONSE;
+		return cmdId;
 	}
 	
 	public short getResult() {

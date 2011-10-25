@@ -59,8 +59,8 @@ public class HuaxiaConfirmBodyMessageCodec implements ICommandCodec {
 
 		message.setCmdId(cmdId);
 		message.setCardNum(cardNum);
-		log.debug("HuaxiaConfirm message request:cmdId is ({}) , cardNum is ({})"
-				, new Object[] { cmdId, cardNum });
+
+		log.trace("HuaxiaRequestMessage:{}", message);
 		return message;
 	}
 	

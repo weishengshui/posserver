@@ -11,15 +11,17 @@ import java.util.Arrays;
  */
 public class PosEchoCommandRequestMessage implements ICommand {
 	
+	private final long cmdId = CmdConstant.ECHO_CMD_ID;
+	
 	private byte[] data;
 
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId() + ", data=" + Arrays.toString(data);
+		return " [cmdId=" + cmdId + ", data=" + Arrays.toString(data) + "]";
 	}
 
 	public long getCmdId() {
-		return CmdConstant.ECHO_CMD_ID;
+		return cmdId;
 	}
 	
 	

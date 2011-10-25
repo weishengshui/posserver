@@ -14,8 +14,7 @@ public class ValCallbackResponseMessage implements ICommand {
 
 	@Override
 	public String toString() {
-		return "cmdId=" + cmdId + ", result="
-				+ result;
+		return " [cmdId=" + cmdId + ", result=" + result + "]";
 	}
 
 	//======================//

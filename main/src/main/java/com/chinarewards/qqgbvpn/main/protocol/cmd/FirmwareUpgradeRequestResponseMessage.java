@@ -8,6 +8,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class FirmwareUpgradeRequestResponseMessage implements ICommand {
 	
+	private long cmdId = CmdConstant.FIRMWARE_UPGRADE_CMD_ID_RESPONSE;
+	
 	private int result;
 
 	private long size;
@@ -16,13 +18,13 @@ public class FirmwareUpgradeRequestResponseMessage implements ICommand {
 	
 	@Override
 	public String toString() {
-		return "cmdId=" + getCmdId() + ", result=" + result
-				+ ", size=" + size + ", firmwareName=" + firmwareName;
+		return " [cmdId=" + cmdId + ", result=" + result + ", size=" + size
+				+ ", firmwareName=" + firmwareName + "]";
 	}
 
 	// -------------------------------------------------//
 	public long getCmdId() {
-		return CmdConstant.FIRMWARE_UPGRADE_CMD_ID_RESPONSE;
+		return cmdId;
 	}
 
 	public int getResult() {

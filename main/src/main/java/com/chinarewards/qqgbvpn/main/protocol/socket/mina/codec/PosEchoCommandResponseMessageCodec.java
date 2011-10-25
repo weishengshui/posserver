@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.PosEchoCommandRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.PosEchoCommandResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
@@ -22,10 +23,41 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
+	/**
+	 * description：mock pos test use it!
+	 * @param bodyMessage
+	 * @param charset
+	 * @return
+	 * @time 2011-9-22   下午07:23:35
+	 * @author Seek
+	 */
 	@Override
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
-		throw new UnsupportedOperationException();
+
+		// insufficient bytes give, die.
+		if (in.remaining() < ProtocolLengths.COMMAND) {
+			throw new PackageException();
+		}
+		long cmdId = in.getUnsignedInt();
+		
+		short result = in.getUnsigned();
+		
+		// decode data 
+		//获取
+		byte data[] = new byte[in.remaining()];	//TODO in.remaining()  ?
+		
+		if(data != null && data.length != 0){
+			in.get(data);
+		}
+		
+		// reconstruct message.
+		PosEchoCommandResponseMessage responseMessage = new PosEchoCommandResponseMessage();
+		responseMessage.setResult(result);
+		responseMessage.setData(data);
+		
+		log.trace("PosEchoCommandResponseMessage:{}", responseMessage);
+		return responseMessage;
 	}
 	
 	/**
@@ -54,7 +86,8 @@ public class PosEchoCommandResponseMessageCodec implements ICommandCodec {
 		if (msg.getData() != null && bufLength > 0) {
 			buf.put(msg.getData());
 		}
-
+		
+		log.trace("PosEchoCommandResponseMessage:{}", msg);
 		// return result
 		return buf.array();
 	}
