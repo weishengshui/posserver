@@ -4,6 +4,10 @@
 package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryManagerMXBean;
+import java.lang.management.MemoryPoolMXBean;
 import java.net.InetSocketAddress;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -202,7 +206,7 @@ public class DefaultPosServer implements PosServer {
 				new IdleConnectionKillerFilter(idleTime));
 		
 		// add jmx monitor
-		registerJMXBeans();
+		addMonitor();
 		
 		// monitor manage connect count filter ------> jmx
 		acceptor.getFilterChain().addLast("monitorConnectManageFilter",
@@ -254,7 +258,7 @@ public class DefaultPosServer implements PosServer {
 		}
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 		
-		// start the acceptor and listen to incoming connection!
+		// start the acceptor and listen to incomming connection!
 		try {
 			acceptor.bind(serverAddr);
 		} catch (IOException e) {
@@ -310,9 +314,6 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void shutdown() {
-		
-		// FIXME shutdown the registry server as well.
-		
 		try {
 			PersistService ps = injector.getInstance(PersistService.class);
 			ps.stop();
@@ -348,35 +349,63 @@ public class DefaultPosServer implements PosServer {
 		return port;
 	}
 
-	public void registerJMXBeans() throws PosServerException,
+	public void addMonitor() throws PosServerException,
 			InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, MalformedObjectNameException,
 			NullPointerException, IOException {
-		
-		// get the RMI port to use
 		jmxMoniterPort = configuration.getInt(ConfigKey.SERVER_MONITORPORT, DEFAULT_SERVER_MONITORPORT);
-		log.info("monitor port={}", jmxMoniterPort);
-		
+		log.debug(" monitor port ={}", jmxMoniterPort);
 		// jmx----------------------code start--------------------------
 		// jmx 服务器
 		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
+
 		// 管理连接状态数目工具Filter
 		this.monitorConnectManageFilter = new MonitorConnectManageFilter();
 		this.monitorCommandManageFilter = new MonitorCommandManageFilter();
 		// 注册需要被管理的MBean
+		mbs.registerMBean(ManagementFactory.getClassLoadingMXBean(), new ObjectName(
+		"ClassLoading:name=ClassLoading"));
+		
+		mbs.registerMBean(ManagementFactory.getCompilationMXBean(), new ObjectName(
+		"Compilation:name=Compilation"));
+		
+		mbs.registerMBean(ManagementFactory.getMemoryMXBean(), new ObjectName(
+		"Memory:name=Memory"));
+		
+		mbs.registerMBean(ManagementFactory.getOperatingSystemMXBean(), new ObjectName(
+		"OperatingSystem:name=OperatingSystem"));
+		
+		mbs.registerMBean(ManagementFactory.getRuntimeMXBean(), new ObjectName(
+		"Runtime:name=Runtime"));
+		
+		mbs.registerMBean(ManagementFactory.getThreadMXBean(), new ObjectName(
+		"Thread:name=Thread"));
+		
+		int unm=1;
+		for(GarbageCollectorMXBean garbageCollector : ManagementFactory.getGarbageCollectorMXBeans()){
+			mbs.registerMBean(garbageCollector, new ObjectName("GarbageCollector:name=GarbageCollector_"+(unm++)));
+		}
+		unm=1;
+		for(MemoryManagerMXBean memoryManager : ManagementFactory.getMemoryManagerMXBeans()){
+			mbs.registerMBean(memoryManager, new ObjectName("MemoryManager:name=MemoryManager_"+(unm++)));
+		}
+		unm=1;
+		for(MemoryPoolMXBean memoryPool : ManagementFactory.getMemoryPoolMXBeans()){
+			mbs.registerMBean(memoryPool, new ObjectName("MemoryPool:name=MemoryPool_"+(unm++)));
+		}
+		
 		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
-				"com.chinarewards.qqgbvpn.main:type=PosConnection"));
+				"QqgbvpnConnect:name=Connect"));
 		
 		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
-				"com.chinarewards.qqgbvpn.main:type=PosCommand"));
+		"QqgbvpnCommand:name=Command"));
 
-		// XXX is it correct? should localhost be configurable?
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
 		// Create an RMI connector and start it
 		JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
 
-		log.debug("JMXServiceURL={}", jmxServiceURL);
+		log.debug(" JMXServiceURL ={}", jmxServiceURL);
 
 		cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
 		// jmx----------------------code end--------------------------
