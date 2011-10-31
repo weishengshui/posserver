@@ -9,8 +9,12 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.apache.commons.io.HexDump;
 import org.junit.Test;
+
+import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 
 /**
  * @author cream
@@ -45,5 +49,6 @@ public class ChallengeUtilTest {
 		assertTrue(ChallengeUtil.checkChallenge(challengeResponse, posKey,
 				random));
 	}
+
 
 }
