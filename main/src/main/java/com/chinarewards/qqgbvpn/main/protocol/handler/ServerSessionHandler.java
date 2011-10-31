@@ -42,7 +42,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	/**
 	 * Default service handler thread pool size.
 	 */
-	public static final int DEFAULT_SERVICE_HANDLER_THREAD_POOL_SIZE = 20;
+	public static final int DEFAULT_SERVICE_HANDLER_THREAD_POOL_SIZE = 100;
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
