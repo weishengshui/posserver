@@ -23,6 +23,9 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	/**
+	 * TODO make this configurable.
+	 */
 	private int errorCountThreshold = 5;
 	
 	final SessionStore sessionStore;
@@ -129,23 +132,23 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 	}
 
 	protected int getErrorCount(IoSession session) {
-		Integer count = (Integer)getServerSession(session, sessionStore).getAttribute(getSessionKey());
+		Integer count = (Integer)session.getAttribute(getSessionKey());
 		return (count == null ? 0 : count);
 	}
 
 	protected int incrementErrorCount(IoSession session) {
 		String key = getSessionKey();
-		Integer value = (Integer) getServerSession(session, sessionStore).getAttribute(key);
+		Integer value = (Integer) session.getAttribute(key);
 
 		if (value == null) {
 			// first time.
-			getServerSession(session, sessionStore).setAttribute(key, 1);
+			session.setAttribute(key, 1);
 		} else {
 			// increment error counter by 1.
-			getServerSession(session, sessionStore).setAttribute(key, value + 1);
+			session.setAttribute(key, value + 1);
 		}
 
-		return (Integer) getServerSession(session, sessionStore).getAttribute(key);
+		return (Integer) session.getAttribute(key);
 	}
 
 	/**
