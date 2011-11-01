@@ -127,7 +127,7 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 			}
 		}
-		getServerSession(session, sessionStore).setAttribute(getSessionKey(), 0);
+		session.setAttribute(getSessionKey(), 0);
 		
 	}
 
