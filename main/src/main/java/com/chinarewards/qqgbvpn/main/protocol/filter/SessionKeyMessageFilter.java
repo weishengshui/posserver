@@ -60,12 +60,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		// get the protocol message.
 		Message posMsg = (Message) message;
 		HeadMessage header = posMsg.getHeadMessage();
-
-		// process next filter if no session key is given.
-		if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) == 0) {
-			nextFilter.messageReceived(session, message);
-		}
-
+		
 		ISessionKey sessionKey = header.getSessionKey();
 		String sessionId = null;
 		Session serverSession = null;
