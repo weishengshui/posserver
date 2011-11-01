@@ -7,6 +7,8 @@ import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 
 import com.chinarewards.qqgbvpn.main.Session;
+import com.chinarewards.qqgbvpn.main.SessionStore;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * 
@@ -16,9 +18,16 @@ import com.chinarewards.qqgbvpn.main.Session;
  */
 public class AbstractFilter extends IoFilterAdapter {
 
-	protected Session getServerSession(IoSession session) {
-		return (Session) session
-				.getAttribute(SessionKeyMessageFilter.SESSION_ID);
+	/**
+	 * Returns the server session
+	 * 
+	 * @param session
+	 * @return
+	 */
+	protected Session getServerSession(IoSession session, SessionStore sessionStore) {
+		String sessionId = MinaUtil.getServerSessionId(session);
+		if (sessionId == null) return null;
+		return sessionStore.getSession(sessionId);
 	}
 
 }

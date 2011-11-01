@@ -4,10 +4,12 @@ import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
+import com.google.inject.Inject;
 
 /**
  * Kills connections if it has too many error message received.
@@ -22,6 +24,14 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	private int errorCountThreshold = 5;
+	
+	final SessionStore sessionStore;
+	
+	@Inject
+	public ErrorConnectionKillerFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
+	
 
 	/**
 	 * Returns the error count threshold. When a Mina session has a consecutive
@@ -77,7 +87,7 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(getServerSession(session)) });
+									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 				}
 				
 				// close and return.
@@ -111,31 +121,31 @@ public class ErrorConnectionKillerFilter extends AbstractFilter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(getServerSession(session)) });
+									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 			}
 		}
-		getServerSession(session).setAttribute(getSessionKey(), 0);
+		getServerSession(session, sessionStore).setAttribute(getSessionKey(), 0);
 		
 	}
 
 	protected int getErrorCount(IoSession session) {
-		Integer count = (Integer)getServerSession(session).getAttribute(getSessionKey());
+		Integer count = (Integer)getServerSession(session, sessionStore).getAttribute(getSessionKey());
 		return (count == null ? 0 : count);
 	}
 
 	protected int incrementErrorCount(IoSession session) {
 		String key = getSessionKey();
-		Integer value = (Integer) getServerSession(session).getAttribute(key);
+		Integer value = (Integer) getServerSession(session, sessionStore).getAttribute(key);
 
 		if (value == null) {
 			// first time.
-			getServerSession(session).setAttribute(key, 1);
+			getServerSession(session, sessionStore).setAttribute(key, 1);
 		} else {
 			// increment error counter by 1.
-			getServerSession(session).setAttribute(key, value + 1);
+			getServerSession(session, sessionStore).setAttribute(key, value + 1);
 		}
 
-		return (Integer) getServerSession(session).getAttribute(key);
+		return (Integer) getServerSession(session, sessionStore).getAttribute(key);
 	}
 
 	/**

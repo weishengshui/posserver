@@ -53,7 +53,7 @@ public class LoginFilter extends AbstractFilter {
 		
 		log.trace("messageReceived() started");
 		
-		Boolean isLogin = (Boolean) getServerSession(session).getAttribute(
+		Boolean isLogin = (Boolean) getServerSession(session, sessionStore).getAttribute(
 				IS_LOGIN);
 		
 		// Check whether the command ID is LOGIN
@@ -85,7 +85,7 @@ public class LoginFilter extends AbstractFilter {
 			// get POS ID
 			// FIXME completely wrong implementation
 			InitRequestMessage im = (InitRequestMessage) msg;
-			getServerSession(session).setAttribute(POS_ID, im.getPosId());
+			getServerSession(session, sessionStore).setAttribute(POS_ID, im.getPosId());
 			
 			checkPosIdIsNull = true;
 
@@ -94,14 +94,14 @@ public class LoginFilter extends AbstractFilter {
 			// get POS ID
 			// FIXME completely wrong implementation
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
-			getServerSession(session).setAttribute(POS_ID, lm.getPosId());
+			getServerSession(session, sessionStore).setAttribute(POS_ID, lm.getPosId());
 			
 			checkPosIdIsNull = true;
 		}
 
 		if (checkPosIdIsNull) {
 			// Check POS ID for other connection(NOT init or login).
-			String posId = (String) getServerSession(session).getAttribute(POS_ID);
+			String posId = (String) getServerSession(session, sessionStore).getAttribute(POS_ID);
 
 			if (StringUtil.isEmptyString(posId)) {
 				throw new IllegalArgumentException("Pos Id not existed!");
@@ -159,12 +159,12 @@ public class LoginFilter extends AbstractFilter {
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE
 				|| cmdId == CmdConstant.BIND_CMD_ID_RESPONSE) {
-			getServerSession(session).setAttribute(IS_LOGIN, false);
+			getServerSession(session, sessionStore).setAttribute(IS_LOGIN, false);
 
 			LoginResponseMessage lm = (LoginResponseMessage) msg;
 			int result = lm.getResult();
 			if (LoginResult.SUCCESS.getPosCode() == result) {
-				getServerSession(session).setAttribute(IS_LOGIN, true);
+				getServerSession(session, sessionStore).setAttribute(IS_LOGIN, true);
 			}
 		}
 		

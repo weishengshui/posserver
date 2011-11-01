@@ -9,8 +9,10 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
+import com.google.inject.Inject;
 
 /**
  * Provides better business-oriented logging.
@@ -29,6 +31,13 @@ public class LoggingFilter extends AbstractFilter {
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	private int maxHexDumpLength = 96;
+	
+	private SessionStore sessionStore;
+	
+	@Inject
+	public LoggingFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
 
 	/**
 	 * Returns the maximum length which data will be dumped for incoming and
@@ -102,7 +111,7 @@ public class LoggingFilter extends AbstractFilter {
 			if (log.isWarnEnabled()) {
 				log.warn("An exception is caught when handling command. Detailed information: "
 						+ " client "
-						+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session)));
+						+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session, sessionStore)));
 			}
 		} catch (Throwable t) {
 			// should not affect the normal flow
@@ -183,7 +192,7 @@ public class LoggingFilter extends AbstractFilter {
 	protected void printMessageReceivedFrom(IoSession session) {
 		if (log.isTraceEnabled()) {
 			log.trace("raw message received from "
-					+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session)));
+					+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session, sessionStore)));
 		}
 	}
 
@@ -242,7 +251,7 @@ public class LoggingFilter extends AbstractFilter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		return MinaUtil.getPosIdFromSession(getServerSession(session));
+		return MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore));
 	}
 
 	/**

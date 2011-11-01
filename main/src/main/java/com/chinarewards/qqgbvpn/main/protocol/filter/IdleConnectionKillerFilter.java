@@ -1,12 +1,13 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
+import com.google.inject.Inject;
 
 /**
  * Kills idle connections.
@@ -17,6 +18,13 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 public class IdleConnectionKillerFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
+	
+	final SessionStore sessionStore;
+	
+	@Inject
+	public IdleConnectionKillerFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
 
 	@Override
 	public void sessionIdle(NextFilter nextFilter, IoSession session,
@@ -27,7 +35,7 @@ public class IdleConnectionKillerFilter extends AbstractFilter {
 					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {})",
 					new Object[] { MinaUtil.buildAddressPortString(session),
 							session.getId(),
-							MinaUtil.getPosIdFromSession(getServerSession(session)) });
+							MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 		}
 
 		session.close(true);

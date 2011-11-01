@@ -155,13 +155,13 @@ public class DefaultPosServer implements PosServer {
 		
 		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
-				new IdleConnectionKillerFilter());
+				injector.getInstance(IdleConnectionKillerFilter.class));
 		
 		// our logging filter
 		acceptor.getFilterChain()
 				.addLast(
 						"cr-logger",
-						new com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter());
+						injector.getInstance(com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter.class));
 		
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
@@ -173,7 +173,7 @@ public class DefaultPosServer implements PosServer {
 
 		// kills error connection if too many.
 		acceptor.getFilterChain().addLast("errorConnectionKiller",
-				new ErrorConnectionKillerFilter());
+				injector.getInstance(ErrorConnectionKillerFilter.class));
 
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
