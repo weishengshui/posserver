@@ -89,6 +89,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				log.debug("Mina session ID {}: client message and server has no session ID, will create one", session.getId());
 				createSession = true;
 				generateSessionKey = true;
+			} else {
+				log.debug("Mina session ID {}: session ID = {}", session.getId(), getServerSessionId(session));
 			}
 
 		} else {
