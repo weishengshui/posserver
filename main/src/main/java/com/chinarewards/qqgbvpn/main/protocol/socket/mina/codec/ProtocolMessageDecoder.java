@@ -159,6 +159,7 @@ public class ProtocolMessageDecoder {
 			if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
 				
 				log.debug("flag FLAG_SESSION_ID is set in header");
+				log.debug("in.remaining() = {}", in.remaining());
 				
 				// make sure we have enough data to decode
 				if (in.remaining() >= 4) {
@@ -171,6 +172,10 @@ public class ProtocolMessageDecoder {
 					
 					// 2 byte of length
 					int sessionKeyLength = in.getUnsignedShort();
+					
+					log.debug("sessionKeyVersion={}", sessionKeyVersion);
+					log.debug("sessionKeyLength={}", sessionKeyLength);
+					
 					// update the command body size
 					// if cmdBodySize = 84, session key length = 10, then
 					// cmdBodySize = 84 - 1 - 2 - 10 = 71
@@ -221,6 +226,8 @@ public class ProtocolMessageDecoder {
 				}
 			}
 			/***** field extension *****/
+			
+			log.debug("before parsing body: cmdBodySize={}, in.remaining={}", cmdBodySize, in.remaining());
 			
 			// make sure we have enough data to feed.
 			if (in.remaining() < cmdBodySize) {
