@@ -185,6 +185,9 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			saveSessionIdToServer(session, sessionId);
 
 		}
+		
+		
+		nextFilter.messageReceived(session, message);
 
 		log.trace("messageReceived() done");
 		
