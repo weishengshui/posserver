@@ -79,6 +79,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		
 		boolean createSession = false;
 		boolean generateSessionKey = false;
+		boolean markSendSessionIdToClient = false;
 
 		// act accordingly.
 		if (sessionKey == null) {
@@ -120,12 +121,14 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 					// no session found in session store
 					createSession = true;
 					generateSessionKey = true;
+					markSendSessionIdToClient = true;
 					log.debug(
 							"session invalid: no session found with key {}, will create one",
 							sessionKey);
 				} else {
 					// session found in session store
 					saveSessionIdToServer(session, sessionId);
+					markSendSessionIdToClient = true;
 					log.debug("session restored with key {}", sessionKey);
 				}
 
@@ -137,6 +140,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 
 				// make sure client's and server's session key match!
 				String serverSessionId = getServerSessionId(session);
+				markSendSessionIdToClient = true;
 
 				if (!sessionKey.getSessionId().equals(serverSessionId)) {
 
@@ -170,10 +174,9 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			// generate session id
 			sessionId = sessionIdGenerator.generate();
 			
-			markSendSessionIdToClient(session);
 			log.debug("Mina session ID {}: created session key {}", session.getId(), sessionId);
 		}
-
+		
 		// if no session is present finally, we need to create one.
 		if (createSession) {
 			
@@ -187,8 +190,11 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			saveSessionIdToServer(session, sessionId);
 
 		}
-		
-		
+
+		if (markSendSessionIdToClient) {
+			markSendSessionIdToClient(session);
+		}
+
 		nextFilter.messageReceived(session, message);
 
 		log.trace("messageReceived() done");
@@ -208,6 +214,10 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		log.trace("messageSent() invoked");
 		
 		if (isMarkSendSessionIdToClient(session)) {
+			
+			log.trace(
+					"Mina session ID {}: mark to send session ID back to client",
+					session.getId());
 			
 			// choose a encoder to encode the message
 			V1SessionKey key = new V1SessionKey(getServerSessionId(session));
@@ -259,6 +269,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	}
 	
 	protected void markSendSessionIdToClient(IoSession session) {
+		log.debug("Mina session ID {}: marking need to return session ID to client", session.getId());
 		session.setAttribute(RETURN_SESSION_ID_TO_CLIENT);
 	}
 	
