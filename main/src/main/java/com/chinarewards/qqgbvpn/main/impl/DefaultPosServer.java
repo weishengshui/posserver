@@ -191,7 +191,7 @@ public class DefaultPosServer implements PosServer {
 
 		// the handler class
 		acceptor.setHandler(new ServerSessionHandler(serviceDispatcher,
-				mapping, configuration));
+				mapping, configuration, injector.getInstance(SessionStore.class)));
 		
 		// additional configuration
 		acceptor.setCloseOnDeactivation(true);
