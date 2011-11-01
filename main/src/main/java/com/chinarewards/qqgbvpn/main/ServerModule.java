@@ -5,6 +5,7 @@ package com.chinarewards.qqgbvpn.main;
 
 import com.chinarewards.qqgbvpn.main.impl.DefaultPosServer;
 import com.chinarewards.qqgbvpn.main.impl.InMemorySessionStore;
+import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
@@ -29,6 +30,7 @@ public class ServerModule extends AbstractModule {
 		bind(SessionStore.class).to(InMemorySessionStore.class).in(
 				Singleton.class);
 		
+		bind(LoginFilter.class);
 	}
 
 }

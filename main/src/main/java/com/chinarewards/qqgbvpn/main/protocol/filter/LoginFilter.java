@@ -6,7 +6,6 @@ package com.chinarewards.qqgbvpn.main.protocol.filter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
@@ -22,6 +21,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
 import com.chinarewards.utils.StringUtil;
+import com.google.inject.Inject;
 
 /**
  * Login filter.
@@ -42,6 +42,7 @@ public class LoginFilter extends AbstractFilter {
 	
 	final SessionStore sessionStore;
 	
+	@Inject
 	public LoginFilter(SessionStore sessionStore) {
 		this.sessionStore = sessionStore;
 	}
