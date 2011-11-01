@@ -179,13 +179,14 @@ public class ProtocolMessageDecoder {
 					// update the command body size
 					// if cmdBodySize = 84, session key length = 10, then
 					// cmdBodySize = 84 - 1 - 2 - 10 = 71
-					cmdBodySize -= sessionKeyLength - 4;
+					cmdBodySize -= (sessionKeyLength + 4);
 					
 					if (sessionKeyVersion == 0 && sessionKeyLength == 0) {
 						// special - it means the client recognize the 
 						// session ID bit.
 						
-						// the three bytes are consumed.
+						// the 4 bytes are consumed.
+						log.debug("version 0 session key detected, client can process session ID!");
 						
 					} else if (in.remaining() < sessionKeyLength) {
 						// not enough data. reset to original position.
