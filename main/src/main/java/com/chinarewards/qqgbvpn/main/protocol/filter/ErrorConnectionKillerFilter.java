@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  * @author cyril
  * @since 0.1.0
  */
-public class ErrorConnectionKillerFilter extends IoFilterAdapter {
+public class ErrorConnectionKillerFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -78,7 +77,7 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(session) });
+									MinaUtil.getPosIdFromSession(getServerSession(session)) });
 				}
 				
 				// close and return.
@@ -112,31 +111,31 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(session) });
+									MinaUtil.getPosIdFromSession(getServerSession(session)) });
 			}
 		}
-		session.setAttribute(getSessionKey(), 0);
+		getServerSession(session).setAttribute(getSessionKey(), 0);
 		
 	}
 
 	protected int getErrorCount(IoSession session) {
-		Integer count = (Integer)session.getAttribute(getSessionKey());
+		Integer count = (Integer)getServerSession(session).getAttribute(getSessionKey());
 		return (count == null ? 0 : count);
 	}
 
 	protected int incrementErrorCount(IoSession session) {
 		String key = getSessionKey();
-		Integer value = (Integer) session.getAttribute(key);
+		Integer value = (Integer) getServerSession(session).getAttribute(key);
 
 		if (value == null) {
 			// first time.
-			session.setAttribute(key, 1);
+			getServerSession(session).setAttribute(key, 1);
 		} else {
 			// increment error counter by 1.
-			session.setAttribute(key, value + 1);
+			getServerSession(session).setAttribute(key, value + 1);
 		}
 
-		return (Integer) session.getAttribute(key);
+		return (Integer) getServerSession(session).getAttribute(key);
 	}
 
 	/**

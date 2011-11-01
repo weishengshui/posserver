@@ -14,9 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.ConfigKey;
+import com.chinarewards.qqgbvpn.main.Session;
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceDispatcher;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
@@ -39,6 +42,32 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  */
 public class ServerSessionHandler extends IoHandlerAdapter {
 	
+	private static class SessionWrapper implements ServiceSession {
+		
+		private Session session;
+		
+		public SessionWrapper(Session session) {
+			this.session = session;
+		}
+
+		/* (non-Javadoc)
+		 * @see com.chinarewards.qqgbvpn.main.protocol.ServiceSession#getAttribute(java.lang.String)
+		 */
+		@Override
+		public Object getAttribute(String key) {
+			return session.getAttribute(key);
+		}
+
+		/* (non-Javadoc)
+		 * @see com.chinarewards.qqgbvpn.main.protocol.ServiceSession#setAttribute(java.lang.String, java.lang.Object)
+		 */
+		@Override
+		public void setAttribute(String key, Object value) {
+			session.setAttribute(key, value);
+		}
+		
+	}
+	
 	/**
 	 * Default service handler thread pool size.
 	 */
@@ -53,13 +82,17 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	protected final ExecutorService exec;
 	
 	protected final Configuration configuration;
+	
+	protected final SessionStore sessionStore;
 
 	public ServerSessionHandler(ServiceDispatcher serviceDispatcher,
-			ServiceMapping serviceMapping, Configuration configuration) {
+			ServiceMapping serviceMapping, Configuration configuration, 
+			SessionStore sessionStore) {
 		
 		this.serviceDispatcher = serviceDispatcher;
 		this.serviceMapping = serviceMapping;
 		this.configuration = configuration;
+		this.sessionStore = sessionStore;
 
 		int poolSize = configuration.getInt(
 				ConfigKey.SERVER_SERVICEHANDLER_THREADPOOLSIZE,
@@ -104,9 +137,10 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 		// debug print the remote address (IP, port and POS ID)
 		if (log.isDebugEnabled()) {
+			Session sStore = sessionStore.getSession(MinaUtil.getServerSessionId(session));
 			log.debug(
 					"A message is sent from client at "
-							+ MinaUtil.buildCommonClientAddressText(session)
+							+ MinaUtil.buildCommonClientAddressText(session, sStore)
 							+ ", message: {}", message);
 		}
 
@@ -120,7 +154,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 	 */
 	protected String getLoggedInPosId(IoSession session) {
 		try {
-			String posId = (String) session.getAttribute(LoginFilter.POS_ID);
+			Session sStore = sessionStore.getSession(MinaUtil.getServerSessionId(session));
+			String posId = (String) sStore.getAttribute(LoginFilter.POS_ID);
 			return posId;
 		} catch (Throwable t) {
 			log.error(
@@ -157,7 +192,9 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 				// FIXME throw PackageException if no handler found for command ID
 
 				// build a request (for dispatcher)
-				MinaSession serviceSession = new MinaSession(session);
+				Session sStore = sessionStore.getSession(MinaUtil.getServerSessionId(session));
+				
+				SessionWrapper serviceSession = new SessionWrapper(sStore);
 				ServiceRequestImpl request = new ServiceRequestImpl(
 						msg.getBodyMessage(), serviceSession);
 				// build a response (for dispatcher)

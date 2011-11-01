@@ -14,7 +14,7 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  * @author dengrenwen
  * @since 0.1.0
  */
-public class IdleConnectionKillerFilter extends IoFilterAdapter {
+public class IdleConnectionKillerFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -27,7 +27,7 @@ public class IdleConnectionKillerFilter extends IoFilterAdapter {
 					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {})",
 					new Object[] { MinaUtil.buildAddressPortString(session),
 							session.getId(),
-							MinaUtil.getPosIdFromSession(session) });
+							MinaUtil.getPosIdFromSession(getServerSession(session)) });
 		}
 
 		session.close(true);

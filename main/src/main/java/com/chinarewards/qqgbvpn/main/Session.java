@@ -11,8 +11,10 @@ package com.chinarewards.qqgbvpn.main;
  */
 public interface Session {
 	
-	public void putAttribute(Object key, Object value);
+	public void setAttribute(Object key, Object value);
 
 	public Object getAttribute(Object key);
+
+	public boolean containsAttribute(String key);
 
 }

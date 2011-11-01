@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  * @author cyril
  * @since 0.1.0
  */
-public class LoggingFilter extends IoFilterAdapter {
+public class LoggingFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
@@ -103,7 +102,7 @@ public class LoggingFilter extends IoFilterAdapter {
 			if (log.isWarnEnabled()) {
 				log.warn("An exception is caught when handling command. Detailed information: "
 						+ " client "
-						+ MinaUtil.buildCommonClientAddressText(session));
+						+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session)));
 			}
 		} catch (Throwable t) {
 			// should not affect the normal flow
@@ -184,7 +183,7 @@ public class LoggingFilter extends IoFilterAdapter {
 	protected void printMessageReceivedFrom(IoSession session) {
 		if (log.isTraceEnabled()) {
 			log.trace("raw message received from "
-					+ MinaUtil.buildCommonClientAddressText(session));
+					+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session)));
 		}
 	}
 
@@ -243,7 +242,7 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		return MinaUtil.getPosIdFromSession(session);
+		return MinaUtil.getPosIdFromSession(getServerSession(session));
 	}
 
 	/**

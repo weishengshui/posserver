@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.PosServerException;
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
 import com.chinarewards.qqgbvpn.main.protocol.CodecMappingConfigBuilder;
@@ -181,7 +182,7 @@ public class DefaultPosServer implements PosServer {
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast(
 				"sessionKeyFilter",
-				new SessionKeyMessageFilter(new InMemorySessionStore(),
+				new SessionKeyMessageFilter(injector.getInstance(SessionStore.class),
 						new UuidSessionIdGenerator()));
 		
 		// Login filter.

@@ -38,7 +38,7 @@ public class InMemorySessionStore implements SessionStore {
 		 * java.lang.Object)
 		 */
 		@Override
-		public void putAttribute(Object key, Object value) {
+		public void setAttribute(Object key, Object value) {
 			store.put(key, value);
 		}
 
@@ -51,6 +51,14 @@ public class InMemorySessionStore implements SessionStore {
 		@Override
 		public Object getAttribute(Object key) {
 			return store.get(key);
+		}
+
+		/* (non-Javadoc)
+		 * @see com.chinarewards.qqgbvpn.main.Session#containsAttribute(java.lang.String)
+		 */
+		@Override
+		public boolean containsAttribute(String key) {
+			return store.containsKey(key);
 		}
 
 	}
@@ -94,5 +102,7 @@ public class InMemorySessionStore implements SessionStore {
 		store.put(sessionId, session);
 		return session;
 	}
+	
+	
 
 }
