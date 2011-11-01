@@ -272,7 +272,8 @@ public class ProtocolMessageDecoder {
 			}
 
 			// really decode the command message.
-			in.position(start + ProtocolLengths.HEAD);
+			in.position(start
+					+ ((int) header.getMessageSize() - (int) cmdBodySize));
 			ICommand bodyMessage = null;
 			try {
 				bodyMessage = this.decodeMessageBody(in, charset, header);
