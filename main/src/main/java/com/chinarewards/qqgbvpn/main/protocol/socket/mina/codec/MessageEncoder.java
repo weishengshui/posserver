@@ -116,6 +116,8 @@ public class MessageEncoder implements ProtocolEncoder {
 		
 		byte[] serializedSessionKey = null;
 		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+			log.debug("message header indicates session ID presence, will encode");
+			
 			// session key is present
 			// FIXME should respect the version ID in the session key.
 			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());
