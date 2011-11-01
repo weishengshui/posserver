@@ -82,6 +82,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 					"Mina ID {}: no session key in header but marked as containing "
 							+ "session key, should be corrupted when decoding. "
 							+ "Assuming no session key.", session.getId());
+			
+			log.debug("marking client supports session ID");
 			session.setAttribute(CLIENT_SUPPORT_SESSION_ID);
 		}
 
@@ -99,6 +101,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				log.debug("Mina session ID {}: client message and server has no session ID, will create one", session.getId());
 				createSession = true;
 				generateSessionKey = true;
+				markSendSessionIdToClient = true;
 			} else {
 				log.debug("Mina session ID {}: existing session ID = {}", session.getId(), getServerSessionId(session));
 			}
@@ -165,7 +168,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 
 					createSession = true;
 					generateSessionKey = true;
-
+					markSendSessionIdToClient = true;
+					
 				} else {
 
 					// session key matched!
@@ -227,7 +231,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			if (session.containsAttribute(CLIENT_SUPPORT_SESSION_ID)) {
 			
 				log.trace(
-						"Mina session ID {}: mark to send session ID back to client",
+						"Mina session ID {}: marked to send session ID back to client",
 						session.getId());
 				
 				// choose a encoder to encode the message
