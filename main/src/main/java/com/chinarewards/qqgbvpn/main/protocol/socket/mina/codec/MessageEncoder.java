@@ -126,8 +126,11 @@ public class MessageEncoder implements ProtocolEncoder {
 		if (serializedSessionKey != null) {
 			length += serializedSessionKey.length;
 		}
+		// prepare buffer
 		IoBuffer buf = IoBuffer.allocate(length);
+		// write header (16 byte)
 		buf.put(result);
+		// write session key (conditional)
 		if (serializedSessionKey != null) {
 			buf.put(serializedSessionKey);
 		}

@@ -211,6 +211,7 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 
 				// grep the response, and write back to the channel.
 				ICommand responseMsgBody = (ICommand) response.getResponse();
+				msg.getHeadMessage().setFlags(0);
 				msg.setBodyMessage(responseMsgBody);
 				session.write(msg);
 

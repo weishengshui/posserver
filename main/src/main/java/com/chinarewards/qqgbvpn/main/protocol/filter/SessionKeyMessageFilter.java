@@ -231,6 +231,10 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
 			}
 			
+		} else {
+			log.trace(
+					"Mina session ID {}: not mark to return session ID to client",
+					session.getId());
 		}
 		
         nextFilter.messageSent(session, writeRequest);
