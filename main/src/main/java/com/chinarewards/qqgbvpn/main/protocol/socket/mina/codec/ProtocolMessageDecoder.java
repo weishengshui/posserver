@@ -161,17 +161,20 @@ public class ProtocolMessageDecoder {
 				log.debug("flag FLAG_SESSION_ID is set in header");
 				
 				// make sure we have enough data to decode
-				if (in.remaining() >= 3) {
+				if (in.remaining() >= 4) {
 					
 					// 1 byte of header
 					short sessionKeyVersion = in.getUnsigned();
+					
+					// 1 byte: reserved.
+					in.getUnsigned();
 					
 					// 2 byte of length
 					int sessionKeyLength = in.getUnsignedShort();
 					// update the command body size
 					// if cmdBodySize = 84, session key length = 10, then
 					// cmdBodySize = 84 - 1 - 2 - 10 = 71
-					cmdBodySize -= sessionKeyLength - 3;
+					cmdBodySize -= sessionKeyLength - 4;
 					
 					if (sessionKeyVersion == 0 && sessionKeyLength == 0) {
 						// special - it means the client recognize the 
@@ -182,7 +185,7 @@ public class ProtocolMessageDecoder {
 					} else if (in.remaining() < sessionKeyLength) {
 						// not enough data. reset to original position.
 						long owe = header.getMessageSize()
-								- ProtocolLengths.HEAD - 3 - in.remaining();
+								- ProtocolLengths.HEAD - 4 - in.remaining();
 						in.position(start);	// restore the original position.
 						return new Result(true, owe, header, null);
 					} else {
