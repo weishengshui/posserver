@@ -173,8 +173,14 @@ public class ProtocolMessageDecoder {
 					// cmdBodySize = 84 - 1 - 2 - 10 = 71
 					cmdBodySize -= sessionKeyLength - 3;
 					
-					// not enough data. reset to original position.
-					if (in.remaining() < sessionKeyLength) {
+					if (sessionKeyVersion == 0 && sessionKeyLength == 0) {
+						// special - it means the client recognize the 
+						// session ID bit.
+						
+						// the three bytes are consumed.
+						
+					} else if (in.remaining() < sessionKeyLength) {
+						// not enough data. reset to original position.
 						long owe = header.getMessageSize()
 								- ProtocolLengths.HEAD - 3 - in.remaining();
 						in.position(start);	// restore the original position.

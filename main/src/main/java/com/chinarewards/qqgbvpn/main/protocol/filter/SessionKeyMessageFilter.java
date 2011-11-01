@@ -31,6 +31,14 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			.getName() + ".SESSION_ID";
 
 	/**
+	 * The key name which the session ID will be stored in the Mina's session.
+	 * <p>
+	 * The content is expected to be a string session ID.
+	 */
+	public static final String CLIENT_SUPPORT_SESSION_ID = SessionKeyMessageFilter.class
+			.getName() + ".CLIENT_SUPPORT_SESSION_ID";
+
+	/**
 	 * Whether the server should include the session ID in the header as part
 	 * of the response when a message is to be sent.
 	 */
@@ -74,6 +82,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 					"Mina ID {}: no session key in header but marked as containing "
 							+ "session key, should be corrupted when decoding. "
 							+ "Assuming no session key.", session.getId());
+			session.setAttribute(CLIENT_SUPPORT_SESSION_ID);
 		}
 
 		
@@ -91,7 +100,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				createSession = true;
 				generateSessionKey = true;
 			} else {
-				log.debug("Mina session ID {}: session ID = {}", session.getId(), getServerSessionId(session));
+				log.debug("Mina session ID {}: existing session ID = {}", session.getId(), getServerSessionId(session));
 			}
 
 		} else {
@@ -215,20 +224,24 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		
 		if (isMarkSendSessionIdToClient(session)) {
 			
-			log.trace(
-					"Mina session ID {}: mark to send session ID back to client",
-					session.getId());
+			if (session.containsAttribute(CLIENT_SUPPORT_SESSION_ID)) {
 			
-			// choose a encoder to encode the message
-			V1SessionKey key = new V1SessionKey(getServerSessionId(session));
-			
-			// update the flag and the session key.
-			Object rawMessage = writeRequest.getMessage();
-			if (rawMessage instanceof Message) {
-				Message posMsg = (Message)rawMessage;
-				HeadMessage header = posMsg.getHeadMessage();
-				header.setSessionKey(key);
-				header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
+				log.trace(
+						"Mina session ID {}: mark to send session ID back to client",
+						session.getId());
+				
+				// choose a encoder to encode the message
+				V1SessionKey key = new V1SessionKey(getServerSessionId(session));
+				
+				// update the flag and the session key.
+				Object rawMessage = writeRequest.getMessage();
+				if (rawMessage instanceof Message) {
+					Message posMsg = (Message)rawMessage;
+					HeadMessage header = posMsg.getHeadMessage();
+					header.setSessionKey(key);
+					header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
+				}
+				
 			}
 			
 		} else {
