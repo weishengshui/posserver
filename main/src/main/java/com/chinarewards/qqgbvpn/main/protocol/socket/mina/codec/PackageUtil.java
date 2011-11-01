@@ -32,16 +32,14 @@ public final class PackageUtil {
 	
 	private static final int flags = 0x0000;
 	
-	/**
-	 * TODO: Should be 0x00000000.
-	 */
-	private static final int ack = 0x20000004;
+	private static final int ack = 0x00000000;
 	
 	private CmdCodecFactory cmdCodecFactory;
 	
 	private PackageHeadCodec packageHeadCodec;
 	
-	public PackageUtil(PackageHeadCodec packageHeadCodec, CmdCodecFactory cmdCodecFactory){
+	public PackageUtil(PackageHeadCodec packageHeadCodec,
+			CmdCodecFactory cmdCodecFactory) {
 		this.packageHeadCodec = packageHeadCodec;
 		this.cmdCodecFactory = cmdCodecFactory;
 	}

@@ -29,6 +29,7 @@ import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.ErrorConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
 import com.google.inject.Inject;
@@ -176,6 +177,12 @@ public class DefaultPosServer implements PosServer {
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
+		
+		// bodyMessage filter - short-circuit if error message is received.
+		acceptor.getFilterChain().addLast(
+				"sessionKeyFilter",
+				new SessionKeyMessageFilter(new InMemorySessionStore(),
+						new UuidSessionIdGenerator()));
 		
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",

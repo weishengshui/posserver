@@ -18,6 +18,9 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.session.CodecException;
+import com.chinarewards.qqgbvpn.main.session.ISessionKey;
+import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
 
 /**
  * 
@@ -30,6 +33,8 @@ public class ProtocolMessageDecoder {
 	private static final Logger log = LoggerFactory
 			.getLogger(ProtocolMessageDecoder.class);
 
+	SessionKeyCodec sessionKeyCodec = new SessionKeyCodec();
+	
 	/**
 	 * Stores the result of message decoding.
 	 * 
@@ -126,32 +131,94 @@ public class ProtocolMessageDecoder {
 		log.trace("IoBuffer remaining bytes: {}, current position: {}",
 				in.remaining(), in.position());
 
-		// check length, it must greater than head length
+		// check length, it must greater than header length
 		if (in.remaining() >= ProtocolLengths.HEAD) {
+			
+			boolean sessionKeyDecoded = false;
+			long cmdBodySize = 0;
 			
 			int start = in.position();
 			
 			// parse message header
-			log.trace("Parsing message header..");
+			log.trace("Parsing message header ({} bytes)..",
+					ProtocolLengths.HEAD);
 			PackageHeadCodec headCodec = new PackageHeadCodec();
 			HeadMessage header = headCodec.decode(in);	// parse
 			log.trace("- message header: {}", header);
 			log.trace("- IoBuffer remaining (for body): {}", in.remaining());
 
-			// check length
-			// XXX suspicious code, may lead to unwanted error code 3: invalid
-			// size
-			// XXX should wait until the whole package is received.
-//			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
-//				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-//				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
-//				return new Result(true, null);
-//			}
-			if (ProtocolLengths.HEAD + in.remaining() < header.getMessageSize()) {
+			// the pure command size
+			// if msg size is 100, header is 16, then cmdBodySize = 84.
+			cmdBodySize = header.getMessageSize() - ProtocolLengths.HEAD; 
+			
+			/***** field extension *****/
+			
+			// act according to the flag.. must be in proper order!!!
+
+			// flag: session key
+			if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+				
+				log.debug("flag FLAG_SESSION_ID is set in header");
+				
+				// make sure we have enough data to decode
+				if (in.remaining() >= 3) {
+					
+					// 1 byte of header
+					short sessionKeyVersion = in.getUnsigned();
+					
+					// 2 byte of length
+					int sessionKeyLength = in.getUnsignedShort();
+					// update the command body size
+					// if cmdBodySize = 84, session key length = 10, then
+					// cmdBodySize = 84 - 1 - 2 - 10 = 71
+					cmdBodySize -= sessionKeyLength - 3;
+					
+					// not enough data. reset to original position.
+					if (in.remaining() < sessionKeyLength) {
+						long owe = header.getMessageSize()
+								- ProtocolLengths.HEAD - 3 - in.remaining();
+						in.position(start);	// restore the original position.
+						return new Result(true, owe, header, null);
+					} else {
+						// enough data to decode session key!
+						// decode the session key.
+						// FIXME distinguish between different exception.
+						try {
+							log.debug(
+									"decoding session key (version: {}, key length: {})",
+									sessionKeyVersion, sessionKeyLength);
+							in.position(start + 3);
+							// decode the session key.
+							ISessionKey sessionKey = sessionKeyCodec.decode(in);
+							header.setSessionKey(sessionKey);
+							log.debug("session key decoded: {}", sessionKey);
+							
+							// session key successfully decoded.
+							sessionKeyDecoded = true;
+							
+						} catch (CodecException e) {
+							log.warn(
+									"error when decoding session key (version: {}, key length: {})",
+									new Object[] { sessionKeyVersion,
+											sessionKeyLength }, e);
+						}
+					}
+				} else {
+					// we don't have enough information to decode header.
+					long owe = header.getMessageSize()
+							- ProtocolLengths.HEAD - in.remaining();
+					in.position(start);	// restore the original position.
+					return new Result(true, owe, header, null);
+				}
+			}
+			/***** field extension *****/
+			
+			// make sure we have enough data to feed.
+			if (in.remaining() < cmdBodySize) {
 				// more data is required.
-				long owe = header.getMessageSize() - ProtocolLengths.HEAD + in.remaining();
+				long owe = cmdBodySize - in.remaining();
 				log.trace("More bytes are required to parse the complete message (still need {} bytes)",
-						header.getMessageSize() - ProtocolLengths.HEAD + in.remaining());
+						owe);
 				in.position(start);	// restore the original position.
 				return new Result(true, owe, header, null);
 			}

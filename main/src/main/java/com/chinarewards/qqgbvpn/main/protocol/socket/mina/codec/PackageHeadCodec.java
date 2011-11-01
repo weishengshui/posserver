@@ -7,13 +7,22 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.session.CodecException;
+import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
 
 public class PackageHeadCodec {
 	
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static Logger log = LoggerFactory.getLogger(PackageHeadCodec.class);
+	
+	private SessionKeyCodec sessionKeyCodec;
+	
+	public PackageHeadCodec() {
+		this.sessionKeyCodec = new SessionKeyCodec();
+	}
 		
 	/**
-	 * description：encode package head message
+	 * Description：encode package head message
+	 * 
 	 * @param headMessage
 	 * @return
 	 * @time 2011-9-22   下午08:09:04
@@ -28,6 +37,7 @@ public class PackageHeadCodec {
 		Tools.putUnsignedShort(headByte, 0, 10);	//checksum
 		Tools.putUnsignedInt(headByte, headMessage.getMessageSize(),
 				12);
+		
 		return headByte;
 	}
 	
@@ -42,8 +52,10 @@ public class PackageHeadCodec {
 		
 		HeadMessage headMessage = new HeadMessage();
 		
+		/***** standard set of fields to decode *****/
+		
 		// read header
-		// read seq
+		// read sequence
 		long seq = in.getUnsignedInt();
 		headMessage.setSeq(seq);
 
@@ -62,6 +74,8 @@ public class PackageHeadCodec {
 		// read message size
 		long messageSize = in.getUnsignedInt();
 		headMessage.setMessageSize(messageSize);
+		
+		/***** standard set of fields to decode *****/
 		
 		return headMessage;
 	}

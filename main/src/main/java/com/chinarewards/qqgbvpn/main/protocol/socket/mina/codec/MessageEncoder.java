@@ -16,6 +16,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
 
 public class MessageEncoder implements ProtocolEncoder {
 
@@ -27,6 +28,8 @@ public class MessageEncoder implements ProtocolEncoder {
 	
 	protected CmdCodecFactory cmdCodecFactory;
 
+	SessionKeyCodec skCodec = new SessionKeyCodec();
+	
 	/**
 	 * XXX can 'injector' be skipped?
 	 * 
@@ -111,15 +114,29 @@ public class MessageEncoder implements ProtocolEncoder {
 		Tools.putUnsignedShort(result, checkSumVal, 10);
 		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
 		
-		IoBuffer buf = IoBuffer.allocate(result.length);
+		byte[] serializedSessionKey = null;
+		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+			// session key is present
+			// FIXME should respect the version ID in the session key.
+			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());
+		}
 
+		// write to Mina session
+		int length = result.length;
+		if (serializedSessionKey != null) {
+			length += serializedSessionKey.length;
+		}
+		IoBuffer buf = IoBuffer.allocate(length);
+		buf.put(result);
+		if (serializedSessionKey != null) {
+			buf.put(serializedSessionKey);
+		}
+		
 		// debug print
 		log.debug("Encoded byte content");
 		// TODO make the '96' be configurable.
-		CodecUtil.hexDumpForLogging(log, result, 96);
-
-		// write to Mina session
-		buf.put(result);
+		CodecUtil.hexDumpForLogging(log, buf.array(), 96);
+		
 		buf.flip();
 		out.write(buf);
 		log.debug("encode message end");
