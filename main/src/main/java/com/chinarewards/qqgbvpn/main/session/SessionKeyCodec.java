@@ -31,7 +31,7 @@ public class SessionKeyCodec implements SessionKeyDecoder {
 		V1SessionKeyCodec skCodec = new V1SessionKeyCodec();
 		byte[] encoded = skCodec.encode(key);
 
-		IoBuffer buf = IoBuffer.allocate(encoded.length + 3);
+		IoBuffer buf = IoBuffer.allocate(encoded.length + 4);
 
 		// first byte is the version
 		buf.putUnsigned((byte) 0x01);
