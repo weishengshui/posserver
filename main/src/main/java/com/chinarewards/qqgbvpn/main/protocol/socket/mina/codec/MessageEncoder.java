@@ -80,6 +80,8 @@ public class MessageEncoder implements ProtocolEncoder {
 		byte[] bodyByte = null;
 		log.debug("cmdId to send: ({})", cmdId);
 		
+		int totalMsgLength = 0;
+		
 		if (bodyMessage instanceof ErrorBodyMessage) {
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
 			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage) bodyMessage;
@@ -99,20 +101,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		//head process
-		headMessage.setMessageSize(ProtocolLengths.HEAD + bodyByte.length);
-		byte[] headByte = packageHeadCodec.encode(headMessage);
-		
-		
-		byte[] result = new byte[ProtocolLengths.HEAD + bodyByte.length];
-
-		Tools.putBytes(result, headByte, 0);
-		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
-		
-		// make the 
-		int checkSumVal = Tools.checkSum(result, result.length);
-		Tools.putUnsignedShort(result, checkSumVal, 10);
-		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
+		totalMsgLength = ProtocolLengths.HEAD + bodyByte.length; 
 		
 		byte[] serializedSessionKey = null;
 		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
@@ -121,22 +110,38 @@ public class MessageEncoder implements ProtocolEncoder {
 			// session key is present
 			// FIXME should respect the version ID in the session key.
 			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());
+			totalMsgLength = serializedSessionKey.length;
 		}
+		
+		
+		byte[] result = new byte[totalMsgLength];
+		
+		// head process
+		headMessage.setMessageSize(totalMsgLength);
+		byte[] headByte = packageHeadCodec.encode(headMessage);
+		
+		/* build the complete encoded buffer in vaiable 'result' */
+		int idx = 0;
+		Tools.putBytes(result, headByte, 0);
+		idx += ProtocolLengths.HEAD;
+		if (serializedSessionKey != null) {
+			Tools.putBytes(result, serializedSessionKey, idx);
+			idx += serializedSessionKey.length;
+		}
+		Tools.putBytes(result, bodyByte, idx);
+		idx += bodyByte.length;
+		
+		/* calculate the checksum using the 'result' buffer */
+		int checkSumVal = Tools.checkSum(result, result.length);
+		Tools.putUnsignedShort(result, checkSumVal, 10);
+		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
+
 
 		// write to Mina session
-		int length = result.length;
-		if (serializedSessionKey != null) {
-			length += serializedSessionKey.length;
-		}
 		// prepare buffer
-		IoBuffer buf = IoBuffer.allocate(length);
+		IoBuffer buf = IoBuffer.allocate(totalMsgLength);
 		// write header (16 byte)
-		buf.put(headByte);
-		// write session key (conditional)
-		if (serializedSessionKey != null) {
-			buf.put(serializedSessionKey);
-		}
-		buf.put(bodyByte);
+		buf.put(result);
 		
 		// debug print
 		log.debug("Encoded byte content");
