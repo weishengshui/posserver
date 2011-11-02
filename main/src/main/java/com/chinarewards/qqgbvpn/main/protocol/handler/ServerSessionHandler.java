@@ -23,10 +23,12 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
+import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
@@ -212,6 +214,19 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 				// grep the response, and write back to the channel.
 				ICommand responseMsgBody = (ICommand) response.getResponse();
 				msg.getHeadMessage().setFlags(0);
+				
+				if (session
+						.containsAttribute(SessionKeyMessageFilter.RETURN_SESSION_ID_TO_CLIENT)
+						&& session
+								.containsAttribute(SessionKeyMessageFilter.SESSION_ID)
+						&& session
+								.containsAttribute(SessionKeyMessageFilter.CLIENT_SUPPORT_SESSION_ID)) {
+					log.debug("setting session key in message header");
+					V1SessionKey key = new V1SessionKey(MinaUtil.getServerSessionId(session));
+					msg.getHeadMessage().setSessionKey(key);
+					msg.getHeadMessage().setFlags(msg.getHeadMessage().getFlags() | 0x8000);
+				}
+				
 				msg.setBodyMessage(responseMsgBody);
 				session.write(msg);
 
