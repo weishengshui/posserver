@@ -110,7 +110,7 @@ public class MessageEncoder implements ProtocolEncoder {
 			// session key is present
 			// FIXME should respect the version ID in the session key.
 			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());
-			totalMsgLength = serializedSessionKey.length;
+			totalMsgLength += serializedSessionKey.length;
 		}
 		
 		
