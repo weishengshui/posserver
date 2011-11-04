@@ -23,7 +23,7 @@
 	<li><a href="<s:url value="/"/>">首页</a></li>
 	<!-- Home ENDS  -->
 	
-	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName == 'admin'">
+	<s:if test="#session._userSession.user.userName != null && #session._userSession.user.userName != 'finance'">
 	<!-- POS manager STARTS -->
 	<li><a href="#">POS管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
