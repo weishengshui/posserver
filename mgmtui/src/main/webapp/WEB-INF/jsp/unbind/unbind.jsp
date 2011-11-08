@@ -24,7 +24,7 @@
 		</td>
 	</tr>
 </table>
-<s:if test="posList!=null && posList.size()>0">
+<s:if test="posVOList!=null && posVOList.size()>0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="table_style">
 	<tr>
 		<td class="td_title">POS机编号</td>
@@ -33,30 +33,32 @@
 		<td class="td_title">电机号码</td>
 		<td class="td_title">交付状态</td>
 		<td class="td_title">运营状态</td>
+		<td class="td_title">第三方名称</td>
 		<td class="td_title">操作</td>
 	</tr>
-	<s:iterator value="posList" id="list">
+	<s:iterator value="posVOList" id="list">
 	<tr>
 		<td><s:property value="#list.posId" /></td>
 		<td><s:property value="#list.sn" /></td>	<%-- 厂商编号 --%>
 		<td><s:property value="#list.model" /></td>		<%-- 型号 --%>
 		<td><s:property value="#list.simPhoneNo" /></td>
 		<td>
-			<s:if test="#list.dstatus != null && #list.dstatus.toString() == 'DELIVERED'">
+			<s:if test="#list.dstatus != null && #list.dstatus == 'DELIVERED'">
 				已交付
 			</s:if>
-			<s:elseif test="#list.dstatus != null && #list.dstatus.toString() == 'RETURNED'">
+			<s:elseif test="#list.dstatus != null && #list.dstatus == 'RETURNED'">
 				已回收
 			</s:elseif>	
 		</td>
 		<td>
-			<s:if test="#list.ostatus != null && #list.ostatus.toString() == 'ALLOWED'">
+			<s:if test="#list.ostatus != null && #list.ostatus == 'ALLOWED'">
 				允许
 			</s:if>
-			<s:elseif test="#list.ostatus != null && #list.ostatus.toString() == 'STOPPED'">
+			<s:elseif test="#list.ostatus != null && #list.ostatus == 'STOPPED'">
 				禁止
 			</s:elseif>	
 		</td>
+		<td><s:property value="#list.deliveryAgent" /></td>
 		<td><button type="button" onclick="unbind('<s:property value="#list.posId" />')">解绑</button></td>
 	</tr>
 	</s:iterator>

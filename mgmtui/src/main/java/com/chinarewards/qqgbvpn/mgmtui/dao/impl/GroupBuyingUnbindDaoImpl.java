@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.impl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +29,9 @@ import com.chinarewards.qqgbvpn.domain.status.ReturnNoteStatus;
 import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
+import com.chinarewards.qqgbvpn.mgmtui.vo.FinanceReportVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingUnbindVO;
 import com.google.gson.Gson;
@@ -255,6 +259,16 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 		jql.setParameter(1, info);
 		List<Pos> resultList = jql.getResultList();
 		return resultList;
+	}
+	
+	public List<PosVO> getPosVOByPosInfo(String info) {
+		StringBuffer sql = new StringBuffer("select p.posId,p.sn,p.model,p.simPhoneNo,p.dstatus,p.ostatus,g.name ");
+		sql.append(" from Pos p LEFT JOIN (SELECT pa.pos_id,a.name FROM PosAssignment pa, Agent a WHERE pa.agent_id = a.id) g ON p.id = g.pos_id ");
+		sql.append(" where p.posId = :info or p.sn = :info or p.simPhoneNo = :info");
+		//hql好像不支持left join，这里用原生SQL来查询
+		Query jql = getEm().createNativeQuery(sql.toString());
+		jql.setParameter("info", info);
+		return getPosVOList(jql.getResultList());
 	}
 	
 	/* (non-Javadoc)
@@ -604,6 +618,26 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 		Long count = (Long) jql.getSingleResult();
 		log.debug("count : {}", count);
 		return count != null && count > 0 ? false : true;
+	}
+	
+	private List<PosVO> getPosVOList(List resultSet) {
+		List<PosVO> voList = new ArrayList<PosVO>();
+		if (resultSet != null && resultSet.size() > 0) {
+			for (int i = 0; i < resultSet.size(); i++) {
+				Object[] o = (Object[]) resultSet.get(i);
+				PosVO vo = new PosVO();
+				vo.setPosId((String) o[0]);
+				vo.setSn((String) o[1]);
+				vo.setModel((String) o[2]);
+				vo.setSimPhoneNo((String) o[3]);
+				vo.setDstatus((String) o[4]);
+				vo.setOstatus((String) o[5]);
+				vo.setDeliveryAgent((String) o[6]);
+				
+				voList.add(vo);
+			}
+		}
+		return voList;
 	}
 	
 }

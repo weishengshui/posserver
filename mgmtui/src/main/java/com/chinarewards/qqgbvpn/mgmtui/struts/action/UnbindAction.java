@@ -23,6 +23,7 @@ import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BaseAction;
 import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
@@ -80,6 +81,8 @@ public class UnbindAction extends BaseAction {
 	private String posCondition;
 	
 	private List<Pos> posList;
+	
+	private List<PosVO> posVOList;
 	
 	private List<Agent> agentList;
 	
@@ -236,6 +239,14 @@ public class UnbindAction extends BaseAction {
 
 	public void setPosList(List<Pos> posList) {
 		this.posList = posList;
+	}
+
+	public List<PosVO> getPosVOList() {
+		return posVOList;
+	}
+
+	public void setPosVOList(List<PosVO> posVOList) {
+		this.posVOList = posVOList;
 	}
 
 	public String getPosCondition() {
@@ -504,8 +515,8 @@ public class UnbindAction extends BaseAction {
 	
 	public String posSearch() {
 		if (!StringUtil.isEmptyString(posCondition)) {
-			posList = getGroupBuyingUnbindManager().getPosByPosInfo(posCondition.trim());
-			if (posList == null || posList.size() == 0) {
+			posVOList = getGroupBuyingUnbindManager().getPosVOByPosInfo(posCondition.trim());
+			if (posVOList == null || posVOList.size() == 0) {
 				this.errorMsg = "POS机信息找不到!";
 			}
 		}
