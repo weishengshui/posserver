@@ -132,6 +132,10 @@
 	}
 	
 	function submitTest() {
+		if ($.trim($("#startDate").val()) == "" || $.trim($("#endDate").val()) == "") {
+			alert("日期不能为空，请选择日期查询");
+			return false;
+		}
 		if (testDateFormat($("#startDate").val()) && testDateFormat($("#endDate").val())) {
 			return true;
 		}
