@@ -20,7 +20,7 @@ way to fit your requirements.
 
 .menu {width:894px; height:32px; position:relative; z-index:100;border-right:1px solid #000; font-family:arial, sans-serif;}
 /* hack to correct IE5.5 faulty box model */
-* html .menu {width:746px; w\idth:745px;}
+* html .menu {width:894px; w\idth:894px;}
 /* remove all the bullets, borders and padding from the default list styling */
 .menu ul {padding:0;margin:0;list-style-type:none;}
 .menu ul ul {width:149px;}
@@ -72,3 +72,4 @@ way to fit your requirements.
 .menu ul :hover ul ul{visibility:hidden;}
 /* make the third level visible when you hover over second level list OR link */
 .menu ul :hover ul :hover ul{ visibility:visible;}
+}

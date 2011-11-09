@@ -7,13 +7,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>edit</title>
 </head>
+<style>
+.showTable th{font-size:12px; font-weight:normal; text-align:left; padding:1px 0px 1px 5px; background-color:#e0e0e0;line-height:22px;}
+.showTable td{font-size:12px; text-align:left; padding-left:5px; line-height:22px;}
+#main td{font-size:12px; line-height:22px;}
+.tdLabel{ text-align:right;}
+</style>
 <body>
 
 <s:form id="editAgent_FormID" namespace="/agent" action="editAgent" onsubmit="return checkForm();">
 	<s:hidden id="agentVO.id_ID" name="agentVO.id"/>
-	<table align="center" width="500px">
+	<table width="100%" border="0" >
 		<tr>
-			<td>
+			<td >
 				<s:textfield id="agentVO.name_ID" name="agentVO.name" label="名称"/>
 			</td>
 		</tr>
@@ -23,7 +29,8 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="center">
+			<td></td>
+			<td align="left">
 				<input id="submit_Button_ID" type="button" value="确认" onclick="checkForm();" />
 				<input type="button" value="返回" onclick="history.back();" />
 			</td>
@@ -36,30 +43,30 @@
 <s:hidden id="agentVO.id" name="agentVO.id"/>
 <s:hidden id="agentVO.name" name="agentVO.name"/>
 <s:hidden id="agentVO.email" name="agentVO.email"/>		
-<table align="left" width="500px">
+<table width="100%" border="0">
 		<tr>
 			<td  colspan="2" align="left">
 				<input type="submit" value="显示第三方POS机" align="left">
 			</td>
 		</tr>
 	</table>
-</s:form>
+
 
 	<div id="pos_list_center_div">
 	<s:if test="agentPosList != null && agentPosList.size > 0">
-		<table align="left" width="850px">
+		<table width="100%" border="0" class="showTable">
 		<tr align="center">
-			<td>POS机编号</td>
-			<td>厂商编号</td>
-			<td>型号</td>
-			<td>电机号码</td>
-			<td>交付状态</td>
-			<td>初始化</td>
-			<td>运营状态</td>
-			<td>密钥</td>
-			<td >允许升级固件</td>
-			<td >固件档案名称</td>
-			<td>第三方名称</td>
+			<th>POS机编号</th>
+			<th>厂商编号</th>
+			<th>型号</th>
+			<th>电机号码</th>
+			<th>交付状态</th>
+			<th>初始化</th>
+			<th>运营状态</th>
+			<th>密钥</th>
+			<th >允许升级固件</th>
+			<th >固件档案名称</th>
+			<th>第三方名称</th>
 			<%--
 				<td>操作</td>
 			 --%>
@@ -127,6 +134,7 @@
    </s:if> 
 	
 	</div>
+</s:form>
 </s:if>	
 <script type="text/javascript">
 	function isEmail(str){
