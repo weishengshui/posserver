@@ -160,6 +160,12 @@ public class PosAction extends BasePagingAction{
 		
 		try{
 			pageInfo = getPosLogic().queryPos(posSearchVO);
+			List<PosVO> li = pageInfo.getItems();
+			log.debug("list size :{}",li.size());
+			for(PosVO p:li){
+				log.debug("pageInfo items :{}",p.getDeliveryAgent());
+			}
+		
 		}catch(Exception e){
 			log.error("list fail",e);
 			e.printStackTrace();

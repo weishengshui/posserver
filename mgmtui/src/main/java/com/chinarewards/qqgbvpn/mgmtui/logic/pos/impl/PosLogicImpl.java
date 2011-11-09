@@ -42,6 +42,11 @@ public class PosLogicImpl implements PosLogic {
 		return posDao.get().queryPos(posSearchVO);
 	}
 
+	@Override
+	public List<PosVO> queryPosByAgentId(String agentId) {
+		return posDao.get().queryPosByAgentId(agentId);
+	}
+
 	@Transactional
 	@Override
 	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,ParamsException,SimPhoneNoIsExitsException, OptimisticLockException{

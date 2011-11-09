@@ -15,6 +15,10 @@
 			<result name="success" type="tiles">agent.showEditAgent</result>
 		</action>
 		
+		<action name="searchAgentPos" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="searchAgentPos">
+			<result name="success" type="tiles">agent.showEditAgent</result>
+		</action>
+		
 		<action name="agentIsExist" class="com.chinarewards.qqgbvpn.mgmtui.struts.agent.AgentAction" method="agentIsExist">
 			<result name="success" type="json">
 				<param name="noCache">true</param>

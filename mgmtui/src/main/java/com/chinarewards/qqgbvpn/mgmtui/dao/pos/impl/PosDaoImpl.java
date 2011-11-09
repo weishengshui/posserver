@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.mgmtui.dao.pos.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -99,10 +101,10 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 		//pageinfo.setRecordCount(recordCount);
 
 		StringBuffer searchSql = new StringBuffer();
-		searchSql.append("SELECT p FROM Pos p WHERE 1=1 ");
+		searchSql.append("SELECT p.id,p.posId,p.model,p.sn,p.simPhoneNo,p.dstatus,g.name,p.istatus,p.ostatus,p.secret,p.firmware,p.upgradeRequired,p.version FROM Pos p LEFT JOIN (Select pa.pos_id AS id , a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
 		
 		StringBuffer countSql = new StringBuffer();
-		countSql.append("SELECT count(p.id) FROM Pos p WHERE 1=1 ");
+		countSql.append("SELECT COUNT(p.id) FROM Pos p LEFT JOIN (Select pa.pos_id AS id , a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 
 		log.debug("posSearchVO============:" + posSearchVO);
@@ -112,13 +114,13 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 				searchSql.append(" AND p.dstatus = :dstatus ");
 				countSql.append(" AND p.dstatus = :dstatus ");
 				paramMap.put("dstatus", PosDeliveryStatus.valueOf(posSearchVO
-						.getDstatus()));
+						.getDstatus()).toString());
 			}
 			if (!Tools.isEmptyString(posSearchVO.getIstatus())) {
 				searchSql.append(" AND p.istatus = :istatus ");
 				countSql.append(" AND p.istatus = :istatus ");
 				paramMap.put("istatus", PosInitializationStatus
-						.valueOf(posSearchVO.getIstatus()));
+						.valueOf(posSearchVO.getIstatus()).toString());
 			}
 			if (!Tools.isEmptyString(posSearchVO.getModel())) {
 				searchSql.append(" AND lower(p.model) like :model ");
@@ -130,7 +132,7 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 				searchSql.append(" AND p.ostatus = :ostatus ");
 				countSql.append(" AND p.ostatus = :ostatus ");
 				paramMap.put("ostatus", PosOperationStatus.valueOf(posSearchVO
-						.getOstatus().trim()));
+						.getOstatus().trim()).toString());
 			}
 			if (!Tools.isEmptyString(posSearchVO.getPosId())) {
 				searchSql.append(" AND lower(p.posId) like :posid ");
@@ -159,15 +161,33 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 						+ "%");
 			}
 		}
-		pageinfo = this.findPageInfo(countSql.toString(), searchSql.toString(), paramMap, posSearchVO.getPage(), posSearchVO.getSize());
+		PageInfo page_info = new PageInfo();
+		page_info.setPageId(posSearchVO.getPage());
+		page_info.setPageSize(posSearchVO.getSize());
+		pageinfo = this.findPageInfoByNativeSearch(countSql.toString(), searchSql.toString(), paramMap, page_info);
 		
-		List<Pos> posList = pageinfo.getItems();
-		
+		List<Object []> posList = pageinfo.getItems();
 		List<PosVO> posVoList = new ArrayList<PosVO>();
-		
-		for (Pos pos : posList) {
-			PosVO posVO = posAdapter.get().convertToPosVO(pos);
-			posVoList.add(posVO);
+		for(Object[] obj:posList){
+			PosVO vo = new PosVO();
+			vo.setId((String)obj[0]);
+			vo.setPosId((String)obj[1]);
+			vo.setModel((String)obj[2]);
+			vo.setSn((String)obj[3]);
+			vo.setSimPhoneNo((String)obj[4]);
+			vo.setDstatus((String)obj[5]);
+			vo.setDeliveryAgent((String)obj[6]);
+			vo.setIstatus((String)obj[7]);
+			vo.setOstatus((String)obj[8]);
+			vo.setSecret((String)obj[9]);
+			vo.setFirmware((String)obj[10]);
+			if("".equals(obj[11]) ||obj[11] == null){
+				vo.setUpgradeRequired(false);
+			}else{
+				vo.setUpgradeRequired((Boolean)obj[11]);
+			}
+			vo.setVersion(((BigInteger)obj[12]).longValue());
+			posVoList.add(vo);
 		}
 		
 		pageinfo.setItems(posVoList);
@@ -177,6 +197,54 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 		return pageinfo;
 	}
 	
+	@Override
+	public List<PosVO> queryPosByAgentId(String agentId) {
+		log.trace("calling queryPosByAgentId start and params is  agentId:{}", agentId);
+			
+			StringBuffer searchSql = new StringBuffer();
+			searchSql.append("SELECT p.id,p.posId,p.model,p.sn,p.simPhoneNo,p.dstatus,g.name,p.istatus,p.ostatus,p.secret,p.firmware,p.upgradeRequired,p.version FROM Pos p LEFT JOIN (Select pa.pos_id AS id ,a.id AS agentId, a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
+			
+			StringBuffer countSql = new StringBuffer();
+			countSql.append("SELECT COUNT(p.id) FROM Pos p LEFT JOIN (Select pa.pos_id AS id , a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
+			Map<String, Object> paramMap = new HashMap<String, Object>();
+
+			if (!Tools.isEmptyString(agentId)) {
+				searchSql.append(" AND lower(g.agentId) like :agentId ");
+				countSql.append(" AND lower(g.agentId) like :agentId ");
+				paramMap.put("agentId", "%"
+						+ agentId.toLowerCase().trim() + "%");
+			}
+			
+			Query q = getEm().createNativeQuery(searchSql.toString());
+			q.setParameter("agentId", paramMap.get("agentId"));
+			List<Object []> list = q.getResultList();
+			List<PosVO> posList = new ArrayList<PosVO>();
+			for(Object[] obj:list){
+				PosVO vo = new PosVO();
+				vo.setId((String)obj[0]);
+				vo.setPosId((String)obj[1]);
+				vo.setModel((String)obj[2]);
+				vo.setSn((String)obj[3]);
+				vo.setSimPhoneNo((String)obj[4]);
+				vo.setDstatus((String)obj[5]);
+				vo.setDeliveryAgent((String)obj[6]);
+				vo.setIstatus((String)obj[7]);
+				vo.setOstatus((String)obj[8]);
+				vo.setSecret((String)obj[9]);
+				vo.setFirmware((String)obj[10]);
+				if("".equals(obj[11]) ||obj[11] == null){
+					vo.setUpgradeRequired(false);
+				}else{
+					vo.setUpgradeRequired((Boolean)obj[11]);
+				}
+				vo.setVersion(((BigInteger)obj[12]).longValue());
+				posList.add(vo);
+			}
+		log.trace("calling queryPosByAgentId end and result is :({})", Tools
+				.objToString(posList));
+		return posList;
+	}
+
 	@Override
 	public PosVO savePos(PosVO posVO) throws PosIdIsExitsException,
 			ParamsException, SimPhoneNoIsExitsException {

@@ -1,17 +1,17 @@
 package com.chinarewards.qqgbvpn.mgmtui.struts.agent;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.struts2.ServletActionContext;
 
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
-import com.google.inject.Injector;
 
 /**
  * third part manager action
@@ -29,9 +29,13 @@ public class AgentAction extends BasePagingToolBarAction {
 
 	private AgentLogic agentLogic;
 	
+	private PosLogic posLogic;
+	
 	private List<AgentVO> agentVOList;
 
 	private AgentSearchVO agentSearchVO = new AgentSearchVO();
+	
+	private List<PosVO> agentPosList;
 	
 	private boolean agentIsExist;
 	
@@ -135,6 +139,28 @@ public class AgentAction extends BasePagingToolBarAction {
 		return SUCCESS;
 	}
 	
+	/**
+	 * description: 查询agent拥有的pos
+	 * @return
+	 * @author lixingya
+	 */
+	public String searchAgentPos(){
+		if(agentVO == null)return ERROR;
+		log.debug("posAction call searchAgentPos ,params agentId:{}",agentVO.getId());
+		if (agentPosList == null) {
+			agentPosList = new ArrayList<PosVO>();
+		}
+		
+		try{
+			agentPosList  = getPosLogic().queryPosByAgentId(agentVO.getId());
+			for(PosVO vo:agentPosList)
+			log.debug("agentPosList :{}",vo.getId());
+		}catch(Throwable e){
+			log.error(e.getMessage(), e);
+		}
+		
+		return SUCCESS;
+	}
 	//---------------------------------------------------//
 	
 	private AgentLogic getAgentLogic() {
@@ -189,5 +215,19 @@ public class AgentAction extends BasePagingToolBarAction {
 	public void setPageInfo(PageInfo pageInfo) {
 		this.pageInfo = pageInfo;
 	}
+
+	private PosLogic getPosLogic() {
+		posLogic = super.getInstance(PosLogic.class);
+		return posLogic;
+	}
+
+	public List<PosVO> getAgentPosList() {
+		return agentPosList;
+	}
+
+	public void setAgentPosList(List<PosVO> agentPosList) {
+		this.agentPosList = agentPosList;
+	}
+	
 	
 }

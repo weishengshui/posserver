@@ -68,7 +68,15 @@ public interface PosLogic {
 	 * @param posSearchVO
 	 * @return
 	 */
-	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO);
+	public PageInfo<PosVO> queryPos(PosSearchVO posSearchVO);	
+	
+	/**
+	 * 查询Pos
+	 * 
+	 * @param posSearchVO
+	 * @return
+	 */
+	public List<PosVO> queryPosByAgentId(String agentId);	
 
 	/**
 	 * 批量更新 Pos 状态为 {@link PosDeliveryStatus#DELIVERED} 和 {@link PosOperationStatus#ALLOWED}

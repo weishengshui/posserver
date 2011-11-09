@@ -28,9 +28,106 @@
 				<input type="button" value="返回" onclick="history.back();" />
 			</td>
 		</tr>
+		
+	</table>
+</s:form>
+<s:if test="agentVO != null && agentVO.id != null">
+<s:form  namespace="/agent" action="searchAgentPos" name="searchAgentPos" theme="simple" id="searchPosForm">
+<s:hidden id="agentVO.id" name="agentVO.id"/>
+<s:hidden id="agentVO.name" name="agentVO.name"/>
+<s:hidden id="agentVO.email" name="agentVO.email"/>		
+<table align="left" width="500px">
+		<tr>
+			<td  colspan="2" align="left">
+				<input type="submit" value="显示第三方POS机" align="left">
+			</td>
+		</tr>
 	</table>
 </s:form>
 
+	<div id="pos_list_center_div">
+	<s:if test="agentPosList != null && agentPosList.size > 0">
+		<table align="left" width="850px">
+		<tr align="center">
+			<td>POS机编号</td>
+			<td>厂商编号</td>
+			<td>型号</td>
+			<td>电机号码</td>
+			<td>交付状态</td>
+			<td>初始化</td>
+			<td>运营状态</td>
+			<td>密钥</td>
+			<td >允许升级固件</td>
+			<td >固件档案名称</td>
+			<td>第三方名称</td>
+			<%--
+				<td>操作</td>
+			 --%>
+		</tr>
+	  <s:iterator  value="agentPosList" id="posTmp" status="stat">
+	  <tr align="center">
+			<td>
+				<s:property value="#posTmp.posId" />
+			</td>
+			<td><s:property value="#posTmp.sn" /></td>	<%-- 厂商编号 --%>
+			<td><s:property value="#posTmp.model" /></td>
+			<td><s:property value="#posTmp.simPhoneNo" /></td>
+			<td>
+				<s:if test="#posTmp.dstatus == 'DELIVERED'">
+					已交付
+				</s:if>
+				<s:elseif test="#posTmp.dstatus == 'RETURNED'">
+					已回收
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td>
+				<s:if test="#posTmp.istatus == 'UNINITED'">
+					否
+				</s:if>
+				<s:elseif test="#posTmp.istatus == 'INITED'">
+					是
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td>
+				<s:if test="#posTmp.ostatus == 'ALLOWED'">
+					允许
+				</s:if>
+				<s:elseif test="#posTmp.ostatus == 'STOPPED'">
+					禁止
+				</s:elseif>	
+				<s:else>
+					&nbsp;&nbsp;
+				</s:else>
+			</td>
+			<td><s:property value="#posTmp.secret" /></td>
+			<td>
+				<s:if test="#posTmp.upgradeRequired == true">
+					允许
+				</s:if>
+				<s:elseif test="#posTmp.upgradeRequired == false">
+					禁止
+				</s:elseif>
+			</td>
+			<td><s:property value="#posTmp.firmware" /></td>
+			<td><s:property value="#posTmp.deliveryAgent" /></td>
+			<%--
+				<td>
+					<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>
+				</td>
+			 --%>
+		</tr>
+	  </s:iterator>
+	</table>
+   </s:if> 
+	
+	</div>
+</s:if>	
 <script type="text/javascript">
 	function isEmail(str){
 	    var reg = /^([a-zA-Z0-9]+[_|\-|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\-|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/gi;
