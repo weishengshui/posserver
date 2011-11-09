@@ -102,6 +102,12 @@ public class InMemorySessionStore implements SessionStore {
 		store.put(sessionId, session);
 		return session;
 	}
+
+	@Override
+	public Session removeSession(String sessionId) {
+		return store.remove(sessionId);
+		
+	}
 	
 	
 

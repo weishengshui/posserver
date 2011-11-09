@@ -23,5 +23,11 @@ public interface ISessionKey {
 	 * @return
 	 */
 	public String getSessionId();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int getSessionIdLength();
 
 }

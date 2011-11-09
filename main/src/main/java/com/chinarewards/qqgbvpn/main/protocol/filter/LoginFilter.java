@@ -51,7 +51,7 @@ public class LoginFilter extends AbstractFilter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		
-		log.trace("messageReceived() started");
+		log.trace("messageReceived() started - LoginFilter");
 		
 		Boolean isLogin = (Boolean) getServerSession(session, sessionStore).getAttribute(
 				IS_LOGIN);
@@ -149,7 +149,7 @@ public class LoginFilter extends AbstractFilter {
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 		
-		log.trace("messageSent() started");
+		log.trace("LoginFilter - messageSent() started");
 		
 		// XXX completely wrong implementation, should be set inside
 		// the command handler.
@@ -170,7 +170,7 @@ public class LoginFilter extends AbstractFilter {
 		
 		nextFilter.messageSent(session, writeRequest);
 		
-		log.trace("messageSent() done");
+		log.trace("LoginFilter - messageSent() done");
 	}
 
 }

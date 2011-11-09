@@ -62,7 +62,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 		log.debug("MessageDecoder.doDecode() invoked");
 		log.trace("Mina session ID: " + session.getId());
-
+		log.debug("buffer.remaining() ={}",in.remaining());
 		// TODO make the '96' be configurable.
 		CodecUtil.hexDumpForLogging(log, in, 96);
 

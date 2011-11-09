@@ -63,122 +63,143 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
 
-		log.trace("messageReceived() started");
+		log.trace("messageReceived() started -SessionKeyMessageFilter");
+
+		boolean createSession = false;
+		boolean generateSessionKey = false;
+		boolean markSendSessionIdToClient = false;
+		String sessionId = null;
+		Session serverSession = null;
 
 		// get the protocol message.
 		Message posMsg = (Message) message;
 		HeadMessage header = posMsg.getHeadMessage();
-		
-		ISessionKey sessionKey = header.getSessionKey();
-		String sessionId = null;
-		Session serverSession = null;
 
-		// shows a debug message if the session key is gone unexpectedly.
-		if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0
-				&& sessionKey == null) {
-			// no session key found... must have some problem decoding in the
-			// previous state.
-			log.info(
-					"Mina ID {}: no session key in header but marked as containing "
-							+ "session key, should be corrupted when decoding. "
-							+ "Assuming no session key.", session.getId());
-			
-			log.debug("marking client supports session ID");
-			session.setAttribute(CLIENT_SUPPORT_SESSION_ID);
-		}
-
-		
-		boolean createSession = false;
-		boolean generateSessionKey = false;
-		boolean markSendSessionIdToClient = false;
-
-		// act accordingly.
-		if (sessionKey == null) {
-
-			// case: No session key found in client message.
-			if (!serverHasSessionId(session)) {
-				// client and server has no session key. create one.
-				log.debug("Mina session ID {}: client message and server has no session ID, will create one", session.getId());
+		// 这个过滤器是用了处理有session key 的client的请求
+		// 也就是说，如果没有session key 功能的client不用走
+		if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) == 0) {
+			if(!serverHasSessionId(session)){
 				createSession = true;
 				generateSessionKey = true;
-				markSendSessionIdToClient = true;
-			} else {
-				log.debug("Mina session ID {}: existing session ID = {}", session.getId(), getServerSessionId(session));
 			}
-
 		} else {
 
-			// case: session key is present in client's message.
+			ISessionKey sessionKey = header.getSessionKey();
 
-			// FIXME 2011-11-02 cyril: need to validate the client's session
-			// key!
-			
-			// FIXME: 2011-11-02 cyril: need to guard against unsupported session key!
-			
-			sessionId = sessionKey.getSessionId();
+			// shows a debug message if the session key is gone unexpectedly.
+			// client告诉server这次连接的POS机可以处理session key信息
+			// 所以在这次请求的回复中server就会根据这里在session记录的状态，进行回复session key
+			if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+				// no session key found... must have some problem decoding in
+				// the
+				// previous state.
+				log.info(
+						"Mina ID {}: no session key in header but marked as containing "
+								+ "session key, should be corrupted when decoding. "
+								+ "Assuming no session key.", session.getId());
 
-			if (!serverHasSessionId(session)) {
+				log.debug("marking client supports session ID");
+				session.setAttribute(CLIENT_SUPPORT_SESSION_ID);
+			}
 
-				// for a new client connection, we need to save that session
-				// ID on server side once the session key is identified as
-				// valid. This is required since the session key MAY NOT
-				// be present in later messages.
-				//
-				// We validate by from session store using client' session key.
-				// If found, load it, and save the session key into Mina.
-				// Otherwise, server will generate a new session key.
+			// act accordingly.
+			if (sessionKey == null) {
 
-				serverSession = sessionStore.getSession(sessionId);
-				if (serverSession == null) {
-					// no session found in session store
+				// case: No session key found in client message.
+				if (!serverHasSessionId(session)) {
+					// 开机第一次请求会出现的情况
+					// client and server has no session key. create one.
+					log.debug(
+							"Mina session ID {}: client message and server has no session ID, will create one",
+							session.getId());
 					createSession = true;
 					generateSessionKey = true;
 					markSendSessionIdToClient = true;
-					log.debug(
-							"session invalid: no session found with key {}, will create one",
-							sessionKey);
 				} else {
-					// session found in session store
-					saveSessionIdToServer(session, sessionId);
-					markSendSessionIdToClient = true;
-					log.debug("session restored with key {}", sessionKey);
+					// 这个是正常请求时，client有sessionkey 但是不需要传
+					log.debug("Mina session ID {}: existing session ID = {}",
+							session.getId(), getServerSessionId(session));
 				}
 
 			} else {
+				// 重连接，client端有session key
+				// case: session key is present in client's message.
 
-				//
-				// Case: Server already has a session key (in Mina's session)
-				//
+				// FIXME 2011-11-02 cyril: need to validate the client's session
+				// key!
 
-				// make sure client's and server's session key match!
-				String serverSessionId = getServerSessionId(session);
-				markSendSessionIdToClient = true;
+				// FIXME: 2011-11-02 cyril: need to guard against unsupported
+				// session key!
 
-				if (!sessionKey.getSessionId().equals(serverSessionId)) {
+				sessionId = sessionKey.getSessionId();
+				// 正常的重连接，sessionIo里面是没有session id的
+				if (!serverHasSessionId(session)) {
+					// for a new client connection, we need to save that session
+					// ID on server side once the session key is identified as
+					// valid. This is required since the session key MAY NOT
+					// be present in later messages.
+					//
+					// We validate by from session store using client' session
+					// key.
+					// If found, load it, and save the session key into Mina.
+					// Otherwise, server will generate a new session key.
 
-					// session key NOT match
-
-					if (log.isInfoEnabled()) {
-						log.info(
-								"Mina session ID {}: Client session key does not match server's session key"
-										+ " ({} vs {}), will create new session",
-								new Object[] { session.getId(), sessionKey.getSessionId(), serverSessionId
-										 });
+					serverSession = sessionStore.getSession(sessionId);
+					if (serverSession == null) {
+						// no session found in session store
+						createSession = true;
+						generateSessionKey = true;
+						markSendSessionIdToClient = true;
+						log.debug(
+								"session invalid: no session found with key {}, will create one",
+								sessionKey);
+					} else {
+						// session found in session store
+						saveSessionIdToServer(session, sessionId);
+						markSendSessionIdToClient = true;
+						log.debug("session restored with key {}", sessionKey);
 					}
 
-					createSession = true;
-					generateSessionKey = true;
-					markSendSessionIdToClient = true;
-					
 				} else {
 
-					// session key matched!
-					log.debug("Mina session ID {}: client and server session key matched", session.getId());
+					//
+					// Case: Server already has a session key (in Mina's
+					// session)
+					//
+
+					// make sure client's and server's session key match!
+					String serverSessionId = getServerSessionId(session);
+					markSendSessionIdToClient = true;
+
+					if (!sessionKey.getSessionId().equals(serverSessionId)) {
+
+						// session key NOT match
+
+						if (log.isInfoEnabled()) {
+							log.info(
+									"Mina session ID {}: Client session key does not match server's session key"
+											+ " ({} vs {}), will create new session",
+									new Object[] { session.getId(),
+											sessionKey.getSessionId(),
+											serverSessionId });
+						}
+
+						createSession = true;
+						generateSessionKey = true;
+						markSendSessionIdToClient = true;
+
+					} else {
+
+						// session key matched!
+						log.debug(
+								"Mina session ID {}: client and server session key matched",
+								session.getId());
+
+					}
 
 				}
 
 			}
-
 		}
 
 		// generate a session ID, also mark the session ID should be sent to
@@ -186,14 +207,16 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		if (generateSessionKey) {
 			// generate session id
 			sessionId = sessionIdGenerator.generate();
-			
-			log.debug("Mina session ID {}: created session key {}", session.getId(), sessionId);
+
+			log.debug("Mina session ID {}: created session key {}",
+					session.getId(), sessionId);
 		}
-		
+
 		// if no session is present finally, we need to create one.
 		if (createSession) {
-			
-			log.debug("creating session for mina session ID {} using session ID {}",
+
+			log.debug(
+					"creating session for mina session ID {} using session ID {}",
 					session.getId(), sessionId);
 
 			// create a session.
@@ -211,10 +234,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		nextFilter.messageReceived(session, message);
 
 		log.trace("messageReceived() done");
-		
-	}
 
-	
+	}
 	
 	
 	/* (non-Javadoc)
@@ -226,6 +247,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		
 		log.trace("messageSent() invoked");
 		
+		//检查是否要发送session key 的信息给client
 		if (isMarkSendSessionIdToClient(session)) {
 			
 			if (session.containsAttribute(CLIENT_SUPPORT_SESSION_ID)) {
@@ -247,7 +269,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				}
 				
 			}
-			
+			//发送完成之后就把标记去掉
+			removeMarkSendSessionIdToClient(session);
 		} else {
 			log.trace(
 					"Mina session ID {}: not mark to return session ID to client",
@@ -296,6 +319,10 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	
 	protected boolean isMarkSendSessionIdToClient(IoSession session) {
 		return session.containsAttribute(RETURN_SESSION_ID_TO_CLIENT);
+	}
+	
+	protected Object removeMarkSendSessionIdToClient(IoSession session) {
+		 return session.removeAttribute(RETURN_SESSION_ID_TO_CLIENT);
 	}
 	
 }

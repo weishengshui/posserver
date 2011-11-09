@@ -192,10 +192,8 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 				long cmdId = msg.getBodyMessage().getCmdId();
 
 				// FIXME throw PackageException if no handler found for command ID
-
 				// build a request (for dispatcher)
 				Session sStore = sessionStore.getSession(MinaUtil.getServerSessionId(session));
-				
 				SessionWrapper serviceSession = new SessionWrapper(sStore);
 				ServiceRequestImpl request = new ServiceRequestImpl(
 						msg.getBodyMessage(), serviceSession);
@@ -236,7 +234,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 		};
 
 		exec.submit(callable);
-
 	}
 
 	/**

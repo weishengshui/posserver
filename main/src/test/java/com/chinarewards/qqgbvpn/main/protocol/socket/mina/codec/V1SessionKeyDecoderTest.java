@@ -33,17 +33,18 @@ public class V1SessionKeyDecoderTest {
 		byte[] encoded = codec.encode(key);
 
 		assertNotNull(encoded);
-		assertEquals(19, encoded.length);
+		assertEquals(20, encoded.length);
 
 		assertEquals((byte) 0x01, encoded[0]);
 		/* length */
 		assertEquals((byte) 0x00, encoded[1]);
 		/* length */
-		assertEquals((byte) 0x10, encoded[2]);
+		assertEquals((byte) 0x10, encoded[3]);
+		
 
 		/* the key content */
 		assertTrue(Arrays.equals(
-				Arrays.copyOfRange(encoded, 3, encoded.length), new String(
+				Arrays.copyOfRange(encoded, 4, encoded.length), new String(
 						"1234567890ABCDEF").getBytes("UTF-8")));
 
 	}
