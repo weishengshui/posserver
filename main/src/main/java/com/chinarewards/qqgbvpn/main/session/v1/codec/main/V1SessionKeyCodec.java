@@ -6,6 +6,9 @@ package com.chinarewards.qqgbvpn.main.session.v1.codec.main;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
+import com.chinarewards.qqgbvpn.main.encoder.IUUIDEncoder;
+import com.chinarewards.qqgbvpn.main.encoder.UUIDEncoderImpl;
+import com.chinarewards.qqgbvpn.main.encoder.UUIDPatternException;
 import com.chinarewards.qqgbvpn.main.session.CodecException;
 import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
 
@@ -17,6 +20,7 @@ import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
  */
 public class V1SessionKeyCodec {
 
+	IUUIDEncoder uuidCode = new UUIDEncoderImpl();
 	/**
 	 * Encode the session key as byte stream.
 	 * 
@@ -30,8 +34,11 @@ public class V1SessionKeyCodec {
 		V1SessionKey k = (V1SessionKey) key;
 
 		try {
-			return k.getKey().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
+			return uuidCode.encode(k.getKey());
+//				return k.getKey().getBytes("UTF-8");
+//		} catch (UnsupportedEncodingException e) {
+//				throw new CodecException(e);
+		} catch (UUIDPatternException e) {
 			throw new CodecException(e);
 		}
 
@@ -45,8 +52,13 @@ public class V1SessionKeyCodec {
 	 * @throws CodecException
 	 */
 	public V1SessionKey decode(byte[] bytes) throws CodecException {
-
-		String key = new String(bytes, Charset.forName("UTF-8"));
+		String key;
+		try {
+			key=uuidCode.decode(bytes);
+		} catch (UUIDPatternException e) {
+			throw new CodecException(e);
+		}
+//		key = new String(bytes, Charset.forName("UTF-8"));
 		return new V1SessionKey(key);
 
 	}

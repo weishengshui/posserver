@@ -184,10 +184,22 @@ public class DefaultPosServerTest extends GuiceTest {
 		assertEquals(runningPort, server.getLocalPort());
 
 		// sleep for a while...
-		Thread.sleep(500); // 0.5 seconds
+//		Thread.sleep(500); // 0.5 seconds
+//		log.trace("one socket...");
+//		//测试旧的pos机正常流程
+//		createSocket1(server.getLocalPort());
+//		
+//		Thread.sleep(1000); // 1 seconds
+//		log.trace("two socket...");
+//		//测试新的pos机正常流程
+//		createSocket2(server.getLocalPort());
+//		
+//		Thread.sleep(1000); // 1 seconds
+//		log.trace("three socket.......");
+//		//测试断线，后重连
+//		createSocket3(server.getLocalPort());
 
-		createSocket(server.getLocalPort());
-
+		
 		// stop it, and make sure it is stopped.
 		server.stop();
 		assertTrue(server.isStopped());
@@ -195,96 +207,95 @@ public class DefaultPosServerTest extends GuiceTest {
 		log.info("Server stopped");
 
 	}
-
-	private void createSocket(int port) throws Exception {
-
+	
+	private void createSocket3(int port) throws Exception {
 		Socket socket = new Socket("localhost", port);
-
 		OutputStream os = socket.getOutputStream();
 		InputStream is = socket.getInputStream();
+		byte[] challenge = new byte[8];
+		byte[] sessionId = new byte[16];
+		
+		log.debug("start init ......");
+		this.newPosInit(os, is , challenge ,sessionId);// new client add session key protocol
+		
+		log.debug("start login ......");
+		newPosLogin(os, is, challenge);
+		
+		log.debug("start list ......");
+		newPosSearchList(os, is);
+		
+		System.out.println("");
+		os.close();
+		socket.close();
+		
+		log.debug("send session id socket........");
+		Socket socket2 = new Socket("localhost", port);
+		OutputStream os2 = socket2.getOutputStream();
+		InputStream is2 = socket2.getInputStream();
+		
+		log.debug("start validate ......");
+		newPosValidateSendSessionKey(os2, is2 , sessionId);
+		
+		log.debug("start list ......");
+		newPosSearchList(os2, is2);
+		
+		System.out.println("");
+		os2.close();
+		socket2.close();
+		
+		
+	}
+	
+	
+	private void createSocket2(int port) throws Exception {
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+		byte[] challenge = new byte[8];
+		byte[] sessionId = new byte[16];
+		
+		log.debug("start init ......");
+		this.newPosInit(os, is , challenge, sessionId);// new client add session key protocol
+		
+		log.debug("start login ......");
+		newPosLogin(os, is, challenge);
+		
+		log.debug("start list ......");
+		newPosSearchList(os, is);
+		
+		log.debug("start validate ......");
+		newPosValidate(os, is);
+		
+		System.out.println("");
+		os.close();
+		socket.close();
+	}
 
-		// byte[] msg = new byte[] {
-		// // SEQ
-		// 0, 0, 0, 24,
-		// // ACK
-		// 0, 0, 0, 0,
-		// // flags
-		// 0, 0,
-		// // checksum
-		// 0, 0,
-		// // message length
-		// 0, 0, 0, 32,
-		// // command ID
-		// 0, 0, 0, 5,
-		// // POS ID
-		// 'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '3' };
-		// byte[] msg2 = new byte[] {
-		// // SEQ
-		// 0, 0, 0, 25,
-		// // ACK
-		// 0, 0, 0, 0,
-		// // flags
-		// 0, 0,
-		// // checksum
-		// 0, 0,
-		// // message length
-		// 0, 0, 0, 32,
-		// // command ID
-		// 0, 0, 0, 5,
-		// // POS ID
-		// 'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '2' };
-		//
-		// // calculate checksum
-		// int checksum = Tools.checkSum(msg, msg.length);
-		// Tools.putUnsignedShort(msg, checksum, 10);
-		// // calculate checksum
-		// int checksum2 = Tools.checkSum(msg2, msg2.length);
-		// Tools.putUnsignedShort(msg2, checksum2, 10);
-		//
-		//
-		// long runForSeconds = 60;
-		// // write response
-		// log.info("Send request to server");
-		//
-		// // send both message at once
-		// int rubbishLength = 4;
-		// byte[] outBuf = new byte[msg.length + msg2.length + rubbishLength];
-		// System.arraycopy(msg, 0, outBuf, 0, msg.length);
-		// System.arraycopy(msg2, 0, outBuf, msg.length, msg2.length);
-		//
-		// os.write(outBuf);
-		//
-		// // ----------
-		//
-		// // session.write("Client First Message");
-		// Thread.sleep(runForSeconds * 1000);
-		// // read
-		// log.info("Read response");
-		// byte[] response = new byte[30];
-		// int n = is.read(response);
-		// System.out.println("Number of bytes read: " + n);
-		// for (int i = 0; i < n; i++) {
-		// String s = Integer.toHexString((byte) response[i]);
-		// if (s.length() < 2)
-		// s = "0" + s;
-		// if (s.length() > 2)
-		// s = s.substring(s.length() - 2);
-		// System.out.print(s + " ");
-		// if ((i + 1) % 8 == 0)
-		// System.out.println("");
-		// }
-		this.posinit(os, is);
-//		log.debug("pos---------------2--------------------start--------------");
-//		this.posinit2(os, is);
+	private void createSocket1(int port) throws Exception {
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+		
+		byte[] challenge = new byte[8];
+		
+		this.oldPosInit(os, is, challenge);// old  client
+		
+		log.debug("start login ......");
+		oldPosLogin(os, is, challenge);
+		
+		log.debug("start list ......");
+		oldPosSearchList(os, is);
+		
+		log.debug("start validate ......");
+		oldPosValidate(os, is);
+		
 		System.out.println("");
 		os.close();
 		socket.close();
 
 	}
 
-
-
-	private void posinit(OutputStream os, InputStream is) throws Exception {
+	private void oldPosInit(OutputStream os, InputStream is, byte[] challenge) throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
 				0, 0, 0, 24,
@@ -300,38 +311,19 @@ public class DefaultPosServerTest extends GuiceTest {
 				0, 0, 0, 5,
 				// POS ID
 				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '3' };
-//		byte[] msg2 = new byte[] {
-//				// SEQ
-//				0, 0, 0, 25,
-//				// ACK
-//				0, 0, 0, 0,
-//				// flags
-//				0, 0,
-//				// checksum
-//				0, 0,
-//				// message length
-//				0, 0, 0, 32,
-//				// command ID
-//				0, 0, 0, 5,
-//				// POS ID
-//				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '2' };
 
 		// calculate checksum
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
-		// calculate checksum
-//		int checksum2 = Tools.checkSum(msg2, msg2.length);
-//		Tools.putUnsignedShort(msg2, checksum2, 10);
 
 		long runForSeconds = 3;
-		// write response
-		log.info(" Init Send request to server");
 
 		// send both message at once
-//		int rubbishLength = 4;
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
 
+		// write response
+		log.info(" Init Send request to server");
 		os.write(outBuf);
 
 		// ----------
@@ -353,16 +345,10 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-	
-		byte[] challenge2 = new byte[8];
-		System.arraycopy(response, 22, challenge2, 0, 8);
-
-		log.debug("start login ......");
-		posLogin(os, is, challenge2);
-
+		System.arraycopy(response, 22, challenge, 0, 8);
 	}
 
-	private void posLogin(OutputStream os, InputStream is, byte[] challenge2)
+	private void oldPosLogin(OutputStream os, InputStream is, byte[] challenge)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -382,7 +368,7 @@ public class DefaultPosServerTest extends GuiceTest {
 				// challengeResponse
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-		byte[] content2 = HMAC_MD5.getSecretContent(challenge2, "000001");
+		byte[] content2 = HMAC_MD5.getSecretContent(challenge, "000001");
 		Tools.putBytes(msg, content2, 32);
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
@@ -398,14 +384,12 @@ public class DefaultPosServerTest extends GuiceTest {
 //				System.out.println("");
 //		}
 //		System.out.println("--------------------");
-		long runForSeconds = 3;
-		// write response
-		log.info(" Login Send request to server");
-
+		long runForSeconds = 1;
 		// send both message at once
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
+		
+		log.info(" Login Send request to server");
 		os.write(outBuf);
 		// ----------
 
@@ -425,14 +409,10 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		log.debug("end login .....");
 		
-		log.debug("start list ......");
-		posSearchList(os, is);
-
 	}
 
-	private void posSearchList(OutputStream os, InputStream is)
+	private void oldPosSearchList(OutputStream os, InputStream is)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -483,13 +463,10 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		log.debug("end list .....");
-		
-		log.debug("start validate ......");
-		posValidate(os, is);
+	
 	}
 	
-	private void posValidate(OutputStream os, InputStream is)
+	private void oldPosValidate(OutputStream os, InputStream is)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -507,7 +484,7 @@ public class DefaultPosServerTest extends GuiceTest {
 				// grouponId
 				49, 51, 50, 49, 50, 51,0,
 				// grouponVCode
-				1, 2, 3, 4, 5, 6, 0 };
+				49, 49, 49, 49, 49, 49, 0 };
 
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
@@ -540,11 +517,10 @@ public class DefaultPosServerTest extends GuiceTest {
 				System.out.println("");
 		}
 		assertEquals(response[21],0);
-		log.debug("end validate .....");
 	}
 	
 	
-	private void posinit2(OutputStream os, InputStream is) throws Exception {
+	private void newPosInit(OutputStream os, InputStream is, byte[] challenge, byte[] sessionId) throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
 				0, 0, 0, 24,
@@ -566,22 +542,8 @@ public class DefaultPosServerTest extends GuiceTest {
 		// calculate checksum
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
-//		System.out.println("--------------------");
-//		for (int i = 0; i < msg.length; i++) {
-//			String s = Integer.toHexString((byte) msg[i]);
-//			if (s.length() < 2)
-//				s = "0" + s;
-//			if (s.length() > 2)
-//				s = s.substring(s.length() - 2);
-//			System.out.print(s + " ");
-//			if ((i + 1) % 8 == 0)
-//				System.out.println("");
-//		}
-//		System.out.println("--------------------");
 
 		long runForSeconds = 3;
-		// write response
-		log.info(" Init Send request to server");
 
 		// send both message at once
 //		int rubbishLength = 4;
@@ -596,7 +558,7 @@ public class DefaultPosServerTest extends GuiceTest {
 		Thread.sleep(runForSeconds * 1000);
 		// read
 		log.info("Read response");
-		byte[] response = new byte[30];
+		byte[] response = new byte[50];
 		int n = is.read(response);
 		System.out.println("Number of bytes init read: " + n);
 		for (int i = 0; i < n; i++) {
@@ -609,16 +571,11 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-	
-		byte[] challenge2 = new byte[8];
-		System.arraycopy(response, 22, challenge2, 0, 8);
-
-		log.debug("start login ......");
-//		posLogin2(os, is, challenge2);
-
+		System.arraycopy(response, 42, challenge, 0, 8);
+		System.arraycopy(response, 20, sessionId, 0, 16);
 	}
 
-	private void posLogin2(OutputStream os, InputStream is, byte[] challenge2)
+	private void newPosLogin(OutputStream os, InputStream is, byte[] challenge)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -626,11 +583,13 @@ public class DefaultPosServerTest extends GuiceTest {
 				// ACK
 				0, 0, 0, 0,
 				// flags
-				0, 0,
+				(byte)128, 0,
 				// checksum
 				0, 0,
 				// message length
-				0, 0, 0, 48,
+				0, 0, 0, 52,
+				//session description
+				1,0,0,0,
 				// command ID
 				0, 0, 0, 7,
 				// POS ID
@@ -638,8 +597,8 @@ public class DefaultPosServerTest extends GuiceTest {
 				// challengeResponse
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-		byte[] content2 = HMAC_MD5.getSecretContent(challenge2, "000001");
-		Tools.putBytes(msg, content2, 32);
+		byte[] content2 = HMAC_MD5.getSecretContent(challenge, "000001");
+		Tools.putBytes(msg, content2, 36);
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
@@ -670,14 +629,10 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		log.debug("end login .....");
-		
-		log.debug("start list ......");
-		posSearchList2(os, is);
 
 	}
 
-	private void posSearchList2(OutputStream os, InputStream is)
+	private void newPosSearchList(OutputStream os, InputStream is)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -685,11 +640,13 @@ public class DefaultPosServerTest extends GuiceTest {
 				// ACK
 				0, 0, 0, 0,
 				// flags
-				0, 0,
+				(byte)128, 0,
 				// checksum
 				0, 0,
 				// message length
-				0, 0, 0, 24,
+				0, 0, 0, 28,
+				//session key description
+				1, 0, 0, 0,
 				// command ID
 				0, 0, 0, 1,
 				// page
@@ -728,13 +685,10 @@ public class DefaultPosServerTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		log.debug("end list .....");
 		
-		log.debug("start validate ......");
-		posValidate2(os, is);
 	}
 	
-	private void posValidate2(OutputStream os, InputStream is)
+	private void newPosValidate(OutputStream os, InputStream is)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -742,17 +696,19 @@ public class DefaultPosServerTest extends GuiceTest {
 				// ACK
 				0, 0, 0, 0,
 				// flags
-				0, 0,
+				(byte)128, 0,
 				// checksum
 				0, 0,
 				// message length
-				0, 0, 0, 33,
+				0, 0, 0, 38,
+				//session key dscription
+				1,0,0,0,
 				// command ID
 				0, 0, 0, 3,
 				// grouponId
 				49, 51, 50, 49, 50, 51,0,
 				// grouponVCode
-				1, 2, 3, 4, 5, 6, 0 };
+				49, 49, 49, 49, 50, 50, 0 };
 
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
@@ -785,7 +741,66 @@ public class DefaultPosServerTest extends GuiceTest {
 				System.out.println("");
 		}
 		assertEquals(response[21],0);
-		log.debug("end validate .....");
+	}
+	
+	private void newPosValidateSendSessionKey(OutputStream os, InputStream is , byte[] sessionId)
+			throws Exception {
+		byte[] msg = new byte[] {
+				// SEQ
+				0, 0, 0, 27,
+				// ACK
+				0, 0, 0, 0,
+				// flags
+				(byte) 128, 0,
+				// checksum
+				0, 0,
+				// message length
+				0, 0, 0, 54,
+				// session key dscription
+				1, 0, 0, 16,
+				//session key
+				0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,
+				// command ID
+				0, 0, 0, 3,
+				// grouponId
+				49, 51, 50, 49, 50, 51, 0,
+				// grouponVCode
+				49, 49, 49, 49, 50, 50, 0 };
+
+		Tools.putBytes(msg, sessionId, 20);
+		
+		int checksum = Tools.checkSum(msg, msg.length);
+		Tools.putUnsignedShort(msg, checksum, 10);
+		
+		long runForSeconds = 3;
+		// write response
+		log.info(" list Send request to server");
+
+		// send both message at once
+		byte[] outBuf = new byte[msg.length];
+		System.arraycopy(msg, 0, outBuf, 0, msg.length);
+
+		os.write(outBuf);
+		// ----------
+
+		Thread.sleep(runForSeconds * 1000);
+		// read
+		log.info("Read response");
+		byte[] response = new byte[136];
+		int n = is.read(response);
+		System.out.println("Number of bytes login read: " + n);
+		for (int i = 0; i < n; i++) {
+			String s = Integer.toHexString((byte) response[i]);
+			if (s.length() < 2)
+				s = "0" + s;
+			if (s.length() > 2)
+				s = s.substring(s.length() - 2);
+			System.out.print(s + " ");
+			if ((i + 1) % 8 == 0)
+				System.out.println("");
+		}
+		assertEquals(response[41], 0);
 	}
 
 }

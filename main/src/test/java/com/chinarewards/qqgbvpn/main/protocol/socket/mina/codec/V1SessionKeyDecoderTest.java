@@ -11,6 +11,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.chinarewards.qqgbvpn.main.encoder.IUUIDEncoder;
+import com.chinarewards.qqgbvpn.main.encoder.UUIDEncoderImpl;
 import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
 import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
 
@@ -27,7 +29,8 @@ public class V1SessionKeyDecoderTest {
 
 		// content
 		SessionKeyCodec codec = new SessionKeyCodec();
-		V1SessionKey key = new V1SessionKey("1234567890ABCDEF");
+		IUUIDEncoder uuidCode = new UUIDEncoderImpl();
+		V1SessionKey key = new V1SessionKey("1234567890ABCDEF1234567890ABCDEF");
 
 		// encoded completed packet
 		byte[] encoded = codec.encode(key);
@@ -44,8 +47,7 @@ public class V1SessionKeyDecoderTest {
 
 		/* the key content */
 		assertTrue(Arrays.equals(
-				Arrays.copyOfRange(encoded, 4, encoded.length), new String(
-						"1234567890ABCDEF").getBytes("UTF-8")));
+				Arrays.copyOfRange(encoded, 4, encoded.length), uuidCode.encode("1234567890ABCDEF1234567890ABCDEF")));
 
 	}
 
@@ -54,7 +56,7 @@ public class V1SessionKeyDecoderTest {
 
 		// content
 		SessionKeyCodec codec = new SessionKeyCodec();
-		V1SessionKey key = new V1SessionKey("1234567890ABCDEF");
+		V1SessionKey key = new V1SessionKey("1234567890ABCDEF1234567890ABCDEF");
 
 		// encoded completed packet
 		byte[] encoded = codec.encode(key);
@@ -64,7 +66,7 @@ public class V1SessionKeyDecoderTest {
 
 		/*** validation ***/
 		assertNotNull(decodedKey);
-		assertEquals("1234567890ABCDEF", decodedKey.getKey());
+		assertEquals("1234567890ABCDEF1234567890ABCDEF".toLowerCase(), decodedKey.getKey());
 
 	}
 

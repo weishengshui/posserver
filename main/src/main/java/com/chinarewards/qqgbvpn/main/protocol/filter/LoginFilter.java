@@ -51,7 +51,8 @@ public class LoginFilter extends AbstractFilter {
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
 		
-		log.trace("messageReceived() started - LoginFilter");
+		log.trace("messageReceived() started");
+		
 		
 		Boolean isLogin = (Boolean) getServerSession(session, sessionStore).getAttribute(
 				IS_LOGIN);
@@ -60,13 +61,12 @@ public class LoginFilter extends AbstractFilter {
 		Message messageTmp = (Message)message;
 		ICommand msg = messageTmp.getBodyMessage();
 		long cmdId = msg.getCmdId();
-		
 		boolean checkPosIdIsNull = false;	// XXX don't know why need to do this, for old Cream code.
 
 		// if the command requires login, but no sign of login is done, 
 		// return an error package.
 		if (isLoginRequiredForCommand(cmdId)) {
-			
+			log.debug("isLogin={}",isLogin);
 			if (isLogin == null || !isLogin) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_NO_LOGIN_CODE);
@@ -149,7 +149,7 @@ public class LoginFilter extends AbstractFilter {
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
 		
-		log.trace("LoginFilter - messageSent() started");
+		log.trace("messageSent() started");
 		
 		// XXX completely wrong implementation, should be set inside
 		// the command handler.
@@ -170,7 +170,7 @@ public class LoginFilter extends AbstractFilter {
 		
 		nextFilter.messageSent(session, writeRequest);
 		
-		log.trace("LoginFilter - messageSent() done");
+		log.trace("messageSent() done");
 	}
 
 }
