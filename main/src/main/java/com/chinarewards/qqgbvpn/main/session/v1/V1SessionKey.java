@@ -51,6 +51,14 @@ public class V1SessionKey implements ISessionKey {
 		return key;
 	}
 
+	@Override
+	public int getSessionIdLength() {
+		if(this.key != null){
+			return key.length();
+		}
+		return 0;
+	}
+
 	
 
 }

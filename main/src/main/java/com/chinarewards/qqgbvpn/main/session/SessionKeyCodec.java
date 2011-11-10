@@ -30,7 +30,7 @@ public class SessionKeyCodec implements SessionKeyDecoder {
 
 		V1SessionKeyCodec skCodec = new V1SessionKeyCodec();
 		byte[] encoded = skCodec.encode(key);
-
+		
 		IoBuffer buf = IoBuffer.allocate(encoded.length + 4);
 
 		// first byte is the version
@@ -68,7 +68,7 @@ public class SessionKeyCodec implements SessionKeyDecoder {
 
 		// any bytes left is for the key content
 		V1SessionKeyCodec skCodec = new V1SessionKeyCodec();
-		Object key = skCodec.decode(Arrays.copyOfRange(bytes, 3, bytes.length));
+		Object key = skCodec.decode(Arrays.copyOfRange(bytes, 4, bytes.length));
 		return key;
 	}
 
@@ -80,8 +80,14 @@ public class SessionKeyCodec implements SessionKeyDecoder {
 	 * #decode(org.apache.mina.core.buffer.IoBuffer)
 	 */
 	public ISessionKey decode(IoBuffer in) throws CodecException {
-
+ 		
+		// 1 byte of header
 		short version = in.getUnsigned();
+		
+		// 1 byte: reserved.
+		in.getUnsigned();
+		
+		// 2 byte of length
 		int length = in.getUnsignedShort();
 		byte[] content = new byte[length];
 		

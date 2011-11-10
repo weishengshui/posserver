@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
+import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
@@ -106,7 +107,7 @@ public class MessageEncoder implements ProtocolEncoder {
 		byte[] serializedSessionKey = null;
 		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
 			log.debug("message header indicates session ID presence, will encode");
-			
+			log.debug("headMessage.getSessionKey()={}",headMessage.getSessionKey());
 			// session key is present
 			// FIXME should respect the version ID in the session key.
 			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());

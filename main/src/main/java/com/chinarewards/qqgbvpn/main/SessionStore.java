@@ -36,5 +36,11 @@ public interface SessionStore {
 	 *             if <code>sessionId</code> is <code>null</code>.
 	 */
 	Session createSession(String sessionId);
+	
+	/**
+	 * 在连接断开的时候移除session  store里面的存储
+	 * @param sessionId
+	 */
+	Session removeSession(String sessionId);
 
 }
