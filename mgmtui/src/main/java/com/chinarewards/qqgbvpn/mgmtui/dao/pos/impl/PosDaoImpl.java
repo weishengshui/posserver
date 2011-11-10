@@ -204,13 +204,10 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 			StringBuffer searchSql = new StringBuffer();
 			searchSql.append("SELECT p.id,p.posId,p.model,p.sn,p.simPhoneNo,p.dstatus,g.name,p.istatus,p.ostatus,p.secret,p.firmware,p.upgradeRequired,p.version FROM Pos p LEFT JOIN (Select pa.pos_id AS id ,a.id AS agentId, a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
 			
-			StringBuffer countSql = new StringBuffer();
-			countSql.append("SELECT COUNT(p.id) FROM Pos p LEFT JOIN (Select pa.pos_id AS id , a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 
 			if (!Tools.isEmptyString(agentId)) {
 				searchSql.append(" AND lower(g.agentId) like :agentId ");
-				countSql.append(" AND lower(g.agentId) like :agentId ");
 				paramMap.put("agentId", "%"
 						+ agentId.toLowerCase().trim() + "%");
 			}
