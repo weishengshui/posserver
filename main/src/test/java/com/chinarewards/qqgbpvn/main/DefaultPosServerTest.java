@@ -273,9 +273,9 @@ public class DefaultPosServerTest extends GuiceTest {
 		// if ((i + 1) % 8 == 0)
 		// System.out.println("");
 		// }
-//		this.posinit(os, is);
-		log.debug("pos---------------2--------------------start--------------");
-		this.posinit2(os, is);
+		this.posinit(os, is);
+//		log.debug("pos---------------2--------------------start--------------");
+//		this.posinit2(os, is);
 		System.out.println("");
 		os.close();
 		socket.close();
