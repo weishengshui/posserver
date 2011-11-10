@@ -295,5 +295,9 @@ public class DefaultPosServer implements PosServer {
 
 		return port;
 	}
+	
+	public Injector getInjector() {
+		return injector;
+	}
 
 }
