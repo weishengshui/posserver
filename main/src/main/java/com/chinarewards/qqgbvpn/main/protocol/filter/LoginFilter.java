@@ -14,12 +14,15 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 
@@ -50,7 +53,6 @@ public class LoginFilter extends AbstractFilter {
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
-		
 		log.trace("messageReceived() started");
 		
 		
@@ -68,8 +70,26 @@ public class LoginFilter extends AbstractFilter {
 		if (isLoginRequiredForCommand(cmdId)) {
 			log.debug("isLogin={}",isLogin);
 			if (isLogin == null || !isLogin) {
+				//保证在返回传送session key的时候，mina sessionId 和message head的sessionId一致
+				if (session
+						.containsAttribute(SessionKeyMessageFilter.RETURN_SESSION_ID_TO_CLIENT)
+						&& session
+								.containsAttribute(SessionKeyMessageFilter.SESSION_ID)
+						&& session
+								.containsAttribute(SessionKeyMessageFilter.CLIENT_SUPPORT_SESSION_ID)) {
+					log.debug("setting session key in message header");
+					V1SessionKey key = new V1SessionKey(
+							MinaUtil.getServerSessionId(session));
+					messageTmp.getHeadMessage().setSessionKey(key);
+					messageTmp.getHeadMessage().setFlags(
+							messageTmp.getHeadMessage().getFlags() | 0x8000);
+				} else if ((messageTmp.getHeadMessage().getFlags() & HeadMessage.FLAG_SESSION_ID) != 0
+						&& messageTmp.getHeadMessage().getSessionKey() == null) {
+					messageTmp.getHeadMessage().setFlags(0);
+				}
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_NO_LOGIN_CODE);
+				messageTmp.getHeadMessage().getSessionKey();
 				messageTmp.setBodyMessage(bodyMessage);
 				session.write(messageTmp);
 				log.debug(
@@ -148,7 +168,6 @@ public class LoginFilter extends AbstractFilter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		
 		log.trace("messageSent() started");
 		
 		// XXX completely wrong implementation, should be set inside

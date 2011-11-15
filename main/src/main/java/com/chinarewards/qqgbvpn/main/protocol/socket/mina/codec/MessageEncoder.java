@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
@@ -67,7 +66,6 @@ public class MessageEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
-		
 		log.debug("encode message start");
 		if (session != null && session.isConnected()) {
 			log.trace("Mina session ID: {}", session.getId());
@@ -105,6 +103,7 @@ public class MessageEncoder implements ProtocolEncoder {
 		totalMsgLength = ProtocolLengths.HEAD + bodyByte.length; 
 		
 		byte[] serializedSessionKey = null;
+		//只要flags标识为1，我们就不回复session key的信息给client
 		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
 			log.debug("message header indicates session ID presence, will encode");
 			log.debug("headMessage.getSessionKey()={}",headMessage.getSessionKey());

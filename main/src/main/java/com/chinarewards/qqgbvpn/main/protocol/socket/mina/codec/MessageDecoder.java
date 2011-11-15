@@ -59,7 +59,6 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 	@Override
 	protected boolean doDecode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
-
 		log.debug("MessageDecoder.doDecode() invoked");
 		log.trace("Mina session ID: " + session.getId());
 		log.debug("buffer.remaining() ={}",in.remaining());

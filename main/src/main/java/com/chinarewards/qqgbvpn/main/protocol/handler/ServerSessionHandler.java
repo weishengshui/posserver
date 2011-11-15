@@ -27,7 +27,6 @@ import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceDispatcherException;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceRequestImpl;
 import com.chinarewards.qqgbvpn.main.protocol.impl.ServiceResponseImpl;
-import com.chinarewards.qqgbvpn.main.protocol.impl.mina.MinaSession;
 import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
@@ -208,7 +207,6 @@ public class ServerSessionHandler extends IoHandlerAdapter {
 					throw new PackageException(
 							"No mapping found for command ID " + cmdId, e);
 				}
-
 				// grep the response, and write back to the channel.
 				ICommand responseMsgBody = (ICommand) response.getResponse();
 				msg.getHeadMessage().setFlags(0);

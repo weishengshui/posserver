@@ -68,7 +68,6 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) {
-
 		log.trace("messageReceived() started -SessionKeyMessageFilter");
 		
 		boolean createSession = false;
@@ -252,7 +251,6 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		
 		log.trace("messageSent() invoked");
 		
 		//检查是否要发送session key 的信息给client
@@ -269,10 +267,12 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				
 				// update the flag and the session key.
 				Object rawMessage = writeRequest.getMessage();
-				Message posMsg = (Message)rawMessage;
-				HeadMessage header = posMsg.getHeadMessage();
-				header.setSessionKey(key);
-				header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
+				if(rawMessage instanceof Message){
+					Message posMsg = (Message)rawMessage;
+					HeadMessage header = posMsg.getHeadMessage();
+					header.setSessionKey(key);
+					header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
+				}
 			
 				
 			}
