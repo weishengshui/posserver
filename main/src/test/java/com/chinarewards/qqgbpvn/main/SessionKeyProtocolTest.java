@@ -4,19 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.http.HttpResponse;
-import org.apache.http.params.CoreProtocolPNames;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +39,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.guice.ServiceHandlerGuiceModule;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
-import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
-import com.chinarewards.qqgbvpn.qqapi.util.GroupBuyingUtil;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
@@ -61,17 +53,19 @@ import com.google.inject.util.Modules;
 public class SessionKeyProtocolTest extends GuiceTest {
 
 	EntityManager em;
+	long runForSeconds;
 	private Server server = new Server(0);
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		initTestServer();
+		runForSeconds = 2;
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		if (em.getTransaction().isActive()) {
+		if (em != null && em.getTransaction().isActive()) {
 			em.getTransaction().rollback();
 		}
 		super.tearDown();
@@ -252,16 +246,16 @@ public class SessionKeyProtocolTest extends GuiceTest {
 
 		// sleep for a while...
 
-		 Thread.sleep(500); // 0.5 seconds
-		 log.trace("one socket...");
-		 //测试旧的pos机正常流程
-		 createSocket1(server.getLocalPort());
-		
-		 Thread.sleep(1000); // 1 seconds
-		 log.trace("two socket...");
-		 //测试新的pos机正常流程
-		 createSocket2(server.getLocalPort());
-		//
+		Thread.sleep(500); // 0.5 seconds
+		log.trace("one socket...");
+		// 测试旧的pos机正常流程
+		createSocket1(server.getLocalPort());
+
+		Thread.sleep(1000); // 1 seconds
+		log.trace("two socket...");
+		// 测试新的pos机正常流程
+		createSocket2(server.getLocalPort());
+
 		Thread.sleep(1000); // 1 seconds
 		log.trace("three socket.......");
 		// 测试断线，后重连
@@ -384,8 +378,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
-
 		// send both message at once
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
@@ -452,7 +444,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		// System.out.println("");
 		// }
 		// System.out.println("--------------------");
-		long runForSeconds = 1;
 		// send both message at once
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
@@ -503,7 +494,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" list Send request to server");
 
@@ -556,7 +546,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" list Send request to server");
 
@@ -609,8 +598,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		// calculate checksum
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
-
-		long runForSeconds = 3;
 
 		// send both message at once
 		// int rubbishLength = 4;
@@ -669,7 +656,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" Login Send request to server");
 
@@ -724,7 +710,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" list Send request to server");
 
@@ -779,7 +764,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" list Send request to server");
 
@@ -838,7 +822,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
-		long runForSeconds = 3;
 		// write response
 		log.info(" list Send request to server");
 
@@ -907,5 +890,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 			}
 		}
 	}
+
 
 }

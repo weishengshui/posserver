@@ -37,6 +37,12 @@ public class IdleConnectionKillerFilter extends AbstractFilter {
 							session.getId(),
 							MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 		}
+		
+		if(session.containsAttribute(SessionKeyMessageFilter.SESSION_ID)){
+			//在连线断开的时间情况session key的信息，当然是在session key过期的情况下
+			sessionStore.expiredSession((String)session.getAttribute(SessionKeyMessageFilter.SESSION_ID));
+			
+		}
 
 		session.close(true);
 

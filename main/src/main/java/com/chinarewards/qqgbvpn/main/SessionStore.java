@@ -38,9 +38,21 @@ public interface SessionStore {
 	Session createSession(String sessionId);
 	
 	/**
-	 * 在连接断开的时候移除session  store里面的存储
+	 * 在连接断开的时候移除session  store里面对应过期的session key信息
 	 * @param sessionId
 	 */
-	Session removeSession(String sessionId);
+	void expiredSession(String sessionId);
+	
+	/**
+	 * 定时清除过期的session key 的信息
+	 * @param sessionId
+	 */
+	void expiredSession();
+	
+	/**
+	 * 根据过期时间清楚session store里面过期的session key 的信息
+	 * @param expiredTime  分为单位
+	 */
+	void expiredSession(long expiredTime);
 
 }

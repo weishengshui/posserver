@@ -29,6 +29,12 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 	 */
 	public static final String SESSION_ID = SessionKeyMessageFilter.class
 			.getName() + ".SESSION_ID";
+	
+	/**
+	 * 这个是用来标识store session 的最后活动时间
+	 */
+	public static final String LAST_ACCESS_TIME = SessionKeyMessageFilter.class
+			.getName() + ".LAST_ACCESS_TIME";
 
 	/**
 	 * The key name which the session ID will be stored in the Mina's session.
@@ -64,7 +70,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 			Object message) {
 
 		log.trace("messageReceived() started -SessionKeyMessageFilter");
-
+		
 		boolean createSession = false;
 		boolean generateSessionKey = false;
 		boolean markSendSessionIdToClient = false;
@@ -170,8 +176,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 					// make sure client's and server's session key match!
 					String serverSessionId = getServerSessionId(session);
 					markSendSessionIdToClient = true;
-
-					if (!sessionKey.getSessionId().equals(serverSessionId)) {
+					//如果传送过来的数据包里面的session key  和 连线connection里面带的session key 不相等，则要重新登录
+					if (!sessionId.equals(serverSessionId)) {
 
 						// session key NOT match
 
@@ -221,6 +227,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 
 			// create a session.
 			serverSession = sessionStore.createSession(sessionId);
+			//创建的时候记录最后一个使用的时间
+			serverSession.setAttribute(LAST_ACCESS_TIME, System.currentTimeMillis());
 			// save the session key to Mina's session such that it can
 			// be retrieved later.
 			saveSessionIdToServer(session, sessionId);
@@ -261,12 +269,11 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				
 				// update the flag and the session key.
 				Object rawMessage = writeRequest.getMessage();
-				if (rawMessage instanceof Message) {
-					Message posMsg = (Message)rawMessage;
-					HeadMessage header = posMsg.getHeadMessage();
-					header.setSessionKey(key);
-					header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
-				}
+				Message posMsg = (Message)rawMessage;
+				HeadMessage header = posMsg.getHeadMessage();
+				header.setSessionKey(key);
+				header.setFlags(header.getFlags() | HeadMessage.FLAG_SESSION_ID);
+			
 				
 			}
 			//发送完成之后就把标记去掉

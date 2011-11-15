@@ -3,10 +3,18 @@
  */
 package com.chinarewards.qqgbvpn.main.impl;
 
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.Session;
 import com.chinarewards.qqgbvpn.main.SessionStore;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
+import com.google.inject.Inject;
 
 /**
  * Concrete implementation of <code>SessionStore</code> backed by a in-memory
@@ -19,6 +27,12 @@ import com.chinarewards.qqgbvpn.main.SessionStore;
  * @since 0.1.0
  */
 public class InMemorySessionStore implements SessionStore {
+
+	public static final int DEFAULT_EXPIRED_TIME = 1800;
+
+	protected final Configuration configuration;
+
+	protected Logger log = LoggerFactory.getLogger(InMemorySessionStore.class);
 
 	/**
 	 * Concrete implementation of Session.
@@ -53,8 +67,12 @@ public class InMemorySessionStore implements SessionStore {
 			return store.get(key);
 		}
 
-		/* (non-Javadoc)
-		 * @see com.chinarewards.qqgbvpn.main.Session#containsAttribute(java.lang.String)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * com.chinarewards.qqgbvpn.main.Session#containsAttribute(java.lang
+		 * .String)
 		 */
 		@Override
 		public boolean containsAttribute(String key) {
@@ -71,9 +89,10 @@ public class InMemorySessionStore implements SessionStore {
 	/**
 	 * 
 	 */
-	public InMemorySessionStore() {
+	@Inject
+	public InMemorySessionStore(Configuration configuration) {
 		super();
-
+		this.configuration = configuration;
 		// create the internal store.
 		this.store = new ConcurrentHashMap<String, Session>();
 	}
@@ -104,11 +123,70 @@ public class InMemorySessionStore implements SessionStore {
 	}
 
 	@Override
-	public Session removeSession(String sessionId) {
-		return store.remove(sessionId);
-		
+	public void expiredSession(String sessionId) {
+		log.debug("parameter sessionid={}", sessionId);
+		long expiredTime = configuration
+				.getLong(ConfigKey.SERVER_EXPIRED_SESSION_KEY_TIME,
+						DEFAULT_EXPIRED_TIME);
+		log.debug("config_expired_time={} second!", expiredTime);
+		long expiredMillis = expiredTime * 1000;
+		long currentTime = System.currentTimeMillis();
+		long lastAccessTime = 0;
+		Session serverSession = store.get(sessionId);
+		log.debug("befor clear store size count={}", store.size());
+		if (serverSession != null
+				&& serverSession
+						.containsAttribute(SessionKeyMessageFilter.LAST_ACCESS_TIME)) {
+			lastAccessTime = Long.valueOf(serverSession.getAttribute(
+					SessionKeyMessageFilter.LAST_ACCESS_TIME).toString());
+			if (currentTime - lastAccessTime >= expiredMillis) {
+				store.remove(sessionId);
+			}
+		}
+		log.debug("after clear store size count={}", store.size());
 	}
-	
-	
+
+	@Override
+	public void expiredSession() {
+		long expiredTime = configuration
+				.getLong(ConfigKey.SERVER_EXPIRED_SESSION_KEY_TIME,
+						DEFAULT_EXPIRED_TIME);
+		log.debug("config_expired_time={} second!", expiredTime);
+		clearStore(expiredTime);
+	}
+
+	@Override
+	public void expiredSession(long expiredTime) {
+		log.debug("parameter_expired_time={} second!", expiredTime);
+		clearStore(expiredTime);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void clearStore(long expiredSecond) {
+
+		long expiredMillis = expiredSecond * 1000;
+		log.debug("befor clear store size count={}", store.size());
+		if (store != null && expiredMillis > 0 && store.size() > 0) {
+			Session serverSession = null;
+			long currentTime = System.currentTimeMillis();
+			long lastAccessTime = 0;
+			Iterator it = store.keySet().iterator();
+			while (it.hasNext()) {
+				String sessionId = it.next().toString();
+				serverSession = store.get(sessionId);
+				if (serverSession != null
+						&& serverSession
+								.containsAttribute(SessionKeyMessageFilter.LAST_ACCESS_TIME)) {
+					lastAccessTime = Long.valueOf(serverSession.getAttribute(
+							SessionKeyMessageFilter.LAST_ACCESS_TIME)
+							.toString());
+					if (currentTime - lastAccessTime >= expiredMillis) {
+						store.remove(sessionId);
+					}
+				}
+			}
+		}
+		log.debug("after clear store size count={}", store.size());
+	}
 
 }

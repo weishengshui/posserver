@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.event.ConfigurationEvent;
+import org.apache.commons.configuration.event.ConfigurationListener;
+import org.apache.commons.configuration.event.EventSource;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LogLevel;
@@ -43,12 +46,14 @@ import com.google.inject.persist.PersistService;
  * @author Cyril
  * @since 0.1.0
  */
-public class DefaultPosServer implements PosServer {
-	
+public class DefaultPosServer implements PosServer, ConfigurationListener {
+
 	/**
 	 * Default timeout, in seconds, which the server will disconnect a client.
 	 */
 	public static final int DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
+
+	public static final int DEFAULT_SERVER_START_TIMER_DELAY = 86400;
 
 	protected final Configuration configuration;
 
@@ -70,6 +75,8 @@ public class DefaultPosServer implements PosServer {
 	 * socket server address
 	 */
 	InetSocketAddress serverAddr;
+
+	ServerTimer timer;
 
 	/**
 	 * The configured port to use.
@@ -98,6 +105,7 @@ public class DefaultPosServer implements PosServer {
 		this.injector = injector;
 		this.serviceDispatcher = serviceDispatcher;
 		this.serviceHandlerObjectFactory = serviceHandlerObjectFactory;
+		this.timer = new ServerTimer();
 	}
 
 	/*
@@ -108,6 +116,8 @@ public class DefaultPosServer implements PosServer {
 	@Override
 	public void start() throws PosServerException {
 
+		configurationAddListener();
+
 		buildCodecMapping();
 
 		// start the JPA persistence service
@@ -116,8 +126,26 @@ public class DefaultPosServer implements PosServer {
 		// setup Apache Mina server.
 		startMinaService();
 
+		// 启动定时任务（清理session store）
+		startTimer();
+		
 		log.info("Server running, listening on {}", getLocalPort());
 
+	}
+
+	private void startTimer() {
+		long timerDelay = this.configuration.getLong(
+				ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
+				DEFAULT_SERVER_START_TIMER_DELAY);
+		log.debug("config server.check_expired_session_timer_delay={}",
+				timerDelay);
+		// 启动定时器
+		this.timer.scheduleAtFixedInterval(
+				timerDelay,
+				timerDelay,
+				new CleanExpiredServerSessionTask(this.injector
+						.getInstance(SessionStore.class)));
+		this.timer.start();
 	}
 
 	protected void buildCodecMapping() {
@@ -137,8 +165,8 @@ public class DefaultPosServer implements PosServer {
 	 * @throws PosServerException
 	 */
 	protected void startMinaService() throws PosServerException {
-		
-		// default  1800 seconds
+
+		// default 1800 seconds
 		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,
 				DEFAULT_SERVER_CLIENTMAXIDLETIME);
 		port = configuration.getInt("server.port");
@@ -146,30 +174,33 @@ public class DefaultPosServer implements PosServer {
 
 		// =============== server side ===================
 
-		// Programmers: You MUST consult your team before rearranging the 
+		// Programmers: You MUST consult your team before rearranging the
 		// order of the following Mina filters, as the ordering may affects
 		// the behaviour of the application which may lead to unpredictable
 		// result.
-		
+
 		acceptor = new NioSocketAcceptor();
-		
-		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
+
+		// ManageIoSessionConnect filter if idle server will not close any idle
+		// IoSession
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
 				injector.getInstance(IdleConnectionKillerFilter.class));
-		
+
 		// our logging filter
 		acceptor.getFilterChain()
 				.addLast(
 						"cr-logger",
 						injector.getInstance(com.chinarewards.qqgbvpn.main.protocol.filter.LoggingFilter.class));
-		
+
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
 		// decode message
-		// TODO config MessageCoderFactory to allow setting the maximum message size 
+		// TODO config MessageCoderFactory to allow setting the maximum message
+		// size
 		acceptor.getFilterChain().addLast(
 				"codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
+				new ProtocolCodecFilter(
+						new MessageCoderFactory(cmdCodecFactory)));
 
 		// kills error connection if too many.
 		acceptor.getFilterChain().addLast("errorConnectionKiller",
@@ -178,21 +209,23 @@ public class DefaultPosServer implements PosServer {
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
-		
+
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast(
 				"sessionKeyFilter",
-				new SessionKeyMessageFilter(injector.getInstance(SessionStore.class),
+				new SessionKeyMessageFilter(injector
+						.getInstance(SessionStore.class),
 						new UuidSessionIdGenerator()));
-		
+
 		// Login filter.
 		acceptor.getFilterChain().addLast("login",
 				injector.getInstance(LoginFilter.class));
 
 		// the handler class
 		acceptor.setHandler(new ServerSessionHandler(serviceDispatcher,
-				mapping, configuration, injector.getInstance(SessionStore.class)));
-		
+				mapping, configuration, injector
+						.getInstance(SessionStore.class)));
+
 		// additional configuration
 		acceptor.setCloseOnDeactivation(true);
 		acceptor.setReuseAddress(true);
@@ -205,7 +238,7 @@ public class DefaultPosServer implements PosServer {
 					idleTime);
 		}
 		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
-		
+
 		// start the acceptor and listen to incomming connection!
 		try {
 			acceptor.bind(serverAddr);
@@ -213,7 +246,7 @@ public class DefaultPosServer implements PosServer {
 			throw new PosServerException("Error binding server port", e);
 		}
 	}
-	
+
 	/**
 	 * Build an new instance of LoggingFilter with sane logging level. The
 	 * principle is to hide unnecessary logging under INFO level.
@@ -247,8 +280,7 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#stop()
 	 */
 	@Override
-	public void stop() {
-
+	public void stop() {		
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
 
@@ -261,6 +293,7 @@ public class DefaultPosServer implements PosServer {
 	 */
 	@Override
 	public void shutdown() {
+		timer.stop();
 		try {
 			PersistService ps = injector.getInstance(PersistService.class);
 			ps.stop();
@@ -295,9 +328,35 @@ public class DefaultPosServer implements PosServer {
 
 		return port;
 	}
-	
+
 	public Injector getInjector() {
 		return injector;
+	}
+
+	@Override
+	public void configurationChanged(ConfigurationEvent event) {
+		log.debug("config name={}, config value{}", event.getPropertyName(),
+				event.getPropertyValue());
+		if (!event.isBeforeUpdate()) {
+			log.debug("configurationChanged event!");
+			if (event.getPropertyValue() != null) {
+				long timerDelay = this.configuration.getLong(
+						ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
+						DEFAULT_SERVER_START_TIMER_DELAY);
+				log.debug("config server.check_expired_session_timer_delay={}",
+						timerDelay);
+				this.timer
+						.scheduleAtFixedInterval(timerDelay, timerDelay, null);
+			}
+		}
+	}
+
+	/**
+	 * 添加配置文件的监听，是否修改
+	 */
+	private void configurationAddListener() {
+		EventSource src = (EventSource) configuration;
+		src.addConfigurationListener(this);
 	}
 
 }
