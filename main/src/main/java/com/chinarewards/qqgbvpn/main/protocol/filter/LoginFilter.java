@@ -11,6 +11,7 @@ import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.Session;
 import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
@@ -55,9 +56,13 @@ public class LoginFilter extends AbstractFilter {
 			Object message) throws Exception {
 		log.trace("messageReceived() started");
 		
+		Boolean isLogin = null;
 		
-		Boolean isLogin = (Boolean) getServerSession(session, sessionStore).getAttribute(
-				IS_LOGIN);
+		Session serverSession = getServerSession(session, sessionStore);
+		if(serverSession != null){
+			isLogin = (Boolean) serverSession.getAttribute(IS_LOGIN);
+		}
+		
 		
 		// Check whether the command ID is LOGIN
 		Message messageTmp = (Message)message;

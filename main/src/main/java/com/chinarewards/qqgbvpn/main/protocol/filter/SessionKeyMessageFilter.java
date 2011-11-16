@@ -137,6 +137,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 				// session key!
 
 				sessionId = sessionKey.getSessionId();
+				log.debug("received session key ={}",sessionId);
 				// 正常的重连接，sessionIo里面是没有session id的
 				if (!serverHasSessionId(session)) {
 					// for a new client connection, we need to save that session
@@ -175,8 +176,8 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 					// make sure client's and server's session key match!
 					String serverSessionId = getServerSessionId(session);
 					markSendSessionIdToClient = true;
-					//如果传送过来的数据包里面的session key  和 连线connection里面带的session key 不相等，则要重新登录
-					if (!sessionId.equals(serverSessionId)) {
+					//如果传送过来的数据包里面的session key  和 连线connection里面带的session key 不相等，或者session store里面没有，则要重新登录
+					if (!sessionId.equals(serverSessionId) || sessionStore.getSession(serverSessionId) == null) {
 
 						// session key NOT match
 
