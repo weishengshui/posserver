@@ -130,8 +130,6 @@ public class LoggingFilter extends AbstractFilter {
 
 		// print the source address
 		printMessageReceivedFrom(session);
-		//更改最后通讯时间
-		updateLastAccessTime(session);
 		// dump part of the raw message
 		doHexDump(message, getMaxHexDumpLength());
 		nextFilter.messageReceived(session, message);
@@ -197,10 +195,6 @@ public class LoggingFilter extends AbstractFilter {
 		}
 	}
 	
-	//更改最后通讯时间
-	protected void updateLastAccessTime(IoSession session) {
-		MinaUtil.updateLastAccessTime(getServerSession(session, sessionStore));
-	}
 
 	protected void doHexDump(Object message, int maxLength) {
 		// do nothing if not IoBuffer

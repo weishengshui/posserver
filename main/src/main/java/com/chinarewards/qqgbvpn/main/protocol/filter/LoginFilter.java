@@ -61,6 +61,7 @@ public class LoginFilter extends AbstractFilter {
 		Session serverSession = getServerSession(session, sessionStore);
 		if(serverSession != null){
 			isLogin = (Boolean) serverSession.getAttribute(IS_LOGIN);
+			MinaUtil.updateLastAccessTime(serverSession);
 		}
 		
 		
