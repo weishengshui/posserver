@@ -260,12 +260,59 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		log.trace("three socket.......");
 		// 测试断线，后重连
 		createSocket3(server.getLocalPort());
+		
+		Thread.sleep(1000); // 1 seconds
+		log.trace("four socket.......");
+		// 测试断线，后重连
+		createSocket4(server.getLocalPort());
 
 		// stop it, and make sure it is stopped.
 		server.stop();
 		assertTrue(server.isStopped());
 
 		log.info("Server stopped");
+
+	}
+	
+	private void createSocket4(int port) throws Exception {
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+		byte[] challenge = new byte[8];
+		byte[] sessionId = new byte[16];
+
+		log.debug("start init ......");
+		newPosInit(os, is, challenge, sessionId);// new client add session key
+													// protocol
+
+		log.debug("start login ......");
+		newPosLogin(os, is, challenge);
+
+		log.debug("start list ......");
+		newPosSearchList(os, is);
+
+		System.out.println("");
+//		os.close();
+//		socket.close();
+//
+//		log.debug("send session id socket........");
+//		Socket socket2 = new Socket("localhost", port);
+//		OutputStream os2 = socket2.getOutputStream();
+//		InputStream is2 = socket2.getInputStream();
+
+		log.debug("start one validate ......");
+		newPosValidateSendSessionKey(os, is, sessionId);
+		
+		log.debug("start two validate ......");
+		sessionId[0]=1;
+		newPosValidateSendSessionKey(os, is, sessionId);
+
+//		log.debug("start list ......");
+//		newPosSearchList(os, is);
+
+		System.out.println("");
+		os.close();
+		socket.close();
 
 	}
 
@@ -296,6 +343,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		InputStream is2 = socket2.getInputStream();
 
 		log.debug("start validate ......");
+		sessionId[0]=1;
 		newPosValidateSendSessionKey(os2, is2, sessionId);
 
 		log.debug("start list ......");
