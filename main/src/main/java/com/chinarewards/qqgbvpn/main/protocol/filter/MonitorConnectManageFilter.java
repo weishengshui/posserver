@@ -82,7 +82,8 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 			Object message) throws Exception {
 		
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
-	
+//		log.debug(" id = {} ,session.getReadBytes()={}",new Object[]{session.getId(),session.getReadBytes()});
+		
 		nextFilter.messageReceived(session, message);
 	}
 
@@ -92,7 +93,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		
+//		log.debug(" id = {} ,session.getWrittenBytes()={}",new Object[]{session.getId(),session.getWrittenBytes()});
 		updateIoSessionConnectMessage(session, IS_ACTIVE);
 		nextFilter.messageSent(session, writeRequest);
 	}
@@ -104,8 +105,8 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	public void sessionClosed(NextFilter nextFilter, IoSession session)
 			throws Exception {
 		//记录即将要关闭的连接，接收和发送的字节数
-		this.closedReceiveBytes += session.getReadBytes();
-		this.closedSendBytes += session.getWrittenBytes();
+		this.closedReceiveBytes += sessionCollector.get(session.getId()).getReceiveBytes();
+		this.closedSendBytes += sessionCollector.get(session.getId()).getSendBytes();
 		//移除。
 		sessionCollector.remove(session.getId());
 
@@ -147,6 +148,8 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 			sessionMess.setIdleTime(System.currentTimeMillis());
 		}
 		sessionMess.setState(state);
+		sessionMess.setSendBytes(session.getWrittenBytes());
+		sessionMess.setReceiveBytes(session.getReadBytes());
 		sessionMess.setSession(session);
 
 		sessionCollector.put(session.getId(), sessionMess);
@@ -175,6 +178,8 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 				sessionMess.setIdleTime(System.currentTimeMillis());
 			}
 			sessionMess.setState(state);
+			sessionMess.setSendBytes(session.getWrittenBytes());
+			sessionMess.setReceiveBytes(session.getReadBytes());
 			log.debug("session_id={}, state={}", new Object[] {
 					session.getId(), state });
 			sessionMess.setSession(session);
@@ -213,7 +218,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 		//得到正在管理的连接的所接收的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
-			receiveBytesCount += sessionMess.getSession().getReadBytes();
+			receiveBytesCount += sessionMess.getReceiveBytes();
 		}
 		log.debug(" receiveBytesCount={} ",receiveBytesCount);
 		return receiveBytesCount;
@@ -230,7 +235,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 		//得到正在管理的连接的所发送的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
-			sendBytesCount += sessionMess.getSession().getWrittenBytes();
+			sendBytesCount += sessionMess.getSendBytes();
 		}
 		log.debug(" sendBytesCount={} ",sendBytesCount);
 		return sendBytesCount;
@@ -260,6 +265,11 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 		
 		this.closedReceiveBytes = 0;
 		this.closedSendBytes = 0;
+		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
+			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
+			sessionMess.setSendBytes(0);
+			sessionMess.setReceiveBytes(0);
+		}
 
 	}
 
