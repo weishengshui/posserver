@@ -240,7 +240,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	 * 关闭所有闲置的连接
 	 */
 	@Override
-	public void closeIdleConnecions() {
+	public void closeIdleConnections() {
 		if (sessionCollector != null && !sessionCollector.isEmpty()) {
 			for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 				IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
@@ -268,7 +268,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	 * 根据闲置的时间，关闭闲置的连接
 	 */
 	@Override
-	public void closeIdleConnecions(long second) {
+	public void closeIdleConnections(long second) {
 		//把分钟转换成毫秒数
 		long idleMilliSecond = second * 1000;
 		//得到应该可以关闭的闲置时间

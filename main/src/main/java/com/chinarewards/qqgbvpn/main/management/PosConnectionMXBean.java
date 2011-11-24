@@ -12,13 +12,13 @@ public interface PosConnectionMXBean {
 	/**
 	 * 关闭所有闲置连接
 	 */
-	public void closeIdleConnecions();
+	public void closeIdleConnections();
 	
 	/**
 	 * 关闭闲置了多少秒钟的连接
 	 * @param seconds
 	 */
-	public void closeIdleConnecions(long seconds);
+	public void closeIdleConnections(long seconds);
 	
 	/**
 	 * 活跃的连接数
