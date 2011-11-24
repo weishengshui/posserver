@@ -1,12 +1,13 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
 import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbvpn.main.management.PosCommandMXBean;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
@@ -17,7 +18,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
  * @author harry
  * 
  */
-@SuppressWarnings("rawtypes")
+
 public class MonitorCommandManageFilter extends IoFilterAdapter implements	PosCommandMXBean {
 
 	Logger log = LoggerFactory.getLogger(getClass());
@@ -66,18 +67,19 @@ public class MonitorCommandManageFilter extends IoFilterAdapter implements	PosCo
 	 * 得到指令的信息
 	 */
 	@Override
-	public String getAllCommandReceiveMessage() {
-		String mes = "";
-		if (commandCollector != null) {
-			mes += "receive_command_type_count (" + commandCollector.size()	+ ") : ";
-			for (Iterator ite = commandCollector.keySet().iterator(); ite.hasNext();) {
-				long command = Long.valueOf(ite.next().toString());
-				long count = commandCollector.get(command);
-				log.debug("command ={},count={}===={}", new Object[] { command,	count });
-				mes += command + " (" + count + ") | ";
-			}
-
-		}
-		return mes;
+	public Map<Long,Long> getAllCommandReceiveMessage() {
+//		String mes = "";
+//		if (commandCollector != null) {
+//			mes += "receive_command_type_count (" + commandCollector.size()	+ ") : ";
+//			for (Iterator ite = commandCollector.keySet().iterator(); ite.hasNext();) {
+//				long command = Long.valueOf(ite.next().toString());
+//				long count = commandCollector.get(command);
+//				log.debug("command ={},count={}===={}", new Object[] { command,	count });
+//				mes += command + " (" + count + ") | ";
+//			}
+//
+//		}
+//		return mes;
+		return this.commandCollector;
 	}
 }

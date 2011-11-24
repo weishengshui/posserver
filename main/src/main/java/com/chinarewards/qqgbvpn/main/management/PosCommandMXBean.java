@@ -1,5 +1,7 @@
 package com.chinarewards.qqgbvpn.main.management;
 
+import java.util.Map;
+
 
 /**
  * 用了管理体现不同状态的连接数
@@ -11,7 +13,7 @@ public interface PosCommandMXBean {
 	 * 各个指令的接收数目
 	 * @return
 	 */
-	public String getAllCommandReceiveMessage();
+	public Map<Long,Long> getAllCommandReceiveMessage();
 	
 	public void resetStatistics();
 }
