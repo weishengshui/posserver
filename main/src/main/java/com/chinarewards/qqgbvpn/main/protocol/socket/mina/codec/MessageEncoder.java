@@ -15,8 +15,11 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
+import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 public class MessageEncoder implements ProtocolEncoder {
 
@@ -82,6 +85,23 @@ public class MessageEncoder implements ProtocolEncoder {
 		int totalMsgLength = 0;
 		
 		if (bodyMessage instanceof ErrorBodyMessage) {
+			//保证在返回传送session key的时候，mina sessionId 和message head的sessionId一致
+			if (session
+					.containsAttribute(SessionKeyMessageFilter.RETURN_SESSION_ID_TO_CLIENT)
+					&& session
+							.containsAttribute(SessionKeyMessageFilter.SESSION_ID)
+					&& session
+							.containsAttribute(SessionKeyMessageFilter.CLIENT_SUPPORT_SESSION_ID)) {
+				log.debug("setting session key in message header");
+				V1SessionKey key = new V1SessionKey(
+						MinaUtil.getServerSessionId(session));
+				headMessage.setSessionKey(key);
+				headMessage.setFlags(
+						headMessage.getFlags() | 0x8000);
+			} else if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0
+					&& headMessage.getSessionKey() == null) {
+				headMessage.setFlags(0);
+			}
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
 			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage) bodyMessage;
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
