@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 
 
@@ -25,6 +26,8 @@ public interface GroupBuyingUnbindDao {
 	public List<Agent> getAgentLikeName(String agentName);
 	
 	public List<Pos> getPosByPosInfo(String info);
+	
+	public List<PosVO> getPosVOByPosInfo(String info);
 	
 	public ReturnNote createReturnNoteByAgentId(String agentId) throws JsonGenerationException,SaveDBException;
 	

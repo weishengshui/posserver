@@ -13,6 +13,7 @@ import com.chinarewards.qqgbvpn.mgmtui.dao.GroupBuyingUnbindDao;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.GroupBuyingUnbindManager;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -82,6 +83,15 @@ public class GroupBuyingUnbindManagerImpl implements GroupBuyingUnbindManager {
 	 */
 	public List<Pos> getPosByPosInfo(String info) {
 		return dao.get().getPosByPosInfo(info);
+	}
+	
+	/**
+	 * 根据posId、sn、simPhoneNo查询相应POS机信息
+	 * @param info
+	 * @return
+	 */
+	public List<PosVO> getPosVOByPosInfo(String info) {
+		return dao.get().getPosVOByPosInfo(info);
 	}
 	
 	/**

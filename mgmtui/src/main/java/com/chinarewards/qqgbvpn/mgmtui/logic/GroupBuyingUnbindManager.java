@@ -11,6 +11,7 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.ReturnNote;
 import com.chinarewards.qqgbvpn.mgmtui.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.mgmtui.exception.UnUseableRNException;
+import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.vo.ReturnNoteInfo;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -56,6 +57,13 @@ public interface GroupBuyingUnbindManager {
 	 * @return
 	 */
 	public List<Pos> getPosByPosInfo(String info);
+	
+	/**
+	 * 根据posId、sn、simPhoneNo查询相应POS机信息
+	 * @param info
+	 * @return
+	 */
+	public List<PosVO> getPosVOByPosInfo(String info);
 	
 	/**
 	 * 根据第三方ID生成空回收单

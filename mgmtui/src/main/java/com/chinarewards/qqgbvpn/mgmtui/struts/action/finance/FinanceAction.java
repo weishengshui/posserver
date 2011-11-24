@@ -91,7 +91,9 @@ public class FinanceAction extends BaseAction {
 			pageInfo = new PageInfo();
 			pageInfo.setPageId(1);
 			pageInfo.setPageSize(INITPAGESIZE);
-			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			if (searchVO.getStartDate() != null && searchVO.getEndDate() != null) {
+				pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			}
 			
 			prepareAgent();
 		}catch(Exception e){
@@ -109,7 +111,9 @@ public class FinanceAction extends BaseAction {
 				pageInfo.setPageId(1);
 				pageInfo.setPageSize(INITPAGESIZE);
 			}
-			pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			if (searchVO.getStartDate() != null && searchVO.getEndDate() != null) {
+				pageInfo = getFinanceManager().searchFinanceReport(searchVO, pageInfo);
+			}
 			prepareAgent();
 		}catch(Exception e){
 			log.error("search Bill error",e);

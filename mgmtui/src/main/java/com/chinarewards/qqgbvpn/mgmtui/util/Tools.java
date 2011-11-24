@@ -123,4 +123,19 @@ public class Tools {
 		date = cal.getTime();
 		return date;
 	}
+	
+	/**
+	 * 增加日期月份
+	 * @author iori
+	 * @param date
+	 * @param x 月数
+	 * @return
+	 */
+	public static Date addMonth(Date date, int x) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.MONTH, x);
+		date = cal.getTime();
+		return date;
+	}
 }

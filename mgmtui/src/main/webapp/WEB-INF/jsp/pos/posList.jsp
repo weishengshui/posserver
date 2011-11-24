@@ -28,7 +28,7 @@
 				厂商编号:
 			</td>
 			<td width="30%">
-				<s:textfield name="model" label="model" id="model"/>
+				<s:textfield name="sn" label="Serial number" id="sn"/>
 			</td>
 		</tr>
 		<tr>
@@ -36,7 +36,7 @@
 				型号:
 			</td>
 			<td >
-				<s:textfield name="sn" label="Serial number" id="sn"/>
+				<s:textfield name="model" label="model" id="model"/>
 			</td>
 			<td >
 				电机号码:
@@ -82,7 +82,7 @@
 </s:form>
 	
 	<div id="pos_list_center_div">
-		<table align="center" width="800px">
+		<table align="center" width="850px">
 		<tr align="center">
 			<td>POS机编号</td>
 			<td>厂商编号</td>
@@ -94,6 +94,7 @@
 			<td>密钥</td>
 			<td >允许升级固件</td>
 			<td >固件档案名称</td>
+			<td>第三方名称</td>
 			<%--
 				<td>操作</td>
 			 --%>
@@ -152,6 +153,7 @@
 				</s:elseif>
 			</td>
 			<td><s:property value="#posTmp.firmware" /></td>
+			<td><s:property value="#posTmp.deliveryAgent" /></td>
 			<%--
 				<td>
 					<a href='<s:url value="/pos/del"/>/<s:property value="#posTmp.id"/>'>删除</a>

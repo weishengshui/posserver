@@ -74,7 +74,11 @@ public class ExcelServiceImpl implements ExcelService {
         sheet.addCell(label);
         sheet.mergeCells(0, row, 7, row);
         row++;
-        label = new jxl.write.Label(0, row, "账单周期：" + sdf.format(data.getCreateDate()) + "至" + sdf.format(data.getEndDate()), font_12);
+        if (data.getStartDate() != null) {
+        	label = new jxl.write.Label(0, row, "账单周期：" + sdf.format(data.getStartDate()) + "至" + sdf.format(data.getEndDate()), font_12);
+        } else {
+        	label = new jxl.write.Label(0, row, "账单周期：截止于" + sdf.format(data.getEndDate()), font_12);
+        }
         sheet.addCell(label);
         sheet.mergeCells(0, row, 7, row);
         row++;

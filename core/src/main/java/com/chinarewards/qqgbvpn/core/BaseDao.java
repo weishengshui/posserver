@@ -223,6 +223,58 @@ public abstract class BaseDao extends JpaBase {
 	}
 	
 	/**
+	 * 分页查询（count和search都使用原生SQL）
+	 * @author iori
+	 * @param sql
+	 * @param params 参数
+	 * @param pageInfo
+	 * @return
+	 */
+	protected PageInfo findPageInfoByNativeSearch(String countSql, String searchSql
+			, Map<String, Object> paramMap, PageInfo pageInfo) {
+		Query countQuery = getEm().createNativeQuery(countSql);
+		Query searchQuery = getEm().createNativeQuery(searchSql);
+		if (paramMap != null) {
+			for (Entry<String, Object> entry : paramMap.entrySet()) {
+				countQuery.setParameter(entry.getKey(), entry.getValue());
+				searchQuery.setParameter(entry.getKey(), entry.getValue());
+			}
+		}
+		//记录总数
+		int count = getCountByNativeQuery(countQuery);
+		int pageId = pageInfo.getPageId();
+        int pageSize = pageInfo.getPageSize();
+        //总页数
+        int pages = (count - 1) / pageSize + 1;
+        int newPageId = pageId > pages ? pages : pageId;
+        newPageId = newPageId < 1 ? 1 : newPageId;
+        //记录开始行数
+        int sIndex = (newPageId - 1) * pageSize + 1;
+        sIndex = sIndex > count ? count : sIndex;
+        //记录结束行数
+        int eIndex = sIndex + pageSize -1;
+        eIndex = eIndex > count ? count : eIndex;
+
+        PageInfo newPageInfo = new PageInfo();
+        newPageInfo.setPageId(newPageId);
+        newPageInfo.setStartIndex(sIndex);
+        newPageInfo.setEndIndex(eIndex);
+        newPageInfo.setPageCount(pages);
+        newPageInfo.setPageSize(pageSize);
+        newPageInfo.setRecordCount(count);
+        
+        if (count > 0) {
+        	searchQuery.setFirstResult(sIndex-1);
+        	searchQuery.setMaxResults(pageSize);
+        	//分布查询结果
+        	List items = searchQuery.getResultList();
+        	newPageInfo.setItems(items);
+        }
+        
+		return newPageInfo;
+	}
+	
+	/**
 	 * 取记录总数
 	 * @author iori
 	 * @param query
