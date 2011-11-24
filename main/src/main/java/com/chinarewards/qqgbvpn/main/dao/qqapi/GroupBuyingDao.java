@@ -1,26 +1,66 @@
 package com.chinarewards.qqgbvpn.main.dao.qqapi;
 
-import java.util.HashMap;
+import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 
+import com.chinarewards.qqgbvpn.domain.Agent;
+import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
-import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
+import com.chinarewards.qqgbvpn.domain.Pos;
+import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
 
 public interface GroupBuyingDao {
 	
-	public void initGrouponCache(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException, CopyPropertiesException;
-
-	public HashMap<String, Object> handleGroupBuyingSearch(HashMap<String, String> params) throws SaveDBException, JsonGenerationException;
-	
+	/**
+	 * 分页取商品缓存列表
+	 * @author iori
+	 * @param pageInfo
+	 * @param posId
+	 * @return
+	 */
 	public PageInfo getGrouponCachePagination(PageInfo pageInfo, String posId);
 	
-	public void handleGroupBuyingValidate(HashMap<String, Object> params) throws SaveDBException;
+	/**
+	 * 查询POS机
+	 * @author iori
+	 * @param posId
+	 * @return
+	 */
+	public Pos getPosByPosId(String posId);
 	
-	/*public void handleGroupBuyingUnbind(HashMap<String, Object> params) throws SaveDBException, JsonGenerationException;*/
+	/**
+	 * 查询第三方
+	 * @author iori
+	 * @param posId
+	 * @return
+	 */
+	public Agent getAgentByPosId(String posId);
+	
+	/**
+	 * 删除POS机的缓存
+	 * @author iori
+	 * @param posId
+	 * @return
+	 */
+	public List<GrouponCache> deleteGrouponCache(String posId);
+	
+	/**
+	 * 保存缓存
+	 * @author iori
+	 * @param grouponCache
+	 */
+	public void saveGrouponCache(GrouponCache grouponCache);
+	
+	/**
+	 * 保存验证信息
+	 * @author iori
+	 * @param validation
+	 */
+	public void saveValidation(Validation validation);
 	
 	/**
 	 * 本地验证团购

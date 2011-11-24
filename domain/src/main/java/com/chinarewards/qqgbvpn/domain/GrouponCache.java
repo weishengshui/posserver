@@ -32,6 +32,16 @@ public class GrouponCache {
 	String listName;
 	
 	String detailName;
+	
+	String resultCode;
+
+	public String getResultCode() {
+		return resultCode;
+	}
+
+	public void setResultCode(String resultCode) {
+		this.resultCode = resultCode;
+	}
 
 	public Long getId() {
 		return id;
