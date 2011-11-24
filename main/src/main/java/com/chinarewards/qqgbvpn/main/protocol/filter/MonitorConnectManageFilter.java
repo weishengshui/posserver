@@ -174,14 +174,14 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 			//在当前这个连接第一次出发闲置的事件时，记录闲置的开始时间
 			if (sessionMess.getState().equals(IS_ACTIVE) && state.equals(IS_IDLE)) {
 				// 得到当前系统时间戳（毫秒计算）
-				log.debug("()={}", System.currentTimeMillis());
+//				log.debug("()={}", System.currentTimeMillis());
 				sessionMess.setIdleTime(System.currentTimeMillis());
 			}
 			sessionMess.setState(state);
 			sessionMess.setSendBytes(session.getWrittenBytes());
 			sessionMess.setReceiveBytes(session.getReadBytes());
-			log.debug("session_id={}, state={}", new Object[] {
-					session.getId(), state });
+//			log.debug("session_id={}, state={}", new Object[] {
+//					session.getId(), state });
 			sessionMess.setSession(session);
 		} else {
 			//如果因为情况所有的统计数据而去掉了连接管理，但是这个连接并没有关闭，当这个连接发送或者接收数据时，做添加连接管理处理
@@ -220,7 +220,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
 			receiveBytesCount += sessionMess.getReceiveBytes();
 		}
-		log.debug(" receiveBytesCount={} ",receiveBytesCount);
+//		log.debug(" receiveBytesCount={} ",receiveBytesCount);
 		return receiveBytesCount;
 	}
 
@@ -237,7 +237,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
 			sendBytesCount += sessionMess.getSendBytes();
 		}
-		log.debug(" sendBytesCount={} ",sendBytesCount);
+//		log.debug(" sendBytesCount={} ",sendBytesCount);
 		return sendBytesCount;
 	}
 
@@ -283,14 +283,14 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 		long idleMilliSecond = second * 1000;
 		//得到应该可以关闭的闲置时间
 		long startIdleMilliSecond = System.currentTimeMillis() - idleMilliSecond;
-		log.debug("startIdleMilliSecond={}", startIdleMilliSecond);
+//		log.debug("startIdleMilliSecond={}", startIdleMilliSecond);
 		
 		if (sessionCollector != null && !sessionCollector.isEmpty()) {
 			for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 				IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
 				// 按照闲置的时间关闭所有闲置的连接
 				if (sessionMess.getState().equals(IS_IDLE) && sessionMess.getIdleTime() <= startIdleMilliSecond) {
-					log.debug("sessionMess.getIdleTime()={}",sessionMess.getIdleTime());
+//					log.debug("sessionMess.getIdleTime()={}",sessionMess.getIdleTime());
 					sessionMess.getSession().close(true);
 				}
 			}

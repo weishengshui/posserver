@@ -35,10 +35,10 @@ public class MonitorCommandManageFilter extends IoFilterAdapter implements	PosCo
 			Object message) throws Exception {
 		// 得到指令信息
 		ICommand msg = ((Message) message).getBodyMessage();
-		log.debug(" msg = {}", msg);
+//		log.debug(" msg = {}", msg);
 		if (commandCollector != null) {
 			// 如果collector里面还没有这个指令的记录就添加
-			log.debug(" msg.getCmdId() = {}", msg.getCmdId());
+//			log.debug(" msg.getCmdId() = {}", msg.getCmdId());
 			if (commandCollector.get(msg.getCmdId()) == null) {
 				commandCollector.put(msg.getCmdId(), 1L);
 			} else {
