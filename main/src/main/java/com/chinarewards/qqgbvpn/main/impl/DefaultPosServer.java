@@ -395,10 +395,10 @@ public class DefaultPosServer implements PosServer {
 		}
 		
 		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
-				"QqgbvpnConnect:name=Connect"));
+				"PosnetConnect:name=Connect"));
 		
 		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
-		"QqgbvpnCommand:name=Command"));
+		"PosnetCommand:name=Command"));
 
 		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
 				+ jmxMoniterPort + "/jmxrmi";
