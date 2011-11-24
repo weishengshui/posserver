@@ -209,7 +209,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	public long getBytesReceived() {
 		//初始化为那些已关闭连接所接收过的字节数
 		receiveBytesCount = this.closedReceiveBytes;
-		log.debug(" receiveBytesCount={} ",receiveBytesCount);
+//		log.debug(" receiveBytesCount={} ",receiveBytesCount);
 		//得到正在管理的连接的所接收的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
@@ -226,7 +226,7 @@ public class MonitorConnectManageFilter extends IoFilterAdapter implements
 	public long getBytesSent() {
 		//初始化为那些已关闭连接所发送过的字节数
 		sendBytesCount = this.closedSendBytes;
-		log.debug(" sendBytesCount={} ",sendBytesCount);
+//		log.debug(" sendBytesCount={} ",sendBytesCount);
 		//得到正在管理的连接的所发送的字节数
 		for (Iterator iterator = sessionCollector.keySet().iterator(); iterator.hasNext();) {
 			IoSessionMessageManage sessionMess = sessionCollector.get(iterator.next());
