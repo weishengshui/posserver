@@ -12,8 +12,7 @@
 	<packaging>pom</packaging>
 	<name>POS Network Server 2 Parent POM</name>
 	<description>POS Network Server 2 parent Maven project.</description>
-	<scm>eryalryt'po4tgo4ertg
-	[prth][evtpo]
+	<scm>
 		<url>http://git.dev.china-rewards.com/repo</url>
 		<connection>scm:git:git://git.dev.china-rewards.com/qqgbvpn/qqgbvpn-server.git</connection>
 		<developerConnection>scm:git:ssh://git@git.dev.china-rewards.com/qqgbvpn/qqgbvpn-server.git</developerConnection>
