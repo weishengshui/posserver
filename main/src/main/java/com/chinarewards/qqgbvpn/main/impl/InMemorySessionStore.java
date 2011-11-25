@@ -105,7 +105,7 @@ public class InMemorySessionStore implements SessionStore {
 	 */
 	@Override
 	public Session getSession(String sessionId) {
-		return store.get(sessionId);
+		return this.store.get(sessionId);
 	}
 
 	/*
@@ -118,7 +118,7 @@ public class InMemorySessionStore implements SessionStore {
 	@Override
 	public Session createSession(String sessionId) {
 		Session session = new SimpleSession();
-		store.put(sessionId, session);
+		this.store.put(sessionId, session);
 		return session;
 	}
 
@@ -132,18 +132,18 @@ public class InMemorySessionStore implements SessionStore {
 		long expiredMillis = expiredTime * 1000;
 		long currentTime = System.currentTimeMillis();
 		long lastAccessTime = 0;
-		Session serverSession = store.get(sessionId);
-		log.debug("befor clear store size count={}", store.size());
+		Session serverSession = this.store.get(sessionId);
+		log.debug("befor clear store size count={}", this.store.size());
 		if (serverSession != null
 				&& serverSession
 						.containsAttribute(SessionKeyMessageFilter.LAST_ACCESS_TIME)) {
 			lastAccessTime = Long.valueOf(serverSession.getAttribute(
 					SessionKeyMessageFilter.LAST_ACCESS_TIME).toString());
 			if (currentTime - lastAccessTime >= expiredMillis) {
-				store.remove(sessionId);
+				this.store.remove(sessionId);
 			}
 		}
-		log.debug("after clear store size count={}", store.size());
+		log.debug("after clear store size count={}", this.store.size());
 	}
 
 	@Override
@@ -165,15 +165,15 @@ public class InMemorySessionStore implements SessionStore {
 	private void clearStore(long expiredSecond) {
 
 		long expiredMillis = expiredSecond * 1000;
-		log.debug("befor clear store size count={}", store.size());
-		if (store != null && expiredMillis > 0 && store.size() > 0) {
+		log.debug("befor clear store size count={}", this.store.size());
+		if (this.store != null && expiredMillis > 0 && this.store.size() > 0) {
 			Session serverSession = null;
 			long currentTime = System.currentTimeMillis();
 			long lastAccessTime = 0;
-			Iterator it = store.keySet().iterator();
+			Iterator it = this.store.keySet().iterator();
 			while (it.hasNext()) {
 				String sessionId = it.next().toString();
-				serverSession = store.get(sessionId);
+				serverSession = this.store.get(sessionId);
 				if (serverSession != null
 						&& serverSession
 								.containsAttribute(SessionKeyMessageFilter.LAST_ACCESS_TIME)) {
@@ -181,12 +181,28 @@ public class InMemorySessionStore implements SessionStore {
 							SessionKeyMessageFilter.LAST_ACCESS_TIME)
 							.toString());
 					if (currentTime - lastAccessTime >= expiredMillis) {
-						store.remove(sessionId);
+						this.store.remove(sessionId);
 					}
 				}
 			}
 		}
-		log.debug("after clear store size count={}", store.size());
+		log.debug("after clear store size count={}", this.store.size());
+	}
+
+	@Override
+	public long getSessionStoreCount() {
+		if(this.store != null){
+			return this.store.size();
+		}
+		return 0;
+	}
+
+	@Override
+	public boolean SessionStoreContainsKey(String sessionId) {
+		if(this.store != null){
+			return this.store.containsKey(sessionId);
+		}
+		return false;
 	}
 
 }

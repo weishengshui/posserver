@@ -54,5 +54,17 @@ public interface SessionStore {
 	 * @param expiredTime  分为单位
 	 */
 	void expiredSession(long expiredTime);
+	
+	/**
+	 *  查看session store里面session key 的数量
+	 * 
+	 */
+	long getSessionStoreCount();
+	
+	/**
+	 *  查看session store里面是否包含session key
+	 * @param sessionId
+	 */
+	boolean SessionStoreContainsKey(String sessionId);
 
 }
