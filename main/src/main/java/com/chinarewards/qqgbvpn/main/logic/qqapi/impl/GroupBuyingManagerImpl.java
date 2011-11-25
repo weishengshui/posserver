@@ -53,6 +53,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	@Inject
 	private DateTimeProvider dtProvider;
 	
+	private final static String SUCCESS_CODE = "0";
+	
 	
 	/**
 	 * 初始化团购商品缓存
@@ -79,18 +81,21 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		List<GroupBuyingSearchListVO> items = (List<GroupBuyingSearchListVO>) map.get("items");
 		//新商品列表
 		List<GrouponCache> grouponCacheList = new ArrayList<GrouponCache>();
-		if (items != null && items.size() > 0) {
-			for (GroupBuyingSearchListVO vo : items) {
-				GrouponCache grouponCache = new GrouponCache();
-				grouponCache.setPosId(posId);
-				grouponCache.setCreateDate(date);
-				grouponCache.setResultCode(resultCode);
-				try {
-					BeanUtils.copyProperties(grouponCache, vo);
-				} catch (Exception e) {
-					throw new CopyPropertiesException(e);
+		//查询成功，才处理商品列表
+		if (SUCCESS_CODE.equals(resultCode)) {
+			if (items != null && items.size() > 0) {
+				for (GroupBuyingSearchListVO vo : items) {
+					GrouponCache grouponCache = new GrouponCache();
+					grouponCache.setPosId(posId);
+					grouponCache.setCreateDate(date);
+					grouponCache.setResultCode(resultCode);
+					try {
+						BeanUtils.copyProperties(grouponCache, vo);
+					} catch (Exception e) {
+						throw new CopyPropertiesException(e);
+					}
+					grouponCacheList.add(grouponCache);
 				}
-				grouponCacheList.add(grouponCache);
 			}
 		}
 		
@@ -117,7 +122,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 			//保存删除缓存日志
 			journalLogic.logEvent(DomainEvent.GROUPON_CACHE_DELETE.toString(),
 					DomainEntity.GROUPON_CACHE.toString(), posId, delEventDetail);
-			if ("0".equals(resultCode)) {
+			if (SUCCESS_CODE.equals(resultCode)) {
 				//保存商品缓存
 				if (grouponCacheList != null && grouponCacheList.size() > 0) {
 					for (GrouponCache vo : grouponCacheList) {
@@ -130,6 +135,9 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 					emptyCache.setCreateDate(date);
 					emptyCache.setResultCode(resultCode);
 					dao.get().saveGrouponCache(emptyCache);
+					//这种情况应该是少有的，日志的detail中记录的是result code
+					//说明查询成功，但商品为空
+					initEventDetail = resultCode;
 				}
 			} else {
 				//如果result code不为0，保存一个只有posId和result code的缓存记录
@@ -247,7 +255,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	 * @return
 	 */
 	private String getResultCode(List<GrouponCache> cacheList) {
-		String resultCode = "0";
+		String resultCode = SUCCESS_CODE;
 		if (cacheList != null && cacheList.size() > 0) {
 			GrouponCache cache = cacheList.get(0);
 			resultCode = cache.getResultCode();
@@ -303,7 +311,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 		if (pos != null && agent != null) {
 			Validation validation = new Validation();
 			Date date = dtProvider.getTime();
-			String event = "0".equals(resultCode) ? DomainEvent.POS_ORDER_VALIDATED_OK.toString() : DomainEvent.POS_ORDER_VALIDATED_FAILED.toString();
+			String event = SUCCESS_CODE.equals(resultCode) ? DomainEvent.POS_ORDER_VALIDATED_OK.toString() : DomainEvent.POS_ORDER_VALIDATED_FAILED.toString();
 			String eventDetail = "";
 			try {
 				validation.setTs(date);
@@ -312,8 +320,8 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 				validation.setPosId(pos.getPosId());
 				validation.setPosModel(pos.getModel());
 				validation.setPosSimPhoneNo(pos.getSimPhoneNo());
-				validation.setStatus("0".equals(resultStatus) ? ValidationStatus.SUCCESS : ValidationStatus.FAILED);
-				validation.setCstatus("0".equals(resultCode) ? CommunicationStatus.SUCCESS : CommunicationStatus.FAILED);
+				validation.setStatus(SUCCESS_CODE.equals(resultStatus) ? ValidationStatus.SUCCESS : ValidationStatus.FAILED);
+				validation.setCstatus(SUCCESS_CODE.equals(resultCode) ? CommunicationStatus.SUCCESS : CommunicationStatus.FAILED);
 				validation.setResultStatus(resultStatus);
 				validation.setResultName(resultName);
 				validation.setResultExplain(resultExplain);
@@ -327,7 +335,7 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 				dao.get().saveValidation(validation);
 				
 				ObjectMapper mapper = new ObjectMapper();
-				if ("0".equals(resultCode) && map.get("items") != null) {
+				if (SUCCESS_CODE.equals(resultCode) && map.get("items") != null) {
 					eventDetail = mapper.writeValueAsString(validation);
 				} else {
 					eventDetail = resultCode;
