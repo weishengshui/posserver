@@ -32,6 +32,7 @@ import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
 import com.chinarewards.qqgbvpn.qqapi.service.GroupBuyingService;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingSearchListVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
+import com.chinarewards.utils.StringUtil;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
@@ -122,6 +123,13 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 					for (GrouponCache vo : grouponCacheList) {
 						dao.get().saveGrouponCache(vo);
 					}
+				} else {
+					//当result code是0，但商品列表为空，则只保存一个记录result code的数据
+					GrouponCache emptyCache = new GrouponCache();
+					emptyCache.setPosId(posId);
+					emptyCache.setCreateDate(date);
+					emptyCache.setResultCode(resultCode);
+					dao.get().saveGrouponCache(emptyCache);
 				}
 			} else {
 				//如果result code不为0，保存一个只有posId和result code的缓存记录
@@ -215,6 +223,18 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 			log.error("eventDetail: " + eventDetail);
 			throw new SaveDBException(e);
 		}
+		
+		//这个处理，是为了将记录result code，但商品为空的数据删除掉
+		if (cacheList != null && cacheList.size() > 0) {
+			GrouponCache cache = cacheList.get(0);
+			if (StringUtil.isEmptyString(cache.getGrouponId())) {
+				pageInfo.setPageId(1);
+				pageInfo.setRecordCount(0);
+				pageInfo.setPageCount(0);
+				pageInfo.setItems(new ArrayList<GrouponCache>());
+			}
+		}
+		
 		relustMap.put("resultCode", resultCode);
 		relustMap.put("pageInfo", pageInfo);
 		return relustMap;
