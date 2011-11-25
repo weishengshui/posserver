@@ -5,11 +5,13 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
@@ -126,10 +128,14 @@ public class ProtocolMessageDecoder {
 	 * @param in
 	 * @param charset
 	 */
-	public Result decode(IoBuffer in, Charset charset) {
+	public Result decode(IoBuffer in, Charset charset, Configuration configuration) {
 
 		log.trace("IoBuffer remaining bytes: {}, current position: {}",
 				in.remaining(), in.position());
+
+		int isDisableChecksumCheck = configuration.getInt(
+				ConfigKey.SERVER_DISABLE_CHECKSUM_CHECK, 0);
+		
 
 		// check length, it must greater than header length
 		//开始读取head的内容
@@ -270,9 +276,10 @@ public class ProtocolMessageDecoder {
 				// calculate the checksum
 				calculatedChecksum = Tools.checkSum(byteTmp, byteTmp.length);
 			}
-
+			//TODO harry 添加 server.disable_checksum_check 配置,为了测试不检查
 			// validate the checksum. if not correct, return an error response.
-			if (calculatedChecksum != header.getChecksum()) {
+			log.debug("isDisableChecksumCheck={}", isDisableChecksumCheck);
+			if (isDisableChecksumCheck == 0 && calculatedChecksum != header.getChecksum()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
 				Message message = new Message(header, bodyMessage);

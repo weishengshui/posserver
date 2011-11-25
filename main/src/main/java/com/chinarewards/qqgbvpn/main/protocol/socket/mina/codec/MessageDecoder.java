@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
@@ -20,14 +21,17 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 	protected CmdCodecFactory cmdCodecFactory;
 	
+	protected final Configuration configuration;
+	
 	/**
 	 * The maximum allowed message size (the whole message)
 	 */
 	private long maxMessageSize = 1024 * 100;
 
-	public MessageDecoder(Charset charset, CmdCodecFactory cmdCodecFactory) {
+	public MessageDecoder(Charset charset, CmdCodecFactory cmdCodecFactory, Configuration configuration) {
 		this.charset = charset;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.configuration = configuration;
 	}
 	
 	
@@ -67,7 +71,7 @@ public class MessageDecoder extends CumulativeProtocolDecoder {
 
 		ProtocolMessageDecoder decoder = new ProtocolMessageDecoder(
 				cmdCodecFactory);
-		ProtocolMessageDecoder.Result result = decoder.decode(in, charset);
+		ProtocolMessageDecoder.Result result = decoder.decode(in, charset, this.configuration);
 
 		// close the session if message to big.
 		boolean sessionClosed = killTooBigMessage(session, in, result);

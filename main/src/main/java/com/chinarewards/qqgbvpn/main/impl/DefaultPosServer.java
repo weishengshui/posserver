@@ -137,7 +137,7 @@ public class DefaultPosServer implements PosServer, ConfigurationListener {
 		long timerDelay = this.configuration.getLong(
 				ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
 				DEFAULT_SERVER_START_TIMER_DELAY);
-		log.debug("config server.check_expired_session_timer_delay={}",
+		log.debug("config server.session.timeout_check_interval={}",
 				timerDelay);
 		// 启动定时器
 		this.timer.scheduleAtFixedInterval(
@@ -200,7 +200,7 @@ public class DefaultPosServer implements PosServer, ConfigurationListener {
 		acceptor.getFilterChain().addLast(
 				"codec",
 				new ProtocolCodecFilter(
-						new MessageCoderFactory(cmdCodecFactory)));
+						new MessageCoderFactory(cmdCodecFactory, this.configuration)));
 
 		// kills error connection if too many.
 		acceptor.getFilterChain().addLast("errorConnectionKiller",
@@ -343,7 +343,7 @@ public class DefaultPosServer implements PosServer, ConfigurationListener {
 				long timerDelay = this.configuration.getLong(
 						ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
 						DEFAULT_SERVER_START_TIMER_DELAY);
-				log.debug("config server.check_expired_session_timer_delay={}",
+				log.debug("config server.session.timeout_check_interval={}",
 						timerDelay);
 				this.timer
 						.scheduleAtFixedInterval(timerDelay, timerDelay, null);
