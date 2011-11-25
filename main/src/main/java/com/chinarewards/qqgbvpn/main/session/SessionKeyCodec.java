@@ -36,7 +36,7 @@ public class SessionKeyCodec implements SessionKeyDecoder {
 		// first byte is the version
 		buf.putUnsigned((byte) 0x01);
 
-		// another byte resireved
+		// another byte reserved
 		buf.putUnsigned((byte) 0x00);
 
 		// 3rd and 4th bytes are for length

@@ -263,14 +263,38 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		
 		Thread.sleep(1000); // 1 seconds
 		log.trace("four socket.......");
-		// 测试断线，后重连
+		// 没有断线但是改变pos机session key的值
 		createSocket4(server.getLocalPort());
+		
+		Thread.sleep(1000); // 1 seconds
+		log.trace("four socket.......");
+		// 测试发送一个服务器不认识的指令
+		createSocket5(server.getLocalPort());
 
 		// stop it, and make sure it is stopped.
 		server.stop();
 		assertTrue(server.isStopped());
 
 		log.info("Server stopped");
+
+	}
+	
+	private void createSocket5(int port) throws Exception {
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+		byte[] challenge = new byte[8];
+		byte[] sessionId = new byte[16];
+
+		log.debug("start init ......");
+		newPosInit(os, is, challenge, sessionId);// new client add session key
+													// protocol
+
+		log.debug("start login ......");
+		newPosLogin(os, is, challenge);
+		System.out.println("");
+		os.close();
+		socket.close();
 
 	}
 	
@@ -286,19 +310,12 @@ public class SessionKeyProtocolTest extends GuiceTest {
 													// protocol
 
 		log.debug("start login ......");
-		newPosLogin(os, is, challenge);
+		oldPosLogin(os, is, challenge);
 
 		log.debug("start list ......");
-		newPosSearchList(os, is);
+		oldPosSearchList(os, is);
 
 		System.out.println("");
-//		os.close();
-//		socket.close();
-//
-//		log.debug("send session id socket........");
-//		Socket socket2 = new Socket("localhost", port);
-//		OutputStream os2 = socket2.getOutputStream();
-//		InputStream is2 = socket2.getInputStream();
 
 		log.debug("start one validate ......");
 		newPosValidateSendSessionKey(os, is, sessionId);
@@ -306,9 +323,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		log.debug("start two validate ......");
 		sessionId[0]=1;
 		newPosValidateSendSessionKey(os, is, sessionId);
-
-//		log.debug("start list ......");
-//		newPosSearchList(os, is);
 
 		System.out.println("");
 		os.close();
@@ -328,10 +342,10 @@ public class SessionKeyProtocolTest extends GuiceTest {
 													// protocol
 
 		log.debug("start login ......");
-		newPosLogin(os, is, challenge);
+		oldPosLogin(os, is, challenge);
 
 		log.debug("start list ......");
-		newPosSearchList(os, is);
+		oldPosSearchList(os, is);
 
 		System.out.println("");
 		os.close();
@@ -343,11 +357,10 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		InputStream is2 = socket2.getInputStream();
 
 		log.debug("start validate ......");
-		sessionId[0]=1;
 		newPosValidateSendSessionKey(os2, is2, sessionId);
 
 		log.debug("start list ......");
-		newPosSearchList(os2, is2);
+		oldPosSearchList(os2, is2);
 
 		System.out.println("");
 		os2.close();
@@ -367,13 +380,13 @@ public class SessionKeyProtocolTest extends GuiceTest {
 														// key protocol
 
 		log.debug("start login ......");
-		newPosLogin(os, is, challenge);
+		oldPosLogin(os, is, challenge);
 
 		log.debug("start list ......");
-		newPosSearchList(os, is);
+		oldPosSearchList(os, is);
 
 		log.debug("start validate ......");
-		newPosValidate(os, is);
+		oldPosValidate(os, is);
 
 		System.out.println("");
 		os.close();
@@ -685,22 +698,20 @@ public class SessionKeyProtocolTest extends GuiceTest {
 				// ACK
 				0, 0, 0, 0,
 				// flags
-				(byte) 128, 0,
+				0, 0,
 				// checksum
 				0, 0,
 				// message length
-				0, 0, 0, 52,
-				// session description
-				1, 0, 0, 0,
+				0, 0, 0, 48,
 				// command ID
-				0, 0, 0, 7,
+				0, 0, 0, 50,
 				// POS ID
 				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '2',
 				// challengeResponse
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 		byte[] content2 = HMAC_MD5.getSecretContent(challenge, "000001");
-		Tools.putBytes(msg, content2, 36);
+		Tools.putBytes(msg, content2, 32);
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
 
@@ -730,115 +741,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-
-	}
-
-	private void newPosSearchList(OutputStream os, InputStream is)
-			throws Exception {
-		byte[] msg = new byte[] {
-				// SEQ
-				0, 0, 0, 26,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				(byte) 128, 0,
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 28,
-				// session key description
-				1, 0, 0, 0,
-				// command ID
-				0, 0, 0, 1,
-				// page
-				0, 1,
-				// size
-				0, 6 };
-
-		int checksum = Tools.checkSum(msg, msg.length);
-		Tools.putUnsignedShort(msg, checksum, 10);
-
-		// write response
-		log.info(" list Send request to server");
-
-		// send both message at once
-		byte[] outBuf = new byte[msg.length];
-		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
-		os.write(outBuf);
-		// ----------
-
-		Thread.sleep(runForSeconds * 1000);
-		// read
-		log.info("Read response");
-		byte[] response = new byte[364];
-		int n = is.read(response);
-		System.out.println("Number of bytes login read2: " + n);
-		for (int i = 0; i < n; i++) {
-			String s = Integer.toHexString((byte) response[i]);
-			if (s.length() < 2)
-				s = "0" + s;
-			if (s.length() > 2)
-				s = s.substring(s.length() - 2);
-			System.out.print(s + " ");
-			if ((i + 1) % 8 == 0)
-				System.out.println("");
-		}
-
-	}
-
-	private void newPosValidate(OutputStream os, InputStream is)
-			throws Exception {
-		byte[] msg = new byte[] {
-				// SEQ
-				0, 0, 0, 27,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				(byte) 128, 0,
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 38,
-				// session key dscription
-				1, 0, 0, 0,
-				// command ID
-				0, 0, 0, 3,
-				// grouponId
-				49, 51, 50, 49, 50, 51, 0,
-				// grouponVCode
-				49, 49, 49, 49, 50, 50, 0 };
-
-		int checksum = Tools.checkSum(msg, msg.length);
-		Tools.putUnsignedShort(msg, checksum, 10);
-
-		// write response
-		log.info(" list Send request to server");
-
-		// send both message at once
-		byte[] outBuf = new byte[msg.length];
-		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
-		os.write(outBuf);
-		// ----------
-
-		Thread.sleep(runForSeconds * 1000);
-		// read
-		log.info("Read response");
-		byte[] response = new byte[110];
-		int n = is.read(response);
-		System.out.println("Number of bytes login read: " + n);
-		for (int i = 0; i < n; i++) {
-			String s = Integer.toHexString((byte) response[i]);
-			if (s.length() < 2)
-				s = "0" + s;
-			if (s.length() > 2)
-				s = s.substring(s.length() - 2);
-			System.out.print(s + " ");
-			if ((i + 1) % 8 == 0)
-				System.out.println("");
-		}
-		assertEquals(response[21], 0);
+		assertEquals(response[23], 9);
 	}
 
 	private void newPosValidateSendSessionKey(OutputStream os, InputStream is,
