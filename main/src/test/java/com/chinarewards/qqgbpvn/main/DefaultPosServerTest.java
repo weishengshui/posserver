@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.junit.After;
@@ -11,7 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
+import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
+import com.chinarewards.qqgbvpn.main.ApplicationModule;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
@@ -19,6 +25,7 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
 import com.chinarewards.qqgbvpn.main.protocol.guice.ServiceHandlerGuiceModule;
+import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 import com.google.inject.Module;
 import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
@@ -48,7 +55,7 @@ public class DefaultPosServerTest extends GuiceTest {
 	 */
 	@Override
 	protected Module[] getModules() {
-		
+
 		CommonTestConfigModule confModule = new CommonTestConfigModule();
 
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
@@ -57,6 +64,7 @@ public class DefaultPosServerTest extends GuiceTest {
 
 		// build the Guice modules.
 		Module[] modules = new Module[] {
+				new ApplicationModule(),
 				new CommonTestConfigModule(),
 				buildPersistModule(confModule.getConfiguration()),
 				new ServerModule(),
@@ -104,6 +112,37 @@ public class DefaultPosServerTest extends GuiceTest {
 
 		return jpaModule;
 	}
+	
+	public void testStart_RandomPort() throws Exception {
+
+		// force changing of configuration
+		Configuration conf = getInjector().getInstance(Configuration.class);
+		conf.setProperty("server.port", 0);
+
+		// get an new instance of PosServer
+		PosServer server = getInjector().getInstance(PosServer.class);
+
+		// make sure it is stopped
+		assertTrue(server.isStopped());
+
+		// start it!
+		server.start();
+
+		// make sure it is started, and port is correct
+		assertFalse(server.isStopped());
+		assertTrue(0 != server.getLocalPort());
+		assertTrue(server.getLocalPort() > 0);
+
+		// sleep for a while...
+		Thread.sleep(500); // 0.5 seconds
+
+		// stop it, and make sure it is stopped.
+		server.stop();
+		assertTrue(server.isStopped());
+
+		log.info("Server stopped");
+
+	}
 
 	@Test
 	public void testStart() throws Exception {
@@ -148,39 +187,8 @@ public class DefaultPosServerTest extends GuiceTest {
 		assertEquals(runningPort, server.getLocalPort());
 
 		// sleep for a while...
-		Thread.sleep(500); // 0.5 seconds
 
-		// stop it, and make sure it is stopped.
-		server.stop();
-		assertTrue(server.isStopped());
-
-		log.info("Server stopped");
-
-	}
-
-	public void testStart_RandomPort() throws Exception {
-
-		// force changing of configuration
-		Configuration conf = getInjector().getInstance(Configuration.class);
-		conf.setProperty("server.port", 0);
-
-		// get an new instance of PosServer
-		PosServer server = getInjector().getInstance(PosServer.class);
-
-		// make sure it is stopped
-		assertTrue(server.isStopped());
-
-		// start it!
-		server.start();
-
-		// make sure it is started, and port is correct
-		assertFalse(server.isStopped());
-		assertTrue(0 != server.getLocalPort());
-		assertTrue(server.getLocalPort() > 0);
-
-		// sleep for a while...
-		Thread.sleep(500); // 0.5 seconds
-
+		
 		// stop it, and make sure it is stopped.
 		server.stop();
 		assertTrue(server.isStopped());

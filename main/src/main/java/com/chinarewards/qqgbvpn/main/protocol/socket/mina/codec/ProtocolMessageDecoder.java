@@ -5,11 +5,13 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
@@ -18,6 +20,9 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.session.CodecException;
+import com.chinarewards.qqgbvpn.main.session.ISessionKey;
+import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
 
 /**
  * 
@@ -30,6 +35,8 @@ public class ProtocolMessageDecoder {
 	private static final Logger log = LoggerFactory
 			.getLogger(ProtocolMessageDecoder.class);
 
+	SessionKeyCodec sessionKeyCodec = new SessionKeyCodec();
+	
 	/**
 	 * Stores the result of message decoding.
 	 * 
@@ -121,37 +128,132 @@ public class ProtocolMessageDecoder {
 	 * @param in
 	 * @param charset
 	 */
-	public Result decode(IoBuffer in, Charset charset) {
+	public Result decode(IoBuffer in, Charset charset, Configuration configuration) {
 
 		log.trace("IoBuffer remaining bytes: {}, current position: {}",
 				in.remaining(), in.position());
 
-		// check length, it must greater than head length
+		int isDisableChecksumCheck = configuration.getInt(
+				ConfigKey.SERVER_DISABLE_CHECKSUM_CHECK, 0);
+		
+
+		// check length, it must greater than header length
+		//开始读取head的内容
 		if (in.remaining() >= ProtocolLengths.HEAD) {
 			
+//			boolean sessionKeyDecoded = false;
+			long cmdBodySize = 0;
+			//记录读取的初始位置
 			int start = in.position();
 			
 			// parse message header
-			log.trace("Parsing message header..");
+			log.trace("Parsing message header ({} bytes)..",
+					ProtocolLengths.HEAD);
 			PackageHeadCodec headCodec = new PackageHeadCodec();
+			//读取head的数据
 			HeadMessage header = headCodec.decode(in);	// parse
 			log.trace("- message header: {}", header);
 			log.trace("- IoBuffer remaining (for body): {}", in.remaining());
 
-			// check length
-			// XXX suspicious code, may lead to unwanted error code 3: invalid
-			// size
-			// XXX should wait until the whole package is received.
-//			if (messageSize != ProtocolLengths.HEAD + in.remaining()) {
-//				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
-//				bodyMessage.setErrorCode(CmdConstant.ERROR_MESSAGE_SIZE_CODE);
-//				return new Result(true, null);
-//			}
-			if (ProtocolLengths.HEAD + in.remaining() < header.getMessageSize()) {
+			// the pure command size
+			// if msg size is 100, header is 16, then cmdBodySize = 84.
+			//得到包主体信息的大小
+			cmdBodySize = header.getMessageSize() - ProtocolLengths.HEAD; 
+			
+			/***** field extension *****/
+			
+			// act according to the flag.. must be in proper order!!!
+
+			// flag: session key
+			
+			//2011-11-07,harry:下面这个if()为了不让pos机重连的时候init,login所以在协议里面添加了，session key这个概念
+			//主要就是为了，减少重连接的时间
+			//判断是否包的信息中带有session key的信息，如果head中的flags==1就说明带了
+			if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+				
+				log.debug("flag FLAG_SESSION_ID is set in header");
+				log.debug("in.remaining() = {}", in.remaining());
+				
+				// make sure we have enough data to decode
+				//判断保证剩下的数据够，描述sessiong key的属性（版本，长度）
+				if (in.remaining() >= 4) {
+					
+					// 1 byte of header
+					short sessionKeyVersion = in.getUnsigned();
+					
+					// 1 byte: reserved.
+					in.getUnsigned();
+					
+					// 2 byte of length
+					int sessionKeyLength = in.getUnsignedShort();
+					
+					log.debug("sessionKeyVersion={}", sessionKeyVersion);
+					log.debug("sessionKeyLength={}", sessionKeyLength);
+					
+					// update the command body size
+					// if cmdBodySize = 84, session key length = 10, then
+					// cmdBodySize = 84 - 1 - 2 - 10 = 71
+					//剩下的包主体的内容大小
+					cmdBodySize -= (sessionKeyLength + 4);
+					//在POS机开机的时候，init时对session key描述，表示client可以处理session key 的信息
+					//版本默认是1，长度是0
+					if (sessionKeyVersion == 1 && sessionKeyLength == 0) {
+						// special - it means the client recognize the 
+						// session ID bit.
+						
+						// the 4 bytes are consumed.
+						log.debug("version 1 session key detected, client can process session ID!");
+						
+					} else if (in.remaining() < sessionKeyLength) {
+						// not enough data. reset to original position.
+						long owe = header.getMessageSize()
+								- ProtocolLengths.HEAD - 4 - in.remaining();
+						in.position(start);	// restore the original position.
+						return new Result(true, owe, header, null);
+					} else {
+						// enough data to decode session key!
+						// decode the session key.
+						// FIXME distinguish between different exception.
+						try {
+							log.debug(
+									"decoding session key (version: {}, key length: {})",
+									sessionKeyVersion, sessionKeyLength);
+							//这里是开始读取sessionKey，所以我们要把session key前面的值跳过
+							in.position(start+ProtocolLengths.HEAD);
+//							in.position(start + 3);
+							// decode the session key.
+							ISessionKey sessionKey = sessionKeyCodec.decode(in);
+							header.setSessionKey(sessionKey);
+							log.debug("session key decoded: {}", sessionKey);
+							
+							// session key successfully decoded.
+//							sessionKeyDecoded = true;
+							
+						} catch (CodecException e) {
+							log.warn(
+									"error when decoding session key (version: {}, key length: {})",
+									new Object[] { sessionKeyVersion,
+											sessionKeyLength }, e);
+						}
+					}
+				} else {
+					// we don't have enough information to decode header.
+					long owe = header.getMessageSize()
+							- ProtocolLengths.HEAD - in.remaining();
+					in.position(start);	// restore the original position.
+					return new Result(true, owe, header, null);
+				}
+			}
+			/***** field extension *****/
+			
+			log.debug("before parsing body: cmdBodySize={}, in.remaining={}", cmdBodySize, in.remaining());
+			
+			// make sure we have enough data to feed.
+			if (in.remaining() < cmdBodySize) {
 				// more data is required.
-				long owe = header.getMessageSize() - ProtocolLengths.HEAD + in.remaining();
+				long owe = cmdBodySize - in.remaining();
 				log.trace("More bytes are required to parse the complete message (still need {} bytes)",
-						header.getMessageSize() - ProtocolLengths.HEAD + in.remaining());
+						owe);
 				in.position(start);	// restore the original position.
 				return new Result(true, owe, header, null);
 			}
@@ -174,9 +276,10 @@ public class ProtocolMessageDecoder {
 				// calculate the checksum
 				calculatedChecksum = Tools.checkSum(byteTmp, byteTmp.length);
 			}
-
+			//TODO harry 添加 server.disable_checksum_check 配置,为了测试不检查
 			// validate the checksum. if not correct, return an error response.
-			if (calculatedChecksum != header.getChecksum()) {
+			log.debug("isDisableChecksumCheck={}", isDisableChecksumCheck);
+			if (isDisableChecksumCheck == 0 && calculatedChecksum != header.getChecksum()) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_CHECKSUM_CODE);
 				Message message = new Message(header, bodyMessage);
@@ -188,7 +291,8 @@ public class ProtocolMessageDecoder {
 			}
 
 			// really decode the command message.
-			in.position(start + ProtocolLengths.HEAD);
+			in.position(start
+					+ ((int) header.getMessageSize() - (int) cmdBodySize));
 			ICommand bodyMessage = null;
 			try {
 				bodyMessage = this.decodeMessageBody(in, charset, header);

@@ -8,7 +8,9 @@ import java.net.SocketAddress;
 
 import org.apache.mina.core.session.IoSession;
 
+import com.chinarewards.qqgbvpn.main.Session;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 
 /**
  * Contains a set of Mina related APIs.
@@ -24,11 +26,18 @@ public abstract class MinaUtil {
 	 * @param session
 	 * @return
 	 */
-	public static final String getPosIdFromSession(IoSession session) {
+	public static final String getPosIdFromSession(Session session) {
+		if (session == null)
+			return null;
 		if (session.containsAttribute(LoginFilter.POS_ID)) {
 			return (String) session.getAttribute(LoginFilter.POS_ID);
 		}
 		return null;
+	}
+
+	public static final String getServerSessionId(IoSession session) {
+		return (String) session
+				.getAttribute(SessionKeyMessageFilter.SESSION_ID);
 	}
 
 	/**
@@ -63,10 +72,27 @@ public abstract class MinaUtil {
 	 * @param session
 	 * @return
 	 */
-	public static final String buildCommonClientAddressText(IoSession session) {
+	public static final String buildCommonClientAddressText(IoSession session,
+			Session serverSession) {
 		return "address " + buildAddressPortString(session)
 				+ ", Mina session ID " + session.getId()
-				+ ", identified POS ID " + getPosIdFromSession(session);
+				+ ", identified POS ID " + getPosIdFromSession(serverSession);
+	}
+
+	/**
+	 * 更改最后一次使用通讯的时间
+	 * 
+	 * @param serverSession
+	 */
+	public static final void updateLastAccessTime(Session serverSession) {
+		if (serverSession != null) {
+			if (serverSession
+					.containsAttribute(SessionKeyMessageFilter.LAST_ACCESS_TIME)) {
+				serverSession.setAttribute(
+						SessionKeyMessageFilter.LAST_ACCESS_TIME,
+						System.currentTimeMillis());
+			}
+		}
 	}
 
 }

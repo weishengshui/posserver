@@ -10,13 +10,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
+import com.chinarewards.qqgbpvn.main.TestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.protocol.CmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.CmdMapping;
@@ -28,6 +33,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ProtocolMessageDecoder.Result;
+import com.google.inject.Module;
 
 /**
  * 
@@ -83,6 +89,18 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		super.tearDown();
 	}
 
+	
+	@Override
+	protected Module[] getModules() {
+		Module[] modules = super.getModules();
+		List<Module> m = new ArrayList<Module>();
+		if (modules != null) {
+			m.addAll(Arrays.asList(modules));
+		}
+		m.add(new CommonTestConfigModule());
+		return (Module[])m.toArray(new Module[0]);
+	}
+
 	/**
 	 * Test the case a complete message, when converted to byte arrays, is
 	 * divided into two parts which a incomplete header is sent.
@@ -123,7 +141,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		// Call the API for the first time.
 		//
 		// the first call - not sufficient data, should not have error.
-		Result ret1 = msgDecoder.decode(in1, charset);
+		Result ret1 = msgDecoder.decode(in1, charset, getInjector().getInstance(Configuration.class));
 		assertNotNull(ret1);
 		assertTrue("Decoder should report more data is needed!", ret1.isMoreDataRequired());	// more data needed
 		assertNull(ret1.getMessage());	// no message returned.
@@ -142,7 +160,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		// Call the API for the second time.
 		//
 		// the second call - sufficient data, should have message returned.
-		Result ret2 = msgDecoder.decode(in1, charset);
+		Result ret2 = msgDecoder.decode(in1, charset, getInjector().getInstance(Configuration.class));
 		assertNotNull(ret2);
 		assertFalse(ret2.isMoreDataRequired());
 		assertNotNull(ret2.getMessage());
@@ -196,7 +214,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		// Call the API for the first time.
 		//
 		// the first call - not sufficient data, should not have error.
-		Result ret1 = msgDecoder.decode(in1, charset);
+		Result ret1 = msgDecoder.decode(in1, charset, getInjector().getInstance(Configuration.class));
 		assertNotNull(ret1);
 		assertTrue("Decoder should report more data is needed!", ret1.isMoreDataRequired());	// more data needed
 		assertNull(ret1.getMessage());	// no message returned.
@@ -214,7 +232,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		// Call the API for the second time.
 		//
 		// the second call - sufficient data, should have message returned.
-		Result ret2 = msgDecoder.decode(in1, charset);
+		Result ret2 = msgDecoder.decode(in1, charset, getInjector().getInstance(Configuration.class));
 		assertNotNull(ret2);
 		assertFalse(ret2.isMoreDataRequired());
 		assertNotNull(ret2.getMessage());
@@ -265,7 +283,7 @@ public class ProtocolMessageDecoderTest extends GuiceTest {
 		//
 		// Call the API for the first time.
 		//
-		Result ret1 = msgDecoder.decode(in1, charset);
+		Result ret1 = msgDecoder.decode(in1, charset, getInjector().getInstance(Configuration.class));
 		assertNotNull(ret1);
 		assertFalse("Decoder should not report more data is needed!", ret1.isMoreDataRequired());
 		assertNotNull(ret1.getHeader());

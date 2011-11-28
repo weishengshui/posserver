@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
@@ -27,16 +28,20 @@ public class MessageCoderFactory implements ProtocolCodecFactory {
 	private ProtocolDecoder decoder;
 
 	protected final CmdCodecFactory cmdCodecFactory;
+	
+	protected final Configuration configuration;
 
-	public MessageCoderFactory(CmdCodecFactory cmdCodecFactory) {
-		this(charsetDefault, cmdCodecFactory);
+	public MessageCoderFactory(CmdCodecFactory cmdCodecFactory, Configuration configuration) {
+		this(charsetDefault, cmdCodecFactory, configuration);
 	}
 
-	public MessageCoderFactory(Charset charset, CmdCodecFactory cmdCodecFactory) {
+	public MessageCoderFactory(Charset charset, CmdCodecFactory cmdCodecFactory, Configuration configuration) {
 		this.charset = charset;
 		this.cmdCodecFactory = cmdCodecFactory;
+		this.configuration = configuration;
 		encoder = new MessageEncoder(charset, this.cmdCodecFactory);
-		decoder = new MessageDecoder(charset, this.cmdCodecFactory);
+		decoder = new MessageDecoder(charset, this.cmdCodecFactory, this.configuration);
+		
 	}
 
 	@Override

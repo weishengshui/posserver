@@ -176,6 +176,7 @@ public class CodecUtil {
 		int position = buffer.position();
 		// number of available bytes to read.
 		int remaining = buffer.remaining();
+		
 		// the actual length to read.
 		int partLength = remaining < maxHexDumpLength ? remaining
 				: maxHexDumpLength;

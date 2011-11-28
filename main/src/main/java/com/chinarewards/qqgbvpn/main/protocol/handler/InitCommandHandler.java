@@ -38,9 +38,9 @@ public class InitCommandHandler implements ServiceHandler {
 		byte[] newChallenge = ChallengeUtil.generateChallenge();
 		try {
 			initResponseMessage = loginManager.init(bodyMessage, newChallenge);
-			
 			//save to session
 			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
+			
 		} catch (Throwable e) {
 			// must refresh the challenge even an exception has occurred.
 			log.warn("an unexpected error has occurred when POS ID "  + 

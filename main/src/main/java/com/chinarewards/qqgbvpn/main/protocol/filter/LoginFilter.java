@@ -6,12 +6,13 @@ package com.chinarewards.qqgbvpn.main.protocol.filter;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.Session;
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
@@ -20,7 +21,9 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 import com.chinarewards.utils.StringUtil;
+import com.google.inject.Inject;
 
 /**
  * Login filter.
@@ -32,35 +35,48 @@ import com.chinarewards.utils.StringUtil;
  * @author cream
  * @since 1.0.0 2011-08-29
  */
-public class LoginFilter extends IoFilterAdapter {
+public class LoginFilter extends AbstractFilter {
 
 	public final static String IS_LOGIN = "is_login";
 	public final static String POS_ID = "pos_id";
 
 	Logger log = LoggerFactory.getLogger(getClass());
+	
+	final SessionStore sessionStore;
+	
+	@Inject
+	public LoginFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
 
 	@Override
 	public void messageReceived(NextFilter nextFilter, IoSession session,
 			Object message) throws Exception {
-		
 		log.trace("messageReceived() started");
 		
-		Boolean isLogin = (Boolean) session.getAttribute(IS_LOGIN);
+		Boolean isLogin = null;
+		
+		Session serverSession = getServerSession(session, sessionStore);
+		if(serverSession != null){
+			isLogin = (Boolean) serverSession.getAttribute(IS_LOGIN);
+			MinaUtil.updateLastAccessTime(serverSession);
+		}
+		
 		
 		// Check whether the command ID is LOGIN
 		Message messageTmp = (Message)message;
 		ICommand msg = messageTmp.getBodyMessage();
 		long cmdId = msg.getCmdId();
-		
 		boolean checkPosIdIsNull = false;	// XXX don't know why need to do this, for old Cream code.
 
 		// if the command requires login, but no sign of login is done, 
 		// return an error package.
 		if (isLoginRequiredForCommand(cmdId)) {
-			
+			log.debug("isLogin={}",isLogin);
 			if (isLogin == null || !isLogin) {
 				ErrorBodyMessage bodyMessage = new ErrorBodyMessage();
 				bodyMessage.setErrorCode(CmdConstant.ERROR_NO_LOGIN_CODE);
+				messageTmp.getHeadMessage().getSessionKey();
 				messageTmp.setBodyMessage(bodyMessage);
 				session.write(messageTmp);
 				log.debug(
@@ -76,7 +92,7 @@ public class LoginFilter extends IoFilterAdapter {
 			// get POS ID
 			// FIXME completely wrong implementation
 			InitRequestMessage im = (InitRequestMessage) msg;
-			session.setAttribute(POS_ID, im.getPosId());
+			getServerSession(session, sessionStore).setAttribute(POS_ID, im.getPosId());
 			
 			checkPosIdIsNull = true;
 
@@ -85,14 +101,14 @@ public class LoginFilter extends IoFilterAdapter {
 			// get POS ID
 			// FIXME completely wrong implementation
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
-			session.setAttribute(POS_ID, lm.getPosId());
+			getServerSession(session, sessionStore).setAttribute(POS_ID, lm.getPosId());
 			
 			checkPosIdIsNull = true;
 		}
 
 		if (checkPosIdIsNull) {
 			// Check POS ID for other connection(NOT init or login).
-			String posId = (String) session.getAttribute(POS_ID);
+			String posId = (String) getServerSession(session, sessionStore).getAttribute(POS_ID);
 
 			if (StringUtil.isEmptyString(posId)) {
 				throw new IllegalArgumentException("Pos Id not existed!");
@@ -140,7 +156,6 @@ public class LoginFilter extends IoFilterAdapter {
 	@Override
 	public void messageSent(NextFilter nextFilter, IoSession session,
 			WriteRequest writeRequest) throws Exception {
-		
 		log.trace("messageSent() started");
 		
 		// XXX completely wrong implementation, should be set inside
@@ -151,12 +166,12 @@ public class LoginFilter extends IoFilterAdapter {
 		long cmdId = msg.getCmdId();
 		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE
 				|| cmdId == CmdConstant.BIND_CMD_ID_RESPONSE) {
-			session.setAttribute(IS_LOGIN, false);
+			getServerSession(session, sessionStore).setAttribute(IS_LOGIN, false);
 
 			LoginResponseMessage lm = (LoginResponseMessage) msg;
 			int result = lm.getResult();
 			if (LoginResult.SUCCESS.getPosCode() == result) {
-				session.setAttribute(IS_LOGIN, true);
+				getServerSession(session, sessionStore).setAttribute(IS_LOGIN, true);
 			}
 		}
 		

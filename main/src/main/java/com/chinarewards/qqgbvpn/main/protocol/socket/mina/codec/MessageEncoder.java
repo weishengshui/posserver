@@ -15,7 +15,11 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
+import com.chinarewards.qqgbvpn.main.protocol.filter.SessionKeyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
+import com.chinarewards.qqgbvpn.main.session.SessionKeyCodec;
+import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 public class MessageEncoder implements ProtocolEncoder {
 
@@ -27,6 +31,8 @@ public class MessageEncoder implements ProtocolEncoder {
 	
 	protected CmdCodecFactory cmdCodecFactory;
 
+	SessionKeyCodec skCodec = new SessionKeyCodec();
+	
 	/**
 	 * XXX can 'injector' be skipped?
 	 * 
@@ -63,7 +69,6 @@ public class MessageEncoder implements ProtocolEncoder {
 	@Override
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
-		
 		log.debug("encode message start");
 		if (session != null && session.isConnected()) {
 			log.trace("Mina session ID: {}", session.getId());
@@ -77,7 +82,26 @@ public class MessageEncoder implements ProtocolEncoder {
 		byte[] bodyByte = null;
 		log.debug("cmdId to send: ({})", cmdId);
 		
+		int totalMsgLength = 0;
+		
 		if (bodyMessage instanceof ErrorBodyMessage) {
+			//保证在返回传送session key的时候，mina sessionId 和message head的sessionId一致
+			if (session
+					.containsAttribute(SessionKeyMessageFilter.RETURN_SESSION_ID_TO_CLIENT)
+					&& session
+							.containsAttribute(SessionKeyMessageFilter.SESSION_ID)
+					&& session
+							.containsAttribute(SessionKeyMessageFilter.CLIENT_SUPPORT_SESSION_ID)) {
+				log.debug("setting session key in message header");
+				V1SessionKey key = new V1SessionKey(
+						MinaUtil.getServerSessionId(session));
+				headMessage.setSessionKey(key);
+				headMessage.setFlags(
+						headMessage.getFlags() | 0x8000);
+			} else if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0
+					&& headMessage.getSessionKey() == null) {
+				headMessage.setFlags(0);
+			}
 			bodyByte = new byte[ProtocolLengths.COMMAND + 4];
 			ErrorBodyMessage errorBodyMessage = (ErrorBodyMessage) bodyMessage;
 			Tools.putUnsignedInt(bodyByte, errorBodyMessage.getCmdId(), 0);
@@ -96,30 +120,54 @@ public class MessageEncoder implements ProtocolEncoder {
 			bodyByte = bodyMessageCoder.encode(bodyMessage, charset);
 		}
 
-		//head process
-		headMessage.setMessageSize(ProtocolLengths.HEAD + bodyByte.length);
+		totalMsgLength = ProtocolLengths.HEAD + bodyByte.length; 
+		
+		byte[] serializedSessionKey = null;
+		//只要flags标识为1，我们就不回复session key的信息给client
+		if ((headMessage.getFlags() & HeadMessage.FLAG_SESSION_ID) != 0) {
+			log.debug("message header indicates session ID presence, will encode");
+			log.debug("headMessage.getSessionKey()={}",headMessage.getSessionKey());
+			// session key is present
+			// FIXME should respect the version ID in the session key.
+			serializedSessionKey = skCodec.encode(headMessage.getSessionKey());
+			totalMsgLength += serializedSessionKey.length;
+		}
+		
+		
+		byte[] result = new byte[totalMsgLength];
+		
+		// head process
+		headMessage.setMessageSize(totalMsgLength);
 		byte[] headByte = packageHeadCodec.encode(headMessage);
 		
-		
-		byte[] result = new byte[ProtocolLengths.HEAD + bodyByte.length];
-
+		/* build the complete encoded buffer in vaiable 'result' */
+		int idx = 0;
 		Tools.putBytes(result, headByte, 0);
-		Tools.putBytes(result, bodyByte, ProtocolLengths.HEAD);
+		idx += ProtocolLengths.HEAD;
+		if (serializedSessionKey != null) {
+			Tools.putBytes(result, serializedSessionKey, idx);
+			idx += serializedSessionKey.length;
+		}
+		Tools.putBytes(result, bodyByte, idx);
+		idx += bodyByte.length;
 		
-		// make the 
+		/* calculate the checksum using the 'result' buffer */
 		int checkSumVal = Tools.checkSum(result, result.length);
 		Tools.putUnsignedShort(result, checkSumVal, 10);
 		log.debug("Encoded message checkum: 0x{}", Integer.toHexString(checkSumVal));
-		
-		IoBuffer buf = IoBuffer.allocate(result.length);
 
+
+		// write to Mina session
+		// prepare buffer
+		IoBuffer buf = IoBuffer.allocate(totalMsgLength);
+		// write header (16 byte)
+		buf.put(result);
+		
 		// debug print
 		log.debug("Encoded byte content");
 		// TODO make the '96' be configurable.
-		CodecUtil.hexDumpForLogging(log, result, 96);
-
-		// write to Mina session
-		buf.put(result);
+		CodecUtil.hexDumpForLogging(log, buf.array(), 96);
+		
 		buf.flip();
 		out.write(buf);
 		log.debug("encode message end");

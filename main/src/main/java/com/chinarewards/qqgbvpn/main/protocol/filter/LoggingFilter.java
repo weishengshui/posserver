@@ -4,14 +4,15 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.apache.mina.core.buffer.IoBuffer;
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
+import com.google.inject.Inject;
 
 /**
  * Provides better business-oriented logging.
@@ -25,11 +26,18 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  * @author cyril
  * @since 0.1.0
  */
-public class LoggingFilter extends IoFilterAdapter {
+public class LoggingFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
 	private int maxHexDumpLength = 96;
+	
+	private SessionStore sessionStore;
+	
+	@Inject
+	public LoggingFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
 
 	/**
 	 * Returns the maximum length which data will be dumped for incoming and
@@ -103,7 +111,7 @@ public class LoggingFilter extends IoFilterAdapter {
 			if (log.isWarnEnabled()) {
 				log.warn("An exception is caught when handling command. Detailed information: "
 						+ " client "
-						+ MinaUtil.buildCommonClientAddressText(session));
+						+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session, sessionStore)));
 			}
 		} catch (Throwable t) {
 			// should not affect the normal flow
@@ -124,7 +132,6 @@ public class LoggingFilter extends IoFilterAdapter {
 		printMessageReceivedFrom(session);
 		// dump part of the raw message
 		doHexDump(message, getMaxHexDumpLength());
-
 		nextFilter.messageReceived(session, message);
 
 		log.trace("messageReceived() done");
@@ -184,9 +191,10 @@ public class LoggingFilter extends IoFilterAdapter {
 	protected void printMessageReceivedFrom(IoSession session) {
 		if (log.isTraceEnabled()) {
 			log.trace("raw message received from "
-					+ MinaUtil.buildCommonClientAddressText(session));
+					+ MinaUtil.buildCommonClientAddressText(session, getServerSession(session, sessionStore)));
 		}
 	}
+	
 
 	protected void doHexDump(Object message, int maxLength) {
 		// do nothing if not IoBuffer
@@ -243,7 +251,7 @@ public class LoggingFilter extends IoFilterAdapter {
 	 * @return
 	 */
 	protected String getPosIdFromSession(IoSession session) {
-		return MinaUtil.getPosIdFromSession(session);
+		return MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore));
 	}
 
 	/**
