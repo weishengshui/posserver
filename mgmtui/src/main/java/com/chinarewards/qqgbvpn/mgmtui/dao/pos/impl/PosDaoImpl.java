@@ -9,7 +9,9 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+
 import javax.persistence.Query;
+
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -105,6 +107,7 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 		
 		StringBuffer countSql = new StringBuffer();
 		countSql.append("SELECT COUNT(p.id) FROM Pos p LEFT JOIN (Select pa.pos_id AS id , a.name FROM PosAssignment pa , Agent a WHERE pa.agent_id = a.id) g On p.id = g.id WHERE 1=1");
+
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 
 		log.debug("posSearchVO============:" + posSearchVO);
@@ -188,6 +191,7 @@ public class PosDaoImpl extends BaseDao implements PosDao {
 			}
 			vo.setVersion(((BigInteger)obj[12]).longValue());
 			posVoList.add(vo);
+
 		}
 		
 		pageinfo.setItems(posVoList);

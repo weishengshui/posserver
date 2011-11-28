@@ -16,7 +16,6 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsExceptio
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;

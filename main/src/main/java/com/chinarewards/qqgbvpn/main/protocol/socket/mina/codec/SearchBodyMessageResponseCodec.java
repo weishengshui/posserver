@@ -140,6 +140,7 @@ public class SearchBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, detailByte, ProtocolLengths.COMMAND + 10);
 		
 		log.trace("SearchResponseMessage:{}", responseMessage);
+
 		return resultByte;
 	}
 }

@@ -36,15 +36,15 @@ public class PosVO implements java.io.Serializable {
 	Date createAt;
 
 	Date lastModifyAt;
-
+	
 	String firmware;
-
+	
 	Boolean upgradeRequired;
 
 	long version;
-
-	public PosVO() {
-	}
+	
+	
+	public PosVO(){}
 
 	public PosVO(String id, String posId, String model, String sn,
 			String simPhoneNo, String dstatus, String deliveryAgent,
@@ -70,6 +70,7 @@ public class PosVO implements java.io.Serializable {
 	}
 
 	// -------------------------------------------//
+
 
 	public long getVersion() {
 		return version;
@@ -174,7 +175,7 @@ public class PosVO implements java.io.Serializable {
 	public void setLastModifyAt(Date lastModifyAt) {
 		this.lastModifyAt = lastModifyAt;
 	}
-
+	
 	public String getFirmware() {
 		return firmware;
 	}

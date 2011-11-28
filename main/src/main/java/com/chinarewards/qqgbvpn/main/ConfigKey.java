@@ -25,6 +25,13 @@ public abstract class ConfigKey {
 	 * 
 	 * @since 0.1.0
 	 */
-	public static final String SERVER_CLIENTMAXIDLETIME = "server.client_max_idle_time";
+	 public static final String SERVER_CLIENTMAXIDLETIME = "server.client_max_idle_time";
+	
+	/**
+	 * 这个是用来配置监控端口用的
+	 * 
+	 * @since 0.1.0
+	 */
+	public static final String SERVER_MONITORPORT = "server.monitor_port";
 
 }

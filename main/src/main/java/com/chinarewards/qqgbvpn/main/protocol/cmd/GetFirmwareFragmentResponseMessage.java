@@ -73,6 +73,7 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 	 */
 	public long getCmdId() {
 		return cmdId;
+
 	}
 
 	/**

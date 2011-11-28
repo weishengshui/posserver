@@ -21,6 +21,7 @@ public class InitResponseMessage implements ICommand {
 	public String toString() {
 		return " [cmdId=" + cmdId + ", result=" + result + ", challenge="
 				+ Arrays.toString(challenge) + "]";
+
 	}
 
 	//-------------------------------------------------//

@@ -4,7 +4,22 @@
 package com.chinarewards.qqgbvpn.main.impl;
 
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryManagerMXBean;
+import java.lang.management.MemoryPoolMXBean;
 import java.net.InetSocketAddress;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.session.IdleStatus;
@@ -29,8 +44,11 @@ import com.chinarewards.qqgbvpn.main.protocol.filter.BodyMessageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.ErrorConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.IdleConnectionKillerFilter;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorCommandManageFilter;
+import com.chinarewards.qqgbvpn.main.protocol.filter.MonitorConnectManageFilter;
 import com.chinarewards.qqgbvpn.main.protocol.handler.ServerSessionHandler;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.MessageCoderFactory;
+import com.chinarewards.qqgbvpn.main.rmi.RMIRegistry;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
@@ -46,7 +64,13 @@ public class DefaultPosServer implements PosServer {
 	/**
 	 * Default timeout, in seconds, which the server will disconnect a client.
 	 */
-	public static final int DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
+
+	public static final long DEFAULT_SERVER_CLIENTMAXIDLETIME = 1800;
+	
+	/**
+	 * Default monitor port
+	 */
+	public static final int DEFAULT_SERVER_MONITORPORT = 9999;
 
 	protected final Configuration configuration;
 
@@ -64,6 +88,11 @@ public class DefaultPosServer implements PosServer {
 
 	protected final ServiceDispatcher serviceDispatcher;
 
+	protected JMXConnectorServer cs;
+	
+	private MonitorConnectManageFilter monitorConnectManageFilter;
+	private MonitorCommandManageFilter monitorCommandManageFilter;
+	
 	/**
 	 * socket server address
 	 */
@@ -73,6 +102,11 @@ public class DefaultPosServer implements PosServer {
 	 * The configured port to use.
 	 */
 	protected int port;
+
+	/**
+	 * The configured jmx moniter server port to use.
+	 */
+	protected int jmxMoniterPort;
 
 	/**
 	 * Whether the PersistService of Guice has been initialized, i.e. the
@@ -104,7 +138,10 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#start()
 	 */
 	@Override
-	public void start() throws PosServerException {
+	public void start() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
 
 		buildCodecMapping();
 
@@ -113,6 +150,7 @@ public class DefaultPosServer implements PosServer {
 
 		// setup Apache Mina server.
 		startMinaService();
+
 
 		log.info("Server running, listening on {}", getLocalPort());
 
@@ -133,12 +171,25 @@ public class DefaultPosServer implements PosServer {
 	 * Start the Apache Mina service.
 	 * 
 	 * @throws PosServerException
+	 * @throws NullPointerException
+	 * @throws MalformedObjectNameException
+	 * @throws NotCompliantMBeanException
+	 * @throws MBeanRegistrationException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws IOException
 	 */
-	protected void startMinaService() throws PosServerException {
+	protected void startMinaService() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
+
 		
-		// default  1800 seconds
-		int idleTime = configuration.getInt(ConfigKey.SERVER_CLIENTMAXIDLETIME,
+		// default 1800 seconds
+		long idleTime = configuration.getLong(ConfigKey.SERVER_CLIENTMAXIDLETIME,
 				DEFAULT_SERVER_CLIENTMAXIDLETIME);
+
+		log.debug("idleTime={}",idleTime);
+
 		port = configuration.getInt("server.port");
 		serverAddr = new InetSocketAddress(port);
 
@@ -150,12 +201,19 @@ public class DefaultPosServer implements PosServer {
 		// result.
 		
 		acceptor = new NioSocketAcceptor();
-		
+
 		// ManageIoSessionConnect filter if idle server will not close any idle IoSession
 		acceptor.getFilterChain().addLast("ManageIoSessionConnect",
-				new IdleConnectionKillerFilter());
+				new IdleConnectionKillerFilter(idleTime));
 		
-		// our logging filter
+		// add jmx monitor
+		addMonitor();
+		
+		// monitor manage connect count filter ------> jmx
+		acceptor.getFilterChain().addLast("monitorConnectManageFilter",
+				this.monitorConnectManageFilter);
+
+		// our logging filter		
 		acceptor.getFilterChain()
 				.addLast(
 						"cr-logger",
@@ -163,16 +221,21 @@ public class DefaultPosServer implements PosServer {
 		
 		acceptor.getFilterChain().addLast("logger", buildLoggingFilter());
 
+
 		// decode message
 		// TODO config MessageCoderFactory to allow setting the maximum message size 
 		acceptor.getFilterChain().addLast(
-				"codec",
-				new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
+				"codec", new ProtocolCodecFilter(new MessageCoderFactory(cmdCodecFactory)));
+
 
 		// kills error connection if too many.
 		acceptor.getFilterChain().addLast("errorConnectionKiller",
 				new ErrorConnectionKillerFilter());
-
+		
+		// monitor manage command filter ------> jmx
+		acceptor.getFilterChain().addLast("monitorCommandManageFilter",
+				this.monitorCommandManageFilter);
+		
 		// bodyMessage filter - short-circuit if error message is received.
 		acceptor.getFilterChain().addLast("bodyMessage",
 				new BodyMessageFilter());
@@ -196,7 +259,9 @@ public class DefaultPosServer implements PosServer {
 			log.info("Client idle timeout set to {} seconds, will be disabled",
 					idleTime);
 		}
-		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);
+
+		acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+
 		
 		// start the acceptor and listen to incomming connection!
 		try {
@@ -239,10 +304,11 @@ public class DefaultPosServer implements PosServer {
 	 * @see com.chinarewards.qqgbvpn.main.PosServer#stop()
 	 */
 	@Override
-	public void stop() {
-
+	public void stop() throws IOException {
 		acceptor.unbind(serverAddr);
 		acceptor.dispose();
+		if (cs != null && cs.isActive())
+			cs.stop();
 
 	}
 
@@ -286,6 +352,80 @@ public class DefaultPosServer implements PosServer {
 		}
 
 		return port;
+	}
+
+	public void addMonitor() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException {
+		jmxMoniterPort = configuration.getInt(ConfigKey.SERVER_MONITORPORT, DEFAULT_SERVER_MONITORPORT);
+		log.debug(" monitor port ={}", jmxMoniterPort);
+		// jmx----------------------code start--------------------------
+		// jmx 服务器
+		MBeanServer mbs = MBeanServerFactory.createMBeanServer();
+
+		// 管理连接状态数目工具Filter
+		this.monitorConnectManageFilter = new MonitorConnectManageFilter();
+		this.monitorCommandManageFilter = new MonitorCommandManageFilter();
+		// 注册需要被管理的MBean
+		mbs.registerMBean(ManagementFactory.getClassLoadingMXBean(), new ObjectName(
+		"ClassLoading:name=ClassLoading"));
+		
+		mbs.registerMBean(ManagementFactory.getCompilationMXBean(), new ObjectName(
+		"Compilation:name=Compilation"));
+		
+		mbs.registerMBean(ManagementFactory.getMemoryMXBean(), new ObjectName(
+		"Memory:name=Memory"));
+		
+		mbs.registerMBean(ManagementFactory.getOperatingSystemMXBean(), new ObjectName(
+		"OperatingSystem:name=OperatingSystem"));
+		
+		mbs.registerMBean(ManagementFactory.getRuntimeMXBean(), new ObjectName(
+		"Runtime:name=Runtime"));
+		
+		mbs.registerMBean(ManagementFactory.getThreadMXBean(), new ObjectName(
+		"Thread:name=Thread"));
+		
+		int unm=1;
+		for(GarbageCollectorMXBean garbageCollector : ManagementFactory.getGarbageCollectorMXBeans()){
+			mbs.registerMBean(garbageCollector, new ObjectName("GarbageCollector:name=GarbageCollector_"+(unm++)));
+		}
+		unm=1;
+		for(MemoryManagerMXBean memoryManager : ManagementFactory.getMemoryManagerMXBeans()){
+			mbs.registerMBean(memoryManager, new ObjectName("MemoryManager:name=MemoryManager_"+(unm++)));
+		}
+		unm=1;
+		for(MemoryPoolMXBean memoryPool : ManagementFactory.getMemoryPoolMXBeans()){
+			mbs.registerMBean(memoryPool, new ObjectName("MemoryPool:name=MemoryPool_"+(unm++)));
+		}
+		
+		mbs.registerMBean(this.monitorConnectManageFilter, new ObjectName(
+				"PosnetConnect:name=Connect"));
+		
+		mbs.registerMBean(this.monitorCommandManageFilter, new ObjectName(
+		"PosnetCommand:name=Command"));
+
+		String jmxServiceURL = "service:jmx:rmi:///jndi/rmi://localhost:"
+				+ jmxMoniterPort + "/jmxrmi";
+		// Create an RMI connector and start it
+		JMXServiceURL url = new JMXServiceURL(jmxServiceURL);
+
+		log.debug(" JMXServiceURL ={}", jmxServiceURL);
+
+		cs = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mbs);
+		// jmx----------------------code end--------------------------
+	}
+
+	@Override
+	public void setMonitorEnable(boolean isMonitorEnable) throws IOException {
+		if (cs != null && isMonitorEnable) {
+			RMIRegistry.createRegistry(jmxMoniterPort);
+			cs.start();
+		} else {
+			if (cs != null && cs.isActive()&& !isMonitorEnable){
+				cs.stop();
+			}
+		}
 	}
 
 }

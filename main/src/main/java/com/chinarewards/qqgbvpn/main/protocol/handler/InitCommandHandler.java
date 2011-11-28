@@ -37,7 +37,6 @@ public class InitCommandHandler implements ServiceHandler {
 		InitResponseMessage  initResponseMessage  = null;
 		byte[] newChallenge = ChallengeUtil.generateChallenge();
 		try {
-			//创建一个新的challenge
 			initResponseMessage = loginManager.init(bodyMessage, newChallenge);
 			
 			//save to session

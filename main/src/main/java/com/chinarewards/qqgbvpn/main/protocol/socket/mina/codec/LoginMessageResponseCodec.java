@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
@@ -53,7 +52,8 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		responseMessage.setResult(result);
 		responseMessage.setChallenge(challenge);
 		
-		log.trace("LoginResponseMessage:{}", responseMessage);
+		log.debug("login/bind message request:cmdId is ({}) , result is ({}) ,challeuge is ({})",
+				new Object[]{cmdId, result, challenge});
 		return responseMessage;
 	}
 
@@ -74,6 +74,7 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
 		
 		log.trace("LoginResponseMessage:{}", responseMessage);
+
 		return resultByte;
 	}
 

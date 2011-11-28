@@ -10,7 +10,6 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -75,6 +74,7 @@ public class LoginMessageCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, challengeResponse, ProtocolLengths.COMMAND + ProtocolLengths.POS_ID);
 		
 		log.trace("LoginRequestMessage:{}", requestMessage);
+
 		return resultByte;
 	}
 

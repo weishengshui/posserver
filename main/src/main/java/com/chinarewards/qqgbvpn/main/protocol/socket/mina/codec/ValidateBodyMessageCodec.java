@@ -12,7 +12,6 @@ import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateRequestMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 public class ValidateBodyMessageCodec implements ICommandCodec {
@@ -113,6 +112,7 @@ public class ValidateBodyMessageCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND);
 		
 		log.trace("ValidateRequestMessage:{}", requestMessage);
+
 		return resultByte;
 	}
 

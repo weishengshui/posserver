@@ -8,7 +8,6 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.agent.AgentLogic;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.agent.AgentVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.struts.BasePagingToolBarAction;
 import com.chinarewards.qqgbvpn.mgmtui.util.Tools;
@@ -228,6 +227,5 @@ public class AgentAction extends BasePagingToolBarAction {
 	public void setAgentPosList(List<PosVO> agentPosList) {
 		this.agentPosList = agentPosList;
 	}
-	
 	
 }

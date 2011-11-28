@@ -244,6 +244,7 @@ public class ProtocolMessageDecoder {
 			bodyMessage.setErrorCode(CmdConstant.ERROR_INVALID_CMD_ID);
 			return bodyMessage;
 		}
+
 	}
 
 }

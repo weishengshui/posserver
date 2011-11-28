@@ -56,4 +56,5 @@ public final class PosGetQQGroupBuyListTask extends PosTask {
 		return buildMessage.buildBodyMessage(map);
 	}
 	
+
 }

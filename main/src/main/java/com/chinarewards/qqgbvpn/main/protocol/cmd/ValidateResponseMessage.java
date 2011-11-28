@@ -24,6 +24,7 @@ public class ValidateResponseMessage implements ICommand {
 				+ resultName + ", resultExplain=" + resultExplain
 				+ ", currentTime=" + currentTime + ", useTime=" + useTime
 				+ ", validTime=" + validTime + "]";
+
 	}
 
 	//---------------------------------------//

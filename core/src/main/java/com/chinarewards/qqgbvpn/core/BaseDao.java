@@ -274,6 +274,7 @@ public abstract class BaseDao extends JpaBase {
 		return newPageInfo;
 	}
 	
+
 	/**
 	 * 取记录总数
 	 * @author iori

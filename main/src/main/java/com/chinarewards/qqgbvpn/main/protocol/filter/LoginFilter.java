@@ -132,6 +132,7 @@ public class LoginFilter extends IoFilterAdapter {
 				CmdConstant.FIRMWARE_UP_DONE_CMD_ID,
 				CmdConstant.ECHO_CMD_ID
 				};
+
 		return Arrays.asList(ids);
 	}
 	
