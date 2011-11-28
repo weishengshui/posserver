@@ -33,20 +33,6 @@ public class IdleConnectionKillerFilter extends AbstractFilter {
 	public void sessionIdle(NextFilter nextFilter, IoSession session,
 			IdleStatus status) throws Exception {
 
-		if (log.isDebugEnabled()) {
-			log.debug(
-					"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {})",
-					new Object[] { MinaUtil.buildAddressPortString(session),
-							session.getId(),
-							MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
-		}
-		
-		if(session.containsAttribute(SessionKeyMessageFilter.SESSION_ID)){
-			//在连线断开的时间情况session key的信息，当然是在session key过期的情况下
-			sessionStore.expiredSession((String)session.getAttribute(SessionKeyMessageFilter.SESSION_ID));
-			
-		}
-
 		// 第一次闲置触发就设置闲置开始时间
 		if (session.getAttribute("startIdleTime") == null) {
 			session.setAttribute("startIdleTime", System.currentTimeMillis());
@@ -55,6 +41,19 @@ public class IdleConnectionKillerFilter extends AbstractFilter {
 			long startTime = Long.valueOf(session.getAttribute("startIdleTime")
 					.toString());
 			if (System.currentTimeMillis() - startTime >= idleKillerTime) {
+				if (log.isDebugEnabled()) {
+					log.debug(
+							"Connection idle too long, closing... (addr: {}, session ID: {}, POS ID: {})",
+							new Object[] { MinaUtil.buildAddressPortString(session),
+									session.getId(),
+									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
+				}
+				
+				if(session.containsAttribute(SessionKeyMessageFilter.SESSION_ID)){
+					//在连线断开的时间情况session key的信息，当然是在session key过期的情况下
+					sessionStore.expiredSession((String)session.getAttribute(SessionKeyMessageFilter.SESSION_ID));
+					
+				}
 				session.close(true);
 				log.trace("sessionIdle() done");
 			}
