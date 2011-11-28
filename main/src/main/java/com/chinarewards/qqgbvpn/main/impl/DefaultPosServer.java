@@ -173,7 +173,7 @@ public class DefaultPosServer implements PosServer, ConfigurationListener {
 
 	private void startTimer() {
 		long timerDelay = this.configuration.getLong(
-				ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
+				ConfigKey.SERVER_SESSION_TIMEOUT_CHECK_INTERVAL,
 				DEFAULT_SERVER_START_TIMER_DELAY);
 		log.debug("config server.session.timeout_check_interval={}",
 				timerDelay);
@@ -478,7 +478,7 @@ public class DefaultPosServer implements PosServer, ConfigurationListener {
 			log.debug("configurationChanged event!");
 			if (event.getPropertyValue() != null) {
 				long timerDelay = this.configuration.getLong(
-						ConfigKey.SERVER_CHECK_EXPIRED_SESSION_TIMER_DELAY,
+						ConfigKey.SERVER_SESSION_TIMEOUT_CHECK_INTERVAL,
 						DEFAULT_SERVER_START_TIMER_DELAY);
 				log.debug("config server.session.timeout_check_interval={}",
 						timerDelay);

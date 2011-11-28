@@ -126,7 +126,7 @@ public class InMemorySessionStore implements SessionStore {
 	public void expiredSession(String sessionId) {
 		log.debug("parameter sessionid={}", sessionId);
 		long expiredTime = configuration
-				.getLong(ConfigKey.SERVER_EXPIRED_SESSION_KEY_TIME,
+				.getLong(ConfigKey.SERVER_SESSION_CLIENT_TIMEOUT,
 						DEFAULT_EXPIRED_TIME);
 		log.debug("config_expired_time={} second!", expiredTime);
 		long expiredMillis = expiredTime * 1000;
@@ -149,7 +149,7 @@ public class InMemorySessionStore implements SessionStore {
 	@Override
 	public void expiredSession() {
 		long expiredTime = configuration
-				.getLong(ConfigKey.SERVER_EXPIRED_SESSION_KEY_TIME,
+				.getLong(ConfigKey.SERVER_SESSION_CLIENT_TIMEOUT,
 						DEFAULT_EXPIRED_TIME);
 		log.debug("config_expired_time={} second!", expiredTime);
 		clearStore(expiredTime);
