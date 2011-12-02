@@ -1,14 +1,15 @@
 package com.chinarewards.qqgbvpn.main.protocol.filter;
 
-import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.util.MinaUtil;
+import com.google.inject.Inject;
 
 /**
  * Kills connections if it has too many error message received.
@@ -18,11 +19,22 @@ import com.chinarewards.qqgbvpn.main.util.MinaUtil;
  * @author cyril
  * @since 0.1.0
  */
-public class ErrorConnectionKillerFilter extends IoFilterAdapter {
+public class ErrorConnectionKillerFilter extends AbstractFilter {
 
 	Logger log = LoggerFactory.getLogger(getClass());
 
+	/**
+	 * TODO make this configurable.
+	 */
 	private int errorCountThreshold = 5;
+	
+	final SessionStore sessionStore;
+	
+	@Inject
+	public ErrorConnectionKillerFilter(SessionStore sessionStore) {
+		this.sessionStore = sessionStore;
+	}
+	
 
 	/**
 	 * Returns the error count threshold. When a Mina session has a consecutive
@@ -78,7 +90,7 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(session) });
+									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 				}
 				
 				// close and return.
@@ -112,7 +124,7 @@ public class ErrorConnectionKillerFilter extends IoFilterAdapter {
 							new Object[] {
 									MinaUtil.buildAddressPortString(session),
 									session.getId(),
-									MinaUtil.getPosIdFromSession(session) });
+									MinaUtil.getPosIdFromSession(getServerSession(session, sessionStore)) });
 			}
 		}
 		session.setAttribute(getSessionKey(), 0);

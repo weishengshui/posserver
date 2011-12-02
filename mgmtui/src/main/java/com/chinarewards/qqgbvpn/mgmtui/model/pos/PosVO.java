@@ -36,13 +36,13 @@ public class PosVO implements java.io.Serializable {
 	Date createAt;
 
 	Date lastModifyAt;
-
+	
 	String firmware;
-
+	
 	Boolean upgradeRequired;
 
 	long version;
-
+	
 	public PosVO() {
 	}
 
@@ -174,7 +174,7 @@ public class PosVO implements java.io.Serializable {
 	public void setLastModifyAt(Date lastModifyAt) {
 		this.lastModifyAt = lastModifyAt;
 	}
-
+	
 	public String getFirmware() {
 		return firmware;
 	}

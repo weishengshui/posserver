@@ -13,7 +13,6 @@ import com.chinarewards.qqgbvpn.mgmtui.logic.exception.PosIdIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.logic.exception.SimPhoneNoIsExitsException;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
-import com.chinarewards.qqgbvpn.mgmtui.model.util.PaginationTools;
 
 /**
  * pos service
@@ -76,7 +75,7 @@ public interface PosLogic {
 	 * @param posSearchVO
 	 * @return
 	 */
-	public List<PosVO> queryPosByAgentId(String agentId);	
+	public List<PosVO> queryPosByAgentId(String agentId);    
 
 	/**
 	 * 批量更新 Pos 状态为 {@link PosDeliveryStatus#DELIVERED} 和 {@link PosOperationStatus#ALLOWED}

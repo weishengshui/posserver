@@ -16,12 +16,9 @@ import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbpvn.testing.util.DigestUtil;
 import com.chinarewards.qqgbpvn.testing.util.FileUtil;
-import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * description：POS机下載固件內容

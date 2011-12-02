@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -49,7 +48,8 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 		message.setCmdId(cmdId);
 		message.setResult(result);
 
-		log.trace("FirmwareUpDoneResponseMessage:{}", message);
+		log.debug("init message request:cmdId is ({}) , result is ({}) ",
+				cmdId, result);
 		return message;
 	}
 
@@ -71,6 +71,7 @@ public class FirmwareUpDoneResponseCodec implements ICommandCodec {
 		buf.putShort(msg.getResult());
 		
 		log.trace("FirmwareUpDoneResponseMessage:{}", msg);
+
 		// return result
 		return buf.array();
 

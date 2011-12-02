@@ -3,14 +3,15 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -61,7 +62,8 @@ public class FirmwareResponseMessageCodec implements ICommandCodec {
 		message.setSize(size);
 		message.setFirmwareName(firmwareName);
 		
-		log.trace("FirmwareUpgradeRequestResponseMessage:{}", message);
+		log.debug("search message request:cmdId is ({}) , result is ({}), size is ({})" +
+				", firmwareName is ({})", new Object[]{cmdId, result, size, firmwareName});
 		return message;
 	}
 	
@@ -92,6 +94,7 @@ public class FirmwareResponseMessageCodec implements ICommandCodec {
 		}
 		
 		log.trace("FirmwareUpgradeRequestResponseMessage:{}", responseMessage);
+
 		return Arrays.copyOfRange(buf.array(), 0, buf.position());
 	}
 	

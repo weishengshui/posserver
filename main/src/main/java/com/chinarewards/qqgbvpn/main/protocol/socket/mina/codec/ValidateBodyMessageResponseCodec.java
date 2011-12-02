@@ -1,7 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
+
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +119,7 @@ public class ValidateBodyMessageResponseCodec implements ICommandCodec {
 
 
 		log.trace("ValidateResponseMessage:{}", responseMessage);
+
 		return resultByte;
 	}
 

@@ -3,6 +3,13 @@
  */
 package com.chinarewards.qqgbvpn.main;
 
+import java.io.IOException;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Defines the interface of a POS server.
  * 
@@ -15,12 +22,15 @@ public interface PosServer {
 	/**
 	 * Start the server.
 	 */
-	public void start() throws PosServerException;
+	public void start() throws PosServerException,
+			InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, MalformedObjectNameException,
+			NullPointerException, IOException;
 
 	/**
 	 * Stop the server.
 	 */
-	public void stop();
+	public void stop() throws IOException;
 
 	/**
 	 * Complete shutdown the server and release all resources. This should be
@@ -39,5 +49,12 @@ public interface PosServer {
 	 * @return
 	 */
 	public int getLocalPort();
+
+	/**
+	 * 是否开启监控服务
+	 * @param isMonitorEnable
+	 * @throws IOException
+	 */
+	public void setMonitorEnable(boolean isMonitorEnable)throws IOException;
 
 }

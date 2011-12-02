@@ -10,7 +10,6 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 /**
@@ -78,6 +77,7 @@ public class GetFirmwareFragmentRequestMessageCodec implements ICommandCodec {
 				+ ProtocolLengths.FIRMWARE_OFFSET);
 		
 		log.trace("GetFirmwareFragmentRequestMessage:{}", requestMessage);
+
 		return resultByte;
 	}
 	

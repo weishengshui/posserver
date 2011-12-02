@@ -48,4 +48,5 @@ public abstract class ProtocolLengths {
 	
 	
 	public static final int ECHO_COMMAND_RESULT = 1;
+
 }

@@ -140,7 +140,7 @@ public class CodecUtil {
 			byte[] part = new byte[partLength];
 			System.arraycopy(buf, 0, part, 0, partLength);
 			int omitted = buf.length - partLength;
-			
+
 			String hexDump = CodecUtil.hexDumpAsString(part);
 
 			// use hex dump to output
@@ -176,6 +176,7 @@ public class CodecUtil {
 		int position = buffer.position();
 		// number of available bytes to read.
 		int remaining = buffer.remaining();
+		
 		// the actual length to read.
 		int partLength = remaining < maxHexDumpLength ? remaining
 				: maxHexDumpLength;

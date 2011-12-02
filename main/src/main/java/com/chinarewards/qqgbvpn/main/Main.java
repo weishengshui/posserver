@@ -49,7 +49,10 @@ public class Main {
 			// request the application to stop.
 			log.info("Requesting message sender to stop...");
 	
-			server.stop();
+			try {
+				server.stop();
+			} catch (Throwable t) {
+			}
 			server.shutdown();
 			mainThread.interrupt();
 	
@@ -118,6 +121,7 @@ public class Main {
 		try {
 			
 			server.start();
+			server.setMonitorEnable(true);
 			
 		} catch (Throwable e) {
 			// don't let it die without gracefully closing the application.
