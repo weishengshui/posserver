@@ -17,7 +17,6 @@ public class SearchResponseDetail {
 		return " [grouponId=" + grouponId + ", grouponName=" + grouponName
 				+ ", mercName=" + mercName + ", listName=" + listName
 				+ ", detailName=" + detailName + "]";
-
 	}
 
 	//--------------------------------------------------//

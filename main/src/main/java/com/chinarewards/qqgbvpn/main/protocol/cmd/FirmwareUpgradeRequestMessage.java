@@ -20,7 +20,6 @@ public class FirmwareUpgradeRequestMessage implements ICommand {
 
 	public long getCmdId() {
 		return cmdId;
-
 	}
 
 	public String getPosId() {

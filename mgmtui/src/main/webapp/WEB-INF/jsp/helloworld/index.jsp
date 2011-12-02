@@ -17,7 +17,7 @@
     <tr>
       <td align="center"><img src="<s:url value='/images/btbg.gif' />" width="7" height="14"></td>
       <td class="font14white" align="left"><strong>联系我们</strong></td>
-      <td width="80" align="left"><a href="<s:url value='/profile/myHome' />"><img src="<s:url value='/images/backbutton.gif' />" width="63" height="21"></a></td>
+      <td width="80" align="left"></td>
     </tr>
   </table>
   <table width="960" align="center" cellpadding="20" class="bk-bg" style="margin:0 auto">

@@ -13,7 +13,6 @@ public class ValidateRequestMessage implements ICommand {
 	public String toString() {
 		return " [cmdId=" + cmdId + ", grouponId=" + grouponId
 				+ ", grouponVCode=" + grouponVCode + "]";
-
 	}
 
 	//--------------------------------//

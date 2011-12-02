@@ -66,7 +66,6 @@ public final class PosGetQQGroupBuyValidationTask extends PosTask {
 		
 		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosGetQQGroupBuyValidation);
 		return buildMessage.buildBodyMessage(map);
-
 	}
 	
 }

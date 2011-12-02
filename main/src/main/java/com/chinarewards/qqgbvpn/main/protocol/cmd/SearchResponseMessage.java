@@ -32,7 +32,6 @@ public class SearchResponseMessage implements ICommand {
 		return " [cmdId=" + cmdId + ", result=" + result + ", totalnum="
 				+ totalnum + ", curnum=" + curnum + ", curpage=" + curpage
 				+ ", totalpage=" + totalpage + ", detail=" + detail + "]";
-
 	}
 
 	@Override

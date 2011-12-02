@@ -636,5 +636,5 @@ public class GroupBuyingUnbindDaoImpl extends BaseDao implements GroupBuyingUnbi
 		}
 		return voList;
 	}
-
+    
 }
