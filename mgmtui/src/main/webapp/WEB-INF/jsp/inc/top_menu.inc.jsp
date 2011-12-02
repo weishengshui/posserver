@@ -56,27 +56,6 @@
 	</li>
 	<!-- 交付单管理 ENDS -->
 	
-	<!-- 第三方管理 STARTS -->
-	<li><a href="#">第三方管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
-	<!--[if lte IE 6]><table><tr><td><![endif]-->
-		<ul>
-		<li><a href="<s:url action="searchAgent" namespace="/agent" />">列表</a></li>
-		<li><a href="<s:url action="showEditAgent" namespace="/agent" />">新増</a></li>
-		</ul>
-	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
-	</li>
-	<!-- 第三方管理 ENDS -->
-	
-	<!-- 交付单管理 STARTS -->
-	<li><a href="#">交付单管理<!--[if gte IE 7]><!--></a><!--<![endif]-->
-	<!--[if lte IE 6]><table><tr><td><![endif]-->
-		<ul>
-		<li><a href="<s:url action="searchDelivery" namespace="/delivery" />">列表</a></li>
-		</ul>
-	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
-	</li>
-	<!-- 交付单管理 ENDS -->
-	
 	<!-- POS回收 STARTS -->
 	<li><a href="#">POS回收<!--[if gte IE 7]><!--></a><!--<![endif]-->
 	<!--[if lte IE 6]><table><tr><td><![endif]-->
