@@ -17,7 +17,6 @@ import com.google.inject.Module;
  */
 public abstract class GuiceTest extends BaseTest {
 
-	// code
 	private Injector injector;
 
 	/**

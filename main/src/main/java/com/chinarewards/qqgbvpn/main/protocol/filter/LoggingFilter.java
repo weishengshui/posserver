@@ -132,6 +132,7 @@ public class LoggingFilter extends AbstractFilter {
 		printMessageReceivedFrom(session);
 		// dump part of the raw message
 		doHexDump(message, getMaxHexDumpLength());
+		
 		nextFilter.messageReceived(session, message);
 
 		log.trace("messageReceived() done");

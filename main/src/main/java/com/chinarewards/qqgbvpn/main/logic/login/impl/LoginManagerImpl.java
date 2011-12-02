@@ -138,7 +138,6 @@ public class LoginManagerImpl implements LoginManager {
 					oldChallenge);
 
 			logger.debug("new challenge for POS (POS ID): {}", newChallenge, pos.getPosId());
-
 			posDao.get().merge(pos);
 
 			if (check) {

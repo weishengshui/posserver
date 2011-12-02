@@ -60,7 +60,6 @@ public class IncompleteTask extends PosTask {
 		Map<String, String> map = new HashMap<String, String>();
 		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosInit);
 		return buildMessage.buildBodyMessage(map);
-
 	}
 	
 	@Override

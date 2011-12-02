@@ -43,8 +43,8 @@ public class PosVO implements java.io.Serializable {
 
 	long version;
 	
-	
-	public PosVO(){}
+	public PosVO() {
+	}
 
 	public PosVO(String id, String posId, String model, String sn,
 			String simPhoneNo, String dstatus, String deliveryAgent,
@@ -70,7 +70,6 @@ public class PosVO implements java.io.Serializable {
 	}
 
 	// -------------------------------------------//
-
 
 	public long getVersion() {
 		return version;

@@ -59,7 +59,6 @@
 			</s:elseif>	
 		</td>
 		<td><s:property value="#list.deliveryAgent" /></td>
-
 		<td><button type="button" onclick="unbind('<s:property value="#list.posId" />')">解绑</button></td>
 	</tr>
 	</s:iterator>

@@ -74,7 +74,6 @@ public class LoginMessageResponseCodec implements ICommandCodec {
 		Tools.putBytes(resultByte, challeuge, ProtocolLengths.COMMAND + ProtocolLengths.RESULT);
 		
 		log.trace("LoginResponseMessage:{}", responseMessage);
-
 		return resultByte;
 	}
 

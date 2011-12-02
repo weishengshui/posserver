@@ -173,7 +173,6 @@ public abstract class PosTask extends AbstractJavaSamplerClient {
 	}
 	
 	/**
-<<<<<<< HEAD
 	 * description：build package body bytes
 	 * @return
 	 * @time 2011-9-23   下午02:22:37

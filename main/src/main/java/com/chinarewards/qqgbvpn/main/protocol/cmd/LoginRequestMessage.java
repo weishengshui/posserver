@@ -21,7 +21,6 @@ public class LoginRequestMessage implements ICommand {
 	public String toString() {
 		return " [cmdId=" + cmdId + ", posId=" + posId + ", challengeResponse="
 				+ Arrays.toString(challengeResponse) + "]";
-
 	}
 
 	public long getCmdId() {

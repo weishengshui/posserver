@@ -25,6 +25,7 @@ public class ApplicationModule extends AbstractModule {
 		// log
 		bind(LogConfig.class).to(LogConfigImpl.class).in(Singleton.class);
 
+		bind(LoginFilter.class);
 	}
 
 }

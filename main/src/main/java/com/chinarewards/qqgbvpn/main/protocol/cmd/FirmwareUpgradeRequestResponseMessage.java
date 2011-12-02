@@ -25,7 +25,6 @@ public class FirmwareUpgradeRequestResponseMessage implements ICommand {
 	// -------------------------------------------------//
 	public long getCmdId() {
 		return cmdId;
-
 	}
 
 	public int getResult() {

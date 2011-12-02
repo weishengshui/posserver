@@ -100,7 +100,6 @@ public class CmdConstant {
 	 */
 	public static final long ERROR_NO_LOGIN_CODE = 7;
 
-
 	/**
 	 * Invalid command ID.
 	 */
@@ -131,7 +130,6 @@ public class CmdConstant {
 	 */
 	public static final long FIRMWARE_UP_DONE_CMD_ID_RESPONSE = 18;
 	
-
 	/**
 	 * 华厦银行查询兑换品请求
 	 */

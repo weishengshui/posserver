@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
-
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.exception.RunTaskException;
