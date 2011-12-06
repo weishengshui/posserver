@@ -14,7 +14,7 @@
 	<link href="<s:url value='/styles/main.css'/>" rel="stylesheet" type="text/css" media="all"/>
 	
 	<%-- pagingToolbar --%>
-	<link rel="stylesheet" href="<s:url value='/style/kernel/kernel.css'/>" type="text/css" />
+	<link rel="stylesheet" href="<s:url value='/styles/kernel/kernel.css'/>" type="text/css" />
 	<script type="text/javascript" src="<s:url value='/js/kernel/kernel.js'/>"></script>
 	<style media="print">
 		.noprint {display:none;}

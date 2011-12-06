@@ -39,27 +39,30 @@
 			<s:form id="searchDelivery_FORM_ID" namespace="/delivery" action="searchDelivery" method="GET">
 				<s:hidden name="pageInfo.pageId" id="pageInfo.pageId" />
 				<s:hidden name="pageInfo.pageSize" id="pageInfo.pageSize" />
-			
-				交付单编号：
-				<input type="text" name="deliverySearchVO.dnNumber" value="<s:property value='#request.deliverySearchVO.dnNumber'/>"/>&nbsp;&nbsp;&nbsp;
-				交付单状态：
-				<select id="deliveryStatusList_ID" name="deliverySearchVO.status">
-					<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
-					<option value="DRAFT">草稿</option>
-					<option value="CONFIRMED">已确定</option>
-					<option value="PRINTED">已打印</option>
-				</select>&nbsp;&nbsp;&nbsp;
-				第三方：
-				<select id="deliveryAgentList_ID" name="deliverySearchVO.agentId" >
-					<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
-					<s:iterator id="agentVO" value="#request.agentVOList" status="i">
-						<option value="<s:property value='#agentVO.id'/>">
-							<s:property value="#agentVO.name"/>
-						</option>
-					</s:iterator>
-				</select>&nbsp;&nbsp;&nbsp;
-				<input type="submit" value="查询" />
-			</s:form>
+			<table>
+				<tr>
+					<td>交付单编号： <input type="text" name="deliverySearchVO.dnNumber"
+						value="<s:property value='#request.deliverySearchVO.dnNumber'/>" />&nbsp;&nbsp;&nbsp;
+					</td>
+					<td>交付单状态： <select id="deliveryStatusList_ID"
+						name="deliverySearchVO.status">
+						<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+						<option value="DRAFT">草稿</option>
+						<option value="CONFIRMED">已确定</option>
+						<option value="PRINTED">已打印</option>
+					</select>&nbsp;&nbsp;&nbsp;</td>
+					<td>第三方： <select id="deliveryAgentList_ID"
+						name="deliverySearchVO.agentId">
+						<option value="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+						<s:iterator id="agentVO" value="#request.agentVOList" status="i">
+							<option value="<s:property value='#agentVO.id'/>"><s:property
+								value="#agentVO.name" /></option>
+						</s:iterator>
+					</select>&nbsp;&nbsp;&nbsp;</td>
+					<td><input type="submit" value="查询" /></td>
+				</tr>
+			</table>
+		</s:form>
 		</td>
 	</tr>
 	<tr>
