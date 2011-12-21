@@ -3,6 +3,6 @@ CREATE TABLE IF NOT EXISTS changelog (
   complete_dt TIMESTAMP NOT NULL,
   applied_by VARCHAR(100) NOT NULL,
   description VARCHAR(500) NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ALTER TABLE changelog ADD CONSTRAINT Pkchangelog PRIMARY KEY (change_number);

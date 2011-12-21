@@ -45,8 +45,15 @@ public abstract class ConfigKey {
 	public static final String SERVER_SESSION_CLIENT_TIMEOUT = "server.session.client_timeout";
 	
 	/**
+	 * 这个是开关检查checksum
 	 * 0=检查，1=不检查
 	 */
 	public static final String SERVER_DISABLE_CHECKSUM_CHECK = "server.disable_checksum_check";
+	
+	/**
+	 * 这个是开关检查Challenge
+	 * 0=检查，1=不检查
+	 */
+	public static final String SERVER_DISABLE_CHALLENGE_CHECK = "server.disable_challenge_check";
 
 }

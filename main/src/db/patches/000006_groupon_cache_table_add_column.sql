@@ -1,0 +1,1 @@
+ALTER TABLE `GrouponCache` ADD COLUMN `resultCode` VARCHAR(10) NULL;
