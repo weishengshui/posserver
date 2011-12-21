@@ -163,7 +163,7 @@ public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
 			getEm().getTransaction().begin();
 		}
 		
-		String hql = "select r from GroupBuyValidateResult r where r.grouponId = :grouponId and r.grouponVCode = :grouponVCode and r.status = :status";
+		/*String hql = "select r from GroupBuyValidateResult r where r.grouponId = :grouponId and r.grouponVCode = :grouponVCode and r.status = :status";
 		List<GroupBuyValidateResult> list = getEm().createQuery(hql)
 				.setParameter("grouponId", grouponId).setParameter(
 						"grouponVCode", grouponVCode).setParameter("status",
@@ -173,7 +173,17 @@ public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
 			groupBuyValidateResult.setModifyAt(new Date());
 			groupBuyValidateResult.setStatus(GroupBuyValidateResultStatus.POSVALIDATION);
 			getEm().merge(groupBuyValidateResult);
-		} 
+		} */
+		
+		//将之前的更改状态，修改为删除
+		String hql = "delete from GroupBuyValidateResult r where r.grouponId = :grouponId and r.grouponVCode = :grouponVCode and r.status = :status";
+		getEm().createQuery(hql)
+				.setParameter("grouponId", grouponId)
+				.setParameter("grouponVCode", grouponVCode)
+				.setParameter("status",
+						GroupBuyValidateResultStatus.QQVALIDATION)
+				.executeUpdate();
+		
 		if (!getEm().getTransaction().isActive()) {
 			getEm().getTransaction().commit();
 		}
