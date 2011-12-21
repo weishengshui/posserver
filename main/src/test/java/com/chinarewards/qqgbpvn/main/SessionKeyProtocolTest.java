@@ -123,7 +123,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 					"/groupBuyingValidate");
 			// add handler to server
 			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8086);
+			server.getConnectors()[0].setPort(8787);
 			server.start();
 		}
 		// build test server end
