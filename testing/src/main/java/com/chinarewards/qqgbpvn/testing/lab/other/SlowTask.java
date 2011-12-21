@@ -17,11 +17,7 @@ import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
 import com.chinarewards.qqgbpvn.testing.util.SocketUtil;
-import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * description：分次发的的package

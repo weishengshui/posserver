@@ -1,14 +1,20 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
-import com.chinarewards.qqgbvpn.common.Tools;
+import com.chinarewards.qqgbvpn.main.session.ISessionKey;
 
 /**
- * head message
+ * Message header.
+ * 
  * 
  * @author huangwei
  * @since 0.1.0
  */
 public class HeadMessage {
+
+	/**
+	 * Indicate that the header contains session ID.
+	 */
+	public static final int FLAG_SESSION_ID = 0x8000;
 
 	private long seq;
 
@@ -19,6 +25,8 @@ public class HeadMessage {
 	private int checksum;
 
 	private long messageSize;
+
+	private ISessionKey sessionKey;
 
 	// -----------------------------------------------//
 	public long getSeq() {
@@ -61,6 +69,21 @@ public class HeadMessage {
 		this.messageSize = messageSize;
 	}
 
+	/**
+	 * @return the sessionKey
+	 */
+	public ISessionKey getSessionKey() {
+		return sessionKey;
+	}
+
+	/**
+	 * @param sessionKey
+	 *            the sessionKey to set
+	 */
+	public void setSessionKey(ISessionKey sessionKey) {
+		this.sessionKey = sessionKey;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer sbr = new StringBuffer();
@@ -68,7 +91,10 @@ public class HeadMessage {
 				.append(Long.toHexString(ack)).append("} flags:{0x")
 				.append(Integer.toHexString(flags)).append("} checksum:{0x")
 				.append(Integer.toHexString(checksum))
-				.append("} messageSize:{0x").append(Long.toHexString(messageSize)).append("}");
+				.append("} messageSize:{0x")
+				.append(Long.toHexString(messageSize)).append("}")
+				.append(" sessionKey:{").append(sessionKey).append("}")
+				;
 		return sbr.toString();
 	}
 

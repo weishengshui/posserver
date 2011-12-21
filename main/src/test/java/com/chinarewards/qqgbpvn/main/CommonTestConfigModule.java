@@ -9,6 +9,7 @@ import java.io.InputStream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.junit.Ignore;
 
 import com.google.inject.AbstractModule;
@@ -51,6 +52,7 @@ public class CommonTestConfigModule extends AbstractModule {
 		// load from resource
 		InputStream is = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream("posnet.ini");
+		conf.setReloadingStrategy(new FileChangedReloadingStrategy());
 		conf.load(is);
 		try {
 			is.close();

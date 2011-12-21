@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 import javax.persistence.NoResultException;
 
+import org.apache.commons.configuration.Configuration;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import com.chinarewards.qqgbvpn.domain.event.DomainEvent;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.logic.journal.JournalLogic;
+import com.chinarewards.qqgbvpn.main.ConfigKey;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.challenge.ChallengeUtil;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
@@ -45,6 +47,9 @@ public class LoginManagerImpl implements LoginManager {
 
 	@Inject
 	JournalLogic journalLogic;
+	
+	@Inject
+	Configuration configuration;
 
 	@Override
 	public InitResponseMessage init(InitRequestMessage req, byte[] newChallenge) {
@@ -133,9 +138,17 @@ public class LoginManagerImpl implements LoginManager {
 					"Loaded from db: pos.posId:{}, pos.secret:{}, oldChallenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
 							oldChallenge });
-			boolean check = ChallengeUtil.checkChallenge(
-					req.getChallengeResponse(), pos.getSecret(),
-					oldChallenge);
+			
+			
+			// 2011-12-2 harry 添加一个配置来控制是否检查challenge，0就是检查，1就是不检查
+			int disableChallengeCheck = this.configuration.getInt(ConfigKey.SERVER_DISABLE_CHALLENGE_CHECK,0);
+			logger.debug("disableChallengeCheck ={}", disableChallengeCheck);
+			boolean check = true;			
+			if(disableChallengeCheck == 0){
+				check = ChallengeUtil.checkChallenge(
+						req.getChallengeResponse(), pos.getSecret(),
+						oldChallenge);
+			}
 
 			logger.debug("new challenge for POS (POS ID): {}", newChallenge, pos.getPosId());
 			posDao.get().merge(pos);
@@ -190,9 +203,16 @@ public class LoginManagerImpl implements LoginManager {
 					"pos.posId:{}, pos.secret:{}, oldChallenge:{}",
 					new Object[] { pos.getPosId(), pos.getSecret(),
 							oldChallenge });
-			boolean check = ChallengeUtil.checkChallenge(
-					req.getChallengeResponse(), pos.getSecret(),
-					oldChallenge);
+			
+			// 2011-12-2 harry 添加一个配置来控制是否检查challenge，0就是检查，1就是不检查
+			int disableChallengeCheck = this.configuration.getInt(ConfigKey.SERVER_DISABLE_CHALLENGE_CHECK,0);
+			logger.debug("disableChallengeCheck ={}", disableChallengeCheck);
+			boolean check = true;			
+			if(disableChallengeCheck == 0){
+				check = ChallengeUtil.checkChallenge(
+						req.getChallengeResponse(), pos.getSecret(),
+						oldChallenge);
+			}
 
 			logger.debug("new challenge:{}", newChallenge);
 			posDao.get().merge(pos);

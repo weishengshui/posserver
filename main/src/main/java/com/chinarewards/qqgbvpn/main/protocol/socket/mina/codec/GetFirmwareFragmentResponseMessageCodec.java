@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -48,7 +47,8 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		
 		GetFirmwareFragmentResponseMessage message = new GetFirmwareFragmentResponseMessage(result, content);
 		
-		log.trace("GetFirmwareFragmentResponseMessage:{}", message);
+		log.debug("get firmware fragment message response:cmdId is ({}) , result is ({}), content is ({})" , 
+				new Object[]{cmdId, result, Arrays.toString(content)});
 		return message;
 	}
 	
@@ -80,6 +80,7 @@ public class GetFirmwareFragmentResponseMessageCodec implements ICommandCodec {
 		}
 		
 		log.trace("GetFirmwareFragmentResponseMessage:{}", msg);
+
 		// return result
 		return buf.array();
 	}

@@ -9,10 +9,8 @@ import javax.persistence.OptimisticLockException;
 import org.junit.Test;
 
 import com.chinarewards.qqgbvpn.common.SimpleDateTimeModule;
-import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.mgmtui.logic.pos.PosLogic;
-import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosSearchVO;
 import com.chinarewards.qqgbvpn.mgmtui.model.pos.PosVO;
 import com.chinarewards.qqgbvpn.mgmtui.util.JPATestCase;
 import com.google.inject.Module;
@@ -84,6 +82,7 @@ public class PosLogicTest extends JPATestCase {
 		System.out.println("Version:"+posVO77.getVersion());
 		System.out.println("Version:"+posVO88.getVersion());
 	}
+	
 /*
 	@Test
 	//hibernate对虚拟数据的方言和mysql的方言类型支持有差异

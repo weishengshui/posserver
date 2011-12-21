@@ -13,12 +13,9 @@ import com.chinarewards.qqgbpvn.testing.lab.PosTask;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BusinessType;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.MessageFactory;
-import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
 
 /**
  * description：POS机请求升级
@@ -64,6 +61,7 @@ public final class PosRequestUpgradeTask extends PosTask {
 		Map<String, String> map = new HashMap<String, String>();
 		BuildMessage buildMessage = MessageFactory.getBuildMessage(BusinessType.PosRequestUpgrade);
 		return buildMessage.buildBodyMessage(map);
+
 	}
 	
 }
