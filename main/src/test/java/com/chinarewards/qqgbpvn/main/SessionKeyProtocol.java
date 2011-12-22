@@ -50,21 +50,21 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
 
 /**
- * 
+ * FIXME restore this as SessionKeyProtocolTest
  * 
  * @author Cyril
  * @author harry
  * @since 0.1.0
  */
-public class SessionKeyProtocolTest extends GuiceTest {
+public class SessionKeyProtocol extends GuiceTest {
 
 	EntityManager em;
 	long runForSeconds;
 	private Server server = new Server(0);
 	PosServer posServer;
 	int port;
-	// FIXME reenable this test
-//	@Before
+
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		// if (!server.isStarted()) {
@@ -74,8 +74,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		runForSeconds = 1;
 
 	}
-	// FIXME reenable this test
-//	@After
+
+	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
 		if (em != null && em.getTransaction().isActive()) {
@@ -90,8 +90,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 	 * 
 	 * @see com.chinarewards.qqgpvn.main.test.GuiceTest#getModules()
 	 */
-	// FIXME reenable this test
-//	@Override
+	@Override
 	protected Module[] getModules() {
 
 		CommonTestConfigModule confModule = new CommonTestConfigModule();
@@ -112,13 +111,6 @@ public class SessionKeyProtocolTest extends GuiceTest {
 
 		return modules;
 	}
-
-	
-	@Test
-	public void testDummy() {
-		assertTrue(true);
-	}
-	
 
 	private void startTXServer() throws Exception {
 		// build test server start
@@ -228,8 +220,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 
 		return jpaModule;
 	}
-	// FIXME reenable this test
-//	@Test
+
+	@Test
 	public void testClientNotSupportSessionId() throws Exception {
 		//检查旧pos机（不支持session key）的流程
 		Socket socket = new Socket("localhost", port);
@@ -254,8 +246,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		socket.close();
 
 	}
-	// FIXME reenable this test
-//	@Test
+
+	@Test
 	public void testClientSupportSessionId() throws Exception {
 		//检查支持session key的正常流程
 		//检查的代码都在每次请求里面？？？？
@@ -283,8 +275,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		socket.close();
 
 	}
-	// FIXME reenable this test
-//	@Test
+
+	@Test
 	public void testClientSupportSessionIdReLogin() throws Exception {
 		//检查支持session key的pos机断线后重新连接
 		Socket socket = new Socket("localhost", port);
@@ -336,8 +328,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		//检查发送和返回的是同一个session key
 		assertTrue(Arrays.equals(forwardSessionId, afterSessionId));
 	}
-	// FIXME reenable this test
-//	@Test
+
+	@Test
 	public void testClientSendErrorCommandId() throws Exception {
 		//检查发送一个错误指令
 		Socket socket = new Socket("localhost", port);
@@ -358,8 +350,8 @@ public class SessionKeyProtocolTest extends GuiceTest {
 		socket.close();
 
 	}
-	// FIXME reenable this test
-//	@Test
+
+	@Test
 	public void testChangedSessionIdInSameConnection() throws Exception {
 
 		// do checking

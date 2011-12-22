@@ -31,21 +31,19 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
 
 /**
- * 
+ * FIXME restore this as DefaultPosServerTest
  * 
  * @author Cyril
  * @since 0.1.0
  */
-public class DefaultPosServerTest extends GuiceTest {
+public class DefaultPosServer extends GuiceTest {
 
-	// FIXME reenable this test
-//	@Before
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 	}
 
-	// FIXME reenable this test
-//	@After
+	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -55,7 +53,7 @@ public class DefaultPosServerTest extends GuiceTest {
 	 * 
 	 * @see com.chinarewards.qqgpvn.main.test.GuiceTest#getModules()
 	 */
-//	@Override
+	@Override
 	protected Module[] getModules() {
 
 		CommonTestConfigModule confModule = new CommonTestConfigModule();
@@ -115,11 +113,6 @@ public class DefaultPosServerTest extends GuiceTest {
 		return jpaModule;
 	}
 	
-	@Test
-	public void testDummy() {
-		
-	}
-	
 	public void testStart_RandomPort() throws Exception {
 
 		// force changing of configuration
@@ -151,8 +144,7 @@ public class DefaultPosServerTest extends GuiceTest {
 
 	}
 
-	// FIXME reenable this test
-//	@Test
+	@Test
 	public void testStart() throws Exception {
 
 		// force changing of configuration
