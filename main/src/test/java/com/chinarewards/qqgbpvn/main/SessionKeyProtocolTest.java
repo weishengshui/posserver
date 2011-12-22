@@ -116,7 +116,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 	
 	@Test
 	public void testDummy() {
-		
+		assertTrue(true);
 	}
 	
 
