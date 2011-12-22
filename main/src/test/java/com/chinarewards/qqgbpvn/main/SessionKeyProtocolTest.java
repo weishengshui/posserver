@@ -91,7 +91,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 	 * @see com.chinarewards.qqgpvn.main.test.GuiceTest#getModules()
 	 */
 	// FIXME reenable this test
-	@Override
+//	@Override
 	protected Module[] getModules() {
 
 		CommonTestConfigModule confModule = new CommonTestConfigModule();
