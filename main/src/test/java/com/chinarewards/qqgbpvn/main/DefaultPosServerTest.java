@@ -56,27 +56,27 @@ public class DefaultPosServerTest extends GuiceTest {
 	 * @see com.chinarewards.qqgpvn.main.test.GuiceTest#getModules()
 	 */
 //	@Override
-//	protected Module[] getModules() {
-//
-//		CommonTestConfigModule confModule = new CommonTestConfigModule();
-//
-//		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
-//		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
-//				.getConfiguration());
-//
-//		// build the Guice modules.
-//		Module[] modules = new Module[] {
-//				new ApplicationModule(),
-//				new CommonTestConfigModule(),
-//				buildPersistModule(confModule.getConfiguration()),
-//				new ServerModule(),
-//				new AppModule(),
-//				Modules.override(
-//						new ServiceHandlerModule(confModule.getConfiguration()))
-//						.with(new ServiceHandlerGuiceModule(mapping)) };
-//
-//		return modules;
-//	}
+	protected Module[] getModules() {
+
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+
+		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
+		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
+				.getConfiguration());
+
+		// build the Guice modules.
+		Module[] modules = new Module[] {
+				new ApplicationModule(),
+				new CommonTestConfigModule(),
+				buildPersistModule(confModule.getConfiguration()),
+				new ServerModule(),
+				new AppModule(),
+				Modules.override(
+						new ServiceHandlerModule(confModule.getConfiguration()))
+						.with(new ServiceHandlerGuiceModule(mapping)) };
+
+		return modules;
+	}
 
 	protected Module buildTestConfigModule() {
 
@@ -113,6 +113,11 @@ public class DefaultPosServerTest extends GuiceTest {
 		b.configModule(jpaModule, config, "db");
 
 		return jpaModule;
+	}
+	
+	@Test
+	public void testDummy() {
+		
 	}
 	
 	public void testStart_RandomPort() throws Exception {

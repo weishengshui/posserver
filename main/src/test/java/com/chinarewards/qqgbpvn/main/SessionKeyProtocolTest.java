@@ -68,21 +68,21 @@ public class SessionKeyProtocolTest extends GuiceTest {
 	public void setUp() throws Exception {
 		super.setUp();
 		// if (!server.isStarted()) {
-//		startTXServer();
-//		// }
-//		port = startServer();
-//		runForSeconds = 1;
+		startTXServer();
+		// }
+		port = startServer();
+		runForSeconds = 1;
 
 	}
 	// FIXME reenable this test
 //	@After
 	public void tearDown() throws Exception {
 		super.tearDown();
-//		if (em != null && em.getTransaction().isActive()) {
-//			em.getTransaction().rollback();
-//		}
-//		stopTXServer();
-//		stopServer();
+		if (em != null && em.getTransaction().isActive()) {
+			em.getTransaction().rollback();
+		}
+		stopTXServer();
+		stopServer();
 	}
 
 	/*
@@ -91,27 +91,34 @@ public class SessionKeyProtocolTest extends GuiceTest {
 	 * @see com.chinarewards.qqgpvn.main.test.GuiceTest#getModules()
 	 */
 	// FIXME reenable this test
-//	@Override
-//	protected Module[] getModules() {
-//
-//		CommonTestConfigModule confModule = new CommonTestConfigModule();
-//		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
-//		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
-//				.getConfiguration());
-//
-//		// build the Guice modules.
-//		Module[] modules = new Module[] {
-//				new ApplicationModule(),
-//				new CommonTestConfigModule(),
-//				buildPersistModule(confModule.getConfiguration()),
-//				new ServerModule(),
-//				new AppModule(),
-//				Modules.override(
-//						new ServiceHandlerModule(confModule.getConfiguration()))
-//						.with(new ServiceHandlerGuiceModule(mapping)) };
-//
-//		return modules;
-//	}
+	@Override
+	protected Module[] getModules() {
+
+		CommonTestConfigModule confModule = new CommonTestConfigModule();
+		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
+		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
+				.getConfiguration());
+
+		// build the Guice modules.
+		Module[] modules = new Module[] {
+				new ApplicationModule(),
+				new CommonTestConfigModule(),
+				buildPersistModule(confModule.getConfiguration()),
+				new ServerModule(),
+				new AppModule(),
+				Modules.override(
+						new ServiceHandlerModule(confModule.getConfiguration()))
+						.with(new ServiceHandlerGuiceModule(mapping)) };
+
+		return modules;
+	}
+
+	
+	@Test
+	public void testDummy() {
+		
+	}
+	
 
 	private void startTXServer() throws Exception {
 		// build test server start
