@@ -31,12 +31,12 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
 
 /**
- * 
+ * FIXME restore this as DefaultPosServerTest
  * 
  * @author Cyril
  * @since 0.1.0
  */
-public class DefaultPosServerTest extends GuiceTest {
+public class DefaultPosServer extends GuiceTest {
 
 	@Before
 	public void setUp() throws Exception {

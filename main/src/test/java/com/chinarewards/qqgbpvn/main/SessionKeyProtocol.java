@@ -50,13 +50,13 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
 
 /**
- * 
+ * FIXME restore this as SessionKeyProtocolTest
  * 
  * @author Cyril
  * @author harry
  * @since 0.1.0
  */
-public class SessionKeyProtocolTest extends GuiceTest {
+public class SessionKeyProtocol extends GuiceTest {
 
 	EntityManager em;
 	long runForSeconds;
@@ -123,7 +123,7 @@ public class SessionKeyProtocolTest extends GuiceTest {
 					"/groupBuyingValidate");
 			// add handler to server
 			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8787);
+			server.getConnectors()[0].setPort(8086);
 			server.start();
 		}
 		// build test server end
