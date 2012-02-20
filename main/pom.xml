@@ -3,12 +3,12 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.1-SNAPSHOT</version>
+		<version>0.1.1</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>main</artifactId>
 	<name>POS Network Server 2</name>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.1</version>
 	<description>Server for POS Network Server version 2</description>
 	<dependencies>
 	
