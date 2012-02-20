@@ -13,6 +13,7 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.HeadMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.Message;
 import com.chinarewards.qqgbvpn.main.session.ISessionKey;
 import com.chinarewards.qqgbvpn.main.session.v1.V1SessionKey;
+import com.chinarewards.qqgbvpn.main.util.MinaUtil;
 
 /**
  * 
@@ -83,7 +84,7 @@ public class SessionKeyMessageFilter extends IoFilterAdapter {
 		// 这个过滤器是用了处理有session key 的client的请求
 		// 也就是说，如果没有session key 功能的client不用走
 		if ((header.getFlags() & HeadMessage.FLAG_SESSION_ID) == 0) {
-			if(!serverHasSessionId(session)){
+			if(!serverHasSessionId(session) || !sessionStore.SessionStoreContainsKey(MinaUtil.getServerSessionId(session))){
 				createSession = true;
 				generateSessionKey = true;
 			}
