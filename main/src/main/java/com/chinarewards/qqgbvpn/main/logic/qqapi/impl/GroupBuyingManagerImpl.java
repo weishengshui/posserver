@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.main.logic.qqapi.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
+import com.chinarewards.qqgbvpn.main.vo.ValidationVO;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -383,6 +386,85 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public void groupBuyValidateCallBack(String grouponId, String grouponVCode)
 			throws SaveDBException {
 		dao.get().groupBuyValidateCallBack(grouponId, grouponVCode);
+	}
+
+
+	@Override
+	public ValidationVO getValidationByPcodeVcodeLastTs(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		
+		return dao.get().getValidationByPcodeVcodeLastTs(pcode, vcode);
+	}
+	
+	@Override
+	public ValidationVO getValidationByPcodeVcodeFirstTs(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		
+		return dao.get().getValidationByPcodeVcodeFirstTs(pcode, vcode);
+	}
+
+	@Override
+	public void createValidation(String posId, ValidationVO validationVo)
+			throws SaveDBException, JsonGenerationException {
+		
+		Pos pos = dao.get().getPosByPosId(posId);
+		Agent agent = dao.get().getAgentByPosId(posId);
+		
+		if(pos != null && agent != null && validationVo != null){
+			Validation validation = new Validation();
+			Date date = dtProvider.getTime();
+			String eventDetail = "";
+			String event = validationVo.getStatus().equals(CommunicationStatus.SUCCESS) ? DomainEvent.POS_ORDER_VALIDATED_OK.toString() : DomainEvent.POS_ORDER_VALIDATED_FAILED.toString();
+			
+			validation.setTs(date);
+			validation.setVcode(validationVo.getVcode());
+			validation.setPcode(validationVo.getPcode());
+			validation.setPosId(pos.getPosId());
+			validation.setPosModel(pos.getModel());
+			validation.setPosSimPhoneNo(pos.getSimPhoneNo());
+			validation.setStatus(validationVo.getStatus());
+			validation.setCstatus(validationVo.getCstatus());
+			validation.setResultStatus(validationVo.getResultStatus());
+			validation.setResultName(validationVo.getResultName());
+			validation.setResultExplain(validationVo.getResultExplain());
+			validation.setCurrentTime(validationVo.getCurrentTime());
+			validation.setUseTime(validationVo.getUseTime());
+			validation.setValidTime(validationVo.getValidTime());
+			validation.setRefundTime(validationVo.getRefundTime());
+			validation.setAgentId(agent.getId());
+			validation.setAgentName(agent.getName());
+			// 保存验证信息
+			dao.get().saveValidation(validation);
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				eventDetail = mapper.writeValueAsString(validation);
+
+			} catch (Exception e) {
+				log.error("journalLogic save error");
+				log.error("posId: " + posId);
+				log.error("ts: " + date);
+				log.error("token: " + validationVo.getVcode());
+				log.error("grouponId" + validationVo.getPcode());
+				log.error("entity: " + DomainEntity.VALIDATION.toString());
+				log.error("entityId: " + validation.getId());
+				log.error("event: " + event);
+				log.error("eventDetail: " + eventDetail);
+				throw new SaveDBException(e);
+			}
+	
+			//记录保存日志
+			journalLogic.logEvent(event, DomainEntity.VALIDATION.toString(), posId, eventDetail);
+		}else{
+			throw new SaveDBException("create validate error,validationVo is null or pos or agent not found by posId : " + posId);
+		}
+	}
+
+
+	@Override
+	public int getValidationCountByPcodeVcode(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		return dao.get().getValidationCountByPcodeVcode(pcode, vcode);
 	}
 
 }

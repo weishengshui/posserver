@@ -10,6 +10,7 @@ import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.main.vo.ValidationVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
 
@@ -90,4 +91,33 @@ public interface GroupBuyingDao {
 	 * @throws SaveDBException
 	 */
 	public void groupBuyValidateCallBack(String grouponId,String grouponVCode)throws SaveDBException;
+
+	/**
+	 * 查询同一个团购同一个验证码的最后一次验证信息
+	 * @param pcode
+	 * @param vcode
+	 * @return
+	 * @throws SaveDBException
+	 * @throws JsonGenerationException
+	 */
+	public ValidationVO getValidationByPcodeVcodeLastTs(String pcode, String vcode)throws SaveDBException, JsonGenerationException;
+	
+	/**
+	 * 查询同一个团购同一个验证码的第一次验证信息
+	 * @param pcode
+	 * @param vcode
+	 * @return
+	 * @throws SaveDBException
+	 * @throws JsonGenerationException
+	 */
+	public ValidationVO getValidationByPcodeVcodeFirstTs(String pcode, String vcode)throws SaveDBException, JsonGenerationException;
+
+
+	/**
+	 * 查询同一个团购同一个验证码验证过多少次
+	 * @param pcode
+	 * @param vcode
+	 * @return count
+	 */
+	public int getValidationCountByPcodeVcode(String pcode, String vcode)throws SaveDBException;
 }
