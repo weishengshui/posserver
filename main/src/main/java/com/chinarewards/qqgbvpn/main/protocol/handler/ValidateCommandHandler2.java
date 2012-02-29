@@ -8,6 +8,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
@@ -101,6 +102,9 @@ public class ValidateCommandHandler2 implements ServiceHandler {
 				validateResponseMessage.setFirst_validate_time(firstValidationVo.getTs());
 				
 				//每一次验证都要插入一条验证的数据，作为历史记录
+				//为了区分相对腾讯来说的验证成功，和针对我们自己服务器的成功这里添加了一个成功的状态
+				//腾讯成功是SUCCESS  我们自己的服务器成功是SUCCESS_DUP
+				lastValidationVo.setStatus(ValidationStatus.SUCCESS_DUP);
 				gbm.get().createValidation(String.valueOf(session.getAttribute(LoginFilter.POS_ID)), lastValidationVo);
 			}
 			//这个团购这个验证码第一次验证，请求腾讯服务器验证。
