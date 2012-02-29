@@ -134,12 +134,14 @@ public class ValidateBodyMessageResponseCodec2 implements ICommandCodec {
 		
 		posId = responseMessage.getFirst_posId()==null?"":responseMessage.getFirst_posId();
 		buffer.append(posId);
+		//这里定义了如果POSID不够12个字节用'\0'补充
 		for(int i = posId.length(); i < 12 ; i++){
 			buffer.append(CmdConstant.SEPARATOR);
 		}
 
 		posId = responseMessage.getPrev_posId() == null ? "" : responseMessage.getPrev_posId();
 		buffer.append(posId);
+		//这里定义了如果POSID不够12个字节用'\0'补充
 		for (int i = posId.length(); i < 12; i++) {
 			buffer.append(CmdConstant.SEPARATOR);
 		}
@@ -168,27 +170,29 @@ public class ValidateBodyMessageResponseCodec2 implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, qqvalidate_resultstatus,
 				ProtocolLengths.COMMAND + ProtocolLengths.VALIDATE_COUNT
 						+ ProtocolLengths.QQWS_RESULTCODE);
-		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND
-				+ ProtocolLengths.VALIDATE_COUNT
-				+ ProtocolLengths.QQWS_RESULTCODE
-				+ ProtocolLengths.QQVALIDATE_RESULTSTATUS);
-		Tools.putDate(resultByte, first_validate_time,
-				ProtocolLengths.COMMAND + ProtocolLengths.VALIDATE_COUNT
-						+ ProtocolLengths.QQWS_RESULTCODE
-						+ ProtocolLengths.QQVALIDATE_RESULTSTATUS + tmp.length);
-		
+
 		int index = ProtocolLengths.COMMAND + ProtocolLengths.VALIDATE_COUNT
 				+ ProtocolLengths.QQWS_RESULTCODE
-				+ ProtocolLengths.QQVALIDATE_RESULTSTATUS + tmp.length
-				+ ProtocolLengths.FIRST_VALIDATE_TIME;
-		if(validateCount > 1){
-			Tools.putDate(resultByte, prev_validate_time,index);
-		}else{
-			for(int i = 0; i < ProtocolLengths.PREV_VALIDATE_TIME; i++){
+				+ ProtocolLengths.QQVALIDATE_RESULTSTATUS;
+		Tools.putBytes(resultByte, tmp, index);
+
+		index += tmp.length;
+		if (first_validate_time != null) {
+			Tools.putDate(resultByte, first_validate_time, index);
+		} else {
+			for (int i = 0; i < ProtocolLengths.PREV_VALIDATE_TIME; i++) {
 				resultByte[index + i] = 0;
 			}
 		}
-			
+		index += ProtocolLengths.FIRST_VALIDATE_TIME;
+		if (validateCount > 1 && prev_validate_time != null) {
+			Tools.putDate(resultByte, prev_validate_time, index);
+		} else {
+			for (int i = 0; i < ProtocolLengths.PREV_VALIDATE_TIME; i++) {
+				resultByte[index + i] = 0;
+			}
+		}
+
 		log.trace("ValidateResponseMessage2:{}", responseMessage);
 
 		return resultByte;

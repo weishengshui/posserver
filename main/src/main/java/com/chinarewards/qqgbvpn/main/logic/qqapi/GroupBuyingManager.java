@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonGenerationException;
 
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.main.vo.ValidateResponseMessageVO;
 import com.chinarewards.qqgbvpn.main.vo.ValidationVO;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
@@ -122,4 +123,11 @@ public interface GroupBuyingManager {
 	 * @throws JsonGenerationException
 	 */
 	public void createValidation(String posId, ValidationVO validationVo)throws SaveDBException,JsonGenerationException;
+	
+	/**
+	 * QQ团购验证业务的验证请求业务处理
+	 * @param HashMap<String, String> postParams
+	 * @return ValidateResponseMessageVO
+	 */
+	public ValidateResponseMessageVO qqgbvValidationCommand(HashMap<String, String> postParams)throws SaveDBException,JsonGenerationException;
 }
