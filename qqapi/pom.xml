@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.2-RC2</version>
+		<version>0.1.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>qqapi</artifactId>
-	<version>0.1.2-RC2</version>
+	<version>0.1.2-SNAPSHOT</version>
 	<name>Tencent API for Group Buying Validation POS Network</name>
 	<description>Tencent Group Buying API for Validation POS Network</description>
 	<url>http://www.china-rewards.com</url>
