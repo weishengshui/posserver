@@ -19,7 +19,9 @@
 	</scm>
 	<inceptionYear>2011</inceptionYear>
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<apache.commonconfig.version>1.7</apache.commonconfig.version>
+		<apache.hc.version>4.1.2</apache.hc.version>
 		<guice.version>3.0</guice.version>
 		<guice-struts2>3.0</guice-struts2>
 		<hibernate.version>3.4.0</hibernate.version>
@@ -202,5 +204,6 @@
 		<!-- Packaging projects -->
 		<module>main-packaging</module>
 		<module>mgmtui-packaging</module>
-	</modules>
+    	<module>qqmeishi-wsapi</module>
+  </modules>
 </project>

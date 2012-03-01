@@ -15,7 +15,6 @@
 	<url>http://www.china-rewards.com</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<apache.hc.version>4.1.2</apache.hc.version>
 	</properties>
 	<dependencies>
 
