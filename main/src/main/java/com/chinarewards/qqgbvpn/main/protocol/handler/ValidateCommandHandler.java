@@ -1,7 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.codehaus.jackson.JsonGenerationException;
@@ -18,20 +17,13 @@ import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
-import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
-import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
-import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
-import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
+import com.chinarewards.qqgbvpn.main.vo.ValidateResponseMessageVO;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 public class ValidateCommandHandler implements ServiceHandler {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
-
-	private final int ERROR_CODE_THER = 999; 
-	
-	private final int SUCCESS_CODE = 0; 
 	
 	@Inject
 	public Provider<GroupBuyingManager> gbm;
@@ -39,7 +31,6 @@ public class ValidateCommandHandler implements ServiceHandler {
 	@Inject
 	protected Configuration configuration;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
@@ -58,90 +49,26 @@ public class ValidateCommandHandler implements ServiceHandler {
 		postParams.put("token", validateRequestMessage.getGrouponVCode());
 		postParams.put("key", configuration.getString("txserver.key"));
 		log.debug("ValidateCommandHandler======execute==key=: {}"+configuration.getString("txserver.key"));
-
 		
 		try {
-			//本地验证
-			GroupBuyingValidateResultVO groupBuyingValidateResultVO = gbm.get().groupBuyingValidateLocal(validateRequestMessage.getGrouponId(), validateRequestMessage.getGrouponVCode());
-			//本地验证通过
-			if(groupBuyingValidateResultVO != null){
-				validateResponseMessage.setResult(0);
-				validateResponseMessage.setResultName(groupBuyingValidateResultVO.getResultName());
-				validateResponseMessage.setCurrentTime(groupBuyingValidateResultVO.getCurrentTime());
-				validateResponseMessage.setResultExplain(groupBuyingValidateResultVO.getResultExplain());
-				validateResponseMessage.setUseTime(groupBuyingValidateResultVO.getUseTime());
-				validateResponseMessage.setValidTime(groupBuyingValidateResultVO.getValidTime());
-				log.debug("ValidateCommandHandler======local==");
+			ValidateResponseMessageVO vo = gbm.get().qqgbvValidationCommand(postParams);
+			
+			validateResponseMessage.setResult((int)vo.getQqws_resultcode());
+			if(vo.getQqws_resultcode() == 0 && vo.getQqvalidate_resultstatus() != 0){
+				validateResponseMessage.setResult(1);
 			}
-			//本地验证失败
-			else{
-				log.debug("ValidateCommandHandler======remote==");
-				HashMap<String, Object> result =  gbm.get().groupBuyingValidate(postParams);
-				int resultCode = Integer.valueOf((String) result.get("resultCode"));
-				log.debug("resultCode=========: {}", resultCode);
-				if (resultCode == SUCCESS_CODE ) {
-					List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result
-							.get("items");
-					validateResponseMessage.setResult(SUCCESS_CODE);
-					for (GroupBuyingValidateResultVO item : items) {
-						log.debug("item.getResultStatus()=============: [{}]", item.getResultStatus());
-						//腾讯验证通过
-						if (!"0".equals(item.getResultStatus())) {
-							validateResponseMessage.setResult(1);
-						}else{
-							//创建本地验证记录
-							log.debug("ValidateCommandHandler==========create local===");
-							gbm.get().createValidateResultLocal(validateRequestMessage.getGrouponId(), validateRequestMessage.getGrouponVCode(), item);
-						}
-						validateResponseMessage.setResultName(item.getResultName());
-						validateResponseMessage.setCurrentTime(item.getCurrentTime());
-						validateResponseMessage.setResultExplain(item.getResultExplain());
-						validateResponseMessage.setUseTime(item.getUseTime());
-						validateResponseMessage.setValidTime(item.getValidTime());
-					}
-				} else {
-					switch (resultCode) {
-					case -1:
-						log.debug("error=========:服务器繁忙");
-						validateResponseMessage.setResult(resultCode);
-						break;
-					case -2:
-						log.debug("error=========:md5校验失败");
-						validateResponseMessage.setResult(resultCode);
-						break;
-					case -3:
-						log.debug("error=========:没有权限");
-						validateResponseMessage.setResult(resultCode);
-						break;
-					default:
-						log.debug("error=========:未知错误");
-						validateResponseMessage.setResult(resultCode);
-						break;
-					}
-				}
-			}
+			validateResponseMessage.setResultName(vo.getResultName());
+			validateResponseMessage.setCurrentTime(vo.getCurrentTime());
+			validateResponseMessage.setResultExplain(vo.getResultExplain());
+			validateResponseMessage.setUseTime(vo.getUseTime());
+			validateResponseMessage.setValidTime(vo.getValidTime());
+			validateResponseMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID_RESPONSE);
 			
 		} catch (JsonGenerationException e) {
-			log.error("error=========:生成JSON对象出错", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
-		} catch (MD5Exception e) {
-			log.error("error=========:生成MD5校验位出错", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
-		} catch (ParseXMLException e) {
-			log.error("error=========:解析XML出错", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
-		} catch (SendPostTimeOutException e) {
-			log.error("error=========:POST连接出错", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
+			log.error("JsonGenerationException:", e);
 		} catch (SaveDBException e) {
-			log.error("error=========:后台保存数据库出错 ", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
-		}catch (Throwable e) {
-			log.error("error=========:", e);
-			validateResponseMessage.setResult(ERROR_CODE_THER);
+			log.error("SaveDBException:", e);
 		}
-		
-		validateResponseMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID_RESPONSE);
 
 		log.debug("ValidateCommandHandler======execute==end=:"+validateResponseMessage.getCmdId());
 		
