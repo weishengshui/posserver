@@ -2,13 +2,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>mgmtui-packaging</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.1.2-RC2</version>
 	<packaging>pom</packaging>
 	<name>POSNetv2 Server Management UI Packaging Parent Project</name>
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.2-SNAPSHOT</version>
+		<version>0.1.2-RC2</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modules>
