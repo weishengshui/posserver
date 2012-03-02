@@ -1,7 +1,6 @@
 //package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 //
 //import java.nio.charset.Charset;
-//import java.util.Arrays;
 //
 //import org.apache.mina.core.buffer.IoBuffer;
 //import org.slf4j.Logger;
@@ -9,7 +8,6 @@
 //
 //import com.chinarewards.qqgbvpn.common.Tools;
 //import com.chinarewards.qqgbvpn.main.exception.PackageException;
-//import com.chinarewards.qqgbvpn.main.protocol.PosnetString;
 //import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 //import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 //import com.chinarewards.qqgbvpn.main.protocol.cmd.QQmeishiRequestMessage;
@@ -24,107 +22,121 @@
 //	public ICommand decode(IoBuffer in, Charset charset)
 //			throws PackageException {
 //		log.debug("qqmeishi request message decode");
+//		
 //		QQmeishiRequestMessage message = new QQmeishiRequestMessage();
-//		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.AMOUNT +4) {
+//		
+//		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.AMOUNT
+//				+ 4) {
 //			throw new PackageException(
 //					"qqmeishi packge message body error, body message is :"
 //							+ in);
 //		}
-//		//指令ID
+//		
+//		// 指令ID
 //		long cmdId = in.getUnsignedInt();
-//		
-//		byte[] requestByte = new byte[in.remaining()];
-//		
-//		in.get(requestByte);
-//		
-//		log.debug("requestByte==========:"+Arrays.toString(requestByte));
-//		
-//		PosnetString  user_token = null;
-//		double  amount  = -1;
-//		PosnetString password = null;
-//		
-//		boolean errorFlag = false;
-//		
-//		int grouponIdEnd = -1;
-//		int grouponVCodeEnd = -1;
-//		
-//		for (int i = 0; i < requestByte.length; i++) {
-//			if (requestByte[i] == 0) {
-//				if (grouponIdEnd == -1) {
-//					grouponIdEnd = i;
-//				} else if (grouponVCodeEnd == -1) {
-//					grouponVCodeEnd = i;
-//				} else {
-//					errorFlag = true;
-//				}
-//			}
-//		}
-//		if (requestByte[requestByte.length - 1] != 0) {
-//			errorFlag = true;
-//		}
-//		if (errorFlag) {
+//
+//		// user_token len
+//		int userTokenLen = in.getUnsignedShort();
+//		if (userTokenLen > ProtocolLengths.USERTOKEN) {
 //			throw new PackageException(
-//					"validate packge message body error, body message");
+//					"qqmeishi packge message body error, user token len :"
+//							+ userTokenLen);
 //		}
-//		String grouponId = null;
-//		String grouponVCode = null;
-//		if (grouponIdEnd != 0) {
-//			byte[] tmp = new byte[grouponIdEnd];
-//			for (int i = 0; i < grouponIdEnd; i++) {
-//				tmp[i] = requestByte[i];
-//			}
-//			grouponId = new String(tmp, charset);
+//
+//		String userToken = "";
+//		if (userTokenLen > 0) {
+//			byte[] userTokenByte = new byte[userTokenLen];
+//			in.get(userTokenByte);
+//			userToken = new String(userTokenByte, charset);
 //		}
-//		if (grouponVCodeEnd - grouponIdEnd != 1) {
-//			byte[] tmp = new byte[requestByte.length - grouponIdEnd - 2];
-//			for (int i = 0; i < requestByte.length - grouponIdEnd - 2; i++) {
-//				tmp[i] = requestByte[i + grouponIdEnd + 1];
-//			}
-//			grouponVCode = new String(tmp, charset);
+//
+//		// amount
+//		double amount = in.getDouble();
+//
+//		// password
+//		int passwordLen = in.getUnsignedShort();
+//		String password = "";
+//		if (passwordLen > 0) {
+//			byte[] passwordByte = new byte[passwordLen];
+//			in.get(passwordByte);
+//			password = new String(passwordByte, charset);
 //		}
 //
 //		message.setCmdId(cmdId);
-//		message.setGrouponId(grouponId);
-//		message.setGrouponVCode(grouponVCode);
-//		
-//		log.trace("ValidateRequestMessage:{}", message);
+//		message.setAmount(amount);
+//		message.setPassword(password);
+//		message.setUserToken(userToken);
+//
+//		log.trace("QQmeshiRequestMessage:{}", message);
 //		return message;
 //	}
-//	
+//
 //	/**
 //	 * description：mock pos test use it!
+//	 * 
 //	 * @param bodyMessage
 //	 * @param charset
 //	 * @return
-//	 * @time 2011-9-22   下午07:23:35
-//	 * @author Seek
+//	 * @time 2012-3-2
+//	 * @author harry
 //	 */
 //	@Override
 //	public byte[] encode(ICommand bodyMessage, Charset charset) {
-//		log.debug("validate request message encode");
-//		ValidateRequestMessage requestMessage = (ValidateRequestMessage) bodyMessage;
+//		
+//		log.debug("QQmeishi request message encode");
+//		QQmeishiRequestMessage requestMessage = (QQmeishiRequestMessage) bodyMessage;
 //
 //		long cmdId = requestMessage.getCmdId();
-//		String grouponId = requestMessage.getGrouponId();
-//		String grouponVCode = requestMessage.getGrouponVCode();
-//		
-//		StringBuffer buffer = new StringBuffer();
-//		buffer.append(grouponId==null?"":grouponId).append(
-//				CmdConstant.SEPARATOR);
-//		buffer.append(grouponVCode==null?"":grouponVCode).append(
-//				CmdConstant.SEPARATOR);
+//		String userToken = requestMessage.getUserToken();
+//		String password = requestMessage.getPassword();
+//		double amount = requestMessage.getAmount();
 //
-//		String tmpStr = buffer.toString();
-//		log.debug("validate result buffer is ({})",buffer);
-//		tmpStr = tmpStr.replaceAll("\\\\r\\\\n", String.valueOf(CmdConstant.ENTER));
-//		byte[] tmp = tmpStr.getBytes(charset);
-//		log.debug("validate src is ({})",tmpStr);
+//		byte[] userTokenByte;
+//		int byteLen = ProtocolLengths.COMMAND + ProtocolLengths.AMOUNT
+//				+ ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN;
+//		int userTokenLen = (userToken == null) ? 0 :userToken.length();
+//		if(userTokenLen > 0){
+//			userToken = userToken.replaceAll("\\\\r\\\\n",
+//					String.valueOf(CmdConstant.ENTER));
+//			byteLen += userToken.length();
+//			userTokenByte = userToken.getBytes(charset);
+//		}
+//		byte[] passwordByte;
+//		int passwordLen = (password == null) ? 0 :password.length();
+//		if(passwordLen > 0){
+//			password = password.replaceAll("\\\\r\\\\n",
+//					String.valueOf(CmdConstant.ENTER));
+//			byteLen += password.length();
+//			passwordByte = password.getBytes(charset);
+//		}
 //
-//		byte[] resultByte = new byte[ProtocolLengths.COMMAND + tmp.length];
-//		Tools.putUnsignedInt(resultByte, cmdId, 0);
-//		Tools.putBytes(resultByte, tmp, ProtocolLengths.COMMAND);
+//		byte[] resultByte = new byte[byteLen];
+//		int index = 0;
+//		//指令ID
+//		Tools.putUnsignedInt(resultByte, cmdId, index);
+//		index += ProtocolLengths.COMMAND;
 //		
-//		log.trace("ValidateRequestMessage:{}", requestMessage);
+//		//usertoken
+//		Tools.putUnsignedShort(resultByte, userTokenLen, index);
+//		index += ProtocolLengths.POSNETSTRLEN;
+//		if(userTokenLen > 0){
+//			Tools.putBytes(resultByte, userTokenByte, index);
+//			index += userTokenByte.length;
+//		}
+//		
+//		//amount double
+//		Tools.putBytes(resultByte, amount, index);
+//		index += ProtocolLengths.AMOUNT;
+//		
+//		//password
+//		Tools.putUnsignedShort(resultByte, passwordLen, index);
+//		index += ProtocolLengths.POSNETSTRLEN;
+//		if(passwordLen > 0){
+//			Tools.putBytes(resultByte, passwordByte, index);
+//			index += passwordByte.length;
+//		}
+//		
+//		log.trace("QQmeishiRequestMessage:{}", requestMessage);
 //
 //		return resultByte;
 //	}

@@ -1,6 +1,5 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
-import com.chinarewards.qqgbvpn.main.protocol.PosnetString;
 
 /**
  * @author harry
@@ -12,13 +11,13 @@ public class QQmeishiRequestMessage implements ICommand{
 	public long cmdId;
 	
 	//Token码
-	public PosnetString userToken;
+	public String userToken;
 	
 	//消费金额
 	public double amount;
 	
 	//商家输入的交易密码
-	public PosnetString password;
+	public String password;
 	
 	@Override
 	public String toString() {
@@ -36,11 +35,11 @@ public class QQmeishiRequestMessage implements ICommand{
 		this.cmdId = cmdId;
 	}
 
-	public PosnetString getUserToken() {
+	public String getUserToken() {
 		return userToken;
 	}
 
-	public void setUserToken(PosnetString userToken) {
+	public void setUserToken(String userToken) {
 		this.userToken = userToken;
 	}
 
@@ -52,11 +51,11 @@ public class QQmeishiRequestMessage implements ICommand{
 		this.amount = amount;
 	}
 
-	public PosnetString getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(PosnetString password) {
+	public void setPassword(String password) {
 		this.password = password;
 	} 
 

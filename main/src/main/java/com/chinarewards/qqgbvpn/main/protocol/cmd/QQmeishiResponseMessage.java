@@ -2,8 +2,6 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
 import java.util.Date;
 
-import com.chinarewards.qqgbvpn.main.protocol.PosnetString;
-
 /**
  * @author harry
  *
@@ -23,13 +21,13 @@ public class QQmeishiResponseMessage implements ICommand{
 	public Date xact_time;
 	
 	//小票上的打印标题
-	public PosnetString title;
+	public String title;
 	
 	//小票上的打印内容
-	public PosnetString tip;
+	public String tip;
 	
 	//商家输入的交易密码
-	public PosnetString password;
+	public String password;
 	
 	
 	@Override
@@ -74,27 +72,27 @@ public class QQmeishiResponseMessage implements ICommand{
 		this.xact_time = xact_time;
 	}
 
-	public PosnetString getTitle() {
+	public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(PosnetString title) {
+	public void setTitle(String title) {
 		this.title = title;
 	}
 
-	public PosnetString getTip() {
+	public String getTip() {
 		return tip;
 	}
 
-	public void setTip(PosnetString tip) {
+	public void setTip(String tip) {
 		this.tip = tip;
 	}
 
-	public PosnetString getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(PosnetString password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
