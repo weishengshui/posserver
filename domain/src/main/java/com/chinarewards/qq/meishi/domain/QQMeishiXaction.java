@@ -11,6 +11,8 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.chinarewards.qq.meishi.domain.status.QQMeishiXactionResult;
+
 /**
  * Defines the data structure for storing QQ Meishi Q Mi transaction.
  * 
@@ -46,7 +48,7 @@ public class QQMeishiXaction {
 
 	String xactPwd;
 
-	long xactResultCode;
+	int xactResultCode;
 
 	boolean forcePwdOnNextAction;
 
@@ -242,9 +244,13 @@ public class QQMeishiXaction {
 	 * The transaction result code returned from QQ Meishi web service API.
 	 * Related to the value of 'validCode' in the response.
 	 * 
+	 * See the class {@link QQMeishiXactionResult} which contains the list of
+	 * possible values.
+	 * 
 	 * @return the xactResultCode
+	 * @see QQMeishiXactionResult
 	 */
-	public long getXactResultCode() {
+	public int getXactResultCode() {
 		return xactResultCode;
 	}
 
@@ -252,7 +258,7 @@ public class QQMeishiXaction {
 	 * @param xactResultCode
 	 *            the xactResultCode to set
 	 */
-	public void setXactResultCode(long xactResultCode) {
+	public void setXactResultCode(int xactResultCode) {
 		this.xactResultCode = xactResultCode;
 	}
 
