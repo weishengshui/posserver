@@ -14,11 +14,14 @@ import org.hibernate.annotations.GenericGenerator;
 /**
  * Defines the data structure for storing QQ Meishi Q Mi transaction.
  * 
+ * The transaction data between the POS client and the QQ Meishi server is
+ * stored in this entity.
+ * 
  * @author Cyril
  * @since 0.1.3
  */
 @Entity
-public class QQMeishiTransaction {
+public class QQMeishiXaction {
 
 	@Id
 	@GeneratedValue(generator = "system-uuid")

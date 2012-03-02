@@ -11,6 +11,9 @@ import javax.persistence.Lob;
  * Business Event Journal for replay and audit purpose. This record should not
  * be modified by any program once written.
  * 
+ * This entity is defined to be very neutral, and supposed to be reusable 
+ * for all kind of business, and in most case, needed not to be modified.
+ * 
  * @author kmtong
  * @since 0.1.0
  */
