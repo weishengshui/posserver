@@ -222,7 +222,7 @@ public class QQMeishiXaction {
 
 	/**
 	 * QQ Meishi transaction specific data. Transaction password entered by the
-	 * merchant.
+	 * merchant which will be sent to the server.
 	 * 
 	 * @return the xactPwd
 	 */
