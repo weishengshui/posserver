@@ -1,5 +1,7 @@
 package com.chinarewards.qq.meishi;
 
+import java.util.TimeZone;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -33,6 +35,11 @@ public class AppTest
      */
     public void testApp()
     {
-        assertTrue( true );
+    	String timeZones[] = TimeZone.getAvailableIDs();
+    	for (String tzs: timeZones) {
+    		TimeZone tz = TimeZone.getTimeZone(tzs);
+    		
+    		System.out.println(tz.getDisplayName() + "(" + tzs + "): " + (double)tz.getRawOffset() / 1000 / 3600);
+    	}
     }
 }
