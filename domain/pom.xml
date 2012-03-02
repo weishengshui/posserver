@@ -3,12 +3,12 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.2-SNAPSHOT</version>
+		<version>0.1.2-RC3</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
 	<artifactId>domain</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.1.2-RC3</version>
 	<name>POS Network Server 2 Domain Model</name>
 	<description>POS Network Server 2 Domain Model</description>
 	<dependencies>
