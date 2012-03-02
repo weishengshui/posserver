@@ -7,10 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.commons.configuration.Configuration;
 import org.junit.After;
@@ -26,18 +26,15 @@ import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
+import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.ApplicationModule;
 import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
-import com.chinarewards.qqgbvpn.main.SessionStore;
-import com.chinarewards.qqgbvpn.main.encoder.IUUIDEncoder;
-import com.chinarewards.qqgbvpn.main.encoder.UUIDEncoderImpl;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.impl.DefaultPosServer;
-import com.chinarewards.qqgbvpn.main.impl.InMemorySessionStore;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.HardCodedServlet;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
@@ -50,13 +47,13 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.util.Modules;
 
 /**
- * FIXME restore this as SessionKeyProtocolTest
+ * FIXME restore this as SessionKeyProtocol2Test
  * 
  * @author Cyril
  * @author harry
  * @since 0.1.0
  */
-public class SessionKeyProtocol extends GuiceTest {
+public class SessionKeyProtocol2 extends GuiceTest {
 
 	EntityManager em;
 	long runForSeconds;
@@ -221,251 +218,6 @@ public class SessionKeyProtocol extends GuiceTest {
 		return jpaModule;
 	}
 
-	@Test
-	public void testClientNotSupportSessionId() throws Exception {
-		//检查旧pos机（不支持session key）的流程
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-
-		byte[] challenge = new byte[8];
-
-		this.oldPosInit(os, is, challenge);// old client
-
-		log.debug("start login ......");
-		oldPosLogin(os, is, challenge);
-
-		log.debug("start list ......");
-		oldPosSearchList(os, is);
-
-		log.debug("start validate ......");
-		oldPosValidate(os, is);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-
-	}
-
-	@Test
-	public void testClientSupportSessionId() throws Exception {
-		//检查支持session key的正常流程
-		//检查的代码都在每次请求里面？？？？
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-		byte[] challenge = new byte[8];
-		byte[] sessionId = new byte[16];
-
-		log.debug("start init ......");
-		this.newPosInit(os, is, challenge, sessionId);// new client add session
-														// key protocol
-
-		log.debug("start login ......");
-		oldPosLogin(os, is, challenge);
-
-		log.debug("start list ......");
-		oldPosSearchList(os, is);
-
-		log.debug("start validate ......");
-		oldPosValidate(os, is);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-
-	}
-
-	@Test
-	public void testClientSupportSessionIdReLogin() throws Exception {
-		//检查支持session key的pos机断线后重新连接
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-		byte[] challenge = new byte[8];
-		byte[] forwardSessionId = new byte[16];
-		byte[] afterSessionId = new byte[16];
-
-		log.debug("start init ......");
-		newPosInit(os, is, challenge, forwardSessionId);// new client add session key
-													// protocol
-
-		log.debug("start login ......");
-		oldPosLogin(os, is, challenge);
-
-		log.debug("start list ......");
-		oldPosSearchList(os, is);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-
-		//断线，重建连接
-		log.debug("send session id socket........");
-		Socket socket2 = new Socket("localhost", port);
-		OutputStream os2 = socket2.getOutputStream();
-		InputStream is2 = socket2.getInputStream();
-
-		// send a validation command, which requires login. The session ID
-		// should help recover the login credential in the same session, so 
-		// this validation should pass WITHOUT error code = 7.
-		log.debug("start validate ......");
-		newPosValidateSendSessionKey(os2, is2, forwardSessionId, afterSessionId);
-
-		System.out.println("");
-		os2.close();
-		socket2.close();
-		
-		InMemorySessionStore sessionStore = (InMemorySessionStore) getInjector()
-				.getInstance(SessionStore.class);
-		IUUIDEncoder encoder = new UUIDEncoderImpl();
-		
-		// 检查返回的新的session id 是否在session store里面
-		assertTrue(sessionStore.SessionStoreContainsKey(encoder.decode(forwardSessionId)));
-		//检查session store里面session key的个数
-		assertEquals(1, sessionStore.getSessionStoreCount());
-		
-		//检查发送和返回的是同一个session key
-		assertTrue(Arrays.equals(forwardSessionId, afterSessionId));
-	}
-
-	@Test
-	public void testClientSendErrorCommandId() throws Exception {
-		//检查发送一个错误指令
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-		byte[] challenge = new byte[8];
-		byte[] sessionId = new byte[16];
-
-		log.debug("start init ......");
-		newPosInit(os, is, challenge, sessionId);// new client add session key
-													// protocol
-
-		log.debug("start login ......");
-		//在这个方法里检查发送一个服务器不认识的指令command id=50，服务器应该返回错误码 9
-		checkSendErrorCommandId(os, is, challenge, sessionId);
-		System.out.println("");
-		os.close();
-		socket.close();
-
-	}
-
-	@Test
-	public void testChangedSessionIdInSameConnection() throws Exception {
-
-		// do checking
-		Thread.sleep(500); // 1 seconds
-		log.trace("four socket.......");
-		// 没有断线但是改变pos机session key的值
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-		byte[] challenge = new byte[8];
-		byte[] sessionId = new byte[16];
-		byte[] oldSessionId = new byte[16];
-		byte[] newSessionId = new byte[16];
-
-		log.debug("start init ......");
-		newPosInit(os, is, challenge, sessionId);// new client add session key
-													// protocol
-
-		log.debug("start login ......");
-		oldPosLogin(os, is, challenge);
-
-		log.debug("start list ......");
-		oldPosSearchList(os, is);
-
-		System.out.println("");
-
-		log.debug("start one validate ......");
-		checkSendNewPosValidateSendSessionKey(os, is, sessionId, null);
-
-		// 第二次验证改变session key的值
-		log.debug("start two validate ......");
-		System.arraycopy(sessionId, 0, oldSessionId, 0, 16);
-		sessionId[0] = 1;
-		checkSendNewPosValidateSendSessionKey(os, is, sessionId, newSessionId);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-		
-		IUUIDEncoder encoder = new UUIDEncoderImpl();
-
-		//session store 里面的 session key 的个数
-		InMemorySessionStore sessionStore = (InMemorySessionStore) getInjector()
-				.getInstance(SessionStore.class);
-		
-		//检查返回的新的session id 和前一次的session id 是否一样
-		assertTrue(!Arrays.equals(oldSessionId, newSessionId));
-		// 检查返回的新的session id 是否在session store里面
-		assertTrue(sessionStore.SessionStoreContainsKey(encoder.decode(newSessionId)));
-		// 检查旧的的session id 是否在session store里面
-		assertTrue(sessionStore.SessionStoreContainsKey(encoder.decode(oldSessionId)));
-		//检查session store里面session key的个数
-		assertEquals(2, sessionStore.getSessionStoreCount());
-
-	}
-
-	private void stopServer() throws Exception {
-		// stop it, and make sure it is stopped.
-		posServer.stop();
-		assertTrue(posServer.isStopped());
-		log.info("posServer stopped");
-	}
-
-	private int startServer() throws Exception {
-
-		// force changing of configuration
-		Configuration conf = getInjector().getInstance(Configuration.class);
-		conf.setProperty("server.port", 0);
-
-		// get an new instance of PosServer
-		posServer = getInjector().getInstance(PosServer.class);
-		// make sure it is started, and port is correct
-		assertTrue(posServer.isStopped());
-		//
-		// start it!
-		posServer.start();
-		int runningPort = posServer.getLocalPort();
-		// stop it.
-		posServer.stop();
-		assertTrue(posServer.isStopped());
-
-		// XXX we insert data here
-		{
-			DefaultPosServer dserver = (DefaultPosServer) posServer;
-			Injector injector = dserver.getInjector();
-
-			em = injector.getInstance(EntityManager.class);
-			em.getTransaction().begin();
-			initDB(em);
-		}
-
-		//
-		// Now we know which free port to use.
-		//
-		// XXX it is a bit risky since the port maybe in use by another
-		// process.
-		//
-
-		// get an new instance of PosServer
-		conf.setProperty("server.port", runningPort);
-
-		// make sure it is stopped
-		assertTrue(posServer.isStopped());
-
-		// start it!
-		posServer.start();
-
-		// make sure it is started, and port is correct
-		assertFalse(posServer.isStopped());
-		assertEquals(runningPort, posServer.getLocalPort());
-		return posServer.getLocalPort();
-		// sleep for a while...
-	}
-
 	private void oldPosInit(OutputStream os, InputStream is, byte[] challenge)
 			throws Exception {
 		byte[] msg = new byte[] {
@@ -520,6 +272,270 @@ public class SessionKeyProtocol extends GuiceTest {
 		assertEquals(0, response[21]);
 	}
 
+	private void ackRequest(OutputStream os, InputStream is)
+			throws Exception {
+		byte[] msg = new byte[] {
+				// SEQ
+				0, 0, 0, 27,
+				// ACK
+				0, 0, 0, 0,
+				// flags
+				0, 0,
+				// checksum
+				0, 0,
+				// message length
+				0, 0, 0, 33,
+				// command ID
+				0, 0, 0, 11,
+				// grouponId
+				49, 51, 50, 49, 50, 51, 0,
+				// grouponVCode
+				49, 49, 49, 49, 50, 50, 0 };
+
+		int checksum = Tools.checkSum(msg, msg.length);
+		Tools.putUnsignedShort(msg, checksum, 10);
+
+		// write response
+		log.info("ack...");
+
+		// send both message at once
+		byte[] outBuf = new byte[msg.length];
+		System.arraycopy(msg, 0, outBuf, 0, msg.length);
+
+		os.write(outBuf);
+		// ----------
+
+		Thread.sleep(runForSeconds * 1000);
+		// read
+		log.info("Read response");
+		byte[] response = new byte[161];
+		int n = is.read(response);
+		System.out.println("Number of bytes login read: " + n);
+		for (int i = 0; i < n; i++) {
+			String s = Integer.toHexString((byte) response[i]);
+			if (s.length() < 2)
+				s = "0" + s;
+			if (s.length() > 2)
+				s = s.substring(s.length() - 2);
+			System.out.print(s + " ");
+			if ((i + 1) % 8 == 0)
+				System.out.println("");
+		}
+	}
+
+	private void oldPosValidate(OutputStream os, InputStream is, int validateCount)
+			throws Exception {
+		byte[] msg = new byte[] {
+				// SEQ
+				0, 0, 0, 27,
+				// ACK
+				0, 0, 0, 0,
+				// flags
+				0, 0,
+				// checksum
+				0, 0,
+				// message length
+				0, 0, 0, 33,
+				// command ID
+				0, 0, 0, 27,
+				// grouponId
+				49, 51, 50, 49, 50, 51, 0,
+				// grouponVCode
+				49, 49, 49, 49, 50, 50, 0 };
+		
+	
+
+		int checksum = Tools.checkSum(msg, msg.length);
+		Tools.putUnsignedShort(msg, checksum, 10);
+
+		// write response
+		log.info(" list Send request to server");
+
+		// send both message at once
+		byte[] outBuf = new byte[msg.length];
+		System.arraycopy(msg, 0, outBuf, 0, msg.length);
+
+		os.write(outBuf);
+		// ----------
+
+		Thread.sleep(runForSeconds * 1000);
+		// read
+		log.info("Read response");
+		byte[] response = new byte[161];
+		int n = is.read(response);
+		System.out.println("Number of bytes login read: " + n);
+		for (int i = 0; i < n; i++) {
+			String s = Integer.toHexString((byte) response[i]);
+			if (s.length() < 2)
+				s = "0" + s;
+			if (s.length() > 2)
+				s = s.substring(s.length() - 2);
+			System.out.print(s + " ");
+			if ((i + 1) % 8 == 0)
+				System.out.println("");
+		}
+		assertEquals(validateCount, response[21]);
+		assertEquals(0, response[22]);
+		assertEquals(0, response[23]);
+		assertEquals(0, response[24]);
+		assertEquals(0, response[25]);
+		assertEquals(0, response[26]);
+		assertEquals(0, response[27]);
+		assertEquals(0, response[28]);
+		assertEquals(0, response[29]);
+	}
+	
+	
+	private void checkResultCount(int count){
+		
+		Query result = em.createQuery("select count(r.id) from GroupBuyValidateResult r");
+		int resultCount = Integer.parseInt(result.getSingleResult().toString());
+		log.debug("group buy validate resultCount={}",resultCount);
+		assertEquals(count, resultCount);
+	}
+	
+	private void checkValidateCount(int count){
+		
+		Query query = em.createQuery("select count(v.id) from Validation v where v.pcode = :pcode and v.vcode = :vcode");
+		query.setParameter("pcode", "132123");
+		query.setParameter("vcode", "111122");
+		int resultCount = Integer.parseInt(query.getSingleResult().toString());
+		log.debug("validation resultCount={}",resultCount);
+		assertEquals(count, resultCount);
+		
+		
+	}
+	
+	private void deleteValidationData(int count){
+		Query query = em.createQuery("delete Validation");
+		int deleteCount = query.executeUpdate();
+		assertEquals(count, deleteCount);
+	}
+	
+	
+	@Test
+	public void testThreeValidate() throws Exception {
+
+		Thread.sleep(500); 
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+		byte[] challenge = new byte[8];
+		byte[] sessionId = new byte[16];
+		int validateCount = 1;
+
+		log.debug("start init 1......");
+		newPosInit(os, is, challenge, sessionId);// new client add session key
+
+		log.debug("start login 1......");
+		oldPosLogin(os, is, challenge);
+
+		log.debug("start list ......");
+		oldPosSearchList(os, is);
+
+		System.out.println("");
+
+		log.debug("start one validate ......");
+		SendValidationCheckValidateCount(os, is, sessionId, validateCount);
+
+		log.debug("start two validate ......");
+		validateCount = 2;
+		SendValidationCheckValidateCount(os, is, sessionId, validateCount);
+		
+		log.debug("ACK request......");
+		ackRequest(os, is);
+		
+		//检查验证结果表里面是不是只有0条数据
+		checkResultCount(0);
+		//检查验证表里面是不是只有两条数据
+		checkValidateCount(2);
+		
+		//为了不影响下一次这里清空validation的数据
+		deleteValidationData(2);
+
+		//如果我再来验证这个团购这个验证码应该是第一次，因为这个时候会去请求腾讯服务器
+		validateCount = 1;
+		SendValidationCheckValidateCount(os, is, sessionId, validateCount);
+
+		os.close();
+		socket.close();
+		
+		//断线后再次验证
+		Socket socket2 = new Socket("localhost", port);
+		OutputStream os2 = socket2.getOutputStream();
+		InputStream is2 = socket2.getInputStream();
+
+		challenge = new byte[8];
+
+		this.oldPosInit(os2, is2, challenge);// old client
+
+		log.debug("start login 2......");
+		oldPosLogin(os2, is2, challenge);
+
+		log.debug("start list 2 ......");
+		oldPosSearchList(os2, is2);
+
+		log.debug("start validate 3......");
+		
+		//确定验证的次数数第二次
+		validateCount = 2;
+		oldPosValidate(os2, is2, validateCount);
+
+		os2.close();
+		socket2.close();
+	}
+
+	private void stopServer() throws Exception {
+		// stop it, and make sure it is stopped.
+		posServer.stop();
+		assertTrue(posServer.isStopped());
+		log.info("posServer stopped");
+	}
+
+	private int startServer() throws Exception {
+
+		// force changing of configuration
+		Configuration conf = getInjector().getInstance(Configuration.class);
+		conf.setProperty("server.port", 0);
+
+		// get an new instance of PosServer
+		posServer = getInjector().getInstance(PosServer.class);
+		// make sure it is started, and port is correct
+		assertTrue(posServer.isStopped());
+		//
+		// start it!
+		posServer.start();
+		int runningPort = posServer.getLocalPort();
+		// stop it.
+		posServer.stop();
+		assertTrue(posServer.isStopped());
+
+		// XXX we insert data here
+		{
+			DefaultPosServer dserver = (DefaultPosServer) posServer;
+			Injector injector = dserver.getInjector();
+
+			em = injector.getInstance(EntityManager.class);
+			em.getTransaction().begin();
+			initDB(em);
+		}
+
+		// get an new instance of PosServer
+		conf.setProperty("server.port", runningPort);
+
+		// make sure it is stopped
+		assertTrue(posServer.isStopped());
+
+		// start it!
+		posServer.start();
+
+		// make sure it is started, and port is correct
+		assertFalse(posServer.isStopped());
+		assertEquals(runningPort, posServer.getLocalPort());
+		return posServer.getLocalPort();
+		// sleep for a while...
+	}
+
 	private void oldPosLogin(OutputStream os, InputStream is, byte[] challenge)
 			throws Exception {
 		byte[] msg = new byte[] {
@@ -536,7 +552,7 @@ public class SessionKeyProtocol extends GuiceTest {
 				// command ID
 				0, 0, 0, 7,
 				// POS ID
-				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '3',
+				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '2',
 				// challengeResponse
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -544,19 +560,7 @@ public class SessionKeyProtocol extends GuiceTest {
 		Tools.putBytes(msg, content2, 32);
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
-		// System.out.println("--------------------");
-		// for (int i = 0; i < msg.length; i++) {
-		// String s = Integer.toHexString((byte) msg[i]);
-		// if (s.length() < 2)
-		// s = "0" + s;
-		// if (s.length() > 2)
-		// s = s.substring(s.length() - 2);
-		// System.out.print(s + " ");
-		// if ((i + 1) % 8 == 0)
-		// System.out.println("");
-		// }
-		// System.out.println("--------------------");
-		// send both message at once
+
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
 
@@ -640,59 +644,6 @@ public class SessionKeyProtocol extends GuiceTest {
 
 	}
 
-	private void oldPosValidate(OutputStream os, InputStream is)
-			throws Exception {
-		byte[] msg = new byte[] {
-				// SEQ
-				0, 0, 0, 27,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				0, 0,
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 33,
-				// command ID
-				0, 0, 0, 3,
-				// grouponId
-				49, 51, 50, 49, 50, 51, 0,
-				// grouponVCode
-				49, 49, 49, 49, 49, 49, 0 };
-
-		int checksum = Tools.checkSum(msg, msg.length);
-		Tools.putUnsignedShort(msg, checksum, 10);
-
-		// write response
-		log.info(" list Send request to server");
-
-		// send both message at once
-		byte[] outBuf = new byte[msg.length];
-		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
-		os.write(outBuf);
-		// ----------
-
-		Thread.sleep(runForSeconds * 1000);
-		// read
-		log.info("Read response");
-		byte[] response = new byte[110];
-		int n = is.read(response);
-		System.out.println("Number of bytes login read: " + n);
-		for (int i = 0; i < n; i++) {
-			String s = Integer.toHexString((byte) response[i]);
-			if (s.length() < 2)
-				s = "0" + s;
-			if (s.length() > 2)
-				s = s.substring(s.length() - 2);
-			System.out.print(s + " ");
-			if ((i + 1) % 8 == 0)
-				System.out.println("");
-		}
-		assertEquals(0, response[20]);
-		assertEquals(0, response[21]);
-	}
-
 	private void newPosInit(OutputStream os, InputStream is, byte[] challenge,
 			byte[] sessionId) throws Exception {
 		byte[] msg = new byte[] {
@@ -749,72 +700,11 @@ public class SessionKeyProtocol extends GuiceTest {
 		assertEquals(0, response[41]);
 	}
 
-	private void checkSendErrorCommandId(OutputStream os, InputStream is, byte[] challenge, byte[] sessionId)
+	private void SendValidationCheckValidateCount(OutputStream os,
+			InputStream is, byte[] sessionId, int validateCount)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
-				0, 0, 0, 25,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				(byte) 128, 0,
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 68,
-				// session key dscription
-				1, 0, 0, 16,
-				// session key
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				// command ID
-				0, 0, 0, 50,
-				// POS ID
-				'R', 'E', 'W', 'A', 'R', 'D', 'S', '-', '0', '0', '0', '2',
-				// challengeResponse
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		Tools.putBytes(msg, sessionId, 20);
-		
-		byte[] content2 = HMAC_MD5.getSecretContent(challenge, "000001");
-		Tools.putBytes(msg, content2, 32);
-		int checksum = Tools.checkSum(msg, msg.length);
-		Tools.putUnsignedShort(msg, checksum, 10);
-
-		// write response
-		log.info(" Login Send request to server");
-
-		// send both message at once
-		byte[] outBuf = new byte[msg.length];
-		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
-		os.write(outBuf);
-		// ----------
-
-		Thread.sleep(runForSeconds * 1000);
-		// read
-		log.info("Read response");
-		byte[] response = new byte[44];
-		int n = is.read(response);
-		System.out.println("Number of bytes login read2: " + n);
-		for (int i = 0; i < n; i++) {
-			String s = Integer.toHexString((byte) response[i]);
-			if (s.length() < 2)
-				s = "0" + s;
-			if (s.length() > 2)
-				s = s.substring(s.length() - 2);
-			System.out.print(s + " ");
-			if ((i + 1) % 8 == 0)
-				System.out.println("");
-		}
-		assertEquals(-128, response[8]);
-		assertEquals(9, response[43]);
-	}
-
-	
-	private void newPosValidateSendSessionKey(OutputStream os, InputStream is,
-			byte[] sessionId, byte[] afterSessionId) throws Exception {
-		
-		byte[] msg = new byte[] {
-				// SEQ
 				0, 0, 0, 27,
 				// ACK
 				0, 0, 0, 0,
@@ -829,7 +719,7 @@ public class SessionKeyProtocol extends GuiceTest {
 				// session key
 				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 				// command ID
-				0, 0, 0, 3,
+				0, 0, 0, 27,
 				// grouponId
 				49, 51, 50, 49, 50, 51, 0,
 				// grouponVCode
@@ -853,7 +743,7 @@ public class SessionKeyProtocol extends GuiceTest {
 		Thread.sleep(runForSeconds * 1000);
 		// read
 		log.info("Read response");
-		byte[] response = new byte[136];
+		byte[] response = new byte[181];
 		int n = is.read(response);
 		System.out.println("Number of bytes login read: " + n);
 		for (int i = 0; i < n; i++) {
@@ -866,76 +756,15 @@ public class SessionKeyProtocol extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		//检查请求成功返回
-		if (response[39] == 4) {
-			System.arraycopy(response, 20, afterSessionId, 0, 16);
-			assertEquals(0, response[40]);
-			assertEquals(0, response[41]);
-		} 
-	}
-	
-	private void checkSendNewPosValidateSendSessionKey(OutputStream os, InputStream is,
-			byte[] sessionId, byte[] newSessionId) throws Exception {
-		byte[] msg = new byte[] {
-				// SEQ
-				0, 0, 0, 27,
-				// ACK
-				0, 0, 0, 0,
-				// flags
-				(byte) 128, 0,
-				// checksum
-				0, 0,
-				// message length
-				0, 0, 0, 54,
-				// session key dscription
-				1, 0, 0, 16,
-				// session key
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				// command ID
-				0, 0, 0, 3,
-				// grouponId
-				49, 51, 50, 49, 50, 51, 0,
-				// grouponVCode
-				49, 49, 49, 49, 50, 50, 0 };
-
-		Tools.putBytes(msg, sessionId, 20);
-
-		int checksum = Tools.checkSum(msg, msg.length);
-		Tools.putUnsignedShort(msg, checksum, 10);
-
-		// write response
-		log.info(" list Send request to server");
-
-		// send both message at once
-		byte[] outBuf = new byte[msg.length];
-		System.arraycopy(msg, 0, outBuf, 0, msg.length);
-
-		os.write(outBuf);
-		// ----------
-
-		Thread.sleep(runForSeconds * 1000);
-		// read
-		log.info("Read response");
-		byte[] response = new byte[136];
-		int n = is.read(response);
-		System.out.println("Number of bytes login read: " + n);
-		for (int i = 0; i < n; i++) {
-			String s = Integer.toHexString((byte) response[i]);
-			if (s.length() < 2)
-				s = "0" + s;
-			if (s.length() > 2)
-				s = s.substring(s.length() - 2);
-			System.out.print(s + " ");
-			if ((i + 1) % 8 == 0)
-				System.out.println("");
-		}
-		if (response[39] == 4) {
-			assertEquals(0, response[40]);
-			assertEquals(0, response[41]);
-		} else {
-			System.arraycopy(response, 20, newSessionId, 0, 16);
-			assertEquals(7, response[43]);
-		}
+		assertEquals(validateCount, response[41]);
+		assertEquals(0, response[42]);
+		assertEquals(0, response[43]);
+		assertEquals(0, response[44]);
+		assertEquals(0, response[45]);
+		assertEquals(0, response[46]);
+		assertEquals(0, response[47]);
+		assertEquals(0, response[48]);
+		assertEquals(0, response[49]);
 	}
 
 	private void initDB(EntityManager em) {

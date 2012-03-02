@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.common;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
@@ -90,6 +91,30 @@ public abstract class Tools {
 		bb[index + 2] = (byte) (x >> 8);
 		bb[index + 3] = (byte) (x >> 0);
 	}
+	
+	public static void putDate(byte[] bb, Calendar calendar, int index) {
+		if(calendar == null){
+			return;
+		}
+		int y = calendar.get(Calendar.YEAR);
+		int m = calendar.get(Calendar.MONTH) + 1;
+		int d = calendar.get(Calendar.DAY_OF_MONTH);
+		int h = calendar.get(Calendar.HOUR_OF_DAY);
+		int miu = calendar.get(Calendar.MINUTE);
+		int s = calendar.get(Calendar.SECOND);
+		int ms = calendar.get(Calendar.MILLISECOND);
+//		int tz = calendar.getTimeZone().getRawOffset() / (3600*1000);
+		int tz_min = calendar.getTimeZone().getRawOffset() / (60*1000);
+		putUnsignedShort(bb, y, index);
+		bb[index + 2] = (byte) (m);
+		bb[index + 3] = (byte) (d);
+		bb[index + 4] = (byte) (h);
+		bb[index + 5] = (byte) (miu);
+		bb[index + 6] = (byte) (s);
+		putUnsignedShort(bb, ms, index+7);
+		putUnsignedShort(bb, tz_min, index+9);
+	}
+	
 
 	public static void putBytes(byte[] bb, byte[] x, int index) {
 		for (int i = 0; i < x.length; i++) {

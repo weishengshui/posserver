@@ -170,4 +170,13 @@ public class CmdConstant {
 	 */
 	public static final long ECHO_CMD_ID_RESPONSE = 26;
 	
+	/**
+	 * pos new validate request
+	 */
+	public static final long VALIDATE_2_CMD_ID = 27;
+	
+	/**
+	 * pos new validate response
+	 */
+	public static final long VALIDATE_2_CMD_ID_RESPONSE = 28;
 }

@@ -26,6 +26,8 @@ import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.CopyPropertiesException;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
+import com.chinarewards.qqgbvpn.main.vo.ValidateResponseMessageVO;
+import com.chinarewards.qqgbvpn.main.vo.ValidationVO;
 import com.chinarewards.qqgbvpn.qqapi.exception.MD5Exception;
 import com.chinarewards.qqgbvpn.qqapi.exception.ParseXMLException;
 import com.chinarewards.qqgbvpn.qqapi.exception.SendPostTimeOutException;
@@ -54,6 +56,12 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	private DateTimeProvider dtProvider;
 	
 	private final static String SUCCESS_CODE = "0";
+	
+	private final int ERROR_CODE_THER = 999; 
+	
+	private final int RESULT_SUCCESS_CODE = 0; 
+	
+	private final int SIGNEDINTMAXVALUE  = 32767; 
 	
 	
 	/**
@@ -383,6 +391,222 @@ public class GroupBuyingManagerImpl implements GroupBuyingManager {
 	public void groupBuyValidateCallBack(String grouponId, String grouponVCode)
 			throws SaveDBException {
 		dao.get().groupBuyValidateCallBack(grouponId, grouponVCode);
+	}
+
+
+	@Override
+	public ValidationVO getValidationByPcodeVcodeLastTs(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		
+		return dao.get().getValidationByPcodeVcodeLastTs(pcode, vcode);
+	}
+	
+	@Override
+	public ValidationVO getValidationByPcodeVcodeFirstTs(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		
+		return dao.get().getValidationByPcodeVcodeFirstTs(pcode, vcode);
+	}
+
+	@Override
+	public void createValidation(String posId, ValidationVO validationVo)
+			throws SaveDBException, JsonGenerationException {
+		
+		Pos pos = dao.get().getPosByPosId(posId);
+		Agent agent = dao.get().getAgentByPosId(posId);
+		
+		if(pos != null && agent != null && validationVo != null){
+			Validation validation = new Validation();
+			Date date = dtProvider.getTime();
+			String eventDetail = "";
+			String event = validationVo.getStatus().equals(CommunicationStatus.SUCCESS) ? DomainEvent.POS_ORDER_VALIDATED_OK.toString() : DomainEvent.POS_ORDER_VALIDATED_FAILED.toString();
+			
+			validation.setTs(date);
+			validation.setVcode(validationVo.getVcode());
+			validation.setPcode(validationVo.getPcode());
+			validation.setPosId(pos.getPosId());
+			validation.setPosModel(pos.getModel());
+			validation.setPosSimPhoneNo(pos.getSimPhoneNo());
+			validation.setStatus(validationVo.getStatus());
+			validation.setCstatus(validationVo.getCstatus());
+			validation.setResultStatus(validationVo.getResultStatus());
+			validation.setResultName(validationVo.getResultName());
+			validation.setResultExplain(validationVo.getResultExplain());
+			validation.setCurrentTime(validationVo.getCurrentTime());
+			validation.setUseTime(validationVo.getUseTime());
+			validation.setValidTime(validationVo.getValidTime());
+			validation.setRefundTime(validationVo.getRefundTime());
+			validation.setAgentId(agent.getId());
+			validation.setAgentName(agent.getName());
+			// 保存验证信息
+			dao.get().saveValidation(validation);
+
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				eventDetail = mapper.writeValueAsString(validation);
+
+			} catch (Exception e) {
+				log.error("journalLogic save error");
+				log.error("posId: " + posId);
+				log.error("ts: " + date);
+				log.error("token: " + validationVo.getVcode());
+				log.error("grouponId" + validationVo.getPcode());
+				log.error("entity: " + DomainEntity.VALIDATION.toString());
+				log.error("entityId: " + validation.getId());
+				log.error("event: " + event);
+				log.error("eventDetail: " + eventDetail);
+				throw new SaveDBException(e);
+			}
+	
+			//记录保存日志
+			journalLogic.logEvent(event, DomainEntity.VALIDATION.toString(), posId, eventDetail);
+		}else{
+			throw new SaveDBException("create validate error,validationVo is null or pos or agent not found by posId : " + posId);
+		}
+	}
+
+
+	@Override
+	public int getValidationCountByPcodeVcode(String pcode, String vcode)
+			throws SaveDBException, JsonGenerationException {
+		return dao.get().getValidationCountByPcodeVcode(pcode, vcode);
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ValidateResponseMessageVO qqgbvValidationCommand(
+			HashMap<String, String> postParams) throws SaveDBException,JsonGenerationException{
+		
+		ValidateResponseMessageVO validateResponseMessage = new ValidateResponseMessageVO();
+		try {
+			// 验证首先检查是否通过本地验证（就是验证结果表GroupBuyingValidateResult里面是否还存在同一个团购同一个验证码的数据）
+			GroupBuyingValidateResultVO groupBuyingValidateResultVO = dao.get().groupBuyingValidateLocal(
+					postParams.get("grouponId"), postParams.get("token"));
+			// 如果存在一条需要验证的数据说明，上一次验证失败（失败的原因有：可能是验证请求回复POS机失败，或者验证后的ACK请求失败）
+			if (groupBuyingValidateResultVO != null) {
+				
+				log.debug("validate to dup.....");
+				
+				// 从validate表里面获取上一次验证和第一次验证这个团购的数据然后回复给POS机
+				ValidationVO lastValidationVo = dao.get().getValidationByPcodeVcodeLastTs(
+						postParams.get("grouponId"), postParams.get("token"));
+				ValidationVO firstValidationVo = dao.get().getValidationByPcodeVcodeFirstTs(
+						postParams.get("grouponId"), postParams.get("token"));
+				
+				// 查询在该次验证前验证了多少次
+				int validateCount = dao.get().getValidationCountByPcodeVcode(
+						postParams.get("grouponId"), postParams.get("token"));
+				
+				// 因为要得到当前的验证次数，所以要加上1
+				int currCount = validateCount + 1;
+				log.debug("validate count:{}", currCount);
+				if (currCount > SIGNEDINTMAXVALUE) {
+					currCount = SIGNEDINTMAXVALUE;
+				}
+				
+				validateResponseMessage.setValidate_count(currCount);
+				validateResponseMessage.setPrev_posId(lastValidationVo.getPosId());
+				validateResponseMessage.setFirst_posId(firstValidationVo.getPosId());
+				validateResponseMessage.setQqws_resultcode(0);
+				validateResponseMessage.setQqvalidate_resultstatus(Long.parseLong(firstValidationVo.getResultStatus()));
+				validateResponseMessage.setResultName(groupBuyingValidateResultVO.getResultName());
+				validateResponseMessage.setCurrentTime(groupBuyingValidateResultVO.getCurrentTime());
+				validateResponseMessage.setResultExplain(groupBuyingValidateResultVO.getResultExplain());
+				validateResponseMessage.setUseTime(groupBuyingValidateResultVO.getUseTime());
+				validateResponseMessage.setValidTime(groupBuyingValidateResultVO.getValidTime());
+				validateResponseMessage.setPrev_validate_time(lastValidationVo.getTs());
+				validateResponseMessage.setFirst_validate_time(firstValidationVo.getTs());
+
+				// 每一次验证都要插入一条验证的数据，作为历史记录
+				// 为了区分相对腾讯来说的验证成功，和针对我们自己服务器的成功这里添加了一个成功的状态
+				// 腾讯成功是SUCCESS 我们自己的服务器成功是SUCCESS_DUP
+				lastValidationVo.setStatus(ValidationStatus.SUCCESS_DUP);
+				this.createValidation(postParams.get("posId"), lastValidationVo);
+			}
+			// 这个团购这个验证码第一次验证，请求腾讯服务器验证。
+			else {
+				log.debug("ValidateCommand to tx...");
+				HashMap<String, Object> result = this.groupBuyingValidate(postParams);
+				int resultCode = Integer.valueOf((String) result.get("resultCode"));
+				log.debug("resultCode: {}", resultCode);
+				if (resultCode == RESULT_SUCCESS_CODE) {
+					List<GroupBuyingValidateResultVO> items = (List<GroupBuyingValidateResultVO>) result.get("items");
+
+					validateResponseMessage.setQqws_resultcode(0);
+					validateResponseMessage.setQqvalidate_resultstatus(0);
+
+					for (GroupBuyingValidateResultVO item : items) {
+						log.debug("item.getResultStatus(): [{}]",
+								item.getResultStatus());
+						// 腾讯那边说resultStatus非0是验证通过
+						if (!SUCCESS_CODE.equals(item.getResultStatus())) {
+							validateResponseMessage
+									.setQqvalidate_resultstatus(Long
+											.parseLong(item.getResultStatus()));
+						} else {
+							// 创建本地验证记录用来备份，如果这次验证失败可以第二次验证时不用访问腾讯服务器，这条记录会在某一次验证成功后的ACK请求中删除
+							log.debug("ValidateCommand create groupBuyingValidateResult");
+							dao.get().createValidateResultLocal(postParams.get("grouponId"), postParams.get("token"), item);
+						}
+
+						ValidationVO firstValidationVo = dao.get().getValidationByPcodeVcodeFirstTs(
+										postParams.get("grouponId"),postParams.get("token"));
+
+						validateResponseMessage.setValidate_count(1);
+						validateResponseMessage.setResultName(item.getResultName());
+						validateResponseMessage.setCurrentTime(item.getCurrentTime());
+						validateResponseMessage.setResultExplain(item.getResultExplain());
+						validateResponseMessage.setUseTime(item.getUseTime());
+						validateResponseMessage.setValidTime(item.getValidTime());
+						validateResponseMessage.setPrev_posId(null);
+						validateResponseMessage.setFirst_posId(postParams.get("posId"));
+						validateResponseMessage.setPrev_validate_time(null);
+						validateResponseMessage.setFirst_validate_time(firstValidationVo.getTs());
+					}
+				} else {
+					switch (resultCode) {
+					case -1:
+						log.debug("error==:服务器繁忙");
+						validateResponseMessage.setQqws_resultcode(resultCode);
+						break;
+					case -2:
+						log.debug("error==:md5校验失败");
+						validateResponseMessage.setQqws_resultcode(resultCode);
+						break;
+					case -3:
+						log.debug("error==:没有权限");
+						validateResponseMessage.setQqws_resultcode(resultCode);
+						break;
+					default:
+						log.debug("error==:未知错误");
+						validateResponseMessage.setQqws_resultcode(resultCode);
+						break;
+					}
+				}
+			}
+
+		} catch (JsonGenerationException e) {
+			log.error("error==:生成JSON对象出错", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		} catch (MD5Exception e) {
+			log.error("error==:生成MD5校验位出错", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		} catch (ParseXMLException e) {
+			log.error("error==:解析XML出错", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		} catch (SendPostTimeOutException e) {
+			log.error("error==:POST连接出错", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		} catch (SaveDBException e) {
+			log.error("error==:后台保存数据库出错 ", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		} catch (Throwable e) {
+			log.error("error==:", e);
+			validateResponseMessage.setQqws_resultcode(ERROR_CODE_THER);
+		}
+
+		return validateResponseMessage;
 	}
 
 }
