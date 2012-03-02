@@ -4,9 +4,10 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Hex;
+
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
 
 /**
  * byte tools
@@ -93,10 +94,10 @@ public abstract class Tools {
 		bb[index + 3] = (byte) (x >> 0);
 	}
 	
-	public static void putDate(byte[] bb, Date x, int index) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(x);
-		
+	public static void putDate(byte[] bb, Calendar calendar, int index) {
+		if(calendar == null){
+			return;
+		}
 		int y = calendar.get(Calendar.YEAR);
 		int m = calendar.get(Calendar.MONTH) + 1;
 		int d = calendar.get(Calendar.DAY_OF_MONTH);
@@ -113,6 +114,8 @@ public abstract class Tools {
 		bb[index + 6] = (byte) (s);
 		putUnsignedShort(bb, ms, index+7);
 		bb[index + 9] =  (byte) (tz);
+		
+		System.out.println(CodecUtil.hexDumpAsString(bb));
 	}
 	
 

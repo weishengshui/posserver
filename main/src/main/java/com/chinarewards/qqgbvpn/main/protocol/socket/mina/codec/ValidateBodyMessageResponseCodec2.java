@@ -1,6 +1,7 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -178,7 +179,9 @@ public class ValidateBodyMessageResponseCodec2 implements ICommandCodec {
 
 		index += tmp.length;
 		if (first_validate_time != null) {
-			Tools.putDate(resultByte, first_validate_time, index);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(first_validate_time);
+			Tools.putDate(resultByte, calendar, index);
 		} else {
 			for (int i = 0; i < ProtocolLengths.PREV_VALIDATE_TIME; i++) {
 				resultByte[index + i] = 0;
@@ -186,7 +189,9 @@ public class ValidateBodyMessageResponseCodec2 implements ICommandCodec {
 		}
 		index += ProtocolLengths.FIRST_VALIDATE_TIME;
 		if (validateCount > 1 && prev_validate_time != null) {
-			Tools.putDate(resultByte, prev_validate_time, index);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(prev_validate_time);
+			Tools.putDate(resultByte, calendar, index);
 		} else {
 			for (int i = 0; i < ProtocolLengths.PREV_VALIDATE_TIME; i++) {
 				resultByte[index + i] = 0;
