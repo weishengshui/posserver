@@ -46,6 +46,8 @@ public abstract class ProtocolLengths {
 	
 	public static final int REDEEM_COUNT = 2;
 	
+	public static final int AMOUNT = 8; 
+	
 	
 	public static final int ECHO_COMMAND_RESULT = 1;
 
