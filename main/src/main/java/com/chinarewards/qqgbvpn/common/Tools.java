@@ -7,8 +7,6 @@ import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
 
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
-
 /**
  * byte tools
  * 
@@ -105,7 +103,8 @@ public abstract class Tools {
 		int miu = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int ms = calendar.get(Calendar.MILLISECOND);
-		int tz = calendar.getTimeZone().getRawOffset() / (3600*1000);
+//		int tz = calendar.getTimeZone().getRawOffset() / (3600*1000);
+		int tz_min = calendar.getTimeZone().getRawOffset() / (60*1000);
 		putUnsignedShort(bb, y, index);
 		bb[index + 2] = (byte) (m);
 		bb[index + 3] = (byte) (d);
@@ -113,9 +112,7 @@ public abstract class Tools {
 		bb[index + 5] = (byte) (miu);
 		bb[index + 6] = (byte) (s);
 		putUnsignedShort(bb, ms, index+7);
-		bb[index + 9] =  (byte) (tz);
-		
-		System.out.println(CodecUtil.hexDumpAsString(bb));
+		putUnsignedShort(bb, tz_min, index+9);
 	}
 	
 
