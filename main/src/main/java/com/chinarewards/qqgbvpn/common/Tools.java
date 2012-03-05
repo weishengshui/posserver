@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.common;
 
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.codec.binary.Hex;
@@ -90,7 +91,109 @@ public abstract class Tools {
 		bb[index + 2] = (byte) (x >> 8);
 		bb[index + 3] = (byte) (x >> 0);
 	}
+	
+	/** 
+     * float转换byte 
+     *  
+     * @param bb 
+     * @param x 
+     * @param index 
+     */ 
+    public static void putFloat(byte[] bb, float x, int index) {  
+        // byte[] b = new byte[4];  
+        int l = Float.floatToIntBits(x);  
+        for (int i = 0; i < 4; i++) {  
+            bb[index + i] = new Integer(l).byteValue();  
+            l = l >> 8;  
+        }  
+    }  
+ 
+    /** 
+     * 通过byte数组取得float 
+     *  
+     * @param bb 
+     * @param index 
+     * @return 
+     */ 
+    public static float getFloat(byte[] bb, int index) {  
+        int l;  
+        l = bb[index + 0];  
+        l &= 0xff;  
+        l |= ((long) bb[index + 1] << 8);  
+        l &= 0xffff;  
+        l |= ((long) bb[index + 2] << 16);  
+        l &= 0xffffff;  
+        l |= ((long) bb[index + 3] << 24);  
+        return Float.intBitsToFloat(l);  
+    }  
+    
+    
+    /** 
+     * double转换byte 
+     *  
+     * @param bb 
+     * @param x 
+     * @param index 
+     */ 
+    public static void putDouble(byte[] bb, double x, int index) {  
+        // byte[] b = new byte[8];  
+        long l = Double.doubleToLongBits(x);  
+        for (int i = 0; i < 4; i++) {  
+            bb[index + i] = new Long(l).byteValue();  
+            l = l >> 8;  
+        }  
+    }  
+ 
+    /** 
+     * 通过byte数组取得double 
+     *  
+     * @param bb 
+     * @param index 
+     * @return 
+     */ 
+    public static double getDouble(byte[] bb, int index) {  
+        long l;  
+        l = bb[0];  
+        l &= 0xff;  
+        l |= ((long) bb[1] << 8);  
+        l &= 0xffff;  
+        l |= ((long) bb[2] << 16);  
+        l &= 0xffffff;  
+        l |= ((long) bb[3] << 24);  
+        l &= 0xffffffffl;  
+        l |= ((long) bb[4] << 32);  
+        l &= 0xffffffffffl;  
+        l |= ((long) bb[5] << 40);  
+        l &= 0xffffffffffffl;  
+        l |= ((long) bb[6] << 48);  
+        l &= 0xffffffffffffffl;  
+        l |= ((long) bb[7] << 56);  
+        return Double.longBitsToDouble(l);  
+    }  
 
+	public static void putDate(byte[] bb, Calendar calendar, int index) {
+		if(calendar == null){
+			return;
+		}
+		int y = calendar.get(Calendar.YEAR);
+		int m = calendar.get(Calendar.MONTH) + 1;
+		int d = calendar.get(Calendar.DAY_OF_MONTH);
+		int h = calendar.get(Calendar.HOUR_OF_DAY);
+		int miu = calendar.get(Calendar.MINUTE);
+		int s = calendar.get(Calendar.SECOND);
+		int ms = calendar.get(Calendar.MILLISECOND);
+//		int tz = calendar.getTimeZone().getRawOffset() / (3600*1000);
+		int tz_min = calendar.getTimeZone().getRawOffset() / (60*1000);
+		putUnsignedShort(bb, y, index);
+		bb[index + 2] = (byte) (m);
+		bb[index + 3] = (byte) (d);
+		bb[index + 4] = (byte) (h);
+		bb[index + 5] = (byte) (miu);
+		bb[index + 6] = (byte) (s);
+		putUnsignedShort(bb, ms, index+7);
+		putUnsignedShort(bb, tz_min, index+9);
+	}
+	
 	public static void putBytes(byte[] bb, byte[] x, int index) {
 		for (int i = 0; i < x.length; i++) {
 			bb[index + i] = x[i];
