@@ -9,6 +9,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class FirmwareUpDoneResponseMessage implements ICommand {
 
+	public static final long FIRMWARE_UP_DONE_CMD_ID_RESPONSE = 18;
+	
 	private long cmdId;
 	
 	private short result;

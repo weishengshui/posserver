@@ -16,7 +16,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseDetail;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
@@ -104,7 +103,7 @@ public class SearchCommandHandler implements ServiceHandler {
 			searchResponseMessage.setResult(ERROR_CODE_OTHER);
 		}
 		
-		searchResponseMessage.setCmdId(CmdConstant.SEARCH_CMD_ID_RESPONSE);
+		searchResponseMessage.setCmdId(SearchResponseMessage.SEARCH_CMD_ID_RESPONSE);
 		
 		response.writeResponse(searchResponseMessage);
 		

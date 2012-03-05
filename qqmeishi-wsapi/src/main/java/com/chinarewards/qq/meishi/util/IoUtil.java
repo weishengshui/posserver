@@ -1,4 +1,4 @@
-package com.chinarewards.qq.meishi.test.util;
+package com.chinarewards.qq.meishi.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

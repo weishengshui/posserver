@@ -5,6 +5,7 @@ package com.chinarewards.qq.meishi.test;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -16,6 +17,7 @@ import com.google.inject.Module;
  * @author Cyril
  * @since 0.1.0
  */
+@Ignore
 public abstract class GuiceTest extends BaseTest {
 
 	private Injector injector;

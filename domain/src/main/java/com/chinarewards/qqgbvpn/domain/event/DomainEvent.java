@@ -316,10 +316,39 @@ public enum DomainEvent {
 	 * modify FinanceReportHistory
 	 */
 	FINANCE_REPORT_HISTORY_MODIFY,
+
+	
 	
 	/**
-	 * QQ Meishi Q-Mi transaction.
+	 * Indicates a QQ Meishi Q-Mi transaction request is successfully handled by
+	 * the server. This <b>does not</b> mean that.
+	 * 
+	 * This event is emitted when the server processed a QQ Meishi Q-Mi Rewards
+	 * transaction.
+	 * 
+	 * Attributes included:
+	 * <ul>
+	 * <li>posId: The POS ID (e.g. REWARDS-0001)</li>
+	 * <li>qqwsapi: contains the original content of the QQMeishi web service.
+	 * <ul>
+	 * <li>content: The raw (original) content returned from the web service.
+	 * This is a place holder, it should holds the actual content of the values
+	 * returned from the QQ Meishi web service.</li>
+	 * </ul>
+	 * </li>
+	 * </ul>
+	 * 
+	 * @see QQMEISHI_QMI_XACTION_FAILED
 	 */
-	QQMEISHI_QMI_XACTION
+	QQMEISHI_QMI_XACTION_OK,
+	
+	/**
+	 * Indicates a QQ Meishi Q-Mi transaction requested failed to be handled
+	 * by the server. The meaning of failure does <b>not</b> refer to the 
+	 * business meaning.
+	 * 
+	 * @see QQMEISHI_QMI_XACTION_FAILED
+	 */
+	QQMEISHI_QMI_XACTION_FAILED
 	
 }

@@ -1,5 +1,6 @@
 package com.chinarewards.qq.meishi.main;
 
+import org.junit.Ignore;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
@@ -9,6 +10,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
  * @time 2012-3-5   下午05:32:23
  * @author Seek
  */
+@Ignore
 public final class ServletHolderFactory {
 	
 	/**

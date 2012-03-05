@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class SearchResponseMessage implements ICommand {
 	
+	public static final long SEARCH_CMD_ID_RESPONSE = 2;
+	
 	public long cmdId;
 	
 	public int result;

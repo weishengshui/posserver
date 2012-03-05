@@ -2,11 +2,11 @@ package com.chinarewards.qqgbvpn.main.protocol.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.firmware.FirmwareUpDoneResult;
@@ -45,7 +45,7 @@ public class FirmwareUpDoneHandler implements ServiceHandler {
 			firmwareUpDoneResponseMessage = new FirmwareUpDoneResponseMessage();
 			firmwareUpDoneResponseMessage.setResult(FirmwareUpDoneResult.SUCCESS.getPosCode());
 		}
-		firmwareUpDoneResponseMessage.setCmdId(CmdConstant.FIRMWARE_UP_DONE_CMD_ID_RESPONSE);
+		firmwareUpDoneResponseMessage.setCmdId(FirmwareUpDoneResponseMessage.FIRMWARE_UP_DONE_CMD_ID_RESPONSE);
 		response.writeResponse(firmwareUpDoneResponseMessage);
 	}
 	

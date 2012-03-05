@@ -21,7 +21,7 @@ import com.chinarewards.qq.meishi.main.ServletHolderFactory;
 import com.chinarewards.qq.meishi.main.TestConfigModule;
 import com.chinarewards.qq.meishi.service.QQMeishiService;
 import com.chinarewards.qq.meishi.test.GuiceTest;
-import com.chinarewards.qq.meishi.test.util.IoUtil;
+import com.chinarewards.qq.meishi.util.IoUtil;
 import com.chinarewards.qq.meishi.vo.MeishiConvertQQMiReqVO;
 import com.chinarewards.qq.meishi.vo.MeishiConvertQQMiRespVO;
 import com.google.inject.Module;

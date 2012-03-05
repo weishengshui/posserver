@@ -15,6 +15,9 @@ import com.chinarewards.qqgbvpn.main.Session;
 import com.chinarewards.qqgbvpn.main.SessionStore;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ErrorBodyMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
@@ -88,7 +91,7 @@ public class LoginFilter extends AbstractFilter {
 		}
 		
 		// special treatment for some command (cyril: I don't know why it is needed);
-		if (cmdId == CmdConstant.INIT_CMD_ID) {
+		if (cmdId == InitRequestMessage.INIT_CMD_ID) {
 			// get POS ID
 			// FIXME completely wrong implementation
 			InitRequestMessage im = (InitRequestMessage) msg;
@@ -96,8 +99,8 @@ public class LoginFilter extends AbstractFilter {
 			
 			checkPosIdIsNull = true;
 
-		} else if (cmdId == CmdConstant.LOGIN_CMD_ID
-				|| cmdId == CmdConstant.BIND_CMD_ID) {
+		} else if (cmdId == LoginRequestMessage.LOGIN_CMD_ID
+				|| cmdId == LoginRequestMessage.BIND_CMD_ID) {
 			// get POS ID
 			// FIXME completely wrong implementation
 			LoginRequestMessage lm = (LoginRequestMessage) msg;
@@ -140,12 +143,12 @@ public class LoginFilter extends AbstractFilter {
 	
 	protected List<Long> getCmdIdsExcludedFromLogin() {
 		Long[] ids = new Long[] {
-				CmdConstant.INIT_CMD_ID,
-				CmdConstant.LOGIN_CMD_ID,
-				CmdConstant.BIND_CMD_ID,
-				CmdConstant.FIRMWARE_UPGRADE_CMD_ID,
-				CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID,
-				CmdConstant.FIRMWARE_UP_DONE_CMD_ID,
+				InitRequestMessage.INIT_CMD_ID,
+				LoginRequestMessage.LOGIN_CMD_ID,
+				LoginRequestMessage.BIND_CMD_ID,
+				FirmwareUpgradeRequestMessage.FIRMWARE_UPGRADE_CMD_ID,
+				GetFirmwareFragmentRequestMessage.GET_FIRMWARE_FRAGMENT_CMD_ID,
+				FirmwareUpDoneRequestMessage.FIRMWARE_UP_DONE_CMD_ID,
 				CmdConstant.ECHO_CMD_ID
 				};
 
@@ -164,8 +167,8 @@ public class LoginFilter extends AbstractFilter {
 		ICommand msg = ((Message) writeRequest.getMessage())
 				.getBodyMessage();
 		long cmdId = msg.getCmdId();
-		if (cmdId == CmdConstant.LOGIN_CMD_ID_RESPONSE
-				|| cmdId == CmdConstant.BIND_CMD_ID_RESPONSE) {
+		if (cmdId == LoginResponseMessage.LOGIN_CMD_ID_RESPONSE
+				|| cmdId == LoginResponseMessage.BIND_CMD_ID_RESPONSE) {
 			getServerSession(session, sessionStore).setAttribute(IS_LOGIN, false);
 
 			LoginResponseMessage lm = (LoginResponseMessage) msg;

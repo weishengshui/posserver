@@ -3,6 +3,8 @@ package com.chinarewards.qq.meishi.guice;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 
@@ -10,11 +12,11 @@ import com.google.inject.Module;
  * @time 2012-3-5   下午04:24:38
  * @author Seek
  */
+@Ignore
 public class TestAppModule extends AbstractModule {
 	
 	private List<Module> list = new ArrayList<Module>();
 
-	
 	public TestAppModule(){
 		
 		/* pos QQ meishi service */

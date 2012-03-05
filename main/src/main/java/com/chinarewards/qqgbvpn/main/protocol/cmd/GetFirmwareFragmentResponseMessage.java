@@ -11,6 +11,8 @@ import java.util.Arrays;
 public class GetFirmwareFragmentResponseMessage implements ICommand {
 
 	public static final short RESULT_OK = 0;
+	
+	public static final long GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE = 16;
 
 	/**
 	 * Offset value exceed the actual firmware size (out-of-bound). For example,
@@ -50,7 +52,7 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 	 */
 	public static final short RESULT_NO_FIRMWARE_UPGRADE = 7;
 	
-	private final long cmdId = CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE;
+	private final long cmdId = GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE;
 	
 	private final short result;
 
@@ -69,7 +71,7 @@ public class GetFirmwareFragmentResponseMessage implements ICommand {
 
 	/**
 	 * Current implementation always return
-	 * {@link CmdConstant#GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE}
+	 * {@link GetFirmwareFragmentResponseMessage#GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE}
 	 */
 	public long getCmdId() {
 		return cmdId;

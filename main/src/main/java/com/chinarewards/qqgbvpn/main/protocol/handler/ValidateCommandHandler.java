@@ -13,7 +13,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
@@ -62,7 +61,7 @@ public class ValidateCommandHandler implements ServiceHandler {
 			validateResponseMessage.setResultExplain(vo.getResultExplain());
 			validateResponseMessage.setUseTime(vo.getUseTime());
 			validateResponseMessage.setValidTime(vo.getValidTime());
-			validateResponseMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID_RESPONSE);
+			validateResponseMessage.setCmdId(ValidateResponseMessage.VALIDATE_CMD_ID_RESPONSE);
 			
 		} catch (JsonGenerationException e) {
 			log.error("JsonGenerationException:", e);

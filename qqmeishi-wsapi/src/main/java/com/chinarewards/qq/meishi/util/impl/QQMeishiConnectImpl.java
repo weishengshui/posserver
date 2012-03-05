@@ -1,9 +1,5 @@
 package com.chinarewards.qq.meishi.util.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +25,8 @@ import org.slf4j.LoggerFactory;
 import com.chinarewards.qq.meishi.exception.QQMeishiDataParseException;
 import com.chinarewards.qq.meishi.exception.QQMeishiInterfaceAccessException;
 import com.chinarewards.qq.meishi.exception.QQMeishiReadStreamException;
+import com.chinarewards.qq.meishi.util.IoUtil;
 import com.chinarewards.qq.meishi.util.QQMeishiConnect;
-import com.chinarewards.qq.meishi.util.QQMeishiConnect.HttpMethod;
 
 /**
  * description：httpclient implements
@@ -53,47 +49,6 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 
 		httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(mgr.getSchemeRegistry()), params);
 		return httpClient;
-	}
-	
-	/**
-	 * description：read String from inputStarem
-	 * @param in a inputStream
-	 * @param charset 字符编码
-	 * @return 读取到的内容
-	 * @time 2012-3-2   下午05:37:51
-	 * @author Seek
-	 */
-	private static String readStream(InputStream in, String charset) throws 
-			QQMeishiReadStreamException {
-		StringBuilder sb = new StringBuilder("");
-		if (in != null) {
-			BufferedReader reader = null;
-			String line;
-			try {
-				if (charset != null && !"".equals(charset.trim())) {
-					reader = new BufferedReader(new InputStreamReader(in, charset));
-				} else {
-					reader = new BufferedReader(new InputStreamReader(in));
-				}
-				while ((line = reader.readLine()) != null) {
-					sb.append(line.trim());
-				}
-			} catch (Throwable e) {
-				throw new QQMeishiReadStreamException(e);
-			} finally {
-				try {
-					if (reader != null) {
-						reader.close();
-					}
-					if (in != null) {
-						in.close();
-					}
-				} catch (IOException e) {
-					throw new QQMeishiReadStreamException(e);
-				}
-			}
-		}
-		return sb.toString().trim();
 	}
 	
 	/**
@@ -177,7 +132,7 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 		try {
 			String contentCharset = httpResponse.getParams().getParameter(
 					CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
-			str = readStream(httpResponse.getEntity().getContent(), contentCharset);
+			str = IoUtil.readStream(httpResponse.getEntity().getContent(), contentCharset);
 		} catch (Throwable e) {
 			throw new QQMeishiReadStreamException(e);
 		}

@@ -11,12 +11,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Ignore;
+
 /**
  * 
  * 
  * @author Cyril
  * @since 0.1.0
  */
+@Ignore
 public class HardCodedServlet extends HttpServlet {
 
 	private String response = "hello";

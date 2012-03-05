@@ -11,6 +11,16 @@ import java.util.Arrays;
  */
 public class LoginResponseMessage implements ICommand {
 
+	/**
+	 * 登录回复
+	 */
+	public static final long LOGIN_CMD_ID_RESPONSE = 8;
+	
+	/**
+	 * 绑定回复
+	 */
+	public static final long BIND_CMD_ID_RESPONSE = 10;
+	
 	private long cmdId;
 	
 	private int result;
