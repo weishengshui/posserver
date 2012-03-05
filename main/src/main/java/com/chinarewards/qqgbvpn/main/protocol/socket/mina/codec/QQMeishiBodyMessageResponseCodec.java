@@ -12,10 +12,10 @@ import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.QQmeishiResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
-public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
+public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -31,7 +31,7 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 	public ICommand decode(IoBuffer in, Charset charset)
 			throws PackageException {
 		log.debug("QQmeishi response message encode");
-		QQmeishiResponseMessage message = new QQmeishiResponseMessage();
+		QQMeishiResponseMessage message = new QQMeishiResponseMessage();
 		
 		long cmdId = in.getUnsignedInt();
 		long result = in.getUnsignedInt();
@@ -68,11 +68,11 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		
 		message.setCmdId(cmdId);
 		message.setResult(result);
-		message.setForce_pwd_next_action(forcePwdNextAction);
+		message.setForcePwdNextAction(forcePwdNextAction);
 		message.setPassword(password);
 		message.setTitle(title);
 		message.setTip(tip);
-		message.setXact_time(xactTime);
+		message.setXactTime(xactTime);
 		
 		log.trace("QQmeishiResponseMessage:{}", message);
 		return message;
@@ -81,12 +81,12 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("QQmeishi response message encode");
-		QQmeishiResponseMessage responseMessage = (QQmeishiResponseMessage) bodyMessage;
+		QQMeishiResponseMessage responseMessage = (QQMeishiResponseMessage) bodyMessage;
 
 		long cmdId = responseMessage.getCmdId();
 		long result = responseMessage.getResult();
-		byte forcePwdNextAction = responseMessage.getForce_pwd_next_action();
-		Date xactTime = responseMessage.getXact_time();
+		byte forcePwdNextAction = responseMessage.getForcePwdNextAction();
+		Date xactTime = responseMessage.getXactTime();
 		String title = responseMessage.getTitle();
 		String tip = responseMessage.getTip();
 		String password = responseMessage.getPassword();
@@ -99,8 +99,6 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		int titleLen = (title == null) ? 0 : title.length();
 		byte[] titleBytes = null;
 		if(titleLen > 0){
-			title = title.replaceAll("\\\\r\\\\n",
-					String.valueOf(CmdConstant.ENTER));
 			byteLen += title.length();
 			titleBytes = title.getBytes(charset);
 		}
@@ -110,8 +108,6 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		int tipLen = (tip == null) ? 0 : tip.length();
 		byte[] tipBytes = null;
 		if(tipLen > 0){
-			tip = tip.replaceAll("\\\\r\\\\n",
-					String.valueOf(CmdConstant.ENTER));
 			byteLen += tip.length();
 			tipBytes = tip.getBytes(charset);
 		}
@@ -121,8 +117,6 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		int passwordLen = (password == null) ? 0 : password.length();
 		byte[] passwordBytes = null;
 		if(passwordLen > 0){
-			password = password.replaceAll("\\\\r\\\\n",
-					String.valueOf(CmdConstant.ENTER));
 			byteLen += password.length();
 			passwordBytes = password.getBytes(charset);
 		}
@@ -138,6 +132,7 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		resultByte[index] = forcePwdNextAction;
 		index += ProtocolLengths.FORCE_PWD_NEXT_ACTION;
 		
+		// xact time
 		if(xactTime != null){
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(xactTime);

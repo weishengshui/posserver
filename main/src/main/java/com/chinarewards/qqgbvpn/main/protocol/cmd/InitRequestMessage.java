@@ -8,6 +8,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class InitRequestMessage implements ICommand {
 
+	public static final long INIT_CMD_ID = 5;
+	
 	private long cmdId;
 
 	private String posId;

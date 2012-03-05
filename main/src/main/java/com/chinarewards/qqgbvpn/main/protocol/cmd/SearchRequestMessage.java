@@ -9,6 +9,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class SearchRequestMessage implements ICommand {
 
+	public static final long SEARCH_CMD_ID = 1;
+	
 	private long cmdId;
 	
 	private int page;

@@ -3,6 +3,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
 public class HuaxiaRequestMessage implements ICommand {
 
+	public static final long HUAXIA_BANK_REDEEM_SEARCH = 19;
+	
 	public long cmdId;
 	
 	public String cardNum;

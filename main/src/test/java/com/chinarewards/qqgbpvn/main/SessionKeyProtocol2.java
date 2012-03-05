@@ -26,7 +26,6 @@ import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
 import com.chinarewards.qqgbvpn.domain.Agent;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.PosAssignment;
-import com.chinarewards.qqgbvpn.domain.Validation;
 import com.chinarewards.qqgbvpn.domain.status.PosDeliveryStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosInitializationStatus;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
@@ -743,7 +742,7 @@ public class SessionKeyProtocol2 extends GuiceTest {
 		Thread.sleep(runForSeconds * 1000);
 		// read
 		log.info("Read response");
-		byte[] response = new byte[181];
+		byte[] response = new byte[183];
 		int n = is.read(response);
 		System.out.println("Number of bytes login read: " + n);
 		for (int i = 0; i < n; i++) {

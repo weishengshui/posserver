@@ -4,6 +4,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
 public class ValidateResponseMessage implements ICommand {
 
+	public static final long VALIDATE_CMD_ID_RESPONSE = 4;
+	
 	private long cmdId;
 	
 	private int result;

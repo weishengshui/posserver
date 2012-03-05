@@ -8,7 +8,9 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class GetFirmwareFragmentRequestMessage implements ICommand {
 
-	private final long cmdId = CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID;
+	public static final long GET_FIRMWARE_FRAGMENT_CMD_ID = 15;
+	
+	private final long cmdId = GET_FIRMWARE_FRAGMENT_CMD_ID;
 	
 	private final String posId;
 
@@ -31,7 +33,7 @@ public class GetFirmwareFragmentRequestMessage implements ICommand {
 
 	/**
 	 * Current implementation always return
-	 * {@link CmdConstant#GET_FIRMWARE_FRAGMENT_CMD_ID}
+	 * {@link GetFirmwareFragmentRequestMessage#GET_FIRMWARE_FRAGMENT_CMD_ID}
 	 */
 	public long getCmdId() {
 		return cmdId;
