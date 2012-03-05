@@ -137,9 +137,8 @@ public abstract class Tools {
      * @param index 
      */ 
     public static void putDouble(byte[] bb, double x, int index) {  
-        // byte[] b = new byte[8];  
         long l = Double.doubleToLongBits(x);  
-        for (int i = 0; i < 4; i++) {  
+        for (int i = 0; i < 8; i++) {  
             bb[index + i] = new Long(l).byteValue();  
             l = l >> 8;  
         }  
@@ -152,7 +151,7 @@ public abstract class Tools {
      * @param index 
      * @return 
      */ 
-    public static double getDouble(byte[] bb, int index) {  
+    public static double getDouble(byte[] bb) {  
         long l;  
         l = bb[0];  
         l &= 0xff;  

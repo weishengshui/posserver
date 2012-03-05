@@ -13,7 +13,6 @@ import com.chinarewards.qqgbvpn.main.exception.PackageException;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQmeishiResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.ValidateResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
 public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
@@ -43,7 +42,7 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		String password = null;
 		
 		//FIXME decode crdate
-		byte[] xactTimeBytes = new byte[ProtocolLengths.CR_DATE];
+		byte[] xactTimeBytes = new byte[ProtocolLengths.CR_DATE_LENGTH];
 		in.get(xactTimeBytes);
 		
 		int titleLen = in.getUnsignedShort();
@@ -92,10 +91,9 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		String tip = responseMessage.getTip();
 		String password = responseMessage.getPassword();
 		
-		//FIXME 11
 		int byteLen = ProtocolLengths.COMMAND + ProtocolLengths.QQMEISHI_RESULT
 				+ ProtocolLengths.FORCE_PWD_NEXT_ACTION
-				+ ProtocolLengths.CR_DATE + ProtocolLengths.POSNETSTRLEN;
+				+ ProtocolLengths.CR_DATE_LENGTH + ProtocolLengths.POSNETSTRLEN;
 
 		// title
 		int titleLen = (title == null) ? 0 : title.length();
@@ -146,11 +144,11 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 			Tools.putDate(resultByte, calendar, index);
 			
 		}else{
-			for (int i = 0; i < ProtocolLengths.CR_DATE; i++){
+			for (int i = 0; i < ProtocolLengths.CR_DATE_LENGTH; i++){
 				resultByte[index + i] = 0;
 			}
 		}
-		index += ProtocolLengths.CR_DATE;
+		index += ProtocolLengths.CR_DATE_LENGTH;
 		
 		//title
 		Tools.putUnsignedShort(resultByte, titleLen, index);
@@ -172,7 +170,7 @@ public class QQmeishiBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, passwordLen, index);
 		index += ProtocolLengths.POSNETSTRLEN;
 		if(passwordLen > 0){
-			Tools.putBytes(titleBytes, passwordBytes, index);
+			Tools.putBytes(resultByte, passwordBytes, index);
 			index += passwordBytes.length;
 		}
 

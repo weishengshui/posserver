@@ -50,8 +50,10 @@ public class QQmeishiBodyMessageCodec implements ICommandCodec {
 		}
 
 		// amount
-		double amount = in.getDouble();
-
+		byte[] amountBytes = new byte[ProtocolLengths.AMOUNT];
+		in.get(amountBytes);
+		double amount = Tools.getDouble(amountBytes);
+		
 		// password
 		int passwordLen = in.getUnsignedShort();
 		String password = "";
