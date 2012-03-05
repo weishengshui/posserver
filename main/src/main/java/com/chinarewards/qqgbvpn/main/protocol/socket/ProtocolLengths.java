@@ -68,7 +68,6 @@ public abstract class ProtocolLengths {
 	
 	public static final int FORCE_PWD_NEXT_ACTION = 1;
 	
-	
 	public static final int ECHO_COMMAND_RESULT = 1;
 
 }
