@@ -34,6 +34,18 @@ public abstract class ProtocolLengths {
 	
 	public static final int RESULT = 2;
 	
+	public static final int VALIDATE_COUNT  = 2;
+	
+	public static final int QQWS_RESULTCODE   = 4;
+	
+	public static final int QQVALIDATE_RESULTSTATUS  = 4;
+	
+	public static final int CR_DATE_LENGTH = 11;
+	
+	public static final int FIRST_VALIDATE_TIME   = CR_DATE_LENGTH;
+	
+	public static final int PREV_VALIDATE_TIME  = CR_DATE_LENGTH;
+	
 	public static final int CHALLENGE = 8;
 	
 	public static final int PAGE = 2;

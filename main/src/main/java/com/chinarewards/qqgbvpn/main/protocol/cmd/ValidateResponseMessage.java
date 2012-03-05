@@ -82,5 +82,6 @@ public class ValidateResponseMessage implements ICommand {
 	public void setValidTime(String validTime) {
 		this.validTime = validTime;
 	}
+
 	
 }

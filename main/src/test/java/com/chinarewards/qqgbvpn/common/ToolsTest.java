@@ -3,8 +3,8 @@
  */
 package com.chinarewards.qqgbvpn.common;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;
@@ -65,10 +65,10 @@ public class ToolsTest {
 	public void testByteToString_AllNumericZero() {
 
 		byte[] data = null;
-		
+
 		data = new byte[] { 0x00 };
 		assertNull(Tools.byteToString(data, Charset.forName("ISO-8859-1")));
-		
+
 		data = new byte[] { 0x00, 0x01 };
 		assertNull(Tools.byteToString(data, Charset.forName("ISO-8859-1")));
 
@@ -81,9 +81,10 @@ public class ToolsTest {
 	public void testByteToString_NoZeroString() {
 
 		byte[] data = null;
-		
+
 		data = new byte[] { 0x30, 0x31 };
-		assertEquals("01", Tools.byteToString(data, Charset.forName("ISO-8859-1")));
+		assertEquals("01",
+				Tools.byteToString(data, Charset.forName("ISO-8859-1")));
 
 	}
 	
@@ -151,4 +152,5 @@ public class ToolsTest {
 		assertEquals((byte) 0x30, (byte) bb[10]);
 		
 	}
+
 }

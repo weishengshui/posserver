@@ -315,5 +315,11 @@ public enum DomainEvent {
 	/**
 	 * modify FinanceReportHistory
 	 */
-	FINANCE_REPORT_HISTORY_MODIFY
+	FINANCE_REPORT_HISTORY_MODIFY,
+	
+	/**
+	 * QQ Meishi Q-Mi transaction.
+	 */
+	QQMEISHI_QMI_XACTION
+	
 }

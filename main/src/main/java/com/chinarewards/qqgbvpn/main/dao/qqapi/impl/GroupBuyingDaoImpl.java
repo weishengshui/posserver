@@ -16,9 +16,12 @@ import com.chinarewards.qqgbvpn.domain.GrouponCache;
 import com.chinarewards.qqgbvpn.domain.PageInfo;
 import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.Validation;
+import com.chinarewards.qqgbvpn.domain.status.CommunicationStatus;
 import com.chinarewards.qqgbvpn.domain.status.GroupBuyValidateResultStatus;
+import com.chinarewards.qqgbvpn.domain.status.ValidationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.GroupBuyingDao;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
+import com.chinarewards.qqgbvpn.main.vo.ValidationVO;
 import com.chinarewards.qqgbvpn.qqapi.vo.GroupBuyingValidateResultVO;
 
 public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
@@ -187,6 +190,80 @@ public class GroupBuyingDaoImpl extends BaseDao implements GroupBuyingDao {
 		if (!getEm().getTransaction().isActive()) {
 			getEm().getTransaction().commit();
 		}
+	}
+	
+	private ValidationVO getValidationByPcodeVcode(String hql, String pcode,
+			String vcode)throws SaveDBException, JsonGenerationException{
+		
+		if (pcode == null || pcode.length() == 0) {
+			throw new SaveDBException("pcode is null");
+		}
+		if (vcode == null || vcode.length() == 0) {
+			throw new SaveDBException("vcode is null");
+		}
+		Query query = getEm().createQuery(hql).setParameter("pcode", pcode)
+				.setParameter("vcode", vcode);
+		query.setFirstResult(0);
+		query.setMaxResults(1);
+		List<?> validations = query.getResultList();
+
+		if (validations.size() > 0) {
+			Validation validation = (Validation)validations.get(0);
+			ValidationVO vo = new ValidationVO();
+			vo.setTs(validation.getTs());
+			vo.setVcode(validation.getVcode());
+			vo.setPcode(validation.getPcode());
+			vo.setPosId(validation.getPosId());
+			vo.setPosModel(validation.getPosModel());
+			vo.setPosSimPhoneNo(validation.getPosSimPhoneNo());
+			vo.setStatus(validation.getStatus());
+			vo.setCstatus(validation.getCstatus());
+			vo.setResultStatus(validation.getResultStatus());
+			vo.setResultName(validation.getResultName());
+			vo.setResultExplain(validation.getResultExplain());
+			vo.setCurrentTime(validation.getCurrentTime());
+			vo.setUseTime(validation.getUseTime());
+			vo.setValidTime(validation.getValidTime());
+			vo.setRefundTime(validation.getRefundTime());
+			vo.setAgentId(validation.getAgentId());
+			vo.setAgentName(validation.getAgentName());
+			return vo;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public ValidationVO getValidationByPcodeVcodeLastTs(String pcode,
+			String vcode) throws SaveDBException, JsonGenerationException {
+
+		String hql = "select r from Validation r where r.pcode = :pcode and r.vcode = :vcode order by r.ts desc";
+
+		return this.getValidationByPcodeVcode(hql, pcode, vcode);
+	}
+
+	@Override
+	public ValidationVO getValidationByPcodeVcodeFirstTs(String pcode,
+			String vcode) throws SaveDBException, JsonGenerationException {
+		
+		String hql = "select r from Validation r where r.pcode = :pcode and r.vcode = :vcode order by r.ts asc";
+		
+		return this.getValidationByPcodeVcode(hql, pcode, vcode);
+	}
+
+	@Override
+	public int getValidationCountByPcodeVcode(String pcode, String vcode)
+			throws SaveDBException {
+		if (pcode == null || pcode.length() == 0) {
+			throw new SaveDBException("pcode is null");
+		}
+		if (vcode == null || vcode.length() == 0) {
+			throw new SaveDBException("vcode is null");
+		}
+		String hql = "select count(r.id) from Validation r where r.pcode = :pcode and r.vcode = :vcode";
+		Query query = getEm().createQuery(hql).setParameter("pcode", pcode)
+				.setParameter("vcode", vcode);
+		return Integer.parseInt(query.getSingleResult().toString());
 	}
 	
 }
