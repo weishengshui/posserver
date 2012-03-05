@@ -5,7 +5,7 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  * @author harry
  *
  */
-public class QQmeishiRequestMessage implements ICommand{
+public class QQMeishiRequestMessage implements ICommand{
 
 	//指令ID 101
 	public long cmdId;

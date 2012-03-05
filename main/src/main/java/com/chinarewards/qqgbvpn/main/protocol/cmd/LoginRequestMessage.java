@@ -11,6 +11,16 @@ import java.util.Arrays;
  */
 public class LoginRequestMessage implements ICommand {
 
+	/**
+	 * 登录请求
+	 */
+	public static final long LOGIN_CMD_ID = 7;
+	
+	/**
+	 * 绑定请求
+	 */
+	public static final long BIND_CMD_ID = 9;
+	
 	private long cmdId;
 
 	private String posId;

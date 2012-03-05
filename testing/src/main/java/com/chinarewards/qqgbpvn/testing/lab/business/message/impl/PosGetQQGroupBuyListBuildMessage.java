@@ -9,7 +9,6 @@ import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
@@ -32,7 +31,7 @@ public class PosGetQQGroupBuyListBuildMessage implements BuildMessage {
 		try{
 			logger.debug("PosGetQQGroupBuyListTask buildBodyMessage() run...");
 			SearchRequestMessage bodyMessage = new SearchRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.SEARCH_CMD_ID);
+			bodyMessage.setCmdId(SearchRequestMessage.SEARCH_CMD_ID);
 			
 			int page = 1;
 			final int size = 6;

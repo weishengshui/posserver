@@ -8,7 +8,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.HuaxiaResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.filter.LoginFilter;
@@ -23,7 +22,6 @@ public class HuaxiaSearchCommandHandler implements ServiceHandler {
 	@Inject
 	public Provider<HuaxiaRedeemManager> mgr;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(ServiceRequest request, ServiceResponse response) {
 		
@@ -45,7 +43,7 @@ public class HuaxiaSearchCommandHandler implements ServiceHandler {
 		
 		int result = redeemVO.getResult();
 		
-		huaxiaResponseMessage.setCmdId(CmdConstant.HUAXIA_BANK_REDEEM_SEARCH_RESPONSE);
+		huaxiaResponseMessage.setCmdId(HuaxiaResponseMessage.HUAXIA_BANK_REDEEM_SEARCH_RESPONSE);
 		
 		huaxiaResponseMessage.setRedeemCount(redeemCount);
 		

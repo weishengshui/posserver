@@ -6,7 +6,7 @@ import java.util.Date;
  * @author harry
  *
  */
-public class QQmeishiResponseMessage implements ICommand{
+public class QQMeishiResponseMessage implements ICommand{
 
 	//指令ID 102
 	public long cmdId;
@@ -15,10 +15,10 @@ public class QQmeishiResponseMessage implements ICommand{
 	public long result;
 	
 	//是否要提示输入密码，0=是, 1=不是, 2=维持上一次的值 
-	public byte force_pwd_next_action;
+	public byte forcePwdNextAction;
 	
 	//交易时间
-	public Date xact_time;
+	public Date xactTime;
 	
 	//小票上的打印标题
 	public String title;
@@ -33,8 +33,8 @@ public class QQmeishiResponseMessage implements ICommand{
 	@Override
 	public String toString() {
 		return " [cmdId=" + cmdId + ", result=" + result
-				+ ", force_pwd_next_action=" + force_pwd_next_action
-				+ ", xact_time=" + xact_time + ", title=" + title
+				+ ", forcePwdNextAction=" + forcePwdNextAction
+				+ ", xactTime=" + xactTime + ", title=" + title
 				+ ", tip=" + tip + ", password=" + password + "]";
 	}
 
@@ -55,21 +55,21 @@ public class QQmeishiResponseMessage implements ICommand{
 	public void setResult(long result) {
 		this.result = result;
 	}
-
-	public byte getForce_pwd_next_action() {
-		return force_pwd_next_action;
+	
+	public byte getForcePwdNextAction() {
+		return forcePwdNextAction;
 	}
 
-	public void setForce_pwd_next_action(byte force_pwd_next_action) {
-		this.force_pwd_next_action = force_pwd_next_action;
+	public void setForcePwdNextAction(byte forcePwdNextAction) {
+		this.forcePwdNextAction = forcePwdNextAction;
 	}
 
-	public Date getXact_time() {
-		return xact_time;
+	public Date getXactTime() {
+		return xactTime;
 	}
 
-	public void setXact_time(Date xact_time) {
-		this.xact_time = xact_time;
+	public void setXactTime(Date xactTime) {
+		this.xactTime = xactTime;
 	}
 
 	public String getTitle() {

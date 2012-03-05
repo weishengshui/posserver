@@ -8,12 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.QQmeishiRequestMessage;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 
-public class QQmeishiBodyMessageCodec implements ICommandCodec {
+public class QQMeishiBodyMessageCodec implements ICommandCodec {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -22,7 +21,7 @@ public class QQmeishiBodyMessageCodec implements ICommandCodec {
 			throws PackageException {
 		log.debug("qqmeishi request message decode");
 		
-		QQmeishiRequestMessage message = new QQmeishiRequestMessage();
+		QQMeishiRequestMessage message = new QQMeishiRequestMessage();
 		
 		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.AMOUNT
 				+ 4) {
@@ -85,7 +84,7 @@ public class QQmeishiBodyMessageCodec implements ICommandCodec {
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		
 		log.debug("QQmeishi request message encode");
-		QQmeishiRequestMessage requestMessage = (QQmeishiRequestMessage) bodyMessage;
+		QQMeishiRequestMessage requestMessage = (QQMeishiRequestMessage) bodyMessage;
 
 		long cmdId = requestMessage.getCmdId();
 		String userToken = requestMessage.getUserToken();
@@ -97,16 +96,12 @@ public class QQmeishiBodyMessageCodec implements ICommandCodec {
 				+ ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN;
 		int userTokenLen = (userToken == null) ? 0 :userToken.length();
 		if(userTokenLen > 0){
-			userToken = userToken.replaceAll("\\\\r\\\\n",
-					String.valueOf(CmdConstant.ENTER));
 			byteLen += userToken.length();
 			userTokenByte = userToken.getBytes(charset);
 		}
 		byte[] passwordByte = null;
 		int passwordLen = (password == null) ? 0 :password.length();
 		if(passwordLen > 0){
-			password = password.replaceAll("\\\\r\\\\n",
-					String.valueOf(CmdConstant.ENTER));
 			byteLen += password.length();
 			passwordByte = password.getBytes(charset);
 		}

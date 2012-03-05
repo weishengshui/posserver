@@ -4,6 +4,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
 public class HuaxiaResponseMessage implements ICommand {
 
+	public static final long HUAXIA_BANK_REDEEM_SEARCH_RESPONSE = 20;
+	
 	private long cmdId;
 	
 	private int result;

@@ -10,6 +10,8 @@ import java.util.Arrays;
  *
  */
 public class InitResponseMessage implements ICommand {
+	
+	public static final long INIT_CMD_ID_RESPONSE = 6;
 
 	private long cmdId;
 	

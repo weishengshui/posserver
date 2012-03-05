@@ -148,7 +148,6 @@ public abstract class Tools {
      * 通过byte数组取得double 
      *  
      * @param bb 
-     * @param index 
      * @return 
      */ 
     public static double getDouble(byte[] bb) {  

@@ -9,11 +9,9 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.init.InitResult;
-import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
 import com.google.inject.Inject;
 
 public class InitCommandHandler implements ServiceHandler {
@@ -51,7 +49,7 @@ public class InitCommandHandler implements ServiceHandler {
 			initResponseMessage.setResult(InitResult.OTHERS.getPosCode());
 			request.getSession().setAttribute(ServiceSession.CHALLENGE_SESSION_KEY, newChallenge);
 		}
-		initResponseMessage.setCmdId(CmdConstant.INIT_CMD_ID_RESPONSE);
+		initResponseMessage.setCmdId(InitResponseMessage.INIT_CMD_ID_RESPONSE);
 		response.writeResponse(initResponseMessage);
 	}
 
