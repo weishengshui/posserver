@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>main</artifactId>
-			<version>0.1.2-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Guice - dependency injection -->
