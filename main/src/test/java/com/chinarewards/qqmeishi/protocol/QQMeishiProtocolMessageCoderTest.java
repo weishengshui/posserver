@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
+package com.chinarewards.qqmeishi.protocol;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +15,8 @@ import org.junit.Test;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.QQMeishiBodyMessageCodec;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.QQMeishiBodyMessageResponseCodec;
 
 /**
  * 
@@ -56,32 +58,37 @@ public class QQMeishiProtocolMessageCoderTest extends GuiceTest {
 		ca.set(2012, Calendar.JANUARY, 31, 23, 58, 59);
 		ca.set(Calendar.MILLISECOND, 987);
 
-		QQMeishiResponseMessage reponseMessage1 = new QQMeishiResponseMessage();
-		reponseMessage1.setCmdId(102);
-		reponseMessage1.setCmdId((byte)1);
-		reponseMessage1.setResult(2);
-		reponseMessage1.setPassword("123456789");
-		reponseMessage1.setTip("abcdefg");
-		reponseMessage1.setTitle("gfedcba");
-		reponseMessage1.setXactTime(ca.getTime());
+		QQMeishiResponseMessage responseMessage1 = new QQMeishiResponseMessage();
+		responseMessage1.setCmdId(102);
+		responseMessage1.setForcePwdNextAction((byte)1);
+		responseMessage1.setServerErrorCode(1);
+		responseMessage1.setQqwsErrorCode(1);
+		responseMessage1.setResult(2);
+		responseMessage1.setPassword("123456789");
+		responseMessage1.setTip("abcdefg");
+		responseMessage1.setTitle("gfedcba");
+		responseMessage1.setXactTime(ca);
 		
 		QQMeishiBodyMessageResponseCodec responseCodec = new QQMeishiBodyMessageResponseCodec();
 		
-		byte[] responseBytes = responseCodec .encode(reponseMessage1, charset);
+		byte[] responseBytes = responseCodec .encode(responseMessage1, charset);
 		
 		IoBuffer in2 = IoBuffer.allocate(responseBytes.length);
 		in2.put(responseBytes);
 		in2.position(0);
-		QQMeishiResponseMessage reponseMessage2 = (QQMeishiResponseMessage)responseCodec.decode(in2, charset);
-		
+	
 //		System.out.println(CodecUtil.hexDumpAsString(responseBytes));
 		
-		assertEquals(reponseMessage1.getCmdId(), reponseMessage2.getCmdId());
-		assertEquals(reponseMessage1.getForcePwdNextAction(), reponseMessage2.getForcePwdNextAction());
-		assertEquals(reponseMessage1.getPassword(), reponseMessage2.getPassword());
-		assertEquals(reponseMessage1.getResult(), reponseMessage2.getResult());
-		assertEquals(reponseMessage1.getTip(), reponseMessage2.getTip());
-		assertEquals(reponseMessage1.getTitle(), reponseMessage2.getTitle());	
+		QQMeishiResponseMessage reponseMessage2 = (QQMeishiResponseMessage)responseCodec.decode(in2, charset);
+			
+		assertEquals(responseMessage1.getCmdId(), reponseMessage2.getCmdId());
+		assertEquals(responseMessage1.getForcePwdNextAction(), reponseMessage2.getForcePwdNextAction());
+		assertEquals(responseMessage1.getPassword(), reponseMessage2.getPassword());
+		assertEquals(responseMessage1.getServerErrorCode(), reponseMessage2.getServerErrorCode());
+		assertEquals(responseMessage1.getQqwsErrorCode(), reponseMessage2.getQqwsErrorCode());
+		assertEquals(responseMessage1.getResult(), reponseMessage2.getResult());
+		assertEquals(responseMessage1.getTip(), reponseMessage2.getTip());
+		assertEquals(responseMessage1.getTitle(), reponseMessage2.getTitle());	
 
 	}
 	

@@ -64,6 +64,10 @@ public abstract class ProtocolLengths {
 	
 	public static final int POSNETSTRLEN = 2;
 	
+	public static final int QQMEISHI_SERVER_ERROR = 4;
+	
+	public static final int QQMEISHI_QQWS_ERROR = 4;
+	
 	public static final int QQMEISHI_RESULT = 4;
 	
 	public static final int FORCE_PWD_NEXT_ACTION = 1;

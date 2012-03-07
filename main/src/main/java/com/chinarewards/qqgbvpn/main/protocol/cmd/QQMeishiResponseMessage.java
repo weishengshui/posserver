@@ -1,6 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * @author harry
@@ -8,8 +8,16 @@ import java.util.Date;
  */
 public class QQMeishiResponseMessage implements ICommand{
 
+	
+	public static final long QQMEISHI_CMD_ID_RESPONSE = 102;
 	//指令ID 102
 	public long cmdId;
+	
+	//posnet server 异常
+	public long serverErrorCode;
+	
+	//QQ没事服务器error code
+	public long qqwsErrorCode;
 	
 	//0:成功 1: 商家密码错误 2: token码错误 3: 非法用户 4: 金额错误 5: 请输入密码
 	public long result;
@@ -18,7 +26,7 @@ public class QQMeishiResponseMessage implements ICommand{
 	public byte forcePwdNextAction;
 	
 	//交易时间
-	public Date xactTime;
+	public Calendar xactTime;
 	
 	//小票上的打印标题
 	public String title;
@@ -32,10 +40,11 @@ public class QQMeishiResponseMessage implements ICommand{
 	
 	@Override
 	public String toString() {
-		return " [cmdId=" + cmdId + ", result=" + result
-				+ ", forcePwdNextAction=" + forcePwdNextAction
-				+ ", xactTime=" + xactTime + ", title=" + title
-				+ ", tip=" + tip + ", password=" + password + "]";
+		return " [cmdId=" + cmdId + ", serverErrorCode=" + serverErrorCode
+				+ ", qqwsErrorCode=" + qqwsErrorCode + ", result=" + result
+				+ ", forcePwdNextAction=" + forcePwdNextAction + ", xactTime="
+				+ xactTime + ", title=" + title + ", tip=" + tip
+				+ ", password=" + password + "]";
 	}
 
 	//--------------------------------//
@@ -63,12 +72,13 @@ public class QQMeishiResponseMessage implements ICommand{
 	public void setForcePwdNextAction(byte forcePwdNextAction) {
 		this.forcePwdNextAction = forcePwdNextAction;
 	}
+	
 
-	public Date getXactTime() {
+	public Calendar getXactTime() {
 		return xactTime;
 	}
 
-	public void setXactTime(Date xactTime) {
+	public void setXactTime(Calendar xactTime) {
 		this.xactTime = xactTime;
 	}
 
@@ -94,6 +104,22 @@ public class QQMeishiResponseMessage implements ICommand{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public long getServerErrorCode() {
+		return serverErrorCode;
+	}
+
+	public void setServerErrorCode(long serverErrorCode) {
+		this.serverErrorCode = serverErrorCode;
+	}
+
+	public long getQqwsErrorCode() {
+		return qqwsErrorCode;
+	}
+
+	public void setQqwsErrorCode(long qqwsErrorCode) {
+		this.qqwsErrorCode = qqwsErrorCode;
 	}
 
 

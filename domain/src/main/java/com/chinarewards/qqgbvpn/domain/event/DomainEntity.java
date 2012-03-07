@@ -74,6 +74,11 @@ public enum DomainEntity {
 	/**
 	 * FinanceReportHistory. The entity ID should be <code>FinanceReportHistory.getId</code>
 	 */
-	FINANCE_REPORT_HISTORY
-
+	FINANCE_REPORT_HISTORY,
+	
+	/**
+	 * QQMeishiXaction. The entity ID should be <code>QQMeishiXaction.getId</code>
+	 */
+	QQMEISHIXACTION
+	
 }
