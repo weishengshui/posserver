@@ -7,14 +7,19 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiDataParseException;
-import com.chinarewards.qq.meishi.exception.QQMeishiInterfaceAccessException;
-import com.chinarewards.qq.meishi.exception.QQMeishiReadStreamException;
+import com.chinarewards.qq.meishi.exception.QQMeishiReqDataDigestException;
+import com.chinarewards.qq.meishi.exception.QQMeishiRespDataParseException;
+import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
+import com.chinarewards.qq.meishi.exception.QQMeishiServerLinkNotFoundException;
+import com.chinarewards.qq.meishi.exception.QQMeishiServerRespException;
+import com.chinarewards.qq.meishi.exception.QQMeishiServerUnreachableException;
 import com.chinarewards.qq.meishi.service.QQMeishiService;
-import com.chinarewards.qq.meishi.util.JsonUtil;
 import com.chinarewards.qq.meishi.util.QQMeishiConnect;
-import com.chinarewards.qq.meishi.vo.MeishiConvertQQMiReqVO;
-import com.chinarewards.qq.meishi.vo.MeishiConvertQQMiRespVO;
+import com.chinarewards.qq.meishi.util.json.JacksonTypeReference;
+import com.chinarewards.qq.meishi.util.json.JsonUtil;
+import com.chinarewards.qq.meishi.vo.QQMeishiConvertQQMiReqVO;
+import com.chinarewards.qq.meishi.vo.QQMeishiConvertQQMiRespVO;
+import com.chinarewards.qq.meishi.vo.common.QQMeishiResp;
 import com.google.inject.Inject;
 
 /**
@@ -39,30 +44,36 @@ public class QQMeishiServiceImpl implements QQMeishiService {
 	@Inject
 	protected Configuration configuration;
 	
-	
 	@Override
-	public MeishiConvertQQMiRespVO convertQQMi(MeishiConvertQQMiReqVO 
-			meishiConvertQQMiReqVO) throws QQMeishiInterfaceAccessException,
-			QQMeishiReadStreamException, QQMeishiDataParseException {
-		MeishiConvertQQMiRespVO respVO = null;
+	public QQMeishiResp<QQMeishiConvertQQMiRespVO> convertQQMi(
+			QQMeishiConvertQQMiReqVO meishiConvertQQMiReqVO)
+			throws QQMeishiServerUnreachableException,
+			QQMeishiServerLinkNotFoundException, QQMeishiServerRespException,
+			QQMeishiRespDataParseException, QQMeishiReadRespStreamException,
+			QQMeishiReqDataDigestException {
+		QQMeishiResp<QQMeishiConvertQQMiRespVO> respVO = null;
 		
 		String qqMeishiConvert = configuration.getString(QQ_MEISHI_CONVERT_URL_KEY);
 		String qqMeishiHostAddress = configuration.getString(QQ_MEISHI_HOST_ADDRESS_KEY);
 		
-		Map<String, String> postParams = new HashMap<String, String>();
-		postParams.put("verifyCode", meishiConvertQQMiReqVO.getVerifyCode());
-		postParams.put("posid", meishiConvertQQMiReqVO.getPosid());
-		postParams.put("consume", String.valueOf(meishiConvertQQMiReqVO.getConsume()));
-		postParams.put("password", meishiConvertQQMiReqVO.getPassword());
+		Map<String, String> reqParams = new HashMap<String, String>();
+		reqParams.put("verifyCode", meishiConvertQQMiReqVO.getVerifyCode());
+		reqParams.put("posid", meishiConvertQQMiReqVO.getPosid());
+		reqParams.put("consume", String.valueOf(meishiConvertQQMiReqVO.getConsume()));
+		reqParams.put("password", meishiConvertQQMiReqVO.getPassword());
+		log.info("QQ meishi reqParams:" + reqParams.toString());
+		System.out.println("QQ meishi reqParams:" + reqParams.toString());
 		
 		String respContent = qqMeishiConnect.requestServer(qqMeishiConvert, qqMeishiHostAddress, 
-				QQMeishiConnect.HttpMethod.POST, postParams, CHARSET);
-		
+				QQMeishiConnect.HttpMethod.POST, reqParams, CHARSET);
+		log.info("QQ Meishi respContent:" + respContent);
+		System.out.println("QQ Meishi respContent:" + respContent);
 		try {
-			respVO = (MeishiConvertQQMiRespVO) JsonUtil.parseObject(
-					respContent, MeishiConvertQQMiRespVO.class);
+			respVO = JsonUtil.parseObject(
+					respContent, new JacksonTypeReference<QQMeishiResp<QQMeishiConvertQQMiRespVO>>() {
+					});
 		} catch (Throwable e) {
-			throw new QQMeishiDataParseException(e);
+			throw new QQMeishiRespDataParseException(e);
 		}
 		return respVO;
 	}
