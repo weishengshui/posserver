@@ -40,8 +40,8 @@ public class QQMeishiResponseMessage implements ICommand{
 	
 	@Override
 	public String toString() {
-		return " [cmdId=" + cmdId + ", result=" + result + ", serverErrorCode="
-				+ serverErrorCode + ", qqwsErrorCode=" + qqwsErrorCode
+		return " [cmdId=" + cmdId + ", serverErrorCode=" + serverErrorCode
+				+ ", qqwsErrorCode=" + qqwsErrorCode + ", result=" + result
 				+ ", forcePwdNextAction=" + forcePwdNextAction + ", xactTime="
 				+ xactTime + ", title=" + title + ", tip=" + tip
 				+ ", password=" + password + "]";

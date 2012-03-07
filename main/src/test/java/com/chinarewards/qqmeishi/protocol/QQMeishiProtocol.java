@@ -7,17 +7,16 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
@@ -34,11 +33,12 @@ import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.impl.DefaultPosServer;
-import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.HardCodedServlet;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
+import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.guice.ServiceHandlerGuiceModule;
+import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.QQMeishiBodyMessageResponseCodec;
 import com.chinarewards.qqgbvpn.main.util.HMAC_MD5;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -54,16 +54,12 @@ public class QQMeishiProtocol extends GuiceTest {
 
 	EntityManager em;
 	long runForSeconds;
-	private Server server = new Server(0);
 	PosServer posServer;
 	int port;
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
-		// if (!server.isStarted()) {
-		startTXServer();
-		// }
 		port = startServer();
 		runForSeconds = 1;
 
@@ -75,7 +71,6 @@ public class QQMeishiProtocol extends GuiceTest {
 		if (em != null && em.getTransaction().isActive()) {
 			em.getTransaction().rollback();
 		}
-		stopTXServer();
 		stopServer();
 	}
 
@@ -104,104 +99,6 @@ public class QQMeishiProtocol extends GuiceTest {
 						.with(new ServiceHandlerGuiceModule(mapping)) };
 
 		return modules;
-	}
-
-	private void startTXServer() throws Exception {
-		// build test server start
-		if (!server.isStarted()) {
-			ServletHandler scHandler = new ServletHandler();
-			scHandler.addServletWithMapping(getInitGrouponCacheServletHolder(),
-					"/initGrouponCache");
-			scHandler.addServletWithMapping(
-					getGroupBuyingValidateServletHolder(),
-					"/groupBuyingValidate");
-			// add handler to server
-			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8787);
-			server.start();
-		}
-		// build test server end
-	}
-
-	private void stopTXServer() throws Exception {
-		log.debug("tx server stop...");
-		if (server.isStarted()) {
-
-			try {
-				server.stop();
-			} catch (Throwable t) {
-
-			}
-		}
-	}
-
-	private ServletHolder getInitGrouponCacheServletHolder() throws Exception {
-		HardCodedServlet s = new HardCodedServlet();
-		s.init();
-		StringBuffer sb = new StringBuffer();
-		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
-		sb.append("<tuan>");
-		sb.append("<resultCode>0</resultCode>");
-		sb.append("<groupon>");
-		sb.append("<item>");
-		sb.append("<grouponId>132127</grouponId>");
-		sb.append("<grouponName>400.01元套餐POST</grouponName>");
-		sb.append("<mercName>三人行骨头王ggggg</mercName>");
-		sb.append("<listName>40元套餐\r\n        (132127)</listName>");
-		sb.append("<detailName>1111111111111140元套餐(132127)</detailName>");
-		sb.append("</item>");
-		sb.append("<item>");
-		sb.append("<grouponId>132123</grouponId>");
-		sb.append("<grouponName>400.01元套餐</grouponName>");
-		sb.append("<mercName>三人行骨头王</mercName>");
-		sb.append("<listName>400.01元套餐\r\n        (132123)</listName>");
-		sb.append("<detailName>400.01元套餐</detailName>");
-		sb.append("</item>");
-		sb.append("<item>");
-		sb.append("<grouponId>132154</grouponId>");
-		sb.append("<grouponName>测试商品</grouponName>");
-		sb.append("<mercName>测试商品王</mercName>");
-		sb.append("<listName>测试商品套餐\r\n        (132154)</listName>");
-		sb.append("<detailName>测试商品套餐</detailName>");
-		sb.append("</item>");
-		sb.append("</groupon>");
-		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-
-		ServletHolder h = new ServletHolder();
-		h.setServlet(s);
-
-		return h;
-	}
-
-	private ServletHolder getGroupBuyingValidateServletHolder()
-			throws Exception {
-		HardCodedServlet s = new HardCodedServlet();
-		s.init();
-		StringBuffer sb = new StringBuffer();
-		sb.append("<?xml version=\"1.0\" encoding=\"GBK\" ?>");
-		sb.append("<tuan>");
-		sb.append("<resultCode>0</resultCode>");
-		sb.append("<groupon>");
-		sb.append("<resultStatus>0</resultStatus>");
-		sb.append("<resultName>验证已成功</resultName>");
-		sb.append("<resultExplain>验证成功于\r\n08.03 11:10:23</resultExplain>");
-		sb.append("<currentTime>2011-08-03 11:10:23</currentTime>");
-		sb.append("<useTime>2011-08-03 11:10:23</useTime>");
-		sb.append("<validTime>2011-08-10</validTime>");
-		sb.append("</groupon>");
-		sb.append("</tuan>");
-		s.setResponse(new String(sb.toString().getBytes("gbk"), "iso-8859-1"));
-
-		ServletHolder h = new ServletHolder();
-		h.setServlet(s);
-
-		/*
-		 * String servletPath = "/groupBuyingValidate"; ServletHandler scHandler
-		 * = new ServletHandler(); scHandler.addServletWithMapping(h,
-		 * servletPath);
-		 */
-		return h;
 	}
 
 	protected Module buildPersistModule(Configuration config) {
@@ -272,27 +169,136 @@ public class QQMeishiProtocol extends GuiceTest {
 		return posServer.getLocalPort();
 		// sleep for a while...
 	}
+	
+	 private QQMeishiResponseMessage getResponseQQMeishiMessage(byte[] responseBytes)throws Exception{
+		byte[] responseBody = new byte[responseBytes.length - 16];
+		System.arraycopy(responseBytes, 16, responseBody, 0, responseBody.length);
+		IoBuffer in2 = IoBuffer.allocate(responseBody.length);
+		in2.put(responseBody);
+		in2.position(0);
+		Charset charset = Charset.forName("GB2312");
+		QQMeishiBodyMessageResponseCodec responseCodec = new QQMeishiBodyMessageResponseCodec();
+		
+//		System.out.println(CodecUtil.hexDumpAsString(responseBody));
+		
+		QQMeishiResponseMessage reponseMessage = (QQMeishiResponseMessage)responseCodec.decode(in2, charset);
+
+		return reponseMessage;
+		
+	}
 
 	@Test
-	public void testClientNotSupportSessionId() throws Exception {
-		//检查旧pos机（不支持session key）的流程
+	public void testQQMeishiNOConnect() throws Exception {
+		/**
+		 * 不启动QQ美食服务器
+		 */
 		Socket socket = new Socket("localhost", port);
 		OutputStream os = socket.getOutputStream();
 		InputStream is = socket.getInputStream();
 
 		byte[] challenge = new byte[8];
-
+		
+		log.debug("pos init");
 		this.oldPosInit(os, is, challenge);// old client
 
-		log.debug("start login ......");
+		log.debug("pos login");
 		oldPosLogin(os, is, challenge);
 
-		qqMeishiRequest(os, is);
+		byte[] responseBytes = qqMeishiRequest(os, is);
 
 		System.out.println("");
 		os.close();
 		socket.close();
+		
+		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
+			
+		assertEquals(102, reponseMessage.getCmdId());
+		assertEquals(1, reponseMessage.getServerErrorCode());
+		assertEquals(0, reponseMessage.getQqwsErrorCode());
+		assertEquals(0, reponseMessage.getResult());
+		assertEquals(0, reponseMessage.getForcePwdNextAction());
+		assertEquals(null, reponseMessage.getTitle());
+		assertEquals(null, reponseMessage.getTip());		
+		assertEquals(null, reponseMessage.getPassword());
+//		assertEquals("gfedcba", reponseMessage.getTitle());
+//		assertEquals("abcdefg", reponseMessage.getTip());		
+//		assertEquals("123456789", reponseMessage.getPassword());
+	}
+	
+	
+	
+//	@Test
+	public void testQQMeishiSuccess() throws Exception {
+		/**
+		 * 启动QQ美食服务器
+		 * 返回正确的参数
+		 */	
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
 
+		byte[] challenge = new byte[8];
+		
+		log.debug("pos init");
+		this.oldPosInit(os, is, challenge);// old client
+
+		log.debug("pos login");
+		oldPosLogin(os, is, challenge);
+
+		byte[] responseBytes = qqMeishiRequest(os, is);
+
+		System.out.println("");
+		os.close();
+		socket.close();
+		
+		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
+			
+		assertEquals(102, reponseMessage.getCmdId());
+		assertEquals(0, reponseMessage.getServerErrorCode());
+		assertEquals(0, reponseMessage.getQqwsErrorCode());
+		assertEquals(0, reponseMessage.getResult());
+		assertEquals(0, reponseMessage.getForcePwdNextAction());
+
+		assertEquals("gfedcba", reponseMessage.getTitle());
+		assertEquals("abcdefg", reponseMessage.getTip());		
+		assertEquals("123456789", reponseMessage.getPassword());
+	}
+	
+	
+//	@Test
+	public void testQQMeishiErrorCode() throws Exception {
+		/**
+		 * 启动QQMeishi server
+		 * 返回errorCode 不等于0
+		 */
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+
+		byte[] challenge = new byte[8];
+		
+		log.debug("pos init");
+		this.oldPosInit(os, is, challenge);// old client
+
+		log.debug("pos login");
+		oldPosLogin(os, is, challenge);
+
+		byte[] responseBytes = qqMeishiRequest(os, is);
+
+		System.out.println("");
+		os.close();
+		socket.close();
+		
+		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
+			
+		assertEquals(102, reponseMessage.getCmdId());
+		assertEquals(0, reponseMessage.getServerErrorCode());
+		assertEquals(1, reponseMessage.getQqwsErrorCode());
+		assertEquals(0, reponseMessage.getResult());
+		assertEquals(0, reponseMessage.getForcePwdNextAction());
+		assertEquals(null, reponseMessage.getTitle());
+		assertEquals(null, reponseMessage.getTip());		
+		assertEquals(null, reponseMessage.getPassword());
 	}
 
 	private void oldPosInit(OutputStream os, InputStream is, byte[] challenge)
@@ -373,19 +379,6 @@ public class QQMeishiProtocol extends GuiceTest {
 		Tools.putBytes(msg, content2, 32);
 		int checksum = Tools.checkSum(msg, msg.length);
 		Tools.putUnsignedShort(msg, checksum, 10);
-		// System.out.println("--------------------");
-		// for (int i = 0; i < msg.length; i++) {
-		// String s = Integer.toHexString((byte) msg[i]);
-		// if (s.length() < 2)
-		// s = "0" + s;
-		// if (s.length() > 2)
-		// s = s.substring(s.length() - 2);
-		// System.out.print(s + " ");
-		// if ((i + 1) % 8 == 0)
-		// System.out.println("");
-		// }
-		// System.out.println("--------------------");
-		// send both message at once
 		byte[] outBuf = new byte[msg.length];
 		System.arraycopy(msg, 0, outBuf, 0, msg.length);
 
@@ -415,7 +408,7 @@ public class QQMeishiProtocol extends GuiceTest {
 	}
 
 	
-	private void qqMeishiRequest(OutputStream os, InputStream is)
+	private byte[] qqMeishiRequest(OutputStream os, InputStream is)
 			throws Exception {
 		byte[] msg = new byte[] {
 				// SEQ
@@ -427,9 +420,9 @@ public class QQMeishiProtocol extends GuiceTest {
 				// checksum
 				0, 0,
 				// message length
-				0, 0, 0, 33,
+				0, 0, 0, 48,
 				// command ID
-				0, 0, 0, 101,// 20
+				0, 0, 0, 101,
 				// userToken abcd123
 				0, 7, 97, 98, 99, 100, 49, 50, 51,
 				//amount 1.11
@@ -449,8 +442,8 @@ public class QQMeishiProtocol extends GuiceTest {
 
 		Thread.sleep(runForSeconds * 1000);
 		// read
-		log.info("Read response");
-		byte[] response = new byte[300];
+		log.info("QQMeishi Read response");
+		byte[] response = new byte[200];
 		int n = is.read(response);
 		System.out.println("Number of bytes login read: " + n);
 		for (int i = 0; i < n; i++) {
@@ -463,8 +456,13 @@ public class QQMeishiProtocol extends GuiceTest {
 			if ((i + 1) % 8 == 0)
 				System.out.println("");
 		}
-		assertEquals(0, response[20]);
-		assertEquals(0, response[21]);
+		
+//		00000000 00 00 00 66 00 00 00 01 00 00 00 01 00 00 00 02 ...f............
+//		00000010 01 07 DC 01 1F 17 3A 3B 03 DB 01 E0 00 07 67 66 ......:;......gf
+//		00000020 65 64 63 62 61 00 07 61 62 63 64 65 66 67 00 09 edcba..abcdefg..
+//		00000030 31 32 33 34 35 36 37 38 39                      123456789
+		
+		return response;
 	}
 
 	private void initDB(EntityManager em) {

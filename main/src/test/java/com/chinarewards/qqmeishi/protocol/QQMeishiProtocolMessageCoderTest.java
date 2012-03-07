@@ -15,7 +15,6 @@ import org.junit.Test;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
-import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.CodecUtil;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.QQMeishiBodyMessageCodec;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.QQMeishiBodyMessageResponseCodec;
 
@@ -44,7 +43,7 @@ public class QQMeishiProtocolMessageCoderTest extends GuiceTest {
 		in1.put(bodyMsg);
 		in1.position(0);
 		
-		System.out.println(CodecUtil.hexDumpAsString(bodyMsg));
+//		System.out.println(CodecUtil.hexDumpAsString(bodyMsg));
 		
 		QQMeishiRequestMessage requestMessage2 = (QQMeishiRequestMessage)codec.decode(in1, charset);
 		
@@ -77,10 +76,11 @@ public class QQMeishiProtocolMessageCoderTest extends GuiceTest {
 		IoBuffer in2 = IoBuffer.allocate(responseBytes.length);
 		in2.put(responseBytes);
 		in2.position(0);
-		QQMeishiResponseMessage reponseMessage2 = (QQMeishiResponseMessage)responseCodec.decode(in2, charset);
-		
+	
 //		System.out.println(CodecUtil.hexDumpAsString(responseBytes));
 		
+		QQMeishiResponseMessage reponseMessage2 = (QQMeishiResponseMessage)responseCodec.decode(in2, charset);
+			
 		assertEquals(responseMessage1.getCmdId(), reponseMessage2.getCmdId());
 		assertEquals(responseMessage1.getForcePwdNextAction(), reponseMessage2.getForcePwdNextAction());
 		assertEquals(responseMessage1.getPassword(), reponseMessage2.getPassword());
