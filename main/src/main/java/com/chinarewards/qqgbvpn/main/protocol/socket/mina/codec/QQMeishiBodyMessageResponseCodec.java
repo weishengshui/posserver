@@ -2,7 +2,6 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qqgbvpn.common.Tools;
 import com.chinarewards.qqgbvpn.main.exception.PackageException;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.ProtocolLengths;
@@ -34,14 +32,15 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		QQMeishiResponseMessage message = new QQMeishiResponseMessage();
 		
 		long cmdId = in.getUnsignedInt();
+		long serverErrorCode = in.getUnsignedInt();
+		long qqwsErrorCode = in.getUnsignedInt();
 		long result = in.getUnsignedInt();
 		byte forcePwdNextAction = in.get();
-		Date xactTime = null;
+		Calendar xactTime = null;
 		String title = null;
 		String tip = null;
 		String password = null;
 		
-		//FIXME decode crdate
 		byte[] xactTimeBytes = new byte[ProtocolLengths.CR_DATE_LENGTH];
 		in.get(xactTimeBytes);
 		
@@ -67,6 +66,8 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		}
 		
 		message.setCmdId(cmdId);
+		message.setServerErrorCode(serverErrorCode);
+		message.setQqwsErrorCode(qqwsErrorCode);
 		message.setResult(result);
 		message.setForcePwdNextAction(forcePwdNextAction);
 		message.setPassword(password);
@@ -84,14 +85,19 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		QQMeishiResponseMessage responseMessage = (QQMeishiResponseMessage) bodyMessage;
 
 		long cmdId = responseMessage.getCmdId();
+		long serverErrorCode = responseMessage.getServerErrorCode();
+		long qqwsErrorCode = responseMessage.getQqwsErrorCode();
 		long result = responseMessage.getResult();
 		byte forcePwdNextAction = responseMessage.getForcePwdNextAction();
-		Date xactTime = responseMessage.getXactTime();
+		Calendar xactTime = responseMessage.getXactTime();
 		String title = responseMessage.getTitle();
 		String tip = responseMessage.getTip();
 		String password = responseMessage.getPassword();
 		
-		int byteLen = ProtocolLengths.COMMAND + ProtocolLengths.QQMEISHI_RESULT
+		int byteLen = ProtocolLengths.COMMAND
+				+ ProtocolLengths.QQMEISHI_SERVER_ERROR
+				+ ProtocolLengths.QQMEISHI_QQWS_ERROR
+				+ ProtocolLengths.QQMEISHI_RESULT
 				+ ProtocolLengths.FORCE_PWD_NEXT_ACTION
 				+ ProtocolLengths.CR_DATE_LENGTH + ProtocolLengths.POSNETSTRLEN;
 
@@ -121,22 +127,31 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 			passwordBytes = password.getBytes(charset);
 		}
 		
+		//to result bytes
 		byte[] resultByte = new byte[byteLen];
 		int index = 0;
 		Tools.putUnsignedInt(resultByte, cmdId, index);
 		index += ProtocolLengths.COMMAND;
 		
+		//serverErrorCode
+		Tools.putUnsignedInt(resultByte, serverErrorCode, index);
+		index += ProtocolLengths.QQMEISHI_SERVER_ERROR;
+		
+		//qqwsErrorCode
+		Tools.putUnsignedInt(resultByte, qqwsErrorCode, index);
+		index += ProtocolLengths.QQMEISHI_QQWS_ERROR;
+		
+		//result
 		Tools.putUnsignedInt(resultByte, result, index);
 		index += ProtocolLengths.QQMEISHI_RESULT;
 		
+		//forcePwdNextAction
 		resultByte[index] = forcePwdNextAction;
 		index += ProtocolLengths.FORCE_PWD_NEXT_ACTION;
 		
 		// xact time
 		if(xactTime != null){
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(xactTime);
-			Tools.putDate(resultByte, calendar, index);
+			Tools.putDate(resultByte, xactTime, index);
 			
 		}else{
 			for (int i = 0; i < ProtocolLengths.CR_DATE_LENGTH; i++){
