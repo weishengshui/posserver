@@ -4,10 +4,10 @@ import javax.inject.Singleton;
 
 import org.junit.Ignore;
 
+import com.chinarewards.qq.meishi.conn.QQMeishiConnect;
+import com.chinarewards.qq.meishi.conn.impl.QQMeishiConnectImpl;
 import com.chinarewards.qq.meishi.service.QQMeishiService;
 import com.chinarewards.qq.meishi.service.impl.QQMeishiServiceImpl;
-import com.chinarewards.qq.meishi.util.QQMeishiConnect;
-import com.chinarewards.qq.meishi.util.impl.QQMeishiConnectImpl;
 import com.google.inject.AbstractModule;
 
 /**

@@ -1,4 +1,4 @@
-package com.chinarewards.qq.meishi.util.impl;
+package com.chinarewards.qq.meishi.conn.impl;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -25,13 +25,15 @@ import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.chinarewards.qq.meishi.conn.QQMeishiConnect;
+import com.chinarewards.qq.meishi.conn.QQMeishiConnect.ContentFormat;
+import com.chinarewards.qq.meishi.conn.QQMeishiConnect.HttpMethod;
 import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
 import com.chinarewards.qq.meishi.exception.QQMeishiRespDataParseException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerLinkNotFoundException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerRespException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerUnreachableException;
 import com.chinarewards.qq.meishi.util.IoUtil;
-import com.chinarewards.qq.meishi.util.QQMeishiConnect;
 import com.chinarewards.qq.meishi.util.json.JsonUtil;
 
 /**
@@ -61,11 +63,9 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 	 * 发送请求
 	 */
 	private HttpResponse sendRequest(String url, String hostAddr,
-			HttpMethod httpMethod, Map<String, String> postParams,
-			String charset) throws QQMeishiServerUnreachableException {
-		ContentFormat contentFormat = ContentFormat.Json;
-		
-		
+			HttpMethod httpMethod, ContentFormat contentFormat,
+			Map<String, String> postParams, String charset)
+			throws QQMeishiServerUnreachableException {
 		HttpRequestBase httpReqest = null;
 		charset = charset.trim();
 		try {
@@ -83,21 +83,17 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 				httpReqest.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, charset);
 			}
 			
-//			httpReqest.addHeader("Content-Type", "application/json; charset=" + charset);
-			
-			
 			httpReqest.addHeader("host", hostAddr);
 			if(HttpMethod.POST.equals(httpMethod)){
 				if(ContentFormat.Json.equals(contentFormat)){
-					String requestJson = JsonUtil.formatObject(postParams);
+					httpReqest.addHeader("Accept", "application/json"); 
 					
+					String requestJson = JsonUtil.formatObject(postParams);
 					StringEntity entity = new StringEntity(requestJson, charset);
-					entity.setContentType("application/json;charset=UTF-8");
+					entity.setContentType("application/json; charset="+charset);
 					
 					//与QQ联调时使用end
 					((HttpPost)httpReqest).setEntity(entity);
-					
-					httpReqest.addHeader("Accept", "application/json"); 
 				}else {
 					List<NameValuePair> params = new ArrayList<NameValuePair>();
 					//设置post参数
@@ -105,6 +101,7 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 						for (String key : postParams.keySet()) {
 							Object v = postParams.get(key);
 							if (v instanceof java.util.Collection) {
+								@SuppressWarnings("unchecked")
 								ArrayList<String> list = (ArrayList<String>) v;
 								for (String s : list) {
 									s = s==null?null: URLEncoder.encode((String) s, charset);
@@ -121,6 +118,8 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 					//与QQ联调时使用end
 					((HttpPost)httpReqest).setEntity(httpentity);
 				}
+			}else {	//GET
+				httpReqest.addHeader("Content-Type", "application/text; charset=" + charset);
 			}
 			
 			HttpResponse httpResponse = client.execute(httpReqest);
@@ -152,12 +151,13 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 	 * @author Seek
 	 */
 	public String requestServer(String url, String hostAddr,
-			HttpMethod httpMethod, Map<String, String> postParams,
-			String charset) throws QQMeishiServerUnreachableException,
+			HttpMethod httpMethod, ContentFormat contentFormat,
+			Map<String, String> postParams, String charset)
+			throws QQMeishiServerUnreachableException,
 			QQMeishiServerLinkNotFoundException, QQMeishiServerRespException,
 			QQMeishiReadRespStreamException {
-		HttpResponse httpResponse = sendRequest(url, hostAddr, httpMethod, 
-				postParams, charset);
+		HttpResponse httpResponse = sendRequest(url, hostAddr, httpMethod,
+				contentFormat, postParams, charset);
 		
 		String str = null;
 		try {

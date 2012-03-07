@@ -1,4 +1,4 @@
-package com.chinarewards.qq.meishi.util;
+package com.chinarewards.qq.meishi.conn;
 
 import java.util.Map;
 
@@ -18,11 +18,17 @@ import com.chinarewards.qq.meishi.exception.QQMeishiServerUnreachableException;
 public interface QQMeishiConnect {
  
 	public static enum HttpMethod {
+		/**
+		 * GET request parameter will append URL after!
+		 */
 		GET,
 		POST
 	};
 	
 	public static enum ContentFormat {
+		/**
+		 * generic &key=value
+		 */
 		Form,
 		Json
 	};
@@ -41,8 +47,9 @@ public interface QQMeishiConnect {
 	 * @author Seek
 	 */
 	public String requestServer(String url, String hostAddr,
-			HttpMethod httpMethod, Map<String, String> postParams,
-			String charset) throws QQMeishiServerUnreachableException,
+			HttpMethod httpMethod, ContentFormat contentFormat,
+			Map<String, String> postParams, String charset)
+			throws QQMeishiServerUnreachableException,
 			QQMeishiServerLinkNotFoundException, QQMeishiServerRespException,
 			QQMeishiReadRespStreamException;
 			

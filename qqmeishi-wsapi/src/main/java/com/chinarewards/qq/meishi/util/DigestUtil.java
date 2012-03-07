@@ -30,7 +30,7 @@ public final class DigestUtil {
 	 * @author Seek
 	 */
 	public static String digestData(byte[] source, String algorithm)
-			throws QQMeishiReqDataDigestException {
+			throws Throwable {
 		String s = null;
 		char hexDigits[] = { // 用来将字节转换成 16 进制表示的字符
 				'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
@@ -69,8 +69,8 @@ public final class DigestUtil {
 	 * @time 2011-9-30   上午09:48:15
 	 * @author Seek
 	 */
-	public final static boolean compareDigest(byte[] b1, byte[] b2, String algorithm) 
-				throws QQMeishiReqDataDigestException {
+	public final static boolean compareDigest(byte[] b1, byte[] b2,
+			String algorithm) throws Throwable {
 		boolean result = false;
 		try {
 			MessageDigest digest1 = MessageDigest.getInstance(algorithm);

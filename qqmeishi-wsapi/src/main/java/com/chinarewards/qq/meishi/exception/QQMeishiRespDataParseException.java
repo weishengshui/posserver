@@ -34,7 +34,12 @@ public class QQMeishiRespDataParseException extends Exception implements
 	public QQMeishiRespDataParseException(Throwable cause) {
 		super(cause);
 	}
-
+	
+	@Override
+	public String toString() {
+		return "{\"rawContent\":"+rawContent+",\"httpStatusCode\":"+httpStatusCode+"}";
+	}
+	
 	@Override
 	public int getHttpStatusCode() {
 		return httpStatusCode;

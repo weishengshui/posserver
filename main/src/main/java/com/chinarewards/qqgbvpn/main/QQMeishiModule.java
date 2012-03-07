@@ -2,10 +2,10 @@ package com.chinarewards.qqgbvpn.main;
 
 import javax.inject.Singleton;
 
+import com.chinarewards.qq.meishi.conn.QQMeishiConnect;
+import com.chinarewards.qq.meishi.conn.impl.QQMeishiConnectImpl;
 import com.chinarewards.qq.meishi.service.QQMeishiService;
 import com.chinarewards.qq.meishi.service.impl.QQMeishiServiceImpl;
-import com.chinarewards.qq.meishi.util.QQMeishiConnect;
-import com.chinarewards.qq.meishi.util.impl.QQMeishiConnectImpl;
 import com.chinarewards.qqgbvpn.main.logic.login.LoginManager;
 import com.chinarewards.qqgbvpn.main.logic.login.impl.LoginManagerImpl;
 import com.google.inject.AbstractModule;

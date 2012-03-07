@@ -30,6 +30,7 @@ public class QQMeishiConvertQQMiTest extends GuiceTest {
 	
 	private static final String QQ_MEISHI_HOST_ADDRESS_KEY = "qq.meishi.host";
 	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.url.convertQQMi";
+	private static final String QQ_MEISHI_COMM_SECRET_KEY  = "qq.meishi.communication.secretkey";
 	
 	@Override
 	protected Module[] getModules() {
@@ -46,10 +47,11 @@ public class QQMeishiConvertQQMiTest extends GuiceTest {
 		conf.setProperty("server.port", 0);
 		
 		// URL for QQ meishi
+		conf.setProperty(QQ_MEISHI_COMM_SECRET_KEY, "NDA2ZTkwOTExZjlkZDY3ZTIxMTU1OTY0NmVlYzVmY2Q=");
 		conf.setProperty(QQ_MEISHI_HOST_ADDRESS_KEY, "open.meishi.qq.com");
 		conf.setProperty(QQ_MEISHI_CONVERT_URL_KEY, 
 				"http://localhost:9001/pos.php");
-
+		
 		TestConfigModule confModule = new TestConfigModule(conf);
 		return confModule;
 	}

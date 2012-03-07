@@ -34,6 +34,11 @@ public class QQMeishiServerRespException extends Exception implements
 	public QQMeishiServerRespException(Throwable cause) {
 		super(cause);
 	}
+	
+	@Override
+	public String toString() {
+		return "{\"rawContent\":"+rawContent+",\"httpStatusCode\":"+httpStatusCode+"}";
+	}
 
 	@Override
 	public int getHttpStatusCode() {

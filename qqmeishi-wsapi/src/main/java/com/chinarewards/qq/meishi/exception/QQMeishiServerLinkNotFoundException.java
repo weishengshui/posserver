@@ -34,6 +34,11 @@ public class QQMeishiServerLinkNotFoundException extends Exception implements
 	public QQMeishiServerLinkNotFoundException(Throwable cause) {
 		super(cause);
 	}
+	
+	@Override
+	public String toString() {
+		return "{\"rawContent\":"+rawContent+",\"httpStatusCode\":"+httpStatusCode+"}";
+	}
 
 	@Override
 	public int getHttpStatusCode() {

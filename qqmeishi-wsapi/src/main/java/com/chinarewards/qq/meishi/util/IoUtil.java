@@ -25,7 +25,7 @@ public final class IoUtil {
 	 * @author Seek
 	 */
 	public static String readStream(InputStream in, String charset) throws 
-			QQMeishiReadRespStreamException {
+			Throwable {
 		StringBuilder sb = new StringBuilder("");
 		if (in != null) {
 			BufferedReader reader = null;
@@ -40,7 +40,7 @@ public final class IoUtil {
 					sb.append(line.trim());
 				}
 			} catch (Throwable e) {
-				throw new QQMeishiReadRespStreamException(e);
+				throw new Exception(e);
 			} finally {
 				try {
 					if (reader != null) {
@@ -50,7 +50,7 @@ public final class IoUtil {
 						in.close();
 					}
 				} catch (IOException e) {
-					throw new QQMeishiReadRespStreamException(e);
+					throw new IOException(e);
 				}
 			}
 		}

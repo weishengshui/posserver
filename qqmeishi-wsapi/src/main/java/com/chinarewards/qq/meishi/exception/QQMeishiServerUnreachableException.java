@@ -31,6 +31,11 @@ public class QQMeishiServerUnreachableException extends Exception implements
 	public QQMeishiServerUnreachableException(Throwable cause) {
 		super(cause);
 	}
+	
+	@Override
+	public String toString() {
+		return "{\"httpStatusCode\":"+httpStatusCode+"}";
+	}
 
 	@Override
 	public int getHttpStatusCode() {
