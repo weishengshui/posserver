@@ -2,6 +2,7 @@ package com.chinarewards.qq.meishi.test.qqmeishi;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
@@ -26,6 +27,7 @@ import com.google.inject.Module;
  * @time 2012-3-5   下午06:05:07
  * @author Seek
  */
+@Ignore
 public class QQMeishiConvertQQMiTest extends GuiceTest {
 	
 	private static final String QQ_MEISHI_HOST_ADDRESS_KEY = "qq.meishi.host";

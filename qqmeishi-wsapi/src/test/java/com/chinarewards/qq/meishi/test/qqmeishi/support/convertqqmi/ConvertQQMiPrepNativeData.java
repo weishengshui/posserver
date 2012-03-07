@@ -15,10 +15,17 @@ import com.chinarewards.qq.meishi.util.json.JsonUtil;
 import com.chinarewards.qq.meishi.vo.QQMeishiConvertQQMiRespVO;
 import com.chinarewards.qq.meishi.vo.common.QQMeishiResp;
 
+/**
+ * description：QQ美食兑换Q米  本地测试数据准备
+ * @copyright binfen.cc
+ * @projectName qqmeishi-wsapi
+ * @time 2012-3-7   下午06:32:48
+ * @author Seek
+ */
 @Ignore
-public final class ConvertQQMiPrepData {
+public final class ConvertQQMiPrepNativeData {
 	
-	private static ConvertQQMiPrepData thiz = new ConvertQQMiPrepData();
+	private static ConvertQQMiPrepNativeData thiz = new ConvertQQMiPrepNativeData();
 	
 	private Map<String, QQMeishiResp<QQMeishiConvertQQMiRespVO>> resultsMap = Collections
 			.synchronizedMap(new HashMap<String, QQMeishiResp<QQMeishiConvertQQMiRespVO>>());
@@ -26,15 +33,15 @@ public final class ConvertQQMiPrepData {
 	private static final Boolean isSerialize = false;	//close serialize to resouce file
 	
 	/* native monitor port */
-	private static final Integer MONITOR_PORT = 10000;
+	private static final Integer MONITOR_PORT = 8085;
 	
 	private static final String CHARSET = "UTF-8";
 	
 	private static final String MOCK_PATH = "mock_convert_qq_mi";
 	
-	private ConvertQQMiPrepData(){
+	private ConvertQQMiPrepNativeData(){
 	}
-	public static ConvertQQMiPrepData getInstance(){
+	public static ConvertQQMiPrepNativeData getInstance(){
 		return thiz;
 	}
 	

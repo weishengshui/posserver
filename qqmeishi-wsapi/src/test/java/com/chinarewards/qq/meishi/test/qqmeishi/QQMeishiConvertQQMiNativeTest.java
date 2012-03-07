@@ -17,7 +17,7 @@ import com.chinarewards.qq.meishi.guice.TestAppModule;
 import com.chinarewards.qq.meishi.main.TestConfigModule;
 import com.chinarewards.qq.meishi.service.QQMeishiService;
 import com.chinarewards.qq.meishi.test.GuiceTest;
-import com.chinarewards.qq.meishi.test.qqmeishi.support.convertqqmi.ConvertQQMiPrepData;
+import com.chinarewards.qq.meishi.test.qqmeishi.support.convertqqmi.ConvertQQMiPrepNativeData;
 import com.chinarewards.qq.meishi.vo.QQMeishiConvertQQMiReqVO;
 import com.chinarewards.qq.meishi.vo.QQMeishiConvertQQMiRespVO;
 import com.chinarewards.qq.meishi.vo.common.QQMeishiResp;
@@ -46,7 +46,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	
 	private Server server = new Server(0);
 	
-	private ConvertQQMiPrepData prepData = ConvertQQMiPrepData.getInstance();
+	private ConvertQQMiPrepNativeData prepData = ConvertQQMiPrepNativeData.getInstance();
 
 	@Override
 	protected Module[] getModules() {
