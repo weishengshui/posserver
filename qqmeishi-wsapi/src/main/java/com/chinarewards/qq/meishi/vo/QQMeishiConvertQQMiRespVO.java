@@ -1,10 +1,10 @@
 package com.chinarewards.qq.meishi.vo;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import com.chinarewards.qq.meishi.vo.base.IQQMeishiRespBase;
 
 /**
  * description：QQ美食，兑换Q米交易响应VO
@@ -13,7 +13,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @time 2012-3-2   下午04:15:32
  * @author Seek
  */
-public class MeishiConvertQQMiRespVO implements Serializable {
+public class QQMeishiConvertQQMiRespVO implements IQQMeishiRespBase {
 
 	private static final long serialVersionUID = 1626905771653304845L;
 
@@ -29,15 +29,15 @@ public class MeishiConvertQQMiRespVO implements Serializable {
 	
 	private String password;
 	
-	public MeishiConvertQQMiRespVO(){
+	public QQMeishiConvertQQMiRespVO(){
 		
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof MeishiConvertQQMiRespVO))
+		if (!(obj instanceof QQMeishiConvertQQMiRespVO))
 			return false;
-		MeishiConvertQQMiRespVO respVO = (MeishiConvertQQMiRespVO) obj;
+		QQMeishiConvertQQMiRespVO respVO = (QQMeishiConvertQQMiRespVO) obj;
 		return new EqualsBuilder().append(this.validCode, respVO.validCode)
 				.append(this.hasPassword, respVO.hasPassword)
 				.append(this.tradeTime, respVO.tradeTime)

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiReadStreamException;
+import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
 
 /**
  * description：io util
@@ -25,7 +25,7 @@ public final class IoUtil {
 	 * @author Seek
 	 */
 	public static String readStream(InputStream in, String charset) throws 
-			QQMeishiReadStreamException {
+			QQMeishiReadRespStreamException {
 		StringBuilder sb = new StringBuilder("");
 		if (in != null) {
 			BufferedReader reader = null;
@@ -40,7 +40,7 @@ public final class IoUtil {
 					sb.append(line.trim());
 				}
 			} catch (Throwable e) {
-				throw new QQMeishiReadStreamException(e);
+				throw new QQMeishiReadRespStreamException(e);
 			} finally {
 				try {
 					if (reader != null) {
@@ -50,7 +50,7 @@ public final class IoUtil {
 						in.close();
 					}
 				} catch (IOException e) {
-					throw new QQMeishiReadStreamException(e);
+					throw new QQMeishiReadRespStreamException(e);
 				}
 			}
 		}

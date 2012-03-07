@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @time 2012-3-2   下午04:03:20
  * @author Seek
  */
-public class MeishiConvertQQMiReqVO implements Serializable {
+public class QQMeishiConvertQQMiReqVO implements Serializable {
 
 	private static final long serialVersionUID = -8347534846162331211L;
 	
@@ -21,7 +21,7 @@ public class MeishiConvertQQMiReqVO implements Serializable {
 	
 	private String password;
 	
-	public MeishiConvertQQMiReqVO(){
+	public QQMeishiConvertQQMiReqVO(){
 		
 	}
 	
