@@ -38,6 +38,7 @@ import com.chinarewards.qqgbvpn.main.dao.qqapi.QQMeishiDao;
 import com.chinarewards.qqgbvpn.main.exception.SaveDBException;
 import com.chinarewards.qqgbvpn.main.logic.qqapi.QQMeishiManager;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.QQMeishiResponseMessage;
+import com.chinarewards.qqgbvpn.main.vo.QQWsJouranlVo;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
@@ -62,7 +63,6 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 	
 	/**
 	 * 包存交易记录到QQMeishiXaction表
-	 * 以及记录交易日志
 	 * @param postParams
 	 * @param responseMessage
 	 * @throws SaveDBException
@@ -77,45 +77,26 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 		if (pos != null && agent != null) {
 			Date date = dtProvider.getTime();
 			QQMeishiXaction qqmeishiXaction = new QQMeishiXaction();
-			String eventDetail = "";
-			try{
-				qqmeishiXaction.setAgentId(agent.getId());
-				qqmeishiXaction.setAgentName(agent.getName());
-				qqmeishiXaction.setConsumeAmount(Double.parseDouble(postParams.get("amount")));
-				qqmeishiXaction.setForcePwdOnNextAction((responseMessage.getForcePwdNextAction() == 0) ? true :false);
-				qqmeishiXaction.setPosId(posId);
-				qqmeishiXaction.setPosModel(pos.getModel());
-				qqmeishiXaction.setPosSimPhoneNo(pos.getSimPhoneNo());
-				qqmeishiXaction.setQqUserToken(postParams.get("userToken"));
-				qqmeishiXaction.setReceiptTip(responseMessage.getTip());
-				qqmeishiXaction.setReceiptTitle(responseMessage.getTitle());
-				qqmeishiXaction.setRemoteXactDate(responseMessage.getXactTime().getTime());
-				qqmeishiXaction.setRemoteXactPwd(responseMessage.getPassword());
-				qqmeishiXaction.setTs(date);
-				qqmeishiXaction.setXactPwd(postParams.get("password"));
-				qqmeishiXaction.setXactResultCode(Integer.parseInt(Long.toString(responseMessage.getResult())));
+
+			qqmeishiXaction.setAgentId(agent.getId());
+			qqmeishiXaction.setAgentName(agent.getName());
+			qqmeishiXaction.setConsumeAmount(Double.parseDouble(postParams.get("amount")));
+			qqmeishiXaction.setForcePwdOnNextAction((responseMessage.getForcePwdNextAction() == 0) ? true : false);
+			qqmeishiXaction.setPosId(posId);
+			qqmeishiXaction.setPosModel(pos.getModel());
+			qqmeishiXaction.setPosSimPhoneNo(pos.getSimPhoneNo());
+			qqmeishiXaction.setQqUserToken(postParams.get("userToken"));
+			qqmeishiXaction.setReceiptTip(responseMessage.getTip());
+			qqmeishiXaction.setReceiptTitle(responseMessage.getTitle());
+			qqmeishiXaction.setRemoteXactDate(responseMessage.getXactTime().getTime());
+			qqmeishiXaction.setRemoteXactPwd(responseMessage.getPassword());
+			qqmeishiXaction.setTs(date);
+			qqmeishiXaction.setXactPwd(postParams.get("password"));
+			qqmeishiXaction.setXactResultCode(Integer.parseInt(Long.toString(responseMessage.getResult())));
+
+			// 保存交易数据
+			qqmeishiDao.get().saveQQMeishiXaction(qqmeishiXaction);
 				
-				//保存交易数据
-				qqmeishiDao.get().saveQQMeishiXaction(qqmeishiXaction);
-				
-				ObjectMapper mapper = new ObjectMapper();
-				eventDetail = mapper.writeValueAsString(qqmeishiXaction);
-	
-				//记录保存日志
-				journalLogic.logEvent(DomainEvent.QQMEISHI_QMI_XACTION_OK.toString(), DomainEntity.QQMEISHIXACTION.toString(), posId, eventDetail);
-			}catch(Exception e){
-				log.error("qqmeishi transaction save error");
-				log.error("posId: " + posId);
-				log.error("ts: " + date);
-				log.error("userToken: " + qqmeishiXaction.getQqUserToken());
-				log.error("title" + qqmeishiXaction.getReceiptTitle());
-				log.error("tip" + qqmeishiXaction.getReceiptTip());
-				log.error("entity: " + DomainEntity.QQMEISHIXACTION.toString());
-				log.error("entityId: " + qqmeishiXaction.getId());
-				log.error("event: " + DomainEvent.QQMEISHI_QMI_XACTION_OK.toString());
-				log.error("eventDetail: " + eventDetail);
-				throw new SaveDBException(e);
-			}
 		}else{
 			log.error("qqmeishi get pos or agent error");
 			log.error("pos or agent not found by posId : " + posId);
@@ -155,18 +136,24 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 		serverRequestVo.setPosid(posId);
 		serverRequestVo.setVerifyCode(postParams.get("userToken"));
 		
+		//实例化响应对象
+		QQMeishiResponseMessage responseMessage = new QQMeishiResponseMessage();
+		responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_SUCCESS);
+		
+		//记录日志准备
+		QQWsJouranlVo jouranlVo = new QQWsJouranlVo();
 		ObjectMapper mapper = new ObjectMapper();
 		String eventDetail = "";
-		QQMeishiResponseMessage responseMessage = new QQMeishiResponseMessage();
-		
-		responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_SUCCESS);
-		boolean isFailedJournalLogic = false;
+		String event = "";
 		
 		try {
 			// 访问腾讯
 			QQMeishiResp<QQMeishiConvertQQMiRespVO> serverResponseVo = service.get()
 					.convertQQMi(serverRequestVo);
 
+			jouranlVo.setContent(serverResponseVo);
+			
+			
 			//判读腾讯返回的结果
 			/**
 			 * 0 成功
@@ -186,8 +173,10 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 			QQMeishiConvertQQMiRespVO qqmeishiResponseVo = serverResponseVo.getResult();
 			
 			if(errorCode == QQMeishiXactionErrorCode.OK && qqmeishiResponseVo != null){ //QQ美食返回正确的结果
-				//处理返回结果
+				//日志事件
+				event = DomainEvent.QQMEISHI_QMI_XACTION_OK.toString();
 				
+				//处理返回结果				
 				//result
 				responseMessage.setResult(qqmeishiResponseVo.getValidCode());
 				
@@ -222,66 +211,60 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 				//记录腾讯返回的数据到表：QQMeishiXaction
 				this.createQQMeishiXaction(postParams, responseMessage);
 			
-			}else{//QQ美食服务器返回错误的结果
-				
-				try {
-					eventDetail = mapper.writeValueAsString(serverResponseVo);
-					
-					//记录日志
-					journalLogic.logEvent(DomainEvent.QQMEISHI_QMI_XACTION_FAILED.toString(), DomainEntity.QQMEISHIXACTION.toString(), posId, eventDetail);
-				}catch(Exception e) {
-					log.error("qqmeishi transaction save error code journal error");
-					log.error("posId: " + posId);
-					log.error("errorCode: " + serverResponseVo.getErrCode());
-					log.error("errorMessage:" + serverResponseVo.getErrMessage());
-					log.error("userToken: " + serverRequestVo.getVerifyCode());
-					log.error("event: " + DomainEvent.QQMEISHI_QMI_XACTION_FAILED.toString());
-					log.error("eventDetail: " + eventDetail);
-					throw new SaveDBException(e);
-				}
 			}
 			
 		} catch (QQMeishiServerUnreachableException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_UNREACHABLE);
 			log.error("error==:QQ美食服务器不可达", e);
 		} catch (QQMeishiServerLinkNotFoundException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
+			jouranlVo.setRawContent(e.getRawContent());
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_NOCONNECT);
 			log.error("error==:QQ美食服务器链接不存在", e);
 		} catch (QQMeishiServerRespException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
+			jouranlVo.setRawContent(e.getRawContent());
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_RESPERROR);
 			log.error("error==:QQ美食服务器响应异常", e);
 		} catch (QQMeishiRespDataParseException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
+			jouranlVo.setRawContent(e.getRawContent());
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_DATAPARSE);
 			log.error("error==:QQ美食响应数据解析异常", e);
 		} catch (QQMeishiReadRespStreamException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_IO);
 			log.error("error==:QQ美食读取响应流异常", e);
 		} catch (QQMeishiReqDataDigestException e) {
-			isFailedJournalLogic = true;
-			eventDetail = e.toString() + "," + getExceptionStackTrace(e);
+			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_SIG);
 			log.error("error==:QQ美食请求数据签名异常", e);
 		}
+		
+		// 记录日志
+		try {
+			if (!(DomainEvent.QQMEISHI_QMI_XACTION_OK.toString().equals(event)))
+				event = DomainEvent.QQMEISHI_QMI_XACTION_FAILED.toString();
 
-		// 请求腾讯异常
-		if (isFailedJournalLogic) {
+			eventDetail = mapper.writeValueAsString(jouranlVo);
 
-			// 记录保存日志
-			journalLogic.logEvent(
-							DomainEvent.QQMEISHI_QMI_XACTION_FAILED.toString(),
-							DomainEntity.QQMEISHIXACTION.toString(), posId,
-							eventDetail);
-
+			journalLogic.logEvent(event, DomainEntity.QQMEISHIXACTION.toString(),
+							posId, eventDetail);
+		} catch (Exception e) {
+			log.error("qqmeishi transaction save journal error");
+			log.error("posId: " + posId);
+			log.error("httpStatusCode: " + jouranlVo.getHttpStatusCode());
+			log.error("rawcontent:" + jouranlVo.getRawContent());
+			log.error("stackTrace: " + jouranlVo.getStacktrace());
+			log.error("content: " + jouranlVo.getContent().toString());
+			log.error("event: "	+ event);
+			log.error("eventDetail: " + eventDetail);
+			throw new SaveDBException(e);
 		}
 		
 		return responseMessage;
