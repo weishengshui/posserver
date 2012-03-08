@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
-import com.chinarewards.qq.meishi.exception.QQMeishiReqDataDigestException;
 import com.chinarewards.qq.meishi.exception.QQMeishiRespDataParseException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerLinkNotFoundException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerRespException;
@@ -34,7 +32,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	
 	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.url.convertQQMi";
 	
-	private static final Integer JETTY_SERVER_PORT = 8085;
+	private static final Integer JETTY_SERVER_PORT = 9001;
 	
 	/* json string filename and jetty servlet path */
 	private static final String ACCUMULATE = "accumulate";
@@ -43,6 +41,12 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	private static final String ACCUMULATE_HASPWD = "accumulate-haspwd";
 	private static final String ACCUMULATE_ILLEGALUSER = "accumulate-illegaluser";
 	private static final String ACCUMULATE_INVALIDAMOUNT = "accumulate-invalidamount";
+	
+	/* exception case */
+	private static final String ERR_SERVER_UNREACHABLE = "err_server-unreachable";	/* 不需要任何内容 */
+	private static final String ERR_PAGE_NOT_FOUND = "err_page-not-found";	/* 不需要任何内容 */
+	private static final String ERR_SERVER_RESP_EXCEPTION = "err_server-resp-exception";	/* 动态生成的servlet */
+	private static final String ERR_JSON_ERROR = "err_json-error";
 	
 	private Server server = new Server(0);
 	
@@ -65,7 +69,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 		// URL for QQ meishi
 		conf.setProperty("qq.meishi.host", "localhost:"+JETTY_SERVER_PORT);
 //		conf.setProperty("qq.meishi.url.convertQQMi",			TODO 不用了，在每个test中动态设置
-//				"http://localhost:8085/");
+//				"http://localhost:9001/");
 
 		TestConfigModule confModule = new TestConfigModule(conf);
 		return confModule;
@@ -116,6 +120,13 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 			scHandler.addServletWithMapping(prepData
 					.getAccumulateInvalidamount(ACCUMULATE_INVALIDAMOUNT), 
 					"/" + ACCUMULATE_INVALIDAMOUNT);
+			
+			scHandler.addServletWithMapping(prepData
+					.getErrServerRespException(ERR_SERVER_RESP_EXCEPTION), 
+					"/" + ERR_SERVER_RESP_EXCEPTION);
+			scHandler.addServletWithMapping(prepData
+					.getErrJsonError(ERR_JSON_ERROR), 
+					"/" + ERR_JSON_ERROR);
 			
 			// add handler to server
 			server.addHandler(scHandler);
@@ -195,12 +206,68 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 		System.out.println("testAccumulateInvalidamount() actual:"+actualVO);
 	}
 	
-//	@Test
-//	public void testPageNotFound() throws Throwable {
-//		final String url = prepData.buildURL(ACCUMULATE_INVALIDAMOUNT);
-//		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
-//		System.out.println("testAccumulateInvalidamount() actual:"+actualVO);
-//	}
+	@Test	/* error testcase */
+	public void testServerRespException() throws Throwable {
+		final String url = prepData.buildURL(ERR_SERVER_RESP_EXCEPTION);
+		
+		try{
+			baseTest(url);
+		}catch(QQMeishiServerRespException e){
+			System.out.println("testServerRespException():"+e.getHttpStatusCode());
+			System.out.println("testServerRespException():"+e.getRawContent());
+			Assert.assertTrue(Boolean.TRUE);
+			return;
+		}
+		Assert.assertTrue(Boolean.FALSE);
+	}
+	
+	@Test	/* error testcase */
+	public void testJsonError() throws Throwable {
+		final String url = prepData.buildURL(ERR_JSON_ERROR);
+		
+		try{
+			baseTest(url);
+		}catch(QQMeishiRespDataParseException e){
+			System.out.println("testJsonError():"+e.getHttpStatusCode());
+			System.out.println("testJsonError():"+e.getRawContent());
+			Assert.assertTrue(Boolean.TRUE);
+			return;
+		}
+		Assert.assertTrue(Boolean.FALSE);
+	}
+	
+	@Test	/* error testcase */
+	public void testPageNotFound() throws Throwable {
+		final String url = prepData.buildURL(ERR_PAGE_NOT_FOUND);
+		
+		try{
+			baseTest(url);
+		}catch(QQMeishiServerLinkNotFoundException e){
+			System.out.println("testPageNotFound():"+e.getHttpStatusCode());
+			System.out.println("testPageNotFound():"+e.getRawContent());
+			Assert.assertTrue(Boolean.TRUE);
+			return;
+		}
+		Assert.assertTrue(Boolean.FALSE);
+	}
+	
+	@Test	/* error testcase */
+	public void testServerUnreachable() throws Throwable {
+		// stop server
+		if (server.isStarted()) {
+			server.stop();
+		}
+		
+		final String url = prepData.buildURL(ERR_SERVER_UNREACHABLE);
+		
+		try{
+			baseTest(url);
+		}catch(QQMeishiServerUnreachableException e){
+			Assert.assertTrue(Boolean.TRUE);
+			return;
+		}
+		Assert.assertTrue(Boolean.FALSE);
+	}
 	/******************************** Test Case *******************************/
 	
 }

@@ -54,7 +54,7 @@ public class QQMeishiConvertQQMiTest extends GuiceTest {
 				"NDA2ZTkwOTExZjlkZDY3ZTIxMTU1OTY0NmVlYzVmY2Q=");
 		conf.setProperty(QQ_MEISHI_HOST_ADDRESS_KEY, "open.meishi.qq.com");
 		conf.setProperty(QQ_MEISHI_CONVERT_URL_KEY,
-				"http://open.meishi.qq.com/pos.php");	//localhost:9001  for monitor
+				"http://open.meishi.qq.com/pos.php");	//localhost:9012  for monitor
 		
 		TestConfigModule confModule = new TestConfigModule(conf);
 		return confModule;
