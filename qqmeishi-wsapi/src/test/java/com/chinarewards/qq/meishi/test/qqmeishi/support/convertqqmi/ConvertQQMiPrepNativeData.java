@@ -36,7 +36,7 @@ public final class ConvertQQMiPrepNativeData {
 	private Map<String, QQMeishiResp<QQMeishiConvertQQMiRespVO>> resultsMap = Collections
 			.synchronizedMap(new HashMap<String, QQMeishiResp<QQMeishiConvertQQMiRespVO>>());
 	
-	private static final Boolean isSerialize = false;	//close serialize to resouce file
+	private static final Boolean isSerialize = false;	//close serialize to resouce file, need file existent
 	
 	/* native monitor port */
 	private static final Integer MONITOR_PORT = 9001;	//localhost:9011  for monitor
