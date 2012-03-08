@@ -17,6 +17,9 @@ import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
@@ -33,6 +36,7 @@ import com.chinarewards.qqgbvpn.main.PosServer;
 import com.chinarewards.qqgbvpn.main.ServerModule;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.impl.DefaultPosServer;
+import com.chinarewards.qqgbvpn.main.logic.qqapi.impl.HardCodedServlet;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandlerModule;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMapping;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceMappingConfigBuilder;
@@ -56,10 +60,20 @@ public class QQMeishiProtocol extends GuiceTest {
 	long runForSeconds;
 	PosServer posServer;
 	int port;
-
+	private static final String CHARSET = "UTF-8";
+	private static final int QQMEISHIPORT = 8084;
+	
+	private static final String SUCCESS = "SUCCESS";
+	private static final String ERRORCODE = "ERRORCODE";
+	
+	private Server server = new Server(0);
+	
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+		// if (!server.isStarted()) {
+		
+		// }
 		port = startServer();
 		runForSeconds = 1;
 
@@ -71,8 +85,70 @@ public class QQMeishiProtocol extends GuiceTest {
 		if (em != null && em.getTransaction().isActive()) {
 			em.getTransaction().rollback();
 		}
+		
 		stopServer();
 	}
+	
+
+	private void startTXServer(String source) throws Exception {
+		// build test server start
+		if (!server.isStarted()) {
+			ServletHandler scHandler = new ServletHandler();
+			if(source.equals(SUCCESS)){
+				scHandler.addServletWithMapping(getSuccess(),
+				"/qqmeishitransaction");
+			}else if(source.equals(ERRORCODE)){
+				scHandler.addServletWithMapping(getErrorCode(),
+				"/qqmeishitransaction");
+			}
+			
+			// add handler to server
+			server.addHandler(scHandler);
+			server.getConnectors()[0].setPort(QQMEISHIPORT);
+			server.start();
+			System.out.println("qqmeishi server start!");
+		}
+		// build test server end
+	}
+
+	private void stopTXServer() throws Exception {
+		log.debug("qqmeishi server stop");
+		if (server.isStarted()) {
+
+			try {
+				server.stop();
+			} catch (Throwable t) {
+
+			}
+		}
+	}
+
+	private ServletHolder getErrorCode() throws Exception {
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("{\"result\":\"\",\"errCode\":1,\"errMessage\":\"失败了!\"}");
+		s.setResponse(new String(sb.toString().getBytes(CHARSET), CHARSET));
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		return h;
+	}
+	
+	private ServletHolder getSuccess() throws Exception {
+		HardCodedServlet s = new HardCodedServlet();
+		s.init();
+		StringBuffer sb = new StringBuffer();
+		sb.append("{'result':{'password':'123456789','validCode':0,'hasPassword':true,'tradeTime':'20120131T234058+0800','title':'gfedcba','tip':'abcdefg'},'errCode':0,'errMessage':'成功了!'}");
+		s.setResponse(new String(sb.toString().getBytes(CHARSET), CHARSET));
+
+		ServletHolder h = new ServletHolder();
+		h.setServlet(s);
+
+		return h;
+	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -84,9 +160,9 @@ public class QQMeishiProtocol extends GuiceTest {
 
 		CommonTestConfigModule confModule = new CommonTestConfigModule();
 		ServiceMappingConfigBuilder mappingBuilder = new ServiceMappingConfigBuilder();
-		ServiceMapping mapping = mappingBuilder.buildMapping(confModule
-				.getConfiguration());
-
+		Configuration configuration = confModule.getConfiguration();
+		ServiceMapping mapping = mappingBuilder.buildMapping(configuration);
+	
 		// build the Guice modules.
 		Module[] modules = new Module[] {
 				new ApplicationModule(),
@@ -119,6 +195,7 @@ public class QQMeishiProtocol extends GuiceTest {
 		log.info("posServer stopped");
 	}
 
+
 	private int startServer() throws Exception {
 
 		// force changing of configuration
@@ -146,13 +223,6 @@ public class QQMeishiProtocol extends GuiceTest {
 			em.getTransaction().begin();
 			initDB(em);
 		}
-
-		//
-		// Now we know which free port to use.
-		//
-		// XXX it is a bit risky since the port maybe in use by another
-		// process.
-		//
 
 		// get an new instance of PosServer
 		conf.setProperty("server.port", runningPort);
@@ -186,9 +256,98 @@ public class QQMeishiProtocol extends GuiceTest {
 		return reponseMessage;
 		
 	}
+	 	
+	
+	@Test
+	public void testQQMeishiSuccess() throws Exception {
+		System.out.println("success!");
+		//启动腾讯服务器
+		startTXServer(SUCCESS);
+		/**
+		 * 启动QQ美食服务器
+		 * 返回正确的参数
+		 */	
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+
+		byte[] challenge = new byte[8];
+		
+		log.debug("pos init");
+		this.oldPosInit(os, is, challenge);// old client
+
+		log.debug("pos login");
+		oldPosLogin(os, is, challenge);
+
+		byte[] responseBytes = qqMeishiRequest(os, is);
+
+		System.out.println("");
+		os.close();
+		socket.close();
+		
+		//关闭腾讯服务器
+		stopTXServer();
+		
+		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
+			
+		assertEquals(102, reponseMessage.getCmdId());
+		assertEquals(0, reponseMessage.getServerErrorCode());
+		assertEquals(0, reponseMessage.getQqwsErrorCode());
+		assertEquals(0, reponseMessage.getResult());
+		assertEquals(0, reponseMessage.getForcePwdNextAction());
+
+		assertEquals("gfedcba", reponseMessage.getTitle());
+		assertEquals("abcdefg", reponseMessage.getTip());		
+		assertEquals("123456789", reponseMessage.getPassword());
+		
+		
+	}
+	
+	@Test
+	public void testQQMeishiErrorCode() throws Exception {
+		System.out.println("error code!");
+		//启动腾讯服务器
+		startTXServer(ERRORCODE);
+		/**
+		 * 启动QQMeishi server
+		 * 返回errorCode 不等于0
+		 */
+		Socket socket = new Socket("localhost", port);
+		OutputStream os = socket.getOutputStream();
+		InputStream is = socket.getInputStream();
+
+		byte[] challenge = new byte[8];
+		
+		log.debug("pos init");
+		this.oldPosInit(os, is, challenge);// old client
+
+		log.debug("pos login");
+		oldPosLogin(os, is, challenge);
+
+		byte[] responseBytes = qqMeishiRequest(os, is);
+
+		System.out.println("");
+		os.close();
+		socket.close();
+		
+		//关闭腾讯服务器
+		stopTXServer();
+		
+		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
+			
+		assertEquals(102, reponseMessage.getCmdId());
+		assertEquals(0, reponseMessage.getServerErrorCode());
+		assertEquals(1, reponseMessage.getQqwsErrorCode());
+		assertEquals(0, reponseMessage.getResult());
+		assertEquals(0, reponseMessage.getForcePwdNextAction());
+		assertEquals(null, reponseMessage.getTitle());
+		assertEquals(null, reponseMessage.getTip());		
+		assertEquals(null, reponseMessage.getPassword());
+	}
 
 	@Test
 	public void testQQMeishiNOConnect() throws Exception {
+		System.out.println("no qqmeishi server!");
 		/**
 		 * 不启动QQ美食服务器
 		 */
@@ -215,85 +374,6 @@ public class QQMeishiProtocol extends GuiceTest {
 		assertEquals(102, reponseMessage.getCmdId());
 		assertEquals(1, reponseMessage.getServerErrorCode());
 		assertEquals(0, reponseMessage.getQqwsErrorCode());
-		assertEquals(0, reponseMessage.getResult());
-		assertEquals(0, reponseMessage.getForcePwdNextAction());
-		assertEquals(null, reponseMessage.getTitle());
-		assertEquals(null, reponseMessage.getTip());		
-		assertEquals(null, reponseMessage.getPassword());
-//		assertEquals("gfedcba", reponseMessage.getTitle());
-//		assertEquals("abcdefg", reponseMessage.getTip());		
-//		assertEquals("123456789", reponseMessage.getPassword());
-	}
-	
-	
-	
-//	@Test
-	public void testQQMeishiSuccess() throws Exception {
-		/**
-		 * 启动QQ美食服务器
-		 * 返回正确的参数
-		 */	
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-
-		byte[] challenge = new byte[8];
-		
-		log.debug("pos init");
-		this.oldPosInit(os, is, challenge);// old client
-
-		log.debug("pos login");
-		oldPosLogin(os, is, challenge);
-
-		byte[] responseBytes = qqMeishiRequest(os, is);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-		
-		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
-			
-		assertEquals(102, reponseMessage.getCmdId());
-		assertEquals(0, reponseMessage.getServerErrorCode());
-		assertEquals(0, reponseMessage.getQqwsErrorCode());
-		assertEquals(0, reponseMessage.getResult());
-		assertEquals(0, reponseMessage.getForcePwdNextAction());
-
-		assertEquals("gfedcba", reponseMessage.getTitle());
-		assertEquals("abcdefg", reponseMessage.getTip());		
-		assertEquals("123456789", reponseMessage.getPassword());
-	}
-	
-	
-//	@Test
-	public void testQQMeishiErrorCode() throws Exception {
-		/**
-		 * 启动QQMeishi server
-		 * 返回errorCode 不等于0
-		 */
-		Socket socket = new Socket("localhost", port);
-		OutputStream os = socket.getOutputStream();
-		InputStream is = socket.getInputStream();
-
-		byte[] challenge = new byte[8];
-		
-		log.debug("pos init");
-		this.oldPosInit(os, is, challenge);// old client
-
-		log.debug("pos login");
-		oldPosLogin(os, is, challenge);
-
-		byte[] responseBytes = qqMeishiRequest(os, is);
-
-		System.out.println("");
-		os.close();
-		socket.close();
-		
-		QQMeishiResponseMessage reponseMessage = getResponseQQMeishiMessage(responseBytes);
-			
-		assertEquals(102, reponseMessage.getCmdId());
-		assertEquals(0, reponseMessage.getServerErrorCode());
-		assertEquals(1, reponseMessage.getQqwsErrorCode());
 		assertEquals(0, reponseMessage.getResult());
 		assertEquals(0, reponseMessage.getForcePwdNextAction());
 		assertEquals(null, reponseMessage.getTitle());
@@ -457,11 +537,7 @@ public class QQMeishiProtocol extends GuiceTest {
 				System.out.println("");
 		}
 		
-//		00000000 00 00 00 66 00 00 00 01 00 00 00 01 00 00 00 02 ...f............
-//		00000010 01 07 DC 01 1F 17 3A 3B 03 DB 01 E0 00 07 67 66 ......:;......gf
-//		00000020 65 64 63 62 61 00 07 61 62 63 64 65 66 67 00 09 edcba..abcdefg..
-//		00000030 31 32 33 34 35 36 37 38 39                      123456789
-		
+
 		return response;
 	}
 
