@@ -1,7 +1,7 @@
 package com.chinarewards.qq.meishi.exception;
 
-import com.chinarewards.qq.meishi.exception.base.IHttpStatusCode;
-import com.chinarewards.qq.meishi.exception.base.IRawContent;
+import com.chinarewards.qq.meishi.conn.vo.base.IHttpStatusCode;
+import com.chinarewards.qq.meishi.conn.vo.base.IRawContent;
 
 /**
  * description：QQ美食服务器响应异常
@@ -35,11 +35,6 @@ public class QQMeishiServerRespException extends Exception implements
 		super(cause);
 	}
 	
-	@Override
-	public String toString() {
-		return "{\"rawContent\":"+rawContent+",\"httpStatusCode\":"+httpStatusCode+"}";
-	}
-
 	@Override
 	public int getHttpStatusCode() {
 		return httpStatusCode;

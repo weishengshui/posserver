@@ -3,6 +3,8 @@ package com.chinarewards.qq.meishi.util.json;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * description：json字符串工具类
@@ -12,6 +14,8 @@ import org.codehaus.jackson.type.TypeReference;
  * @author Seek
  */
 public final class JsonUtil {
+	
+	static Logger log = LoggerFactory.getLogger(JsonUtil.class);
 	
 	/**
 	 * description：json String convert Object

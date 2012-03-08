@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiReqDataDigestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qq.meishi.util.DigestUtil;
 
 /**
@@ -16,6 +18,8 @@ import com.chinarewards.qq.meishi.util.DigestUtil;
  * @author Seek
  */
 public final class QQMeishiUtil {
+	
+	static Logger log = LoggerFactory.getLogger(QQMeishiUtil.class);
 	
 	/**
 	 * description：append argsMap to requestParams,for example: args[verifycode]=837539
@@ -47,52 +51,69 @@ public final class QQMeishiUtil {
 	public static String buildSig(Map<String, String> otherReqParams,
 			String commSecretKey, String charset)
 			throws Throwable {
-		String otherParamList = null;
+		String urlPart = null;
 		
 		StringBuffer buff = new StringBuffer("");
 		Set<String> keys = otherReqParams.keySet();
 		for(String key:keys){
-			String value = otherReqParams.get(key)==null?"":URLEncoder.encode(otherReqParams.get(key), charset);
-			key = URLEncoder.encode(key, charset);
+			String value = otherReqParams.get(key) == null ? "" : encoder(
+					otherReqParams.get(key), charset);
+			key = encoder(key, charset);
 			
 			String batch = "&" + key + "=" + value;
 			buff.append(batch);
 		}
-		otherParamList = buff.delete(0, 1).toString();
 		
-		return buildSig(otherParamList, commSecretKey, charset);
+		if(buff.length() > 0){
+			urlPart = buff.delete(0, 1).toString();
+		}
+		
+		return buildSig(urlPart, commSecretKey);
 	}
 	
 	/**
 	 * description：生成Sig
-	 * @param otherParamList 其他的所有请求参数URL
+	 * @param urlPart 其他的所有请求参数URL,&key=value,需要字符编码后的
 	 * @param commSecretKey 通讯密钥
-	 * @param charset 编码方式
 	 * @return sig value
 	 * @throws Throwable data digest Exception
 	 * @time 2012-3-7   下午04:27:04
 	 * @author Seek
 	 */
-	public static String buildSig(String otherParamList, String commSecretKey,
-			String charset) throws Throwable {
+	public static String buildSig(String urlPart, String commSecretKey)
+			throws Throwable {
 		try {
-			String seed = otherParamList + commSecretKey;
+			String seed = urlPart + commSecretKey;
 			
-			System.out.println(seed);
+			log.debug("buildSig seed:"+seed);
 			return DigestUtil.digestData(seed.getBytes(), DigestUtil.MD5);
 		} catch (Throwable e) {
-			throw new QQMeishiReqDataDigestException(e);
+			throw new Throwable(e);
 		}
 	}
 	
 	/**
 	 * description：返回自 1970 年 1 月 1 日 00:00:00 GMT 以来此 Date 对象表示的秒数。 
-	 * @return second
+	 * @return unit of time:second
 	 * @time 2012-3-7   下午04:33:23
 	 * @author Seek
 	 */
 	public static long qqMeishiGetTime(){
 		return new Date().getTime() / 1000;
+	}
+	
+	/**
+	 * description：字符串编码
+	 * @param content 内容
+	 * @param charset 编码方式
+	 * @return 编码后的内容
+	 * @throws Throwable
+	 * @time 2012-3-8   上午10:05:22
+	 * @author Seek
+	 */
+	public static String encoder(String content, String charset)
+			throws Throwable {
+		return URLEncoder.encode(content, charset);
 	}
 	
 }

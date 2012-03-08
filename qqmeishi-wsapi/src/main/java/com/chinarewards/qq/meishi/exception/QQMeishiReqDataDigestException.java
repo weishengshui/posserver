@@ -27,9 +27,4 @@ public class QQMeishiReqDataDigestException extends Exception {
 		super(cause);
 	}
 	
-	@Override
-	public String toString() {
-		return "{}";
-	}
-	
 }

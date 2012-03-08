@@ -5,8 +5,6 @@ import java.security.MessageDigest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiReqDataDigestException;
-
 /**
  * description：a digest util
  * @copyright binfen.cc
@@ -20,6 +18,20 @@ public final class DigestUtil {
 	
 	public static final String MD5 = "MD5";
 	public static final String SHA1 = "SHA-1";
+	
+	
+	/**
+	 * description：digest a bytes
+	 * @param source 	 data source
+	 * @param algorithm  MD5, SHA1...
+	 * @return  bytes digest result
+	 * @time 2012-3-6   下午03:27:34
+	 * @author Seek
+	 */
+	public static String digestData(String source, String algorithm)
+			throws Throwable {
+		return digestData(source.getBytes(), algorithm);
+	}
 	
 	/**
 	 * description：digest a bytes
@@ -55,7 +67,7 @@ public final class DigestUtil {
 			s = new String(str); // 换后的结果转换为字符串
 
 		} catch (Throwable e) {
-			throw new QQMeishiReqDataDigestException("data digest is ERROR!", e);
+			throw new Exception("data digest is ERROR!", e);
 		}
 		return s;
 	}
@@ -84,7 +96,7 @@ public final class DigestUtil {
 			
 			logger.debug("bytes1 and bytes2 compareDigest = " + result);
 		} catch (Throwable e) {
-			throw new QQMeishiReqDataDigestException("compare digest is ERROR!", e);
+			throw new Exception("compare digest is ERROR!", e);
 		}
 		return result;
 	}

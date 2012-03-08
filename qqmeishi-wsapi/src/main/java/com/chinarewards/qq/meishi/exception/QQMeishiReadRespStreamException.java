@@ -1,7 +1,6 @@
 package com.chinarewards.qq.meishi.exception;
 
-import com.chinarewards.qq.meishi.exception.base.IHttpStatusCode;
-import com.chinarewards.qq.meishi.exception.base.IRawContent;
+import com.chinarewards.qq.meishi.conn.vo.base.IHttpStatusCode;
 
 /**
  * description：读取网络流异常
@@ -11,11 +10,9 @@ import com.chinarewards.qq.meishi.exception.base.IRawContent;
  * @author Seek
  */
 public class QQMeishiReadRespStreamException extends Exception implements
-		IRawContent, IHttpStatusCode {
+		IHttpStatusCode {
 	
 	private static final long serialVersionUID = 7126868581450582850L;
-	
-	private String rawContent;
 	
 	private int httpStatusCode;
 	
@@ -36,11 +33,6 @@ public class QQMeishiReadRespStreamException extends Exception implements
 	}
 	
 	@Override
-	public String toString() {
-		return "{\"rawContent\":"+rawContent+",\"httpStatusCode\":"+httpStatusCode+"}";
-	}
-	
-	@Override
 	public int getHttpStatusCode() {
 		return httpStatusCode;
 	}
@@ -48,16 +40,6 @@ public class QQMeishiReadRespStreamException extends Exception implements
 	@Override
 	public void setHttpStatusCode(int httpStatusCode) {
 		this.httpStatusCode = httpStatusCode;
-	}
-
-	@Override
-	public String getRawContent() {
-		return rawContent;
-	}
-
-	@Override
-	public void setRawContent(String rawContent) {
-		this.rawContent = rawContent;
 	}
 	
 }

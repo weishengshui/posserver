@@ -26,10 +26,8 @@ public final class ServletHolderFactory {
 			String charset) throws Exception {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
-		StringBuffer sb = new StringBuffer();
 		
-		sb.append(responseContent);
-		s.setResponse(new String(sb.toString().getBytes(charset), "iso-8859-1"));
+		s.setResponse(new String(responseContent.getBytes(charset), "iso-8859-1"));
 		
 		ServletHolder h = new ServletHolder();
 		h.setServlet(s);
