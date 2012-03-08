@@ -1,4 +1,4 @@
-package com.chinarewards.qq.meishi.exception.base;
+package com.chinarewards.qq.meishi.conn.vo.base;
 
 /**
  * description：define httpStatusCode

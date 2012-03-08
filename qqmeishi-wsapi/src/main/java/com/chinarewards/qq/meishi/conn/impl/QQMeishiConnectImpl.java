@@ -1,6 +1,5 @@
 package com.chinarewards.qq.meishi.conn.impl;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,18 +25,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qq.meishi.conn.QQMeishiConnect;
-import com.chinarewards.qq.meishi.conn.QQMeishiConnect.ContentFormat;
-import com.chinarewards.qq.meishi.conn.QQMeishiConnect.HttpMethod;
+import com.chinarewards.qq.meishi.conn.vo.QQMeishiConnRespVO;
 import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
-import com.chinarewards.qq.meishi.exception.QQMeishiRespDataParseException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerLinkNotFoundException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerRespException;
 import com.chinarewards.qq.meishi.exception.QQMeishiServerUnreachableException;
 import com.chinarewards.qq.meishi.util.IoUtil;
 import com.chinarewards.qq.meishi.util.json.JsonUtil;
+import com.chinarewards.qq.meishi.util.qqmeishi.QQMeishiUtil;
 
 /**
- * description：httpclient implements
+ * description：Httpclient implements
  * @copyright binfen.cc
  * @projectName qqmeishi-wsapi
  * @time 2012-3-5   下午03:12:22
@@ -104,11 +102,11 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 								@SuppressWarnings("unchecked")
 								ArrayList<String> list = (ArrayList<String>) v;
 								for (String s : list) {
-									s = s==null?null: URLEncoder.encode((String) s, charset);
+									s = s==null?null: QQMeishiUtil.encoder((String) s, charset);
 									params.add(new BasicNameValuePair(key, s));
 								}
 							} else {
-								v = v==null?null: URLEncoder.encode((String) v, charset);
+								v = v==null?null: QQMeishiUtil.encoder((String) v, charset);
 								params.add(new BasicNameValuePair(key, (String) v));
 							}
 						}
@@ -123,34 +121,29 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 			}
 			
 			HttpResponse httpResponse = client.execute(httpReqest);
+			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
+			
 			//请求成功
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			if (httpStatusCode == HttpStatus.SC_OK	//200
+					|| httpStatusCode == HttpStatus.SC_NOT_FOUND	//404
+					|| httpStatusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) { // 500
 				return httpResponse;
 			}
+			
+			/* other status code~ */
 			throw new Exception("request error, status code: " + httpResponse.
 					getStatusLine().getStatusCode());
 		} catch (Throwable e) {
 			if (httpReqest != null && !httpReqest.isAborted()) {
 				httpReqest.abort();
 			}
-			throw new QQMeishiServerUnreachableException(e);
+			
+			QQMeishiServerUnreachableException serverUnreachableException = new QQMeishiServerUnreachableException(e);
+			throw serverUnreachableException;
 		}
 	}
 	
-	/**
-	 * description：请求服务器
-	 * @param url URL
-	 * @param hostAddr host地址
-	 * @param httpMethod 请求方式
-	 * @param postParams 请求参数<key，value>
-	 * @param charset 编码方式
-	 * @return 读取到的buffer
-	 * @throws QQMeishiInterfaceAccessException QQ美食接口访问异常
-	 * @throws QQMeishiRespDataParseException 数据接口解析异常
-	 * @time 2012-3-2   下午05:23:24
-	 * @author Seek
-	 */
-	public String requestServer(String url, String hostAddr,
+	public QQMeishiConnRespVO requestServer(String url, String hostAddr,
 			HttpMethod httpMethod, ContentFormat contentFormat,
 			Map<String, String> postParams, String charset)
 			throws QQMeishiServerUnreachableException,
@@ -158,16 +151,38 @@ public class QQMeishiConnectImpl implements QQMeishiConnect {
 			QQMeishiReadRespStreamException {
 		HttpResponse httpResponse = sendRequest(url, hostAddr, httpMethod,
 				contentFormat, postParams, charset);
+		int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
 		
-		String str = null;
+		/* read response stream */
+		String rawContent = null;
 		try {
 			String contentCharset = httpResponse.getParams().getParameter(
 					CoreProtocolPNames.HTTP_CONTENT_CHARSET).toString();
-			str = IoUtil.readStream(httpResponse.getEntity().getContent(), contentCharset);
+			rawContent = IoUtil.readStream(httpResponse.getEntity().getContent(), contentCharset);
 		} catch (Throwable e) {
-			throw new QQMeishiReadRespStreamException(e);
+			QQMeishiReadRespStreamException readRespStreamException = new QQMeishiReadRespStreamException(e);
+			readRespStreamException.setHttpStatusCode(httpStatusCode);
+			throw readRespStreamException;
 		}
-		return str;
+		
+		if(httpStatusCode == HttpStatus.SC_NOT_FOUND) { //404
+			QQMeishiServerLinkNotFoundException linkNotFoundException = new QQMeishiServerLinkNotFoundException();
+			linkNotFoundException.setHttpStatusCode(httpStatusCode);
+			linkNotFoundException.setRawContent(rawContent);
+			throw linkNotFoundException; 
+		}
+		
+		if(httpStatusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR) { //500
+			QQMeishiServerRespException serverRespException = new QQMeishiServerRespException();
+			serverRespException.setHttpStatusCode(httpStatusCode);
+			serverRespException.setRawContent(rawContent);
+			throw serverRespException; 
+		}
+		
+		QQMeishiConnRespVO qqMiConnRespVo = new QQMeishiConnRespVO();
+		qqMiConnRespVo.setHttpStatusCode(httpStatusCode);
+		qqMiConnRespVo.setRawContent(rawContent);
+		return qqMiConnRespVo;
 	}
 	
 }

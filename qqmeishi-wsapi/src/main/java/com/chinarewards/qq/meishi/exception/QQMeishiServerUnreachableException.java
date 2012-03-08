@@ -1,7 +1,5 @@
 package com.chinarewards.qq.meishi.exception;
 
-import com.chinarewards.qq.meishi.exception.base.IHttpStatusCode;
-
 /**
  * description：QQ美食服务器不可达
  * @copyright binfen.cc
@@ -9,12 +7,9 @@ import com.chinarewards.qq.meishi.exception.base.IHttpStatusCode;
  * @time 2012-3-7   上午10:55:20
  * @author Seek
  */
-public class QQMeishiServerUnreachableException extends Exception implements
-		IHttpStatusCode {
+public class QQMeishiServerUnreachableException extends Exception {
 	
 	private static final long serialVersionUID = 9183573830594381338L;
-	
-	private int httpStatusCode;
 	
 	public QQMeishiServerUnreachableException() {
 		super();
@@ -30,21 +25,6 @@ public class QQMeishiServerUnreachableException extends Exception implements
 
 	public QQMeishiServerUnreachableException(Throwable cause) {
 		super(cause);
-	}
-	
-	@Override
-	public String toString() {
-		return "{\"httpStatusCode\":"+httpStatusCode+"}";
-	}
-
-	@Override
-	public int getHttpStatusCode() {
-		return this.httpStatusCode;
-	}
-
-	@Override
-	public void setHttpStatusCode(int httpStatusCode) {
-		this.httpStatusCode = httpStatusCode;
 	}
 	
 }

@@ -1,6 +1,5 @@
 package com.chinarewards.qq.meishi.service.impl;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -9,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.chinarewards.qq.meishi.conn.QQMeishiConnect;
+import com.chinarewards.qq.meishi.conn.vo.QQMeishiConnRespVO;
 import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
 import com.chinarewards.qq.meishi.exception.QQMeishiReqDataDigestException;
 import com.chinarewards.qq.meishi.exception.QQMeishiRespDataParseException;
@@ -81,25 +81,31 @@ public class QQMeishiServiceImpl implements QQMeishiService {
 		try {
 			String commSecretKey = configuration.getString(QQ_MEISHI_COMM_SECRET_KEY);
 			String sig = QQMeishiUtil.buildSig(reqParams, commSecretKey, CHARSET);
+			log.debug("sig:"+sig);
 			reqParams.put("sig", sig);
 		} catch (Throwable e) {
 			throw new QQMeishiReqDataDigestException(e);
 		}
 		
-		log.info("QQ meishi reqParams:" + reqParams.toString());
-		System.out.println("QQ meishi reqParams:" + reqParams.toString());
+		log.debug("QQ meishi reqParams:" + reqParams.toString());
+		QQMeishiConnRespVO qqMeishiConnRespVO = qqMeishiConnect.requestServer(
+				qqMeishiConvert, qqMeishiHostAddress,
+				QQMeishiConnect.HttpMethod.POST,
+				QQMeishiConnect.ContentFormat.Form, reqParams, CHARSET);
 		
-		String respContent = qqMeishiConnect.requestServer(qqMeishiConvert, qqMeishiHostAddress, 
-				QQMeishiConnect.HttpMethod.POST, QQMeishiConnect.ContentFormat.Form, reqParams, CHARSET);
-		log.info("QQ Meishi respContent:" + respContent);
-		System.out.println("QQ Meishi respContent:" + respContent);
+		log.debug("QQ Meishi respContent:" + qqMeishiConnRespVO.getRawContent());
 		try {
-			respContent = respContent.replace("\"result\":\"\"", "\"result\":null");
-			respVO = JsonUtil.parseObject(
-					respContent, new JacksonTypeReference<QQMeishiResp<QQMeishiConvertQQMiRespVO>>() {
-					});
+			String packageRespContent = qqMeishiConnRespVO.getRawContent()
+					.replace("\"result\":\"\"", "\"result\":null");
+			respVO = JsonUtil.parseObject(packageRespContent, 
+						new JacksonTypeReference<QQMeishiResp<QQMeishiConvertQQMiRespVO>>() {}
+					 );
 		} catch (Throwable e) {
-			throw new QQMeishiRespDataParseException(e);
+			QQMeishiRespDataParseException dataParseException = new QQMeishiRespDataParseException(e);
+			dataParseException.setHttpStatusCode(qqMeishiConnRespVO.getHttpStatusCode());
+			dataParseException.setRawContent(qqMeishiConnRespVO.getRawContent());
+			
+			throw dataParseException;
 		}
 		return respVO;
 	}

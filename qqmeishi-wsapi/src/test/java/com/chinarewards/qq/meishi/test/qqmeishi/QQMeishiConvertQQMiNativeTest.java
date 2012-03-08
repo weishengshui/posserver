@@ -127,41 +127,28 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	
 	
 	/******************************** Test Case *******************************/
-	private QQMeishiResp<QQMeishiConvertQQMiRespVO> baseTest(final String url){
+	private QQMeishiResp<QQMeishiConvertQQMiRespVO> baseTest(final String url)
+			throws Throwable {
 		Configuration configuration = getInjector().getInstance(
 				Configuration.class);
-		
+
 		configuration.clearProperty(QQ_MEISHI_CONVERT_URL_KEY);
 		configuration.addProperty(QQ_MEISHI_CONVERT_URL_KEY, url);
-		
+
 		QQMeishiService qqMeishiService = getInjector().getInstance(
 				QQMeishiService.class);
-		
+
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = null;
 		QQMeishiConvertQQMiReqVO meishiConvertQQMiReqVO = new QQMeishiConvertQQMiReqVO();
+		actualVO = qqMeishiService.convertQQMi(meishiConvertQQMiReqVO);
 		
-		try {
-			actualVO = qqMeishiService.convertQQMi(meishiConvertQQMiReqVO);
-		} catch (QQMeishiServerUnreachableException e) {
-			e.printStackTrace();
-		} catch (QQMeishiServerLinkNotFoundException e) {
-			e.printStackTrace();
-		} catch (QQMeishiServerRespException e) {
-			e.printStackTrace();
-		} catch (QQMeishiRespDataParseException e) {
-			e.printStackTrace();
-		} catch (QQMeishiReadRespStreamException e) {
-			e.printStackTrace();
-		} catch (QQMeishiReqDataDigestException e) {
-			e.printStackTrace();
-		}
 		Assert.assertEquals(prepData.getResMap().get(url), actualVO);
 		return actualVO;
 	}
 	
 	
 	@Test
-	public void testAccumulate() {
+	public void testAccumulate() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE);
 
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
@@ -169,7 +156,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testAccumulateBadtoken() {
+	public void testAccumulateBadtoken() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE_BADTOKEN);
 		
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
@@ -177,7 +164,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testAccumulateBadxactpwd() {
+	public void testAccumulateBadxactpwd() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE_BADXACTPWD);
 		
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
@@ -185,7 +172,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testAccumulateHaspwd() {
+	public void testAccumulateHaspwd() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE_HASPWD);
 		
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
@@ -193,7 +180,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testAccumulateIllegaluser() {
+	public void testAccumulateIllegaluser() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE_ILLEGALUSER);
 		
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
@@ -201,12 +188,19 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	}
 	
 	@Test
-	public void testAccumulateInvalidamount() {
+	public void testAccumulateInvalidamount() throws Throwable {
 		final String url = prepData.buildURL(ACCUMULATE_INVALIDAMOUNT);
 		
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
 		System.out.println("testAccumulateInvalidamount() actual:"+actualVO);
 	}
+	
+//	@Test
+//	public void testPageNotFound() throws Throwable {
+//		final String url = prepData.buildURL(ACCUMULATE_INVALIDAMOUNT);
+//		QQMeishiResp<QQMeishiConvertQQMiRespVO> actualVO = baseTest(url);
+//		System.out.println("testAccumulateInvalidamount() actual:"+actualVO);
+//	}
 	/******************************** Test Case *******************************/
 	
 }

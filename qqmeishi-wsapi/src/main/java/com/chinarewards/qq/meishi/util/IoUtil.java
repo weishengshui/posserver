@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.chinarewards.qq.meishi.exception.QQMeishiReadRespStreamException;
-
 /**
  * description：io util
  * @copyright binfen.cc
