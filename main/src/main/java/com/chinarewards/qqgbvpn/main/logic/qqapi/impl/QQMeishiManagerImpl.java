@@ -214,7 +214,6 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 			}
 			
 		} catch (QQMeishiServerUnreachableException e) {
-			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
 			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_UNREACHABLE);
 			log.error("error==:QQ美食服务器不可达", e);
@@ -238,7 +237,6 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 			log.error("error==:QQ美食响应数据解析异常", e);
 		} catch (QQMeishiReadRespStreamException e) {
 			jouranlVo.setHttpStatusCode(e.getHttpStatusCode());
-			jouranlVo.setRawContent(e.getRawContent());
 			jouranlVo.setStacktrace(getExceptionStackTrace(e));
 			responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_ERROR_QQWS_IO);
 			log.error("error==:QQ美食读取响应流异常", e);
