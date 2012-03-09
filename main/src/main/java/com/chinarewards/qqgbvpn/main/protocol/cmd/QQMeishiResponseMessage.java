@@ -1,6 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.cmd;
 
-import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author harry
@@ -26,7 +26,7 @@ public class QQMeishiResponseMessage implements ICommand{
 	public byte forcePwdNextAction;
 	
 	//交易时间
-	public Calendar xactTime;
+	public Date xactTime;
 	
 	//小票上的打印标题
 	public String title;
@@ -74,11 +74,11 @@ public class QQMeishiResponseMessage implements ICommand{
 	}
 	
 
-	public Calendar getXactTime() {
+	public Date getXactTime() {
 		return xactTime;
 	}
 
-	public void setXactTime(Calendar xactTime) {
+	public void setXactTime(Date xactTime) {
 		this.xactTime = xactTime;
 	}
 

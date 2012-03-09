@@ -82,7 +82,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(0);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" + 
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
@@ -113,7 +113,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(2);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
@@ -144,7 +144,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(0);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
@@ -175,7 +175,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(0);
 		expectedVO.getResult().setHasPassword(true);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
@@ -206,7 +206,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(3);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
@@ -237,7 +237,7 @@ public final class ConvertQQMiPrepNativeData {
 		
 		expectedVO.getResult().setValidCode(4);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("20120131T234058+0800");
+		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
 		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
 		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
 				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +

@@ -2,6 +2,7 @@ package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		long qqwsErrorCode = in.getUnsignedInt();
 		long result = in.getUnsignedInt();
 		byte forcePwdNextAction = in.get();
-		Calendar xactTime = null;
+		Date xactTime = null;
 		String title = null;
 		String tip = null;
 		String password = null;
@@ -89,7 +90,7 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		long qqwsErrorCode = responseMessage.getQqwsErrorCode();
 		long result = responseMessage.getResult();
 		byte forcePwdNextAction = responseMessage.getForcePwdNextAction();
-		Calendar xactTime = responseMessage.getXactTime();
+		Date xactTime = responseMessage.getXactTime();
 		String title = responseMessage.getTitle();
 		String tip = responseMessage.getTip();
 		String password = responseMessage.getPassword();
@@ -151,7 +152,9 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		
 		// xact time
 		if(xactTime != null){
-			Tools.putDate(resultByte, xactTime, index);
+			Calendar ca = Calendar.getInstance();
+			ca.setTime(xactTime);
+			Tools.putDate(resultByte, ca, index);
 			
 		}else{
 			for (int i = 0; i < ProtocolLengths.CR_DATE_LENGTH; i++){
