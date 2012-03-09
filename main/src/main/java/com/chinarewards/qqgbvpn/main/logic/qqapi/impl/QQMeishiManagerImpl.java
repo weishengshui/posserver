@@ -4,10 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -88,7 +86,7 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 			qqmeishiXaction.setQqUserToken(postParams.get("userToken"));
 			qqmeishiXaction.setReceiptTip(responseMessage.getTip());
 			qqmeishiXaction.setReceiptTitle(responseMessage.getTitle());
-			qqmeishiXaction.setRemoteXactDate(responseMessage.getXactTime().getTime());
+			qqmeishiXaction.setRemoteXactDate(responseMessage.getXactTime());
 			qqmeishiXaction.setRemoteXactPwd(responseMessage.getPassword());
 			qqmeishiXaction.setTs(date);
 			qqmeishiXaction.setXactPwd(postParams.get("password"));
@@ -189,12 +187,9 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 				
 				//xactTime
 				String xactTime = qqmeishiResponseVo.getTradeTime();
-				SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd'T'hhmmss");
+				SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				try {
-					Calendar ca=Calendar.getInstance();
-					ca.setTimeZone(TimeZone.getTimeZone("GMT"+xactTime.substring(xactTime.length()-5)));
-					ca.setTime(format.parse(xactTime));
-					responseMessage.setXactTime(ca);
+					responseMessage.setXactTime(format.parse(xactTime));
 				} catch (ParseException e) {
 					log.error("error==:交易时间格式错误："+xactTime, e);
 				}

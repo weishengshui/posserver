@@ -51,6 +51,7 @@ import com.google.inject.util.Modules;
 
 
 /** 
+ *  FIXME restore this as QQMeishiProtocolTest
  * @author harry
  * @since 0.1.0
  */

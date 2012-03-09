@@ -127,7 +127,7 @@ public class QQApiTest extends JpaGuiceTest {
 					getGroupBuyingUnbindServletHolder(), "/groupBuyingUnbind");
 			// add handler to server
 			server.addHandler(scHandler);
-			server.getConnectors()[0].setPort(8086);
+			server.getConnectors()[0].setPort(8787);
 			server.start();
 		}
 		// build test server end

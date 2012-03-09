@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.Test;
@@ -54,9 +55,6 @@ public class QQMeishiProtocolMessageCoderTest extends GuiceTest {
 		
 		
 		// reponse
-		Calendar ca = Calendar.getInstance();
-		ca.set(2012, Calendar.JANUARY, 31, 23, 58, 59);
-		ca.set(Calendar.MILLISECOND, 987);
 
 		QQMeishiResponseMessage responseMessage1 = new QQMeishiResponseMessage();
 		responseMessage1.setCmdId(102);
@@ -67,7 +65,7 @@ public class QQMeishiProtocolMessageCoderTest extends GuiceTest {
 		responseMessage1.setPassword("123456789");
 		responseMessage1.setTip("abcdefg");
 		responseMessage1.setTitle("gfedcba");
-		responseMessage1.setXactTime(ca);
+		responseMessage1.setXactTime(new Date());
 		
 		QQMeishiBodyMessageResponseCodec responseCodec = new QQMeishiBodyMessageResponseCodec();
 		
