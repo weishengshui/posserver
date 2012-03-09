@@ -140,7 +140,7 @@ public class QQMeishiProtocol extends GuiceTest {
 		HardCodedServlet s = new HardCodedServlet();
 		s.init();
 		StringBuffer sb = new StringBuffer();
-		sb.append("{'result':{'password':'123456789','validCode':0,'hasPassword':true,'tradeTime':'20120131T234058+0800','title':'gfedcba','tip':'abcdefg'},'errCode':0,'errMessage':'成功了!'}");
+		sb.append("{'result':{'password':'123456789','validCode':0,'hasPassword':true,'tradeTime':'2012-01-31 23:40:58','title':'gfedcba','tip':'abcdefg'},'errCode':0,'errMessage':'成功了!'}");
 		s.setResponse(new String(sb.toString().getBytes(CHARSET), CHARSET));
 
 		ServletHolder h = new ServletHolder();
