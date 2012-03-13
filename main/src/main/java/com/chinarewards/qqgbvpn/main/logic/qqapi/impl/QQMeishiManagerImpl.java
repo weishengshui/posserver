@@ -129,7 +129,7 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 		String posId = postParams.get("posId");
 		//封装VO
 		QQMeishiConvertQQMiReqVO serverRequestVo = new QQMeishiConvertQQMiReqVO();
-		serverRequestVo.setConsume(Float.parseFloat(postParams.get("amount")));
+		serverRequestVo.setConsume(Double.parseDouble(postParams.get("amount")));
 		serverRequestVo.setPassword(postParams.get("password"));
 		serverRequestVo.setPosid(posId);
 		serverRequestVo.setVerifyCode(postParams.get("userToken"));
