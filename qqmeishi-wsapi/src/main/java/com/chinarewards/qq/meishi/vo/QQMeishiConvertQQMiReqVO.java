@@ -2,6 +2,8 @@ package com.chinarewards.qq.meishi.vo;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * description：QQ美食，兑换Q米交易请求VO
  * @copyright binfen.cc
@@ -17,12 +19,21 @@ public class QQMeishiConvertQQMiReqVO implements Serializable {
 	
 	private String posid;
 	
-	private float  consume;
+	private double  consume;
 	
 	private String password;
 	
 	public QQMeishiConvertQQMiReqVO(){
 		
+	}
+	
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("verifyCode", this.verifyCode)
+				.append("posid", this.posid)
+				.append("consume", this.consume)
+				.append("password", this.password)
+				.toString();
 	}
 	
 	public String getVerifyCode() {
@@ -48,7 +59,7 @@ public class QQMeishiConvertQQMiReqVO implements Serializable {
 		this.posid = posid;
 	}
 	
-	public float getConsume() {
+	public double getConsume() {
 		return consume;
 	}
 	
@@ -56,7 +67,7 @@ public class QQMeishiConvertQQMiReqVO implements Serializable {
 	 * 消费金额
 	 * 最大和最小值应为Java的限制. 精确到小数点后2位 
 	 */
-	public void setConsume(float consume) {
+	public void setConsume(double consume) {
 		this.consume = consume;
 	}
 	
