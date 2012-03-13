@@ -78,15 +78,15 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
 		expectedVO.getResult().setValidCode(0);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" + 
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("时间:2012-03-08 14:56:52%终端编号:REWARDS-0001%*会员23在阿香米线实际消费33.3元.%*" +
+				"使用优惠券:[优惠券内容].%*恭喜您获得332积分/返券:[优惠内容].%*详情访问QQ美食网%用户签名:%%%进入" +
+				"http://meishi.qq.com查看详情");
 		expectedVO.getResult().setPassword(null);
 		
 		String url = buildURL(targetName);
@@ -109,15 +109,13 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
 		expectedVO.getResult().setValidCode(2);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("token码123错误,%请返回重新输入.");
 		expectedVO.getResult().setPassword(null);
 		
 		String url = buildURL(targetName);
@@ -140,16 +138,14 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
-		expectedVO.getResult().setValidCode(0);
-		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
-		expectedVO.getResult().setPassword("");
+		expectedVO.getResult().setValidCode(1);
+		expectedVO.getResult().setHasPassword(true);
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("密码输入错误,请%返回重新输入.");
+		expectedVO.getResult().setPassword("25f9e794323b453885f5181f1b624d0b");
 		
 		String url = buildURL(targetName);
 		resultsMap.put(url, expectedVO);
@@ -171,16 +167,14 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
-		expectedVO.getResult().setValidCode(0);
+		expectedVO.getResult().setValidCode(5);
 		expectedVO.getResult().setHasPassword(true);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
-		expectedVO.getResult().setPassword("123456789");
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("");
+		expectedVO.getResult().setPassword(null);		//123456789 by MD5
 		
 		String url = buildURL(targetName);
 		resultsMap.put(url, expectedVO);
@@ -202,15 +196,13 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
 		expectedVO.getResult().setValidCode(3);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("会员123为违规操%作帐号,请返回重%新输入.");
 		expectedVO.getResult().setPassword(null);
 		
 		String url = buildURL(targetName);
@@ -233,15 +225,13 @@ public final class ConvertQQMiPrepNativeData {
 		QQMeishiResp<QQMeishiConvertQQMiRespVO> expectedVO = new QQMeishiResp<QQMeishiConvertQQMiRespVO>(
 				new QQMeishiConvertQQMiRespVO());
 		expectedVO.setErrCode(0);
-		expectedVO.setErrMessage("成功!");
+		expectedVO.setErrMessage("OK");
 		
 		expectedVO.getResult().setValidCode(4);
 		expectedVO.getResult().setHasPassword(false);
-		expectedVO.getResult().setTradeTime("2012-01-31 23:40:58");
-		expectedVO.getResult().setTitle("QQ美食极品客联名%会员");
-		expectedVO.getResult().setTip("会员1234在极品客实际消费100元。*使用优惠券：[优惠券内容]。%使用积分300积分，抵现金3元。" +
-				"*恭喜你获得300积分/返券：[优惠内容]。10积分即可抵1元使用！*详情访问QQ美食网%用户签名：%%%%" +
-				"进入http://meishi.qq.com查看详情。");
+		expectedVO.getResult().setTradeTime("2012-03-08 14:56:52");
+		expectedVO.getResult().setTitle("QQ美食阿香米线会员");
+		expectedVO.getResult().setTip("金额应大于0元,小%于5万元,请返回重%新输入.");
 		expectedVO.getResult().setPassword(null);
 		
 		String url = buildURL(targetName);
