@@ -101,33 +101,33 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 				+ ProtocolLengths.QQMEISHI_RESULT
 				+ ProtocolLengths.FORCE_PWD_NEXT_ACTION
 				+ ProtocolLengths.CR_DATE_LENGTH + ProtocolLengths.POSNETSTRLEN;
-
 		// title
 		int titleLen = (title == null) ? 0 : title.length();
 		byte[] titleBytes = null;
 		if(titleLen > 0){
-			byteLen += title.length();
 			titleBytes = title.getBytes(charset);
+			titleLen = titleBytes.length;
 		}
-		
+		byteLen += titleLen;
 		//tip
 		byteLen += ProtocolLengths.POSNETSTRLEN;
 		int tipLen = (tip == null) ? 0 : tip.length();
 		byte[] tipBytes = null;
 		if(tipLen > 0){
-			byteLen += tip.length();
+			
 			tipBytes = tip.getBytes(charset);
+			tipLen = tipBytes.length;
 		}
-		
+		byteLen += tipLen;
 		//password
 		byteLen += ProtocolLengths.POSNETSTRLEN;
 		int passwordLen = (password == null) ? 0 : password.length();
 		byte[] passwordBytes = null;
 		if(passwordLen > 0){
-			byteLen += password.length();
 			passwordBytes = password.getBytes(charset);
+			passwordLen = passwordBytes.length;
 		}
-		
+		byteLen += passwordLen;
 		//to result bytes
 		byte[] resultByte = new byte[byteLen];
 		int index = 0;
@@ -155,7 +155,6 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 			Calendar ca = Calendar.getInstance();
 			ca.setTime(xactTime);
 			Tools.putDate(resultByte, ca, index);
-			
 		}else{
 			for (int i = 0; i < ProtocolLengths.CR_DATE_LENGTH; i++){
 				resultByte[index + i] = 0;
@@ -175,6 +174,8 @@ public class QQMeishiBodyMessageResponseCodec implements ICommandCodec {
 		Tools.putUnsignedShort(resultByte, tipLen, index);
 		index += ProtocolLengths.POSNETSTRLEN;
 		if(tipLen > 0){
+			log.debug("tipBytes.length="+tipBytes.length);
+			log.debug("index="+index);
 			Tools.putBytes(resultByte, tipBytes, index);
 			index += tipBytes.length;
 		}

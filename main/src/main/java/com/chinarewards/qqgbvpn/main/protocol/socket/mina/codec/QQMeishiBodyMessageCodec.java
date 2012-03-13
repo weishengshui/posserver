@@ -96,16 +96,17 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 				+ ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN;
 		int userTokenLen = (userToken == null) ? 0 :userToken.length();
 		if(userTokenLen > 0){
-			byteLen += userToken.length();
 			userTokenByte = userToken.getBytes(charset);
+			userTokenLen = userTokenByte.length;
 		}
+		byteLen += userTokenLen;
 		byte[] passwordByte = null;
 		int passwordLen = (password == null) ? 0 :password.length();
 		if(passwordLen > 0){
-			byteLen += password.length();
 			passwordByte = password.getBytes(charset);
+			passwordLen = passwordByte.length;
 		}
-
+		byteLen += passwordLen;
 		byte[] resultByte = new byte[byteLen];
 		int index = 0;
 		//指令ID
