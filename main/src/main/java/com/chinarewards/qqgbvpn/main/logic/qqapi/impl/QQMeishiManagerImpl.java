@@ -137,6 +137,8 @@ public class QQMeishiManagerImpl implements QQMeishiManager {
 		//实例化响应对象
 		QQMeishiResponseMessage responseMessage = new QQMeishiResponseMessage();
 		responseMessage.setServerErrorCode(QQMeishiXactionPosnetErrorCode.POSSEV_SUCCESS);
+		//默认不需要输入密码
+		responseMessage.setForcePwdNextAction((byte)1);
 		
 		//记录日志准备
 		QQWsJouranlVo jouranlVo = new QQWsJouranlVo();
