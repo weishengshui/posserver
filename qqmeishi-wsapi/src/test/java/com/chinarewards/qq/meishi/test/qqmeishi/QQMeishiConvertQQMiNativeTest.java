@@ -30,7 +30,9 @@ import com.google.inject.Module;
  */
 public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 	
-	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.url.convertQQMi";
+	private static final String QQ_MEISHI_HOST_ADDRESS_KEY = "qq.meishi.wsapi.host";
+	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.wsapi.url";
+	private static final String QQ_MEISHI_COMM_SECRET_KEY  = "qq.meishi.wsapi.secretKey";
 	
 	private static final Integer JETTY_SERVER_PORT = 9001;
 	
@@ -67,7 +69,7 @@ public class QQMeishiConvertQQMiNativeTest extends GuiceTest {
 		conf.setProperty("server.port", 0);
 		
 		// URL for QQ meishi
-		conf.setProperty("qq.meishi.host", "localhost:"+JETTY_SERVER_PORT);
+		conf.setProperty(QQ_MEISHI_HOST_ADDRESS_KEY, "localhost:"+JETTY_SERVER_PORT);
 //		conf.setProperty("qq.meishi.url.convertQQMi",			TODO 不用了，在每个test中动态设置
 //				"http://localhost:9001/");
 
