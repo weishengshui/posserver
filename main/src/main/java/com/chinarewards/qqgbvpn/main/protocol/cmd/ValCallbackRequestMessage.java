@@ -8,6 +8,8 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class ValCallbackRequestMessage implements ICommand{
 
+	public static final long VAL_CALLBACK_CMD_ID = 11;
+	
 	public long cmdId;
 	
 	public String grouponId;

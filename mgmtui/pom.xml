@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.1.3-SNAPSHOT</version>
+		<version>0.2.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>com.chinarewards.qqgbvpn</groupId>
@@ -211,7 +211,7 @@
 		<dependency>
 			<groupId>com.chinarewards.qqgbvpn</groupId>
 			<artifactId>core</artifactId>
-			<version>0.1.3-SNAPSHOT</version>
+			<version>0.2.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>

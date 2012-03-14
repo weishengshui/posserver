@@ -15,7 +15,6 @@ import com.chinarewards.qqgbvpn.domain.Pos;
 import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpgradeRequestMessage;
@@ -261,9 +260,9 @@ public class FirmwareManagerImpl implements FirmwareManager {
 		if (StringUtil.isEmptyString(req.getPosId())) {
 			throw new IllegalArgumentException("POS ID is missing!");
 		}
-		if (CmdConstant.FIRMWARE_UP_DONE_CMD_ID != req.getCmdId()) {
+		if (FirmwareUpDoneRequestMessage.FIRMWARE_UP_DONE_CMD_ID != req.getCmdId()) {
 			throw new IllegalArgumentException("cmdId error!    cmdId != "+
-					CmdConstant.FIRMWARE_UP_DONE_CMD_ID+",cmdId = "+req.getCmdId()+"");
+					FirmwareUpDoneRequestMessage.FIRMWARE_UP_DONE_CMD_ID+",cmdId = "+req.getCmdId()+"");
 		}
 		
 		Pos pos = null;

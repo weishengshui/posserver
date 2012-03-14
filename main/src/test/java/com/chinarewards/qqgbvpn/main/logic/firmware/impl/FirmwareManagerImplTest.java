@@ -26,7 +26,6 @@ import com.chinarewards.qqgbvpn.domain.status.PosOperationStatus;
 import com.chinarewards.qqgbvpn.main.dao.qqapi.PosDao;
 import com.chinarewards.qqgbvpn.main.guice.AppModule;
 import com.chinarewards.qqgbvpn.main.logic.firmware.FirmwareManager;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.FirmwareUpDoneResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.GetFirmwareFragmentRequestMessage;
@@ -84,7 +83,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 
 		FirmwareUpDoneRequestMessage request = new FirmwareUpDoneRequestMessage();
 		request.setPosId("pos-0001");
-		request.setCmdId(CmdConstant.FIRMWARE_UP_DONE_CMD_ID);
+		request.setCmdId(FirmwareUpDoneRequestMessage.FIRMWARE_UP_DONE_CMD_ID);
 		
 		FirmwareUpDoneResponseMessage response = getManager().ackUpgradeCompleted(request);
 		
@@ -153,7 +152,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		//
 		assertNotNull(resp);
 		assertEquals("Command ID not correct",
-				CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE,
+				GetFirmwareFragmentResponseMessage.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE,
 				resp.getCmdId());
 		assertEquals("Unexpected result code",
 				GetFirmwareFragmentResponseMessage.RESULT_OK,
@@ -229,7 +228,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		//
 		assertNotNull(resp);
 		assertEquals("Command ID not correct",
-				CmdConstant.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE,
+				GetFirmwareFragmentResponseMessage.GET_FIRMWARE_FRAGMENT_CMD_ID_RESPONSE,
 				resp.getCmdId());
 		assertEquals("Unexpected result code",
 				GetFirmwareFragmentResponseMessage.RESULT_OK,
@@ -255,7 +254,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 		//charset
 		Charset charset = Charset.forName("gbk");
 		
-		final long cmdId = CmdConstant.FIRMWARE_UP_DONE_CMD_ID;
+		final long cmdId = FirmwareUpDoneRequestMessage.FIRMWARE_UP_DONE_CMD_ID;
 		final byte[] posId = new String("pos-0001a123").getBytes(charset);
 			
 		// prepare buffer
@@ -277,7 +276,7 @@ public class FirmwareManagerImplTest extends JpaGuiceTest {
 	public void testFirmwareUpDoneResponseCodec(){
 		//charset
 		Charset charset = Charset.forName("gbk");
-		final long cmdId = CmdConstant.FIRMWARE_UP_DONE_CMD_ID_RESPONSE;
+		final long cmdId = FirmwareUpDoneResponseMessage.FIRMWARE_UP_DONE_CMD_ID_RESPONSE;
 		final short result = FirmwareUpDoneResult.SUCCESS.getPosCode();
 		
 		ICommandCodec iCommandCodec = new FirmwareUpDoneResponseCodec();

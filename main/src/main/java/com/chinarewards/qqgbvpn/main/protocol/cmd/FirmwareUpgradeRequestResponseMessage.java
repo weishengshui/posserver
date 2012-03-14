@@ -8,7 +8,9 @@ package com.chinarewards.qqgbvpn.main.protocol.cmd;
  */
 public class FirmwareUpgradeRequestResponseMessage implements ICommand {
 	
-	private long cmdId = CmdConstant.FIRMWARE_UPGRADE_CMD_ID_RESPONSE;
+	public static final long FIRMWARE_UPGRADE_CMD_ID_RESPONSE = 14;
+	
+	private long cmdId = FIRMWARE_UPGRADE_CMD_ID_RESPONSE;
 	
 	private int result;
 

@@ -7,7 +7,6 @@ import com.chinarewards.qqgbvpn.main.logic.qqapi.GroupBuyingManager;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ValCallbackResponseMessage;
 import com.google.inject.Inject;
@@ -37,7 +36,7 @@ public class ValidationCallbackHandler implements ServiceHandler{
 			e.printStackTrace();
 			valCallbackResponseMessage.setResult(1);
 		}
-		valCallbackResponseMessage.setCmdId(CmdConstant.VAL_CALLBACK_CMD_ID_RESPONSE);
+		valCallbackResponseMessage.setCmdId(ValCallbackResponseMessage.VAL_CALLBACK_CMD_ID_RESPONSE);
 		response.writeResponse(valCallbackResponseMessage);
 	}
 

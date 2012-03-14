@@ -58,6 +58,19 @@ public abstract class ProtocolLengths {
 	
 	public static final int REDEEM_COUNT = 2;
 	
+	public static final int AMOUNT = 8; 
+	
+	public static final int USERTOKEN = 16;
+	
+	public static final int POSNETSTRLEN = 2;
+	
+	public static final int QQMEISHI_SERVER_ERROR = 4;
+	
+	public static final int QQMEISHI_QQWS_ERROR = 4;
+	
+	public static final int QQMEISHI_RESULT = 4;
+	
+	public static final int FORCE_PWD_NEXT_ACTION = 1;
 	
 	public static final int ECHO_COMMAND_RESULT = 1;
 

@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.chinarewards.qqgbpvn.main.test.GuiceTest;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.InitRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec.ICommandCodec;
@@ -125,7 +124,7 @@ public class CmdCodecTest extends GuiceTest {
 
 		// fake a message
 		InitRequestMessage msg = new InitRequestMessage();
-		msg.setCmdId(CmdConstant.INIT_CMD_ID);
+		msg.setCmdId(InitRequestMessage.INIT_CMD_ID);
 		msg.setPosId("POS-56789012");
 
 		CmdMapping cmdMapping = new SimpleCmdMapping();
@@ -145,7 +144,7 @@ public class CmdCodecTest extends GuiceTest {
 		InitRequestMessage decodedMsg = (InitRequestMessage)codec.decode(buffer, charset);
 		
 		// validation
-		assertEquals(CmdConstant.INIT_CMD_ID, decodedMsg.getCmdId());
+		assertEquals(InitRequestMessage.INIT_CMD_ID, decodedMsg.getCmdId());
 		assertEquals("POS-56789012", decodedMsg.getPosId());
 
 	}
@@ -164,7 +163,7 @@ public class CmdCodecTest extends GuiceTest {
 
 		// 4 byte + 12 byte, see wiki
 		IoBuffer buffer = IoBuffer.allocate(4 + 12);
-		buffer.putUnsignedInt(CmdConstant.INIT_CMD_ID);
+		buffer.putUnsignedInt(InitRequestMessage.INIT_CMD_ID);
 		// CY-1 with trailing ignorable content
 		buffer.put(new byte[] { 0x43, 0x59, 0x2d, 0x31, 0x0, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x31 });
 		buffer.position(0); // must reset
@@ -175,7 +174,7 @@ public class CmdCodecTest extends GuiceTest {
 		InitRequestMessage decodedMsg = (InitRequestMessage)codec.decode(buffer, charset);
 		
 		// validation
-		assertEquals(CmdConstant.INIT_CMD_ID, decodedMsg.getCmdId());
+		assertEquals(InitRequestMessage.INIT_CMD_ID, decodedMsg.getCmdId());
 		assertEquals("CY-1", decodedMsg.getPosId());
 
 	}

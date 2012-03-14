@@ -2,14 +2,15 @@ package com.chinarewards.qqgbpvn.testing.lab.business.message.impl;
 
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.chinarewards.qqgbpvn.testing.context.TestContext;
 import com.chinarewards.qqgbpvn.testing.exception.BuildBodyMessageException;
 import com.chinarewards.qqgbpvn.testing.lab.business.PosGetQQGroupBuyValidationTask;
 import com.chinarewards.qqgbpvn.testing.lab.business.message.BuildMessage;
 import com.chinarewards.qqgbvpn.main.protocol.SimpleCmdCodecFactory;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseDetail;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.SearchResponseMessage;
@@ -37,7 +38,7 @@ public class PosGetQQGroupBuyValidationBuildMessage implements BuildMessage {
 			logger.debug("grouponVCode="+grouponVCode);
 			
 			ValidateRequestMessage bodyMessage = new ValidateRequestMessage();
-			bodyMessage.setCmdId(CmdConstant.VALIDATE_CMD_ID);
+			bodyMessage.setCmdId(ValidateRequestMessage.VALIDATE_CMD_ID);
 			
 			
 			String grouponId = null;

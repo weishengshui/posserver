@@ -13,7 +13,6 @@ import com.chinarewards.qqgbvpn.main.protocol.ServiceHandler;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceRequest;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceResponse;
 import com.chinarewards.qqgbvpn.main.protocol.ServiceSession;
-import com.chinarewards.qqgbvpn.main.protocol.cmd.CmdConstant;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginRequestMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.LoginResponseMessage;
 import com.chinarewards.qqgbvpn.main.protocol.cmd.login.LoginResult;
@@ -60,7 +59,7 @@ public class LoginCommandHandler implements ServiceHandler {
 			loginResponseMessage = new LoginResponseMessage();
 			loginResponseMessage.setResult(LoginResult.OTHERS.getPosCode());
 		}
-		loginResponseMessage.setCmdId(CmdConstant.LOGIN_CMD_ID_RESPONSE);
+		loginResponseMessage.setCmdId(LoginResponseMessage.LOGIN_CMD_ID_RESPONSE);
 		if (loginResponseMessage.getResult() == LoginResult.SUCCESS
 				.getPosCode()) {
 			HashMap<String, String> params = new HashMap<String, String>();
