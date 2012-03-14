@@ -35,10 +35,10 @@ public class QQMeishiServiceImpl implements QQMeishiService {
 	
 	Logger log = LoggerFactory.getLogger(getClass());
 	
-	private static final String QQ_MEISHI_HOST_ADDRESS_KEY = "qq.meishi.host";
-	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.url.convertQQMi";
-	private static final String QQ_MEISHI_COMM_SECRET_KEY  = "qq.meishi.communication.secretkey";
-	
+	private static final String QQ_MEISHI_HOST_ADDRESS_KEY = "qq.meishi.wsapi.host";
+	private static final String QQ_MEISHI_CONVERT_URL_KEY  = "qq.meishi.wsapi.url";
+	private static final String QQ_MEISHI_COMM_SECRET_KEY  = "qq.meishi.wsapi.secretKey";
+//	qq.meishi.wsapi.host
 	private static final String CHARSET = "UTF-8";
 	
 	@Inject
