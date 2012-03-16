@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -63,7 +64,12 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 		}
 
 		message.setCmdId(cmdId);
-		message.setAmount(amount);
+		
+		//截取两个小数
+		BigDecimal aa = new BigDecimal(amount);
+		aa = aa.setScale(2, BigDecimal.ROUND_DOWN);
+		
+		message.setAmount(aa.doubleValue());
 		message.setPassword(password);
 		message.setUserToken(userToken);
 
