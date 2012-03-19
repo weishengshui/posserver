@@ -16,4 +16,4 @@ CREATE TABLE QQMeishiXaction (
 	xactPwd VARCHAR(255),
 	xactResultCode integer NOT NULL,
 	primary key (id)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
