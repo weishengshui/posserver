@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.chinarewards.qqgbvpn</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
+		<version>0.2.0-RC2</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<groupId>com.chinarewards.qq.meishi</groupId>
 	<artifactId>qqmeishi-wsapi</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.2.0-RC2</version>
 	<name>QQ Meishi Web Service API</name>
 	<url>http://wiki.dev.jifen.cc/QQ美食POS机奖励Q米接口技术设计</url>
 	<description>Tencent Group QQ Meishi Web Service API</description>
