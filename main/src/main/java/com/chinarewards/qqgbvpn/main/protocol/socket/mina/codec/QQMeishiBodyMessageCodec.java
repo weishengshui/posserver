@@ -63,13 +63,9 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 		}
 		
 		//保留0.xx, 格式化
+		Double tempDouble = Double.parseDouble(amountStr);
 		DecimalFormat decimalFormat = new DecimalFormat("0.##");
-		double amount;
-		try {
-			amount = (Double) decimalFormat.parse(amountStr);
-		} catch (ParseException e) {
-			throw new PackageException(e);
-		}
+		double amount = Double.parseDouble(decimalFormat.format(tempDouble));
 		
 		// password
 		int passwordLen = in.getUnsignedShort();
