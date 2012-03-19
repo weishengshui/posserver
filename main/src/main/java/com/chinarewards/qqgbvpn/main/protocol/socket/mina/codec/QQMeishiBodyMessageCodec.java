@@ -1,5 +1,6 @@
 package com.chinarewards.qqgbvpn.main.protocol.socket.mina.codec;
 
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.buffer.IoBuffer;
@@ -48,10 +49,18 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 			userToken = new String(userTokenByte, charset);
 		}
 
-		// amount
-		byte[] amountBytes = new byte[ProtocolLengths.AMOUNT];
-		in.get(amountBytes);
-		double amount = Tools.getDouble(amountBytes);
+		// amount   TODO 不想蛋疼字节序了
+//		byte[] amountBytes = new byte[ProtocolLengths.AMOUNT];
+//		in.get(amountBytes);
+//		double amount = Tools.getDouble(amountBytes);
+		int amountLen = in.getUnsignedShort();
+		String amountStr = "";
+		if (amountLen > 0) {
+			byte[] amountByte = new byte[amountLen];
+			in.get(amountByte);
+			amountStr = new String(amountByte, charset);
+		}
+		double amount = Double.parseDouble(amountStr);
 		
 		// password
 		int passwordLen = in.getUnsignedShort();
@@ -63,7 +72,12 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 		}
 
 		message.setCmdId(cmdId);
-		message.setAmount(amount);
+		
+		//截取两个小数
+		BigDecimal aa = new BigDecimal(amount);
+		aa = aa.setScale(2, BigDecimal.ROUND_DOWN);
+		
+		message.setAmount(aa.doubleValue());
 		message.setPassword(password);
 		message.setUserToken(userToken);
 
@@ -91,15 +105,26 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 		String password = requestMessage.getPassword();
 		double amount = requestMessage.getAmount();
 
-		byte[] userTokenByte = null;
-		int byteLen = ProtocolLengths.COMMAND + ProtocolLengths.AMOUNT
+		int byteLen = ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN
 				+ ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN;
+		
+		byte[] userTokenByte = null;
 		int userTokenLen = (userToken == null) ? 0 :userToken.length();
 		if(userTokenLen > 0){
 			userTokenByte = userToken.getBytes(charset);
 			userTokenLen = userTokenByte.length;
 		}
 		byteLen += userTokenLen;
+		
+		byte[] amountByte = null;
+		String amountStr = String.valueOf(amount);
+		int amountLen = (amountStr == null) ? 0 :amountStr.length();
+		if(amountLen > 0){
+			amountByte = amountStr.getBytes(charset);
+			amountLen = amountByte.length;
+		}
+		byteLen += amountLen;
+		
 		byte[] passwordByte = null;
 		int passwordLen = (password == null) ? 0 :password.length();
 		if(passwordLen > 0){
@@ -107,6 +132,8 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 			passwordLen = passwordByte.length;
 		}
 		byteLen += passwordLen;
+		
+		
 		byte[] resultByte = new byte[byteLen];
 		int index = 0;
 		//指令ID
@@ -122,8 +149,15 @@ public class QQMeishiBodyMessageCodec implements ICommandCodec {
 		}
 		
 		//amount double
-		Tools.putDouble(resultByte, amount, index);
-		index += ProtocolLengths.AMOUNT;
+//		Tools.putDouble(resultByte, amount, index);
+//		index += ProtocolLengths.AMOUNT;
+		Tools.putUnsignedShort(resultByte, amountLen, index);
+		index += ProtocolLengths.POSNETSTRLEN;
+		if(amountLen > 0){
+			Tools.putBytes(resultByte, amountByte, index);
+			index += amountByte.length;
+		}
+		
 		
 		//password
 		Tools.putUnsignedShort(resultByte, passwordLen, index);
