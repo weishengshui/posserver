@@ -308,4 +308,13 @@ public abstract class Tools {
 		System.out.println(checkSum(b, b.length));
 
 	}
+
+	public static long bytesToLong(byte[] b) {
+		long l = 0;
+		for (int i = 0; i < b.length; i++) {
+			l <<=8;
+			l^=(long)b[i]& 0xFF;
+		}
+		return l;
+	}
 }
