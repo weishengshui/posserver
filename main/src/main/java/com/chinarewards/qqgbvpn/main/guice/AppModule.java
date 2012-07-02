@@ -3,6 +3,7 @@
  */
 package com.chinarewards.qqgbvpn.main.guice;
 
+import com.chinarewards.qqadidas.module.QQAdidasModule;
 import com.chinarewards.qqgbvpn.logic.journal.DefaultJournalModule;
 import com.chinarewards.qqgbvpn.main.ApplicationModule;
 import com.chinarewards.qqgbvpn.main.HuaxiaModule;
@@ -37,6 +38,8 @@ public class AppModule extends AbstractModule {
 		install(new DefaultJournalModule());
 		
 		install(new HuaxiaModule());
+		//qq adidas
+		install(new QQAdidasModule());
 	}
 
 }

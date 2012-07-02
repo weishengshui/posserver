@@ -79,6 +79,12 @@ public enum DomainEntity {
 	/**
 	 * QQMeishiXaction. The entity ID should be <code>QQMeishiXaction.getId</code>
 	 */
-	QQMEISHIXACTION
+	QQMEISHIXACTION,
 	
+	/**
+	 * QQAdidas 
+	 */
+	QQACTIVITYMEMBER,
+	QQACTIVITYHISTORY,
+	QQWEIXINSIGNIN
 }

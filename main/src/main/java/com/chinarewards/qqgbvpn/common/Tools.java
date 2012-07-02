@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -316,5 +317,71 @@ public abstract class Tools {
 			l^=(long)b[i]& 0xFF;
 		}
 		return l;
+	}
+
+	public static void putInt(byte[] resultByte, int intNum, int index) {
+		// TODO Auto-generated method stub
+		resultByte[index+0] = (byte)((intNum>>24)&0xff);
+		resultByte[index+1] = (byte)((intNum>>16)&0xff);
+		resultByte[index+2] = (byte)((intNum>>8)&0xff);
+		resultByte[index+3] = (byte)((intNum>>0)&0xff);
+		
+	}
+
+	public static Calendar getDate(byte[] xact_time) {
+		int year = getUnsignedShort(xact_time, 0);
+		System.out.println(year);
+		int month = xact_time[2]-1;
+		int day = xact_time[3];
+		int hour = xact_time[4];
+		int minute = xact_time[5];
+		int second = xact_time[6];
+		int millsecond = getUnsignedShort(xact_time, 7);
+		int timezone = getUnsignedShort(xact_time, 9);
+		System.out.println(timezone);
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, year);
+		cal.set(Calendar.MONTH, month);
+		cal.set(Calendar.DAY_OF_MONTH, day);
+		cal.set(Calendar.HOUR_OF_DAY, hour);
+		cal.set(Calendar.MINUTE, minute);
+		cal.set(Calendar.SECOND, second);
+		cal.set(Calendar.MILLISECOND, millsecond);
+		TimeZone zone = new TimeZone() {
+			private int offset;
+			@Override
+			public boolean useDaylightTime() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public void setRawOffset(int offsetMillis) {
+				offset = offsetMillis;
+				
+			}
+			
+			@Override
+			public boolean inDaylightTime(Date date) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public int getRawOffset() {
+				return this.offset;
+			}
+			
+			@Override
+			public int getOffset(int era, int year, int month, int day, int dayOfWeek,
+					int milliseconds) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		};
+		zone.setRawOffset(timezone*1000*60);
+		cal.setTimeZone(zone);
+		
+		return cal;
 	}
 }

@@ -16,6 +16,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.ServletHandler;
@@ -258,7 +259,7 @@ public class QQMeishiProtocol extends GuiceTest {
 		
 	}
 	 	
-	
+	@Ignore
 	@Test
 	public void testQQMeishiSuccess() throws Exception {
 		System.out.println("success!");
@@ -304,6 +305,7 @@ public class QQMeishiProtocol extends GuiceTest {
 		
 	}
 	
+	@Ignore
 	@Test
 	public void testQQMeishiErrorCode() throws Exception {
 		System.out.println("error code!");
@@ -345,7 +347,7 @@ public class QQMeishiProtocol extends GuiceTest {
 		assertEquals(null, reponseMessage.getTip());		
 		assertEquals(null, reponseMessage.getPassword());
 	}
-
+	@Ignore
 	@Test
 	public void testQQMeishiNOConnect() throws Exception {
 		System.out.println("no qqmeishi server!");
