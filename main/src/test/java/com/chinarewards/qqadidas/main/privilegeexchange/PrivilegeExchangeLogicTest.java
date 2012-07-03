@@ -11,7 +11,9 @@ import org.junit.Test;
 
 import com.chinarewards.qqadidas.domain.QQActivityMember;
 import com.chinarewards.qqadidas.domain.status.PrivilegeStatus;
-import com.chinarewards.qqadidas.mian.logic.QQMemberPrivilegeExchangeLogic;
+import com.chinarewards.qqadidas.main.logic.QQAdidasManager;
+import com.chinarewards.qqadidas.main.logic.impl.QQAdidasManagerImpl;
+import com.chinarewards.qqadidas.main.protocol.cmd.PrivilegeExchangeResponseMessage;
 import com.chinarewards.qqgbpvn.main.CommonTestConfigModule;
 import com.chinarewards.qqgbpvn.main.test.JpaGuiceTest;
 import com.chinarewards.qqgbvpn.core.jpa.JpaPersistModuleBuilder;
@@ -38,7 +40,7 @@ import com.google.inject.util.Modules;
 public class PrivilegeExchangeLogicTest extends JpaGuiceTest {
 	EntityManager em;
 	PosServer posServer;
-	QQMemberPrivilegeExchangeLogic logic;
+	QQAdidasManager logic;
 
 	@Override
 	public void setUp() throws Exception {
@@ -70,63 +72,63 @@ public class PrivilegeExchangeLogicTest extends JpaGuiceTest {
 		// case 1: 无效的cdkey
 		cdkey = "123456789001234";
 		amount = "0.01";
-		assertEquals(QQMemberPrivilegeExchangeLogic.CDKEY_NOT_EXISTS,
+		assertEquals(PrivilegeExchangeResponseMessage.CDKEY_NOT_EXISTS,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 2: cdkey正确111111111111234，消费额30
 		cdkey = "111111111111234";
 		amount = "30";
-		assertEquals(QQMemberPrivilegeExchangeLogic.AMOUNT_INVALID,
+		assertEquals(PrivilegeExchangeResponseMessage.AMOUNT_INVALID,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 3: cdkey正确111111111111234，消费额299
 		amount = "299";
-		assertEquals(QQMemberPrivilegeExchangeLogic.AMOUNT_INVALID,
+		assertEquals(PrivilegeExchangeResponseMessage.AMOUNT_INVALID,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 4: cdkey正确111111111111234，消费额300
 		amount = "300";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_FIRST_HALF,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_FIRST_HALF,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 5: cdkey正确111111111111234，消费额599
 		amount = "599";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_SECOND_HALF,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_SECOND_HALF,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 6: cdkey正确111111111111234，消费额600
 		amount = "600";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_DONE,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_DONE,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 7: cdkey正确222222222221234，消费额600
 		cdkey = "222222222221234";
 		amount = "600";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_ALL,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_ALL,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 
 		// case 8: cdkey正确222222222221234，消费额352
 		cdkey = "222222222221234";
 		amount = "352";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_DONE,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_DONE,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 		
 		// case 9: cdkey正确222222222221234，消费额625
 		cdkey = "222222222221234";
 		amount = "625";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_DONE,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_DONE,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 		
 		// case 10: cdkey正确333333333331234，消费额310
 		cdkey = "333333333331234";
 		amount = "310";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_FIRST_HALF,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_FIRST_HALF,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 		
 		// case 11: cdkey正确333333333331234，消费额600
 		cdkey = "333333333331234";
 		amount = "600";
-		assertEquals(QQMemberPrivilegeExchangeLogic.PRIVILEGE_SECOND_HALF,
+		assertEquals(PrivilegeExchangeResponseMessage.PRIVILEGE_SECOND_HALF,
 				logic.getResultStatusByCdkeyAmount(cdkey, amount));
 		
 	}
@@ -177,7 +179,7 @@ public class PrivilegeExchangeLogicTest extends JpaGuiceTest {
 		{
 			DefaultPosServer dserver = (DefaultPosServer) posServer;
 			Injector injector = dserver.getInjector();
-			logic = injector.getInstance(QQMemberPrivilegeExchangeLogic.class);
+			logic = injector.getInstance(QQAdidasManagerImpl.class);
 			em = injector.getInstance(EntityManager.class);
 			em.getTransaction().begin();
 			initDb(em);

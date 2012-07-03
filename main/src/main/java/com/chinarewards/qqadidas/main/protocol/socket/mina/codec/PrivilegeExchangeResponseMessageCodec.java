@@ -35,8 +35,8 @@ public class PrivilegeExchangeResponseMessageCodec implements ICommandCodec {
 
 		if (in.remaining() < ProtocolLengths.COMMAND
 				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
-				+ ProtocolLengths.CR_DATE_LENGTH
-				+ ProtocolLengths.POSNETSTRLEN * 2) {
+				+ ProtocolLengths.CR_DATE_LENGTH + ProtocolLengths.POSNETSTRLEN
+				* 2) {
 			throw new PackageException(
 					"privilege exchange response message body error, body message is: "
 							+ in);
@@ -51,13 +51,13 @@ public class PrivilegeExchangeResponseMessageCodec implements ICommandCodec {
 		int tipLength;
 		byte[] title;
 		byte[] tip;
-		if(titleLength==0){
+		if (titleLength == 0) {
 			tipLength = in.getUnsignedShort();
 			message.setTitleLength(0);
 			message.setTitle(null);
 			message.setTipLength(0);
 			message.setTip(null);
-		}else{
+		} else {
 			title = new byte[titleLength];
 			in.get(title);
 			tipLength = in.getUnsignedShort();
@@ -68,12 +68,11 @@ public class PrivilegeExchangeResponseMessageCodec implements ICommandCodec {
 			message.setTipLength(tipLength);
 			message.setTip(Tools.byteToString(tip, charset));
 		}
-		
 
 		message.setCmdId(cmdId);
 		message.setResult(result);
 		message.setXact_time(xact);
-		
+
 		return message;
 	}
 
@@ -86,47 +85,49 @@ public class PrivilegeExchangeResponseMessageCodec implements ICommandCodec {
 		long cmdId = message.getCmdId();
 		int result = message.getResult();
 		Calendar xact_time = message.getXact_time();
-		int titleLength= message.getTitleLength();
+		int titleLength = message.getTitleLength();
 		String title = message.getTitle();
 		int tipLength = message.getTipLength();
 		String tip = message.getTip();
 
 		byte[] resultByte = new byte[ProtocolLengths.COMMAND
 				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
-				+ ProtocolLengths.CR_DATE_LENGTH
-				+ ProtocolLengths.POSNETSTRLEN * 2 + titleLength + tipLength];
+				+ ProtocolLengths.CR_DATE_LENGTH + ProtocolLengths.POSNETSTRLEN
+				* 2 + titleLength + tipLength];
 		log.debug("privilege exchange response message encode resultByte length: "
 				+ resultByte.length);
-		
-		//cmdId
+
+		// cmdId
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
-		//result
+		// result
 		Tools.putInt(resultByte, result, ProtocolLengths.COMMAND);
-		//xact_time
+		// xact_time
 		Tools.putDate(resultByte, xact_time, ProtocolLengths.COMMAND
 				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH);
-		//titleLength
+		// titleLength
 		Tools.putUnsignedShort(resultByte, titleLength, ProtocolLengths.COMMAND
 				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
 				+ ProtocolLengths.CR_DATE_LENGTH);
-		if(titleLength==0){
-			Tools.putUnsignedShort(resultByte, tipLength, ProtocolLengths.COMMAND
-					+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
-					+ ProtocolLengths.CR_DATE_LENGTH
-					+ ProtocolLengths.POSNETSTRLEN + titleLength);
-		}else{
-			//title
+		if (titleLength == 0) {
+			Tools.putUnsignedShort(resultByte, tipLength,
+					ProtocolLengths.COMMAND
+							+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
+							+ ProtocolLengths.CR_DATE_LENGTH
+							+ ProtocolLengths.POSNETSTRLEN + titleLength);
+		} else {
+			// title
 			Tools.putBytes(resultByte, title.getBytes(charset),
 					ProtocolLengths.COMMAND
 							+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
 							+ ProtocolLengths.CR_DATE_LENGTH
 							+ ProtocolLengths.POSNETSTRLEN);
-			//tipLength
-			Tools.putUnsignedShort(resultByte, tipLength, ProtocolLengths.COMMAND
-					+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
-					+ ProtocolLengths.CR_DATE_LENGTH
-					+ ProtocolLengths.POSNETSTRLEN + titleLength);
-			//tip
+			// tipLength
+			Tools.putUnsignedShort(resultByte, tipLength,
+					ProtocolLengths.COMMAND
+							+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
+							+ ProtocolLengths.CR_DATE_LENGTH
+							+ ProtocolLengths.POSNETSTRLEN + titleLength);
+			// tip
 			Tools.putBytes(resultByte, tip.getBytes(charset),
 					ProtocolLengths.COMMAND
 							+ ProtocolLengths.QQADIDAS_RESULT_LENGTH
@@ -134,7 +135,7 @@ public class PrivilegeExchangeResponseMessageCodec implements ICommandCodec {
 							+ ProtocolLengths.POSNETSTRLEN + titleLength
 							+ ProtocolLengths.POSNETSTRLEN);
 		}
-		
+
 		return resultByte;
 	}
 

@@ -112,7 +112,7 @@ public class ReceiveGiftResponseMessageCodec implements ICommandCodec {
 							+ ProtocolLengths.CR_DATE_LENGTH
 							+ ProtocolLengths.POSNETSTRLEN);
 		}
-		
+
 		return resultByte;
 	}
 

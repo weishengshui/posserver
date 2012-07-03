@@ -16,6 +16,21 @@ public class PrivilegeExchangeResponseMessage implements ICommand {
 	public static final int RESPONSE_RESULT_AMOUNT_INVALID = 3;
 	public static final int RESPONSE_RESULT_ERROR_OTHERS = 4;
 	public static final String TITLE = "adidas NEO Label    打造你的新鲜范";
+
+	// cdkey错误
+	public static final int CDKEY_NOT_EXISTS = -1;
+	// 消费金额不足
+	public static final int AMOUNT_INVALID = 0;
+	// 会员之前已经返还100元
+	public static final int PRIVILEGE_DONE = 1;
+	// 会员之前未消费过，本次消费金额为300-599，返回50元优惠
+	public static final int PRIVILEGE_FIRST_HALF = 2;
+	// 会员之前已经返还过50元，本次消费金额为300及以上
+	public static final int PRIVILEGE_SECOND_HALF = 3;
+	// 会员之前未消费过，本次消费金额为600及以上，返回50元优惠
+	public static final int PRIVILEGE_ALL = 4;
+	// 其它错误
+	public static final int ERROR_CODE_OTHERS = 5;
 	private long cmdId;
 
 	private int result;

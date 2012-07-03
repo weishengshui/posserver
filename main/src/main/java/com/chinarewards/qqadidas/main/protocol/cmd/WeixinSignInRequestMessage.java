@@ -1,18 +1,19 @@
 package com.chinarewards.qqadidas.main.protocol.cmd;
 
 import com.chinarewards.qqgbvpn.main.protocol.cmd.ICommand;
+
 /**
  * 
  * @author weishengshui
- *
+ * 
  */
 public class WeixinSignInRequestMessage implements ICommand {
 	public static final long WEIXIN_SIGN_IN_CMD_ID = 205;
 	private long cmdId;
-	//POSNET字符串
+	// POSNET字符串
 	private int weixinNoLength;
 	private String weixinNo;
-	
+
 	@Override
 	public long getCmdId() {
 		return cmdId;
@@ -37,6 +38,5 @@ public class WeixinSignInRequestMessage implements ICommand {
 	public void setCmdId(long cmdId) {
 		this.cmdId = cmdId;
 	}
-	
 
 }

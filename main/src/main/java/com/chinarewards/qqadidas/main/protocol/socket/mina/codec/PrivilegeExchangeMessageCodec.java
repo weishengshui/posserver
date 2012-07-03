@@ -29,14 +29,16 @@ public class PrivilegeExchangeMessageCodec implements ICommandCodec {
 		log.debug("privilege exchange request message decode");
 		PrivilegeExchangeRequestMessage message = new PrivilegeExchangeRequestMessage();
 		log.debug("in.remaining()={}", in.remaining());
-		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN) {
+		if (in.remaining() < ProtocolLengths.COMMAND
+				+ ProtocolLengths.POSNETSTRLEN + ProtocolLengths.POSNETSTRLEN) {
 			throw new PackageException(
-					"privilege exchange message body error, body message is: " + in);
+					"privilege exchange message body error, body message is: "
+							+ in);
 		}
 
 		long cmdId = in.getUnsignedInt();
 		int cdkeyLength = in.getUnsignedShort();
-		
+
 		byte[] cdkey = new byte[cdkeyLength];
 		in.get(cdkey);
 		int amountLength = in.getUnsignedShort();
@@ -55,22 +57,28 @@ public class PrivilegeExchangeMessageCodec implements ICommandCodec {
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("privilege exchange request message encode");
-		PrivilegeExchangeRequestMessage message = (PrivilegeExchangeRequestMessage)bodyMessage;
-		
+		PrivilegeExchangeRequestMessage message = (PrivilegeExchangeRequestMessage) bodyMessage;
+
 		long cmdId = message.getCmdId();
 		int cdkeyLength = message.getCdkeyLength();
 		String cdkey = message.getCdkey();
 		int amountLength = message.getAmountLength();
 		String amount = message.getAmount();
-		
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.POSNETSTRLEN*2+cdkeyLength+amountLength];
-		
+
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND
+				+ ProtocolLengths.POSNETSTRLEN * 2 + cdkeyLength + amountLength];
+
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, cdkeyLength, ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, cdkey.getBytes(charset), ProtocolLengths.COMMAND+ProtocolLengths.POSNETSTRLEN);
-		Tools.putUnsignedShort(resultByte, amountLength, ProtocolLengths.COMMAND+ProtocolLengths.POSNETSTRLEN+cdkeyLength);
-		Tools.putBytes(resultByte, amount.getBytes(charset), ProtocolLengths.COMMAND+ProtocolLengths.POSNETSTRLEN+cdkeyLength+ProtocolLengths.POSNETSTRLEN);
-		
+		Tools.putBytes(resultByte, cdkey.getBytes(charset),
+				ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN);
+		Tools.putUnsignedShort(resultByte, amountLength,
+				ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN
+						+ cdkeyLength);
+		Tools.putBytes(resultByte, amount.getBytes(charset),
+				ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN
+						+ cdkeyLength + ProtocolLengths.POSNETSTRLEN);
+
 		return resultByte;
 	}
 

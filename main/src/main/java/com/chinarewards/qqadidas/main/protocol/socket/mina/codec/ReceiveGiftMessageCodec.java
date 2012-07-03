@@ -29,7 +29,8 @@ public class ReceiveGiftMessageCodec implements ICommandCodec {
 		log.debug("receive gift request message decode");
 		ReceiveGiftRequestMessage message = new ReceiveGiftRequestMessage();
 		log.debug("in.remaining()={}", in.remaining());
-		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN) {
+		if (in.remaining() < ProtocolLengths.COMMAND
+				+ ProtocolLengths.POSNETSTRLEN) {
 			throw new PackageException(
 					"receive gift message body error, body message is: " + in);
 		}
@@ -50,17 +51,18 @@ public class ReceiveGiftMessageCodec implements ICommandCodec {
 	@Override
 	public byte[] encode(ICommand bodyMessage, Charset charset) {
 		log.debug("receive gift request message encode");
-		ReceiveGiftRequestMessage message = (ReceiveGiftRequestMessage)bodyMessage;
+		ReceiveGiftRequestMessage message = (ReceiveGiftRequestMessage) bodyMessage;
 		long cmdId = message.getCmdId();
 		int cdkeyLength = message.getCdkeyLength();
 		String cdkey = message.getCdkey();
-		
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND+2+cdkeyLength];
-		
+
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND + 2 + cdkeyLength];
+
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, cdkeyLength, ProtocolLengths.COMMAND);
-		Tools.putBytes(resultByte, cdkey.getBytes(), ProtocolLengths.COMMAND+2);
-		
+		Tools.putBytes(resultByte, cdkey.getBytes(),
+				ProtocolLengths.COMMAND + 2);
+
 		return resultByte;
 	}
 

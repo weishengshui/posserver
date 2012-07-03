@@ -32,18 +32,19 @@ public class WeixinSignInResponseMessageCodec implements ICommandCodec {
 
 		log.debug("in.remainning()={}", in.remaining());
 
-		if (in.remaining() < ProtocolLengths.COMMAND + ProtocolLengths.QQADIDAS_RESULT_LENGTH) {
+		if (in.remaining() < ProtocolLengths.COMMAND
+				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH) {
 			throw new PackageException(
 					"weixin sign in response message body error, body message is: "
 							+ in);
 		}
 		long cmdId = in.getUnsignedInt();
 		int result = in.getInt();
-		
+
 		// reconstruct message
 		message.setCmdId(cmdId);
 		message.setResult(result);
-		
+
 		return message;
 	}
 
@@ -52,13 +53,14 @@ public class WeixinSignInResponseMessageCodec implements ICommandCodec {
 
 		log.debug("weixin sign in response message encode");
 
-		WeixinSignInResponseMessage message = (WeixinSignInResponseMessage)bodyMessage;
+		WeixinSignInResponseMessage message = (WeixinSignInResponseMessage) bodyMessage;
 
 		long cmdId = message.getCmdId();
 		int result = message.getResult();
-		
-		byte[] resultByte = new byte[ProtocolLengths.COMMAND+ProtocolLengths.QQADIDAS_RESULT_LENGTH];
-		
+
+		byte[] resultByte = new byte[ProtocolLengths.COMMAND
+				+ ProtocolLengths.QQADIDAS_RESULT_LENGTH];
+
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putInt(resultByte, result, ProtocolLengths.COMMAND);
 

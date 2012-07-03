@@ -63,11 +63,11 @@ public class WeixinSignInMessageCodec implements ICommandCodec {
 		Tools.putUnsignedInt(resultByte, cmdId, 0);
 		Tools.putUnsignedShort(resultByte, weixinNoLength,
 				ProtocolLengths.COMMAND);
-		if(weixinNo!=null){
+		if (weixinNo != null) {
 			Tools.putBytes(resultByte, weixinNo.getBytes(charset),
 					ProtocolLengths.COMMAND + ProtocolLengths.POSNETSTRLEN);
 		}
-		
+
 		return resultByte;
 	}
 

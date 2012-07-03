@@ -13,7 +13,7 @@ public class ReceiveGiftResponseMessage implements ICommand {
 
 	public static final long RECEIVE_GIFT_CMD_ID_RESPONSE = 202;
 	public static final String TITLE = "adidas NEO Label    打造你的新鲜范";
-	public static final String TIP="交易成功";
+	public static final String TIP = "交易成功";
 
 	/**
 	 * response result code
